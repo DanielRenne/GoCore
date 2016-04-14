@@ -22,6 +22,7 @@ func Unzip(archive, target string) error {
 	for _, file := range reader.File {
 		path := filepath.Join(target, file.Name)
 		if file.FileInfo().IsDir() {
+			fmt.Println("Creating Directory:  " + file.Name)
 			os.MkdirAll(path, file.Mode())
 			continue
 		}
@@ -38,8 +39,8 @@ func Unzip(archive, target string) error {
 		}
 		defer targetFile.Close()
 
+		fmt.Println("Extracting File:  " + file.Name)
 		if _, err := io.Copy(targetFile, fileReader); err != nil {
-			fmt.Println(err.Error())
 			return err
 		}
 	}
