@@ -1,0 +1,26 @@
+{
+	"application":{
+    "name": "helloWorld",
+    "domain": "127.0.0.1",
+    "httpPort": 82,
+    "httpsPort": 443
+	},
+	"dbConnections":[
+		{
+			"appName" : "helloWorld",
+			"driver" : "mssql",
+			"connectionString" : "server=myServerAddress;Database=HelloWorld;user id=myUsername;Password=myPassword;Connection Timeout=3000;"
+		},
+		{
+			"appName" : "helloWorld",
+			"driver" : "mysql",
+			"connectionString" : " myUsername:myPassword@/HelloWorld"
+		},
+		{
+			"appName" : "helloWorld",
+			"driver" : "sqlite3",
+			"connectionString" : "db/helloWorld/helloWorld.db"
+		}
+	]
+}
+
