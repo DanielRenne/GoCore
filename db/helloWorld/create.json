@@ -1,0 +1,48 @@
+{
+	"tables":[
+		{	"name":"Device", 
+			"fields":[
+				{
+					"name": "DeviceId",
+					"primary":true,
+					"allowNull":false,
+					"isUnique":true,
+					"check":"",
+					"collate":"",
+					"default":"",
+					"fieldType":"integer"
+				},
+				{
+					"name": "Salary",
+					"primary":false,
+					"allowNull":false,
+					"isUnique":false,
+					"check":"",
+					"collate":"",
+					"default":"1",
+					"fieldType":"integer"
+				},
+				{
+					"name": "Address",
+					"primary":false,
+					"allowNull":false,
+					"isUnique":false,
+					"check":"",
+					"collate":"",
+					"default":"1234",
+					"fieldType":"TEXT"
+				}
+			]
+		}
+	],
+	"indexes":[
+		{
+			"name":"Device_PK",
+			"tableName":"Device",
+			"isUnique":true,
+			"fields":[
+				"DeviceId"
+			]
+		}
+	]
+}
