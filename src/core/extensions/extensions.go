@@ -2,8 +2,11 @@ package extensions
 
 import (
 	"fmt"
+	"os"
+    "path/filepath"
 	"strconv"
 	"strings"
+
 )
 
 func TrimSuffix(s, suffix string) string {
@@ -11,6 +14,26 @@ func TrimSuffix(s, suffix string) string {
 		s = s[:len(s)-len(suffix)]
 	}
 	return s
+}
+
+func RemoveDirectory(dir string) error {
+    d, err := os.Open(dir)
+    if err != nil {
+        return err
+    }
+    defer d.Close()
+    names, err := d.Readdirnames(-1)
+    if err != nil {
+        return err
+    }
+    for _, name := range names {
+        err = os.RemoveAll(filepath.Join(dir, name))
+        if err != nil {
+            return err
+        }
+    }
+    os.Remove(dir)
+    return nil
 }
 
 func PrintKiloBytes(bytes int64) string {

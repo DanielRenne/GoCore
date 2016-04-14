@@ -9,17 +9,33 @@ import (
 	"strings"
 )
 
-func Unzip(archive, target string) error {
+func Unzip(archive, target string, excludedFiles []string) error {
 	reader, err := zip.OpenReader(archive)
 	if err != nil {
 		return err
 	}
+
+	defer reader.Close()
 
 	if err := os.MkdirAll(target, 0777); err != nil {
 		return err
 	}
 
 	for _, file := range reader.File {
+
+		excludeFile := false
+		for _, excludedFile := range excludedFiles{
+			if excludedFile == file.Name{
+				excludeFile = true
+				break
+			}
+		}
+
+		if excludeFile == true{
+			fmt.Println("Excluding File:  " + file.Name)
+			continue
+		}
+
 		path := filepath.Join(target, file.Name)
 		if file.FileInfo().IsDir() {
 			fmt.Println("Creating Directory:  " + file.Name)
