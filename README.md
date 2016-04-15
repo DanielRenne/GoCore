@@ -72,7 +72,7 @@ Open a web browser to:  [http://127.0.0.1/web/helloWorld](http://127.0.0.1/web/h
 
 GoCore has a main web configuration file called `webConfig.json` located in the main directory.
 
-There you will see an application object.  The domain, httpPort, and httpsPort is used for your application to run on.  The name field is used to match database connections and generate Database files, schema, and Golang ORM Packages.
+There you will see an application object.  The domain, httpPort, and httpsPort is used for your application to run on.  The name field is used to match database connections and generate Database files, schema, and a Golang ORM package.
 
 GoCore has a 2nd file to compile the proper application located at:
 
@@ -93,7 +93,7 @@ Additional Info on Golang https:  [https://www.kaihag.com/https-and-go/](https:/
 
 ###Create the helloWorld SQLite3 DB Tables
 
-To create a SQLite3 DB GoCore as built in functions to read json configuration files to generate SQL Tables, indexes, keys and Golang ORM packages.
+To create a SQLite3 DB GoCore as built in functions to read json configuration files to generate SQL Tables, indexes, keys and Golang ORM package.
 
 GoCore uses a file called `buildDB.go` by running the following:
 
