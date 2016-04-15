@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strings"
 )
 
 const goCoreURL = "https://github.com/DanielRenne/GoCore/archive/master.zip"
@@ -65,8 +66,11 @@ func main() {
 
 	fmt.Println("Moving Files . . .")
 
+	dir, _ := os.Getwd()
+	dir = strings.Replace(dir, " ", "\\ ", -1)
+
 	//Copy the Files then Remove the Directory
-	extensions.CopyFolder("goCoreMaster/"+gitRepoName, "")
+	extensions.CopyFolder("goCoreMaster/"+gitRepoName, dir)
 
 	fmt.Println("Moved Files Successfully.")
 	fmt.Println("Started Cleaning Files.")
