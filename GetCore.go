@@ -47,6 +47,8 @@ func main() {
 
 	excludedFiles := []string{gitRepoName + "/webConfig.json"}
 	excludedFiles = append(excludedFiles, gitRepoName+"/src/core/app/app.go")
+	excludedFiles = append(excludedFiles, gitRepoName+"/keys/cert.pem")
+	excludedFiles = append(excludedFiles, gitRepoName+"/keys/key.pem")
 
 	errUnzip := zip.Unzip(fileName, "goCoreMaster", excludedFiles)
 

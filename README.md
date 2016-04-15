@@ -95,7 +95,7 @@ Additional Info on Golang https:  [https://www.kaihag.com/https-and-go/](https:/
 
 ###Create the helloWorld SQLite3 DB Tables
 
-To create a SQLite3 DB GoCore as built in functions to read json configuration files to generate SQL Tables, indexes, keys and Golang ORM package.
+To create a SQLite3 DB GoCore has built in functions to read json configuration files to generate SQL Tables, indexes, keys and Golang ORM package.
 
 GoCore uses a file called `buildDB.go` by running the following:
 
