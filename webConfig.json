@@ -2,17 +2,17 @@
 	"application":{
     "name": "helloWorld",
     "domain": "127.0.0.1",
-    "httpPort": 82,
+    "httpPort": 80,
     "httpsPort": 443
 	},
 	"dbConnections":[
 		{
-			"appName" : "helloWorld",
+			"appName" : "app1",
 			"driver" : "mssql",
 			"connectionString" : "server=myServerAddress;Database=HelloWorld;user id=myUsername;Password=myPassword;Connection Timeout=3000;"
 		},
 		{
-			"appName" : "helloWorld",
+			"appName" : "app2",
 			"driver" : "mysql",
 			"connectionString" : " myUsername:myPassword@/HelloWorld"
 		},
