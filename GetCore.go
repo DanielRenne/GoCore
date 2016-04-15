@@ -63,9 +63,13 @@ func main() {
 		return
 	}
 
+	fmt.Println("Moving Files . . .")
+
 	//Copy the Files then Remove the Directory
 	extensions.CopyFolder("goCoreMaster/"+gitRepoName, "")
 
+	fmt.Println("Moved Files Successfully.")
+	fmt.Println("Started Cleaning Files.")
 	errRemoveDecompressedFiles := extensions.RemoveDirectory("goCoreMaster")
 
 	if errRemoveDecompressedFiles != nil {
