@@ -11,7 +11,7 @@ import (
 
 const goCoreURL = "https://github.com/DanielRenne/GoCore/archive/master.zip"
 const fileName = "goCoreMaster.zip"
-const gitRepoName = "GoCore-master/"
+const gitRepoName = "GoCore-master"
 
 func main() {
 
@@ -44,7 +44,8 @@ func main() {
 
 	fmt.Println("Unzipping goCoreMaster.zip . . .")
 
-	excludedFiles := []string{gitRepoName + "webConfig.json"}
+	excludedFiles := []string{gitRepoName + "/webConfig.json"}
+	excludedFiles = append(excludedFiles, gitRepoName+"/src/core/app/app.go")
 
 	errUnzip := zip.Unzip(fileName, "goCoreMaster", excludedFiles)
 
@@ -53,23 +54,23 @@ func main() {
 		return
 	}
 
-	fmt.Println("Unzipped & Installed GoCore Master successfully.")
+	fmt.Println("Unzipped GoCore Master successfully.")
 
 	errRemoveRepoZip := os.Remove(fileName)
 
 	if errRemoveRepoZip != nil {
-	  fmt.Println("Failed to Remove GoCore Repo Zip File:  " + errRemoveRepoZip.Error())
-	  return
+		fmt.Println("Failed to Remove GoCore Repo Zip File:  " + errRemoveRepoZip.Error())
+		return
 	}
 
 	//Copy the Files then Remove the Directory
-
+	extensions.CopyFolder("goCoreMaster/"+gitRepoName, "")
 
 	errRemoveDecompressedFiles := extensions.RemoveDirectory("goCoreMaster")
 
 	if errRemoveDecompressedFiles != nil {
-	  fmt.Println("Failed to Remove GoCore Decompressed Files:  " + errRemoveDecompressedFiles.Error())
-	  return
+		fmt.Println("Failed to Remove GoCore Decompressed Files:  " + errRemoveDecompressedFiles.Error())
+		return
 	}
 
 	fmt.Println("Cleaned up Repo Files Successfully.")
