@@ -1,28 +1,28 @@
 package serverSettings
 
 import (
-	"fmt"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 )
 
 type dbConnection struct {
 	AppName          string `json:"appName"`
-	ConnectionString string `json:"driver"`
-	Driver           string `json:"connectionString"`
+	ConnectionString string `json:"connectionString"`
+	Driver           string `json:"driver"`
 }
 
-type application struct{
-	Name string `json:"name"`
-	Domain string `json:"domain"`
-	HttpPort int `json:"httpPort"`
-	HttpsPort int `json:"httpsPort"`
+type application struct {
+	Name      string `json:"name"`
+	Domain    string `json:"domain"`
+	HttpPort  int    `json:"httpPort"`
+	HttpsPort int    `json:"httpsPort"`
 }
 
 type webConfigObj struct {
 	DbConnections []dbConnection `json:"dbConnections"`
-	Application application `json:"application"`
-	DbConnection dbConnection
+	Application   application    `json:"application"`
+	DbConnection  dbConnection
 }
 
 var WebConfig webConfigObj
@@ -48,7 +48,6 @@ func init() {
 			return
 		}
 	}
-
 
 	// webConfigJSON, errParse := gabs.ParseJSONFile("webConfig.json")
 
