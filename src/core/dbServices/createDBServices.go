@@ -33,9 +33,24 @@ type indexDef struct {
 	Fields    []string `json:"fields"`
 }
 
+type foreignKeyDef struct {
+	Name     string `json:"name"`
+	Field    string `json:"field"`
+	FKTable  string `json:"fkTable"`
+	FKField  string `json:"fkField"`
+	IsDelete bool   `json:"isDelete"`
+	IsUpdate bool   `json:"isUpdate"`
+}
+
+type foreignKeyTableDef struct {
+	Table string          `json:"table"`
+	Keys  []foreignKeyDef `json:"keys"`
+}
+
 type createObject struct {
-	Tables  []tableDef `json:"tables"`
-	Indexes []indexDef `json:"indexes"`
+	Tables      []tableDef           `json:"tables"`
+	Indexes     []indexDef           `json:"indexes"`
+	ForeignKeys []foreignKeyTableDef `json:"foreignKeys"`
 }
 
 func RunDBCreate() {
@@ -55,6 +70,7 @@ func RunDBCreate() {
 	if serverSettings.WebConfig.DbConnection.Driver == "sqlite3" {
 		createSQLiteTables(co.Tables)
 		createSQLiteIndexes(co.Indexes)
+		createSQLiteForeignKeys(co.ForeignKeys, co.Tables)
 	}
 
 	// fmt.Printf("%+v\n", co)
@@ -63,39 +79,8 @@ func RunDBCreate() {
 func createSQLiteTables(tables []tableDef) {
 
 	for _, table := range tables {
-		sqlStmt := "create table if not exists "
-		sqlStmt += table.Name + " "
-		sqlStmt += "("
 
-		for _, field := range table.Fields {
-			sqlStmt += field.Name + " "
-			sqlStmt += field.FieldType + " "
-			if field.AllowNull == false {
-				sqlStmt += "not null "
-			}
-			if field.Primary == true {
-				sqlStmt += "primary key "
-			}
-			if field.IsUnique == true {
-				sqlStmt += "unique "
-			}
-			if field.Check != "" {
-				sqlStmt += "check(" + field.Check + ") "
-			}
-			if field.Collate != "" {
-				sqlStmt += "collate " + field.Collate + " "
-			}
-			if field.Default != "" {
-				fieldChar := getFieldCharacter(field.FieldType)
-				sqlStmt += "Default " + fieldChar + field.Default + fieldChar + " "
-			}
-
-			sqlStmt += ","
-		}
-
-		sqlStmt = extensions.TrimSuffix(sqlStmt, ",")
-
-		sqlStmt += ");"
+		sqlStmt := generateSQLiteTableCreate(table, []foreignKeyDef{})
 
 		fmt.Println(sqlStmt)
 
@@ -107,6 +92,57 @@ func createSQLiteTables(tables []tableDef) {
 
 		fmt.Println("Creation of table \"" + table.Name + "\" successful.")
 	}
+}
+
+func generateSQLiteTableCreate(table tableDef, keys []foreignKeyDef) string {
+	sqlStmt := "create table if not exists "
+	sqlStmt += table.Name + " "
+	sqlStmt += "("
+
+	for _, field := range table.Fields {
+		sqlStmt += field.Name + " "
+		sqlStmt += field.FieldType + " "
+		if field.AllowNull == false {
+			sqlStmt += "not null "
+		}
+		if field.Primary == true {
+			sqlStmt += "primary key "
+		}
+		if field.IsUnique == true {
+			sqlStmt += "unique "
+		}
+		if field.Check != "" {
+			sqlStmt += "check(" + field.Check + ") "
+		}
+		if field.Collate != "" {
+			sqlStmt += "collate " + field.Collate + " "
+		}
+		if field.Default != "" {
+			fieldChar := getFieldCharacter(field.FieldType)
+			sqlStmt += "Default " + fieldChar + field.Default + fieldChar + " "
+		}
+
+		sqlStmt += ","
+	}
+
+	sqlStmt = extensions.TrimSuffix(sqlStmt, ",")
+
+	for _, fk := range keys {
+		cascades := ""
+		if fk.IsDelete == true {
+			cascades += " ON DELETE CASCADE"
+		}
+		if fk.IsUpdate == true {
+			cascades += " ON UPDATE CASCADE"
+		}
+		sqlStmt += ", FOREIGN KEY (" + fk.Field + ") references " + fk.FKTable + "(" + fk.FKField + ") " + cascades
+
+	}
+
+	sqlStmt += ");"
+	fmt.Println(sqlStmt)
+
+	return sqlStmt
 }
 
 func createSQLiteIndexes(indexes []indexDef) {
@@ -137,6 +173,69 @@ func createSQLiteIndexes(indexes []indexDef) {
 
 		fmt.Println("Creation of index \"" + index.Name + "\" successful.")
 	}
+}
+
+func createSQLiteForeignKeys(foreignKeys []foreignKeyTableDef, tables []tableDef) {
+	for _, fk := range foreignKeys {
+
+		renameSQLiteTable(fk.Table, fk.Table+"_temp")
+
+		//Create the new Table with FK's
+		for _, table := range tables {
+			if table.Name == fk.Table {
+				sqlStmt := generateSQLiteTableCreate(table, fk.Keys)
+				_, errDBExec := DB.Exec(sqlStmt)
+				if errDBExec != nil {
+					fmt.Println("Creation of table with Foreign Keys Failed:  Table  \"" + fk.Table + "_temp" + "\" " + errDBExec.Error())
+					return
+				}
+				fmt.Println("Creation of table \"" + fk.Table + "\" successful.")
+				break
+			}
+		}
+
+		copySQLiteTable(fk.Table+"_temp", fk.Table)
+		dropSQLiteTable(fk.Table + "_temp")
+	}
+}
+
+func renameSQLiteTable(original string, newName string) {
+
+	sqlStmt := "ALTER TABLE " + original + " RENAME TO " + newName + ";"
+
+	fmt.Println("Renaming table from " + original + " to " + newName)
+
+	_, errDBExec := DB.Exec(sqlStmt)
+	if errDBExec != nil {
+		fmt.Println("Rename of table \"" + original + "\" failed:  " + errDBExec.Error())
+	}
+	fmt.Println("Renamed " + original + " to " + newName)
+}
+
+func copySQLiteTable(from string, to string) {
+
+	sqlStmt := "INSERT INTO " + to + " SELECT * FROM " + from + ";"
+
+	fmt.Println("Copying Table Data from " + from + " to " + to)
+
+	_, errDBExec := DB.Exec(sqlStmt)
+	if errDBExec != nil {
+		fmt.Println("Copy of table \"" + from + "\" to " + "\"" + to + "\" failed:  " + errDBExec.Error())
+	}
+	fmt.Println("Copied Data from " + from + " to " + to + " successfully.")
+}
+
+func dropSQLiteTable(tableName string) {
+
+	sqlStmt := "DROP TABLE IF EXISTS " + tableName + ";"
+
+	fmt.Println("Dropping table " + tableName)
+
+	_, errDBExec := DB.Exec(sqlStmt)
+	if errDBExec != nil {
+		fmt.Println("Drop of Table \"" + tableName + "\" failed:  " + errDBExec.Error())
+	}
+	fmt.Println("Dropped Table " + tableName + " successfully.")
 }
 
 func getFieldCharacter(value string) string {

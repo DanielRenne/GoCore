@@ -1,9 +1,9 @@
 {
 	"tables":[
-		{	"name":"Device", 
+		{	"name":"Customer", 
 			"fields":[
 				{
-					"name": "DeviceId",
+					"name": "CustomerId",
 					"primary":true,
 					"allowNull":false,
 					"isUnique":true,
@@ -13,13 +13,47 @@
 					"fieldType":"integer"
 				},
 				{
-					"name": "Salary",
+					"name": "First",
 					"primary":false,
 					"allowNull":false,
 					"isUnique":false,
 					"check":"",
 					"collate":"",
-					"default":"1",
+					"default":"",
+					"fieldType":"TEXT"
+				},
+				{
+					"name": "Last",
+					"primary":false,
+					"allowNull":false,
+					"isUnique":false,
+					"check":"",
+					"collate":"",
+					"default":"",
+					"fieldType":"TEXT"
+				}
+			]
+		},
+		{	"name":"Location", 
+			"fields":[
+				{
+					"name": "LocationId",
+					"primary":true,
+					"allowNull":false,
+					"isUnique":true,
+					"check":"",
+					"collate":"",
+					"default":"",
+					"fieldType":"integer"
+				},
+				{
+					"name": "CustomerId",
+					"primary":false,
+					"allowNull":false,
+					"isUnique":false,
+					"check":"",
+					"collate":"",
+					"default":"",
 					"fieldType":"integer"
 				},
 				{
@@ -29,7 +63,7 @@
 					"isUnique":false,
 					"check":"",
 					"collate":"",
-					"default":"1234",
+					"default":"",
 					"fieldType":"TEXT"
 				}
 			]
@@ -37,11 +71,35 @@
 	],
 	"indexes":[
 		{
-			"name":"Device_PK",
-			"tableName":"Device",
+			"name":"Customer_PK",
+			"tableName":"Customer",
 			"isUnique":true,
 			"fields":[
-				"DeviceId"
+				"CustomerId"
+			]
+		},
+		{
+			"name":"Location_PK",
+			"tableName":"Location",
+			"isUnique":true,
+			"fields":[
+				"LocationId"
+			]
+		}
+	], 
+	"foreignKeys":[
+		{
+
+			"table": "Location",
+			"keys":[
+				{
+					"name": "FK_Location_Customer",
+					"field": "CustomerId",
+					"fkTable": "Customer",
+					"fkField": "CustomerId",
+					"onDelete":false, 
+					"onUpdate":false
+				}
 			]
 		}
 	]
