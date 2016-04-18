@@ -94,11 +94,11 @@
 			"keys":[
 				{
 					"name": "FK_Location_Customer",
-					"field": "CustomerId",
+					"fields": ["CustomerId"],
 					"fkTable": "Customer",
-					"fkField": "CustomerId",
-					"onDelete":false, 
-					"onUpdate":false
+					"fkFields": ["CustomerId"],
+					"onDelete":true, 
+					"onUpdate":true
 				}
 			]
 		}

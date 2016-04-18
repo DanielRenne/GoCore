@@ -66,7 +66,7 @@ GoCore comes with a sample helloWorld project to manipulate to learn.  To run th
 
 `go run server.go`
 
-Open a web browser to:  [http://127.0.0.1/web/helloWorld](http://127.0.0.1/web/helloWorld/"")
+Open a web browser to:  [http://127.0.0.1/web/helloWorld](http://127.0.0.1/web/helloWorld)
 
 #### How to build your own web project in GoCore
 
@@ -95,13 +95,17 @@ Additional Info on Golang https:  [https://www.kaihag.com/https-and-go/](https:/
 
 ###Create the helloWorld SQLite3 DB Tables
 
-To create a SQLite3 DB GoCore has built in functions to read json configuration files to generate SQL Tables, indexes, keys and Golang ORM package.
+####NOTE: Windows users we recommend installing gcc as a prerequisite for the sqlite3 golang module to compile via [tdb-gcc](http://tdm-gcc.tdragon.net/download).  Be sure to install 64 bit for 64 bit machines. 
+
+####More SQLite tools to verify your data in Windows [SQLite Studio](http://sqlitestudio.pl/)
+
+To create a SQLite3 DB GoCore has built in functions to read json configuration files to generate SQL Tables, indexes, primary & foreign keys, and the Golang ORM package.
 
 GoCore uses a file called `buildDB.go` by running the following:
 
 `go run buildDB.go`  
 
-This routine will read the webConfig.json file and read the db\\helloWorld\create.json file to create the SQLite3 Datbase files and Tables. The routine will then add Golang ORM package files to src\\helloWorld\orm.
+This routine will read the webConfig.json file and read the db\\helloWorld\create.json file to create the SQLite3 Database files and Tables. The routine will then add Golang ORM package files to src\\helloWorld\orm.
 
 To use the ORM package you will import into your source files the following:
 
