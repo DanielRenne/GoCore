@@ -2,15 +2,26 @@ package dbServices
 
 import (
 	"core/extensions"
+	"database/sql"
 	"fmt"
 	_ "github.com/mattn/go-sqlite3"
 	"strings"
 )
 
+type tableSchema struct {
+	CId          int
+	Name         string
+	Type         string
+	NotNull      int
+	DefaultValue sql.NullString
+	PrimaryKey   int
+}
+
 func createSQLiteTables(tables []tableDef) {
 
 	for _, table := range tables {
 
+		fmt.Printf("%+v\n", getSQLiteTableSchema(table))
 		sqlStmt := generateSQLiteTableCreate(table, []foreignKeyDef{})
 
 		fmt.Println(sqlStmt)
@@ -197,4 +208,26 @@ func getSQLiteFieldCharacter(value string) string {
 	}
 
 	return ""
+}
+
+func getSQLiteTableSchema(table tableDef) []tableSchema {
+
+	schemaRows := []tableSchema{}
+
+	rows, err := DB.Query("PRAGMA table_info(" + table.Name + ");")
+	if err != nil {
+		fmt.Println("Prepare of DB Query Failed.  " + err.Error())
+		return schemaRows
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var schema tableSchema
+		err = rows.Scan(&schema.CId, &schema.Name, &schema.Type, &schema.NotNull, &schema.DefaultValue, &schema.PrimaryKey)
+		if err != nil {
+			fmt.Println("Scan failed to load Table Schema for table \"" + table.Name + "\":  " + err.Error())
+		}
+		schemaRows = append(schemaRows, schema)
+	}
+	return schemaRows
 }
