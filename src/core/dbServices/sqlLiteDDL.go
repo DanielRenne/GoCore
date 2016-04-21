@@ -21,7 +21,8 @@ func createSQLiteTables(tables []tableDef) {
 
 	for _, table := range tables {
 
-		fmt.Printf("%+v\n", getSQLiteTableSchema(table))
+		doWeAlter := isAlterRequired(table, getSQLiteTableSchema(table))
+		fmt.Printf("%+v\n", doWeAlter)
 		sqlStmt := generateSQLiteTableCreate(table, []foreignKeyDef{})
 
 		fmt.Println(sqlStmt)
@@ -34,6 +35,11 @@ func createSQLiteTables(tables []tableDef) {
 
 		fmt.Println("Creation of table \"" + table.Name + "\" successful.")
 	}
+}
+
+func isAlterRequired(table tableDef, existingSchema []tableSchema) bool {
+
+	return false
 }
 
 func generateSQLiteTableCreate(table tableDef, keys []foreignKeyDef) string {
