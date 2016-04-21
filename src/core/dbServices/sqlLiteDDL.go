@@ -11,7 +11,7 @@ import (
 type tableSchema struct {
 	CId          int
 	Name         string
-	Type         string
+	FieldType    string
 	NotNull      int
 	DefaultValue sql.NullString
 	PrimaryKey   int
@@ -38,6 +38,46 @@ func createSQLiteTables(tables []tableDef) {
 }
 
 func isAlterRequired(table tableDef, existingSchema []tableSchema) bool {
+	if len(existingSchema) == 0 {
+		return false
+	}
+
+	i := 0
+	for _, schemaRow := range existingSchema {
+
+		if len(table.Fields) < i+1 {
+			fmt.Println("Drop Field")
+			return true
+		}
+
+		field := table.Fields[i]
+		if field.Name != schemaRow.Name {
+			return true
+		}
+		if field.FieldType != schemaRow.FieldType {
+			return true
+		}
+		if field.AllowNull == true && schemaRow.NotNull == 1 {
+			return true
+		}
+		if field.AllowNull == false && schemaRow.NotNull == 0 {
+			return true
+		}
+		if field.Primary == true && schemaRow.PrimaryKey == 0 {
+			return true
+		}
+		if field.Primary == false && schemaRow.PrimaryKey == 1 {
+			return true
+		}
+		if field.Default == "" && schemaRow.DefaultValue.Valid == true {
+			return true
+		}
+		if (field.Default != "" && schemaRow.DefaultValue.Valid == true) && (field.Default != schemaRow.DefaultValue.String) {
+			return true
+		}
+
+		i++
+	}
 
 	return false
 }
@@ -229,7 +269,7 @@ func getSQLiteTableSchema(table tableDef) []tableSchema {
 
 	for rows.Next() {
 		var schema tableSchema
-		err = rows.Scan(&schema.CId, &schema.Name, &schema.Type, &schema.NotNull, &schema.DefaultValue, &schema.PrimaryKey)
+		err = rows.Scan(&schema.CId, &schema.Name, &schema.FieldType, &schema.NotNull, &schema.DefaultValue, &schema.PrimaryKey)
 		if err != nil {
 			fmt.Println("Scan failed to load Table Schema for table \"" + table.Name + "\":  " + err.Error())
 		}

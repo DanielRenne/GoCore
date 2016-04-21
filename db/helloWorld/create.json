@@ -9,8 +9,8 @@
 					"isUnique":true,
 					"check":"",
 					"collate":"",
-					"default":"",
-					"fieldType":"integer"
+					"default":"4",
+					"fieldType":"INTEGER"
 				},
 				{
 					"name": "First",
@@ -44,7 +44,7 @@
 					"check":"",
 					"collate":"",
 					"default":"",
-					"fieldType":"integer"
+					"fieldType":"INTEGER"
 				},
 				{
 					"name": "CustomerId",
@@ -54,7 +54,7 @@
 					"check":"",
 					"collate":"",
 					"default":"",
-					"fieldType":"integer"
+					"fieldType":"INTEGER"
 				},
 				{
 					"name": "Address",
