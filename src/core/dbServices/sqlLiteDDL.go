@@ -21,7 +21,13 @@ func createSQLiteTables(tables []tableDef) {
 
 	for _, table := range tables {
 
-		doWeAlter := isAlterRequired(table, getSQLiteTableSchema(table))
+		currentSchema := getSQLiteTableSchema(table)
+		doWeAlter := isAlterRequired(table, currentSchema)
+
+		if doWeAlter {
+			renameSQLiteTable(table.Name, table.Name+"_alterTemp")
+		}
+
 		fmt.Printf("%+v\n", doWeAlter)
 		sqlStmt := generateSQLiteTableCreate(table, []foreignKeyDef{})
 
@@ -33,6 +39,11 @@ func createSQLiteTables(tables []tableDef) {
 			continue
 		}
 
+		if doWeAlter {
+			copySQLiteTableWithAlter(table.Name+"_alterTemp", table.Name, currentSchema, table)
+			dropSQLiteTable(table.Name + "_alterTemp")
+		}
+
 		fmt.Println("Creation of table \"" + table.Name + "\" successful.")
 	}
 }
@@ -42,13 +53,15 @@ func isAlterRequired(table tableDef, existingSchema []tableSchema) bool {
 		return false
 	}
 
-	i := 0
-	for _, schemaRow := range existingSchema {
+	if len(table.Fields) < len(existingSchema) {
+		return true
+	}
 
-		if len(table.Fields) < i+1 {
-			fmt.Println("Drop Field")
-			return true
-		}
+	if len(table.Fields) > len(existingSchema) {
+		return true
+	}
+
+	for i, schemaRow := range existingSchema {
 
 		field := table.Fields[i]
 		if field.Name != schemaRow.Name {
@@ -75,8 +88,6 @@ func isAlterRequired(table tableDef, existingSchema []tableSchema) bool {
 		if (field.Default != "" && schemaRow.DefaultValue.Valid == true) && (field.Default != schemaRow.DefaultValue.String) {
 			return true
 		}
-
-		i++
 	}
 
 	return false
@@ -227,6 +238,38 @@ func copySQLiteTable(from string, to string) {
 	sqlStmt := "INSERT INTO " + to + " SELECT * FROM " + from + ";"
 
 	fmt.Println("Copying Table Data from " + from + " to " + to)
+
+	_, errDBExec := DB.Exec(sqlStmt)
+	if errDBExec != nil {
+		fmt.Println("Copy of table \"" + from + "\" to " + "\"" + to + "\" failed:  " + errDBExec.Error())
+	}
+	fmt.Println("Copied Data from " + from + " to " + to + " successfully.")
+}
+
+func copySQLiteTableWithAlter(from string, to string, currentSchema []tableSchema, table tableDef) {
+
+	sqlStmt := "INSERT INTO " + to + " ("
+	sqlStmt2 := "SELECT "
+	schemaLength := len(currentSchema)
+
+	for i, field := range table.Fields {
+		if schemaLength == i {
+			break
+		}
+		sqlStmt += field.Name + ","
+		sqlStmt2 += currentSchema[i].Name + ","
+	}
+
+	sqlStmt = extensions.TrimSuffix(sqlStmt, ",")
+	sqlStmt2 = extensions.TrimSuffix(sqlStmt2, ",")
+
+	sqlStmt += ") "
+	sqlStmt2 += " FROM " + from + ";"
+
+	sqlStmt += sqlStmt2
+
+	fmt.Println("Copying Table Data from " + from + " to " + to)
+	fmt.Println(sqlStmt)
 
 	_, errDBExec := DB.Exec(sqlStmt)
 	if errDBExec != nil {
