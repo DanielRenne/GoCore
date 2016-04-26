@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-type tableSchema struct {
+type sqliteTableSchema struct {
 	CId          int
 	Name         string
 	FieldType    string
@@ -17,11 +17,21 @@ type tableSchema struct {
 	PrimaryKey   int
 }
 
-type foreignKeySchema struct {
+type sqliteForeignKeySchema struct {
 	Id        int
 	Seq       int
 	Table     string
 	From      string
+	To        string
+	On_Update string
+	On_Delete string
+	Match     string
+}
+
+type sqliteForeignKeyCombinedSchema struct {
+	Table     string
+	From      string
+	To        string
 	On_Update string
 	On_Delete string
 	Match     string
@@ -32,7 +42,7 @@ func createSQLiteTables(tables []tableDef) {
 	for _, table := range tables {
 
 		currentSchema := getSQLiteTableSchema(table)
-		doWeAlter := isAlterRequired(table, currentSchema)
+		doWeAlter := isSQLiteAlterRequired(table, currentSchema)
 
 		if doWeAlter {
 			renameSQLiteTable(table.Name, table.Name+"_alterTemp")
@@ -58,7 +68,7 @@ func createSQLiteTables(tables []tableDef) {
 	}
 }
 
-func isAlterRequired(table tableDef, existingSchema []tableSchema) bool {
+func isSQLiteAlterRequired(table tableDef, existingSchema []sqliteTableSchema) bool {
 	if len(existingSchema) == 0 {
 		return false
 	}
@@ -97,19 +107,6 @@ func isAlterRequired(table tableDef, existingSchema []tableSchema) bool {
 		}
 		if (field.Default != "" && schemaRow.DefaultValue.Valid == true) && (field.Default != schemaRow.DefaultValue.String) {
 			return true
-		}
-	}
-
-	return false
-}
-
-func isFKChangeRequired(fkDef foreignKeyTableDef, fkSchemas []foreignKeySchema) {
-	if len(fkSchemas) == 0 {
-		return true
-	}
-	for i, fkSchema := range fkSchemas {
-		if fkDef.FKTable == fkSchema.Table {
-
 		}
 	}
 
@@ -222,11 +219,18 @@ func createSQLiteIndexes(indexes []indexDef) {
 func createSQLiteForeignKeys(foreignKeys []foreignKeyTableDef, tables []tableDef) {
 	for _, fk := range foreignKeys {
 
-		renameSQLiteTable(fk.Table, fk.Table+"_temp")
-
 		//Create the new Table with FK's
 		for _, table := range tables {
 			if table.Name == fk.Table {
+
+				//First check if we need to create the FK
+				if isSqliteFKRequired(table, fk) == false {
+					fmt.Println("Foreign Keys for \"" + fk.Table + "\" already exist.  FK Creation skipped.")
+					continue
+				}
+
+				renameSQLiteTable(fk.Table, fk.Table+"_temp")
+
 				sqlStmt := generateSQLiteTableCreate(table, fk.Keys)
 				_, errDBExec := DB.Exec(sqlStmt)
 				if errDBExec != nil {
@@ -269,7 +273,7 @@ func copySQLiteTable(from string, to string) {
 	fmt.Println("Copied Data from " + from + " to " + to + " successfully.")
 }
 
-func copySQLiteTableWithAlter(from string, to string, currentSchema []tableSchema, table tableDef) {
+func copySQLiteTableWithAlter(from string, to string, currentSchema []sqliteTableSchema, table tableDef) {
 
 	sqlStmt := "INSERT INTO " + to + " ("
 	sqlStmt2 := "SELECT "
@@ -322,9 +326,9 @@ func getSQLiteFieldCharacter(value string) string {
 	return ""
 }
 
-func getSQLiteTableSchema(table tableDef) []tableSchema {
+func getSQLiteTableSchema(table tableDef) []sqliteTableSchema {
 
-	schemaRows := []tableSchema{}
+	schemaRows := []sqliteTableSchema{}
 
 	rows, err := DB.Query("PRAGMA table_info(" + table.Name + ");")
 	if err != nil {
@@ -334,7 +338,7 @@ func getSQLiteTableSchema(table tableDef) []tableSchema {
 	defer rows.Close()
 
 	for rows.Next() {
-		var schema tableSchema
+		var schema sqliteTableSchema
 		err = rows.Scan(&schema.CId, &schema.Name, &schema.FieldType, &schema.NotNull, &schema.DefaultValue, &schema.PrimaryKey)
 		if err != nil {
 			fmt.Println("Scan failed to load Table Schema for table \"" + table.Name + "\":  " + err.Error())
@@ -344,9 +348,23 @@ func getSQLiteTableSchema(table tableDef) []tableSchema {
 	return schemaRows
 }
 
-func getTableForeignKeys(table tableDef) []foreignKeySchema {
+func isSqliteFKRequired(table tableDef, fkTableDef foreignKeyTableDef) bool {
 
-	schemaRows := []foreignKeySchema{}
+	schemaRows := getSQLiteTableForeignKeys(table)
+	schemaCombinedRows := combineSQLiteForeignKeys(schemaRows)
+
+	for _, fk := range fkTableDef.Keys {
+		if isSqliteFKChangeRequired(fk, schemaCombinedRows) == true {
+			return true
+		}
+	}
+
+	return false
+}
+
+func getSQLiteTableForeignKeys(table tableDef) []sqliteForeignKeySchema {
+
+	schemaRows := []sqliteForeignKeySchema{}
 
 	rows, err := DB.Query("PRAGMA foreign_key_list(" + table.Name + ");")
 	if err != nil {
@@ -356,12 +374,111 @@ func getTableForeignKeys(table tableDef) []foreignKeySchema {
 	defer rows.Close()
 
 	for rows.Next() {
-		var schema tableSchema
+		var schema sqliteForeignKeySchema
 		err = rows.Scan(&schema.Id, &schema.Seq, &schema.Table, &schema.From, &schema.To, &schema.On_Update, &schema.On_Delete, &schema.Match)
 		if err != nil {
 			fmt.Println("Scan failed to load Foreign Key Schema for table \"" + table.Name + "\":  " + err.Error())
 		}
 		schemaRows = append(schemaRows, schema)
 	}
+
 	return schemaRows
+}
+
+//This function combines the rows from Pragma foreign_key_list to make a single record for each fk with comma delimited fields.
+func combineSQLiteForeignKeys(schemaRows []sqliteForeignKeySchema) []sqliteForeignKeyCombinedSchema {
+
+	schemaCombinedRows := []sqliteForeignKeyCombinedSchema{}
+	ids := []int{}
+
+	currentId := -1
+
+	//Build the List of Unique Ids for FK fields
+	for _, fkSchema := range schemaRows {
+		if fkSchema.Id != currentId {
+			ids = append(ids, fkSchema.Id)
+			currentId = fkSchema.Id
+		}
+	}
+
+	//Then itterate through the IDs and create a combined Schema for the fields.
+	for _, id := range ids {
+
+		fromFields := ""
+		toFields := ""
+		fkTable := ""
+		onDelete := ""
+		onUpdate := ""
+		match := ""
+
+		for _, fkSchema := range schemaRows {
+			if fkSchema.Id == id {
+				fkTable = fkSchema.Table
+				onDelete = fkSchema.On_Delete
+				onUpdate = fkSchema.On_Update
+				match = fkSchema.Match
+				fromFields += fkSchema.From + ","
+				toFields += fkSchema.To + ","
+			}
+		}
+
+		fromFields = extensions.TrimSuffix(fromFields, ",")
+		toFields = extensions.TrimSuffix(toFields, ",")
+		fkCombinedSchema := sqliteForeignKeyCombinedSchema{Table: fkTable, From: fromFields, To: toFields, On_Delete: onDelete, On_Update: onUpdate, Match: match}
+		schemaCombinedRows = append(schemaCombinedRows, fkCombinedSchema)
+	}
+
+	return schemaCombinedRows
+}
+
+//Checks to see if this foreign key definition matches what is in the database.
+func isSqliteFKChangeRequired(fkDef foreignKeyDef, fkSchemas []sqliteForeignKeyCombinedSchema) bool {
+
+	if len(fkSchemas) == 0 {
+		return true
+	}
+
+	for _, fkSchema := range fkSchemas {
+
+		if fkDef.FKTable == fkSchema.Table {
+
+			//Before we Check fields check on the cascade properties to save on execution if they don't match
+			if fkDef.OnDelete == true && fkSchema.On_Delete != "CASCADE" {
+				return true
+			}
+			if fkDef.OnDelete == false && fkSchema.On_Delete == "CASCADE" {
+				return true
+			}
+			if fkDef.OnUpdate == true && fkSchema.On_Update != "CASCADE" {
+				return true
+			}
+			if fkDef.OnUpdate == false && fkSchema.On_Update == "CASCADE" {
+				return true
+			}
+
+			fromFields := ""
+			toFields := ""
+
+			for _, field := range fkDef.Fields {
+				fromFields += field + ","
+			}
+
+			for _, field := range fkDef.FKFields {
+				toFields += field + ","
+			}
+
+			fromFields = extensions.TrimSuffix(fromFields, ",")
+			toFields = extensions.TrimSuffix(toFields, ",")
+
+			if fromFields != fkSchema.From {
+				return true
+			}
+
+			if toFields != fkSchema.To {
+				return true
+			}
+		}
+	}
+
+	return false
 }
