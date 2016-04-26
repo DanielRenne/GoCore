@@ -17,6 +17,16 @@ type tableSchema struct {
 	PrimaryKey   int
 }
 
+type foreignKeySchema struct {
+	Id        int
+	Seq       int
+	Table     string
+	From      string
+	On_Update string
+	On_Delete string
+	Match     string
+}
+
 func createSQLiteTables(tables []tableDef) {
 
 	for _, table := range tables {
@@ -87,6 +97,19 @@ func isAlterRequired(table tableDef, existingSchema []tableSchema) bool {
 		}
 		if (field.Default != "" && schemaRow.DefaultValue.Valid == true) && (field.Default != schemaRow.DefaultValue.String) {
 			return true
+		}
+	}
+
+	return false
+}
+
+func isFKChangeRequired(fkDef foreignKeyTableDef, fkSchemas []foreignKeySchema) {
+	if len(fkSchemas) == 0 {
+		return true
+	}
+	for i, fkSchema := range fkSchemas {
+		if fkDef.FKTable == fkSchema.Table {
+
 		}
 	}
 
@@ -315,6 +338,28 @@ func getSQLiteTableSchema(table tableDef) []tableSchema {
 		err = rows.Scan(&schema.CId, &schema.Name, &schema.FieldType, &schema.NotNull, &schema.DefaultValue, &schema.PrimaryKey)
 		if err != nil {
 			fmt.Println("Scan failed to load Table Schema for table \"" + table.Name + "\":  " + err.Error())
+		}
+		schemaRows = append(schemaRows, schema)
+	}
+	return schemaRows
+}
+
+func getTableForeignKeys(table tableDef) []foreignKeySchema {
+
+	schemaRows := []foreignKeySchema{}
+
+	rows, err := DB.Query("PRAGMA foreign_key_list(" + table.Name + ");")
+	if err != nil {
+		fmt.Println("Prepare of DB Query Failed.  " + err.Error())
+		return schemaRows
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var schema tableSchema
+		err = rows.Scan(&schema.Id, &schema.Seq, &schema.Table, &schema.From, &schema.To, &schema.On_Update, &schema.On_Delete, &schema.Match)
+		if err != nil {
+			fmt.Println("Scan failed to load Foreign Key Schema for table \"" + table.Name + "\":  " + err.Error())
 		}
 		schemaRows = append(schemaRows, schema)
 	}
