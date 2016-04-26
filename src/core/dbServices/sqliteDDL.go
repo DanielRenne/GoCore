@@ -326,6 +326,7 @@ func getSQLiteFieldCharacter(value string) string {
 	return ""
 }
 
+//Queries the Database for a tables Schema.
 func getSQLiteTableSchema(table tableDef) []sqliteTableSchema {
 
 	schemaRows := []sqliteTableSchema{}
@@ -348,6 +349,7 @@ func getSQLiteTableSchema(table tableDef) []sqliteTableSchema {
 	return schemaRows
 }
 
+//Returns true if the foreign key needs to be created.
 func isSqliteFKRequired(table tableDef, fkTableDef foreignKeyTableDef) bool {
 
 	schemaRows := getSQLiteTableForeignKeys(table)
@@ -362,6 +364,7 @@ func isSqliteFKRequired(table tableDef, fkTableDef foreignKeyTableDef) bool {
 	return false
 }
 
+//Queries the Database for the actual foreign keys for a table.
 func getSQLiteTableForeignKeys(table tableDef) []sqliteForeignKeySchema {
 
 	schemaRows := []sqliteForeignKeySchema{}
