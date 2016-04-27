@@ -1,6 +1,7 @@
 package dbServices
 
 import (
+	"reflect"
 	"testing"
 )
 
@@ -77,4 +78,41 @@ func TestIsSqliteFKChangeRequired(t *testing.T) {
 
 func TestCombineSQLiteForeignKeys(t *testing.T) {
 
+	FKSchemas := []sqliteForeignKeySchema{}
+	FKSchemas = append(FKSchemas, sqliteForeignKeySchema{
+		Id:        0,
+		Seq:       0,
+		Table:     "Customer",
+		From:      "LocationId",
+		To:        "LocationId",
+		On_Update: "CASCADE",
+		On_Delete: "CASCADE",
+		Match:     "",
+	})
+
+	FKSchemas = append(FKSchemas, sqliteForeignKeySchema{
+		Id:        0,
+		Seq:       1,
+		Table:     "Customer",
+		From:      "Test",
+		To:        "Test",
+		On_Update: "CASCADE",
+		On_Delete: "CASCADE",
+		Match:     "",
+	})
+
+	validateCombined := []sqliteForeignKeyCombinedSchema{}
+	validateCombined = append(validateCombined, sqliteForeignKeyCombinedSchema{
+		Table:     "Customer",
+		From:      "LocationId,Test",
+		To:        "LocationId,Test",
+		On_Update: "CASCADE",
+		On_Delete: "CASCADE",
+		Match:     "",
+	})
+
+	validateResult := combineSQLiteForeignKeys(FKSchemas)
+	if reflect.DeepEqual(validateCombined, validateResult) == false {
+		t.Error("Failed combineSQLiteForeignKeys at sqliteDDL.go.")
+	}
 }

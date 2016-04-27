@@ -247,6 +247,7 @@ func createSQLiteForeignKeys(foreignKeys []foreignKeyTableDef, tables []tableDef
 	}
 }
 
+//Rename SQLite table.
 func renameSQLiteTable(original string, newName string) {
 
 	sqlStmt := "ALTER TABLE " + original + " RENAME TO " + newName + ";"
@@ -260,6 +261,7 @@ func renameSQLiteTable(original string, newName string) {
 	fmt.Println("Renamed " + original + " to " + newName)
 }
 
+//Copy SQLite field to field from one table to another.
 func copySQLiteTable(from string, to string) {
 
 	sqlStmt := "INSERT INTO " + to + " SELECT * FROM " + from + ";"
@@ -273,6 +275,7 @@ func copySQLiteTable(from string, to string) {
 	fmt.Println("Copied Data from " + from + " to " + to + " successfully.")
 }
 
+//Copy SQLite data from a table to another from existing schema to a new schema.
 func copySQLiteTableWithAlter(from string, to string, currentSchema []sqliteTableSchema, table tableDef) {
 
 	sqlStmt := "INSERT INTO " + to + " ("
@@ -305,6 +308,7 @@ func copySQLiteTableWithAlter(from string, to string, currentSchema []sqliteTabl
 	fmt.Println("Copied Data from " + from + " to " + to + " successfully.")
 }
 
+//Drops a SQL Lite Table.
 func dropSQLiteTable(tableName string) {
 
 	sqlStmt := "DROP TABLE IF EXISTS " + tableName + ";"
@@ -318,6 +322,7 @@ func dropSQLiteTable(tableName string) {
 	fmt.Println("Dropped Table " + tableName + " successfully.")
 }
 
+//Return a single quote or empty space for specific field types.
 func getSQLiteFieldCharacter(value string) string {
 	if strings.Contains(value, "CHAR") || strings.Contains(value, "TEXT") || strings.Contains(value, "CLOB") {
 		return "'"
