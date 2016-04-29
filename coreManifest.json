@@ -1,12 +1,18 @@
 {
-	"goDirectories":[
-		"src/core",
-		"src/code.google.com/p/go-charset",
-		"src/github.com/denisenkom/go-mssqldb",
-		"src/github.com/go-sql-driver",
-		"src/github.com/gorilla/websocket",
-		"src/github.com/mattn/go-sqlite3",
-		"src/golang.org/x/net",
-		"src/helloWorld",
+	"versions":[
+		{
+			"version": "1.0.0",
+			"goDirectories":[
+				"src/core",
+				"src/code.google.com/p/go-charset",
+				"src/github.com/denisenkom/go-mssqldb",
+				"src/github.com/go-sql-driver",
+				"src/github.com/gorilla/websocket",
+				"src/github.com/mattn/go-sqlite3",
+				"src/golang.org/x/net",
+				"src/helloWorld",
+			]
+		}
 	]
+
 }
