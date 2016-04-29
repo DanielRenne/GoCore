@@ -3,8 +3,10 @@ package main
 import (
 	"core/extensions"
 	"core/zip"
+	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"strings"
@@ -13,35 +15,34 @@ import (
 const goCoreURL = "https://github.com/DanielRenne/GoCore/archive/master.zip"
 const fileName = "goCoreMaster.zip"
 const gitRepoName = "GoCore-master"
+const manifestFileName = "downloadedManifest.json"
+const manifestURL = "https://raw.githubusercontent.com/DanielRenne/GoCore/master/coreManifest.json"
+
+type version struct {
+	Version       string   `json:"version"`
+	ReleaseURL    string   `json:"releaseURL"`
+	GoDirectories []string `json:"goDirectories"`
+}
+
+type coreManifest struct {
+	Versions []version `json:"versions"`
+}
 
 func main() {
 
-	out, errCreateFile := os.Create(fileName)
+	downloadManifest()
 
-	if errCreateFile != nil {
-		fmt.Println("Failed to create file handle:  " + errCreateFile.Error())
+	manifest, errManifest := readManifest()
+	if errManifest != nil {
+		fmt.Println("Failed to parse manifest file:  " + errManifest.Error())
 		return
 	}
 
-	fmt.Println("Downloading GoCore.  Please Wait . . .")
+	fmt.Printf("%+v\n", manifest)
 
-	resp, errHttpGet := http.Get(goCoreURL)
-	defer resp.Body.Close()
+	return
 
-	if errHttpGet != nil {
-		fmt.Println("Failed to Download GoCore master zip file:  " + errHttpGet.Error())
-		return
-	}
-
-	n, errCopyOut := io.Copy(out, resp.Body)
-
-	if errCopyOut != nil {
-		fmt.Println("Failed to Output to goCoreMaster.zip:  " + errCopyOut.Error())
-		return
-	}
-	out.Close()
-
-	fmt.Println("Downloaded GoCore Master successfully:  " + extensions.PrintMegaBytes(n))
+	downloadRelease()
 
 	fmt.Println("Unzipping goCoreMaster.zip . . .")
 
@@ -84,4 +85,83 @@ func main() {
 	}
 
 	fmt.Println("Cleaned up Repo Files Successfully.")
+}
+
+func downloadRelease() {
+
+	fmt.Println("Downloading GoCore.  Please Wait . . .")
+
+	out, errCreateFile := os.Create(fileName)
+
+	if errCreateFile != nil {
+		fmt.Println("Failed to create file handle:  " + errCreateFile.Error())
+		return
+	}
+
+	resp, errHttpGet := http.Get(goCoreURL)
+	defer resp.Body.Close()
+
+	if errHttpGet != nil {
+		fmt.Println("Failed to Download GoCore master zip file:  " + errHttpGet.Error())
+		return
+	}
+
+	n, errCopyOut := io.Copy(out, resp.Body)
+
+	if errCopyOut != nil {
+		fmt.Println("Failed to Output to goCoreMaster.zip:  " + errCopyOut.Error())
+		return
+	}
+	out.Close()
+
+	fmt.Println("Downloaded GoCore Master successfully:  " + extensions.PrintMegaBytes(n))
+}
+
+func downloadManifest() {
+
+	out, errCreateFile := os.Create(manifestFileName)
+
+	if errCreateFile != nil {
+		fmt.Println("Failed to create file handle:  " + errCreateFile.Error())
+		return
+	}
+
+	fmt.Println("Downloading Manifest.  Please Wait . . .")
+
+	resp, errHttpGet := http.Get(manifestURL)
+	defer resp.Body.Close()
+
+	if errHttpGet != nil {
+		fmt.Println("Failed to Download GoCore manifest:  " + errHttpGet.Error())
+		return
+	}
+
+	n, errCopyOut := io.Copy(out, resp.Body)
+
+	if errCopyOut != nil {
+		fmt.Println("Failed to Output to manifest:  " + errCopyOut.Error())
+		return
+	}
+	out.Close()
+
+	fmt.Println("Downloaded GoCore manifest successfully:  " + extensions.PrintMegaBytes(n))
+}
+
+func readManifest() (coreManifest, error) {
+
+	var manifest coreManifest
+
+	jsonData, err := ioutil.ReadFile(manifestFileName)
+	if err != nil {
+		fmt.Println("Reading of " + manifestFileName + " failed:  " + err.Error())
+		return manifest, err
+	}
+
+	errUnmarshal := json.Unmarshal(jsonData, &manifest)
+	if errUnmarshal != nil {
+		fmt.Println("Parsing / Unmarshaling of " + manifestFileName + " failed:  " + errUnmarshal.Error())
+		return manifest, errUnmarshal
+	}
+
+	return manifest, nil
 }
