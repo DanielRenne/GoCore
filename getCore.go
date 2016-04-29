@@ -36,7 +36,7 @@ func main() {
 		return
 	}
 
-	v := cleanGoCore(manifest)
+	v := getVersion(manifest)
 	fmt.Println("")
 	cleanupFiles()
 
@@ -65,6 +65,7 @@ func main() {
 		return
 	}
 
+	cleanGoCore(v)
 	fmt.Println("\nMoving Files . . .")
 
 	//Copy the Files then Remove the Directory
@@ -170,8 +171,16 @@ func cleanupFiles() {
 
 }
 
-func cleanGoCore(manifest coreManifest) version {
+func cleanGoCore(v version) {
 
+	v := manifest.Versions[len(manifest.Versions)-1]
+	for _, directory := range v.GoDirectories {
+		fmt.Println("Removing Directory:  " + directory)
+		extensions.RemoveDirectory(directory)
+	}
+}
+
+func getVersion(manifest coreManifest) version {
 	v := manifest.Versions[len(manifest.Versions)-1]
 
 	if len(os.Args) > 1 {
@@ -185,11 +194,5 @@ func cleanGoCore(manifest coreManifest) version {
 		}
 	}
 
-	for _, directory := range v.GoDirectories {
-		fmt.Println("Removing Directory:  " + directory)
-		extensions.RemoveDirectory(directory)
-	}
-
 	return v
-
 }
