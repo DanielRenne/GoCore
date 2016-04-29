@@ -34,9 +34,14 @@ func CopyFolder(source string, dest string) (err error) {
 		return err
 	}
 
-	err = os.MkdirAll(dest, sourceinfo.Mode())
-	if err != nil {
-		return err
+	if dest != "" {
+		fmt.Println(dest)
+
+		err = os.MkdirAll(dest, sourceinfo.Mode())
+		if err != nil {
+			fmt.Println("Failed to create Directory: " + dest + ",  " + err.Error())
+			return err
+		}
 	}
 
 	directory, _ := os.Open(source)
@@ -47,7 +52,12 @@ func CopyFolder(source string, dest string) (err error) {
 
 		sourcefilepointer := source + "/" + obj.Name()
 
-		destinationfilepointer := dest + "/" + obj.Name()
+		dstFilePath := dest + "/" + obj.Name()
+		if dest == "" {
+			dstFilePath = obj.Name()
+		}
+
+		destinationfilepointer := dstFilePath
 
 		if obj.IsDir() {
 			err = CopyFolder(sourcefilepointer, destinationfilepointer)

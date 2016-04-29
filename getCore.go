@@ -9,7 +9,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"strings"
 )
 
 const gitRepoName = "GoCore-master"
@@ -38,7 +37,7 @@ func main() {
 	}
 
 	v := cleanGoCore(manifest)
-	fmt.Printf("%+v\n", v)
+	fmt.Println("")
 	cleanupFiles()
 
 	downloadRelease(v.ReleaseURL, v.ReleaseFileName+".zip")
@@ -66,16 +65,13 @@ func main() {
 		return
 	}
 
-	fmt.Println("Moving Files . . .")
-
-	dir, _ := os.Getwd()
-	dir = strings.Replace(dir, " ", "\\ ", -1)
+	fmt.Println("\nMoving Files . . .")
 
 	//Copy the Files then Remove the Directory
-	extensions.CopyFolder(v.ReleaseFileName, dir)
+	extensions.CopyFolder(v.ReleaseFileName+"/"+v.ReleaseFileName, "")
 
 	fmt.Println("Moved Files Successfully.")
-	fmt.Println("Started Cleaning Files.")
+	fmt.Println("\nStarted Cleaning Files.")
 	errRemoveDecompressedFiles := extensions.RemoveDirectory(v.ReleaseFileName)
 
 	if errRemoveDecompressedFiles != nil {
@@ -191,7 +187,7 @@ func cleanGoCore(manifest coreManifest) version {
 
 	for _, directory := range v.GoDirectories {
 		fmt.Println("Removing Directory:  " + directory)
-		// extensions.RemoveDirectory(directory)
+		extensions.RemoveDirectory(directory)
 	}
 
 	return v
