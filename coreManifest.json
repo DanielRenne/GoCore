@@ -18,7 +18,7 @@
 		{
 			"version": "master",
 			"releaseURL": "https://github.com/DanielRenne/GoCore/archive/master.zip",
-			"releaseFileName":"goCoreMaster",
+			"releaseFileName":"GoCore-master",
 			"goDirectories":[
 				"src/core",
 				"src/code.google.com/p/go-charset",
