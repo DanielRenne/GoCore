@@ -60,6 +60,10 @@ As GoCore evolves and matures you can download new updates to your public or pri
 
 `getCore.go` is the process to update with the latest or specific GoCore version.
 
+By default getCore.go will pull down the latest master repository.  However, you can pass in the release version number to pull down a specific release.  If a specific release is not available then master will always default.
+
+`go run getCore.go 1.0.0`
+
 ### Run the included sample project
 
 GoCore comes with a sample helloWorld project to manipulate to learn.  To run the web server for helloWorld run the following:
