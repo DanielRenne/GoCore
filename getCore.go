@@ -12,16 +12,15 @@ import (
 	"strings"
 )
 
-const goCoreURL = "https://github.com/DanielRenne/GoCore/archive/master.zip"
-const fileName = "goCoreMaster.zip"
 const gitRepoName = "GoCore-master"
 const manifestFileName = "downloadedManifest.json"
 const manifestURL = "https://raw.githubusercontent.com/DanielRenne/GoCore/master/coreManifest.json"
 
 type version struct {
-	Version       string   `json:"version"`
-	ReleaseURL    string   `json:"releaseURL"`
-	GoDirectories []string `json:"goDirectories"`
+	Version         string   `json:"version"`
+	ReleaseURL      string   `json:"releaseURL"`
+	ReleaseFileName string   `json:"releaseFileName"`
+	GoDirectories   []string `json:"goDirectories"`
 }
 
 type coreManifest struct {
@@ -38,20 +37,20 @@ func main() {
 		return
 	}
 
-	fmt.Printf("%+v\n", manifest)
+	v := cleanGoCore(manifest)
+	fmt.Printf("%+v\n", v)
+	cleanupFiles()
 
-	return
-
-	downloadRelease()
+	downloadRelease(v.ReleaseURL, v.ReleaseFileName+".zip")
 
 	fmt.Println("Unzipping goCoreMaster.zip . . .")
 
-	excludedFiles := []string{gitRepoName + "/webConfig.json"}
-	excludedFiles = append(excludedFiles, gitRepoName+"/src/core/app/app.go")
-	excludedFiles = append(excludedFiles, gitRepoName+"/keys/cert.pem")
-	excludedFiles = append(excludedFiles, gitRepoName+"/keys/key.pem")
+	excludedFiles := []string{v.ReleaseFileName + "/webConfig.json"}
+	excludedFiles = append(excludedFiles, v.ReleaseFileName+"/src/core/app/app.go")
+	excludedFiles = append(excludedFiles, v.ReleaseFileName+"/keys/cert.pem")
+	excludedFiles = append(excludedFiles, v.ReleaseFileName+"/keys/key.pem")
 
-	errUnzip := zip.Unzip(fileName, "goCoreMaster", excludedFiles)
+	errUnzip := zip.Unzip(v.ReleaseFileName+".zip", v.ReleaseFileName, excludedFiles)
 
 	if errUnzip != nil {
 		fmt.Println("Failed to Unzip goCoreMaster.zip:  " + errUnzip.Error())
@@ -60,7 +59,7 @@ func main() {
 
 	fmt.Println("Unzipped GoCore Master successfully.")
 
-	errRemoveRepoZip := os.Remove(fileName)
+	errRemoveRepoZip := os.Remove(v.ReleaseFileName + ".zip")
 
 	if errRemoveRepoZip != nil {
 		fmt.Println("Failed to Remove GoCore Repo Zip File:  " + errRemoveRepoZip.Error())
@@ -73,11 +72,11 @@ func main() {
 	dir = strings.Replace(dir, " ", "\\ ", -1)
 
 	//Copy the Files then Remove the Directory
-	extensions.CopyFolder("goCoreMaster/"+gitRepoName, dir)
+	extensions.CopyFolder(v.ReleaseFileName, dir)
 
 	fmt.Println("Moved Files Successfully.")
 	fmt.Println("Started Cleaning Files.")
-	errRemoveDecompressedFiles := extensions.RemoveDirectory("goCoreMaster")
+	errRemoveDecompressedFiles := extensions.RemoveDirectory(v.ReleaseFileName)
 
 	if errRemoveDecompressedFiles != nil {
 		fmt.Println("Failed to Remove GoCore Decompressed Files:  " + errRemoveDecompressedFiles.Error())
@@ -87,7 +86,7 @@ func main() {
 	fmt.Println("Cleaned up Repo Files Successfully.")
 }
 
-func downloadRelease() {
+func downloadRelease(url string, fileName string) {
 
 	fmt.Println("Downloading GoCore.  Please Wait . . .")
 
@@ -98,7 +97,7 @@ func downloadRelease() {
 		return
 	}
 
-	resp, errHttpGet := http.Get(goCoreURL)
+	resp, errHttpGet := http.Get(url)
 	defer resp.Body.Close()
 
 	if errHttpGet != nil {
@@ -164,4 +163,37 @@ func readManifest() (coreManifest, error) {
 	}
 
 	return manifest, nil
+}
+
+func cleanupFiles() {
+	err := os.Remove(manifestFileName)
+
+	if err != nil {
+		fmt.Println("Failed to clean up " + manifestFileName + ":  " + err.Error())
+	}
+
+}
+
+func cleanGoCore(manifest coreManifest) version {
+
+	v := manifest.Versions[len(manifest.Versions)-1]
+
+	if len(os.Args) > 1 {
+		argVersion := os.Args[1]
+
+		for _, vn := range manifest.Versions {
+			if vn.Version == argVersion {
+				v = vn
+				break
+			}
+		}
+	}
+
+	for _, directory := range v.GoDirectories {
+		fmt.Println("Removing Directory:  " + directory)
+		// extensions.RemoveDirectory(directory)
+	}
+
+	return v
+
 }
