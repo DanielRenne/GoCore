@@ -3,6 +3,7 @@
 		{
 			"version": "0.0.1",
 			"releaseURL": "https://github.com/DanielRenne/GoCore/archive/v0.0.1.zip",
+			"releaseFileName":"",
 			"goDirectories":[
 				"src/core",
 				"src/code.google.com/p/go-charset",
@@ -17,6 +18,7 @@
 		{
 			"version": "master",
 			"releaseURL": "https://github.com/DanielRenne/GoCore/archive/master.zip",
+			"releaseFileName":"goCoreMaster",
 			"goDirectories":[
 				"src/core",
 				"src/code.google.com/p/go-charset",
