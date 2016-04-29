@@ -173,7 +173,6 @@ func cleanupFiles() {
 
 func cleanGoCore(v version) {
 
-	v := manifest.Versions[len(manifest.Versions)-1]
 	for _, directory := range v.GoDirectories {
 		fmt.Println("Removing Directory:  " + directory)
 		extensions.RemoveDirectory(directory)
