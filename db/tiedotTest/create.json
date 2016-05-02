@@ -1,0 +1,16 @@
+{
+	"collections":
+	[
+		{
+			"name":"testCollection",
+			"schema":
+			{
+				"field1":
+				{
+					"type":"int",
+					"value":0
+				}
+			}
+		}
+	]
+}
