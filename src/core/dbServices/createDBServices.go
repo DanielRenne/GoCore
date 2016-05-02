@@ -4,6 +4,7 @@ import (
 	"core/serverSettings"
 	"encoding/json"
 	"fmt"
+	"github.com/fatih/color"
 	"io/ioutil"
 )
 
@@ -50,6 +51,22 @@ type createObject struct {
 	ForeignKeys []foreignKeyTableDef `json:"foreignKeys"`
 }
 
+type NOSQLSchema struct {
+	Name         string        `json:"name"`
+	Type         string        `json:"type"`
+	DefaultValue string        `json:"defaultValue"`
+	Schema       []NOSQLSchema `json:"schema"`
+}
+
+type NOSQLCollection struct {
+	Name   string        `json:"name"`
+	Schema []NOSQLSchema `json:"schema"`
+}
+
+type NOSQLSchemaDB struct {
+	Collections []NOSQLCollection `json:"collections"`
+}
+
 func RunDBCreate() {
 
 	jsonData, err := ioutil.ReadFile("db/" + serverSettings.WebConfig.DbConnection.AppName + "/create.json")
@@ -58,16 +75,30 @@ func RunDBCreate() {
 		return
 	}
 
-	var co createObject
-	errUnmarshal := json.Unmarshal(jsonData, &co)
-	if errUnmarshal != nil {
-		fmt.Println("Parsing / Unmarshaling of create.json failed:  " + errUnmarshal.Error())
-		return
-	}
 	if serverSettings.WebConfig.DbConnection.Driver == "sqlite3" {
-		createSQLiteTables(co.Tables)
-		createSQLiteIndexes(co.Indexes)
-		createSQLiteForeignKeys(co.ForeignKeys, co.Tables)
+		var co createObject
+		errUnmarshal := json.Unmarshal(jsonData, &co)
+		if errUnmarshal != nil {
+			color.Red("Parsing / Unmarshaling of create.json failed:  " + errUnmarshal.Error())
+			return
+		}
+		if serverSettings.WebConfig.DbConnection.Driver == "sqlite3" {
+			createSQLiteTables(co.Tables)
+			createSQLiteIndexes(co.Indexes)
+			createSQLiteForeignKeys(co.ForeignKeys, co.Tables)
+		}
+
+	} else {
+		var schemaDB NOSQLSchemaDB
+		errUnmarshal := json.Unmarshal(jsonData, &schemaDB)
+		if errUnmarshal != nil {
+			color.Red("Parsing / Unmarshaling of create.json failed:  " + errUnmarshal.Error())
+			return
+		}
+
+		if serverSettings.WebConfig.DbConnection.Driver == "tiedot" {
+			createTieDotCollections(schemaDB.Collections)
+		}
 	}
 
 	// fmt.Printf("%+v\n", co)

@@ -1,7 +1,7 @@
 package main
 
 import (
-	dbServices "core/dbServices"
+	"core/dbServices"
 )
 
 func main() {
