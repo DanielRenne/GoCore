@@ -1,2 +1,5 @@
 db/helloWorld/helloWorld.db
 pkg/
+bin/tiedot.exe
+db/tiedotTest/tiedotTestDB/number_of_partitions
+src/github.com/HouzuoGuo/tiedot/.gitignore
