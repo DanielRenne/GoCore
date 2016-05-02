@@ -2,6 +2,7 @@ package dbServices
 
 import (
 	// "io/ioutil"
+	"fmt"
 	"testing"
 )
 
@@ -30,6 +31,8 @@ func TestGenerateSQLiteORM(t *testing.T) {
 
 	compareResult := generateSQLiteORM(table, "testORM")
 
+	fmt.Println(compareResult)
+
 	if getTestORM() != compareResult {
 		t.Error("Failed generateSQLiteORM at sqliteORM.go:  Failed to match getTestORM().")
 	}
@@ -38,8 +41,8 @@ func TestGenerateSQLiteORM(t *testing.T) {
 func getTestORM() string {
 	val := "package testORM\n\n"
 	val += "import(\n"
-	val += "\t\"database/sql\""
-	val += "\t\"fmt\""
+	val += "\t\"database/sql\"\n"
+	val += "\t\"fmt\"\n"
 	val += "\t_ \"github.com/mattn/go-sqlite3\"\n"
 	val += ")\n"
 	return val

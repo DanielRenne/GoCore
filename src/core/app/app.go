@@ -1,11 +1,11 @@
 package app
 
-import(
+import (
 
 	//--------Change Below for the application you want to run --------
-	_ "helloWorld"
+	_ "tiedotTest"
 )
 
 func init() {
-	
+
 }

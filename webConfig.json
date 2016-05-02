@@ -1,6 +1,6 @@
 {
 	"application":{
-    "name": "helloWorld",
+    "name": "tiedotTest",
     "domain": "127.0.0.1",
     "httpPort": 80,
     "httpsPort": 443
@@ -20,6 +20,11 @@
 			"appName" : "helloWorld",
 			"driver" : "sqlite3",
 			"connectionString" : "db/helloWorld/helloWorld.db"
+		},
+		{
+			"appName" : "tiedotTest",
+			"driver" : "tiedot",
+			"connectionString" : "tiedotTestDB"
 		}
 	]
 }
