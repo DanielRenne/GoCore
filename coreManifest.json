@@ -16,6 +16,8 @@
 				"src/github.com/go-sql-driver",
 				"src/github.com/gorilla/websocket",
 				"src/github.com/mattn/go-sqlite3",
+				"src/github.com/HouzuoGuo/tiedot",
+				"src/github.com/Jeffail/gabs",
 				"src/golang.org/x/net",
 				"src/helloWorld"
 			]
@@ -36,6 +38,8 @@
 				"src/github.com/go-sql-driver",
 				"src/github.com/gorilla/websocket",
 				"src/github.com/mattn/go-sqlite3",
+				"src/github.com/HouzuoGuo/tiedot",
+				"src/github.com/Jeffail/gabs",
 				"src/golang.org/x/net",
 				"src/helloWorld"
 			]
