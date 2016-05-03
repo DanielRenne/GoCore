@@ -51,16 +51,22 @@ type createObject struct {
 	ForeignKeys []foreignKeyTableDef `json:"foreignKeys"`
 }
 
+type NOSQLSchemaField struct {
+	Name         string      `json:"name"`
+	Type         string      `json:"type"`
+	DefaultValue string      `json:"defaultValue"`
+	Schema       NOSQLSchema `json:"schema"`
+}
+
 type NOSQLSchema struct {
-	Name         string        `json:"name"`
-	Type         string        `json:"type"`
-	DefaultValue string        `json:"defaultValue"`
-	Schema       []NOSQLSchema `json:"schema"`
+	Name   string             `json:"name"`
+	Fields []NOSQLSchemaField `json"fields"`
 }
 
 type NOSQLCollection struct {
-	Name   string        `json:"name"`
-	Schema []NOSQLSchema `json:"schema"`
+	Name    string      `json:"name"`
+	Indexes []string    `json:"indexes"`
+	Schema  NOSQLSchema `json:"schema"`
 }
 
 type NOSQLSchemaDB struct {
@@ -98,6 +104,7 @@ func RunDBCreate() {
 
 		if serverSettings.WebConfig.DbConnection.Driver == "tiedot" {
 			createTieDotCollections(schemaDB.Collections)
+			createTieDotORM(schemaDB.Collections, serverSettings.WebConfig.DbConnection.AppName)
 		}
 	}
 
