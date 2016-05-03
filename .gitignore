@@ -4,3 +4,5 @@ bin/tiedot.exe
 db/tiedotTest/tiedotTestDB/number_of_partitions
 src/github.com/HouzuoGuo/tiedot/.gitignore
 db/tiedotTest/tiedotTestDB/
+src/tieDotTest/model/
+src/tieDotTest/orm/

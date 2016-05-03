@@ -1,9 +1,10 @@
-package tiedotTest
+package tieDotTest
 
 import (
-	_ "core/dbServices"
+	// "fmt"
+	_ "tieDotTest/model"
 )
 
 func init() {
-
+	// fmt.Printf("%+v\n", model)
 }
