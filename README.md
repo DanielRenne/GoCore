@@ -109,11 +109,12 @@ GoCore uses a file called `buildDB.go` by running the following:
 
 `go run buildDB.go`  
 
-This routine will read the webConfig.json file and read the db\\helloWorld\create.json file to create the SQLite3 Database files and Tables. The routine will then add Golang ORM package files to src\\helloWorld\orm.
+This routine will read the webConfig.json file and read the db\\helloWorld\create.json file to create the SQLite3 Database files and Tables. The routine will then add Golang ORM package files to src\\helloWorld\orm and src\\helloWorld\model.
 
 To use the ORM package you will import into your source files the following:
 
 	import( 
-		"_ helloWorld/orm"
+		"helloWorld/orm"
+		"helloWorld/model"
 	)
 
