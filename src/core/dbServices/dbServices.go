@@ -4,16 +4,16 @@ import (
 	"core/serverSettings"
 	"database/sql"
 	"fmt"
-	tiedotDriver "github.com/HouzuoGuo/tiedot/db"
-	"github.com/fatih/color"
-	// tiedotError "github.com/HouzuoGuo/tiedot/dberr"
+	"github.com/asdine/storm"
 	_ "github.com/denisenkom/go-mssqldb"
+	"github.com/fatih/color"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/mattn/go-sqlite3"
+	"os"
 )
 
 var DB *sql.DB
-var TiedotDB *tiedotDriver.DB
+var BoltDB *storm.DB
 
 func init() {
 	fmt.Println("core dbServices initialized.")
@@ -25,8 +25,8 @@ func init() {
 		openSQLDriver()
 	case "sqlite3":
 		openSQLDriver()
-	case "tiedot":
-		openTiedot()
+	case "boltDB":
+		openBolt()
 	}
 
 }
@@ -43,26 +43,19 @@ func openSQLDriver() {
 	color.Cyan("Open Database Connections: " + string(DB.Stats().OpenConnections))
 }
 
-func openTiedot() {
+func openBolt() {
 
 	myDBDir := "db/" + serverSettings.WebConfig.DbConnection.AppName + "/" + serverSettings.WebConfig.DbConnection.ConnectionString
 
+	os.Mkdir("db/"+serverSettings.WebConfig.DbConnection.AppName, 0777)
+
 	// (Create if not exist) open a database
 	var err error
-	TiedotDB, err = tiedotDriver.OpenDB(myDBDir)
+	BoltDB, err = storm.Open(myDBDir, storm.AutoIncrement())
 	if err != nil {
-		color.Red("Failed to create or open tiedot Database at " + myDBDir + ":\n\t" + err.Error())
+		color.Red("Failed to create or open boltDB Database at " + myDBDir + ":\n\t" + err.Error())
 	}
 
-	color.Cyan("Successfully opened new tiedot DB at " + myDBDir)
-	for _, collection := range TiedotDB.AllCols() {
-		fmt.Println("First tiedot collection:  " + collection)
-		break
-	}
-}
+	color.Cyan("Successfully opened new bolt DB at " + myDBDir)
 
-// Return all collection names.
-func tieDotAllCols() (ret []string) {
-	ret = TiedotDB.AllCols()
-	return
 }

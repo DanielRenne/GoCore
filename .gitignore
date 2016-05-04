@@ -6,3 +6,4 @@ src/github.com/HouzuoGuo/tiedot/.gitignore
 db/tiedotTest/tiedotTestDB/
 src/tieDotTest/model/
 src/tieDotTest/orm/
+src/boltDBApp/model/

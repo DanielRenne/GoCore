@@ -1,6 +1,6 @@
 {
 	"application":{
-    "name": "tiedotTest",
+    "name": "boltDBApp",
     "domain": "127.0.0.1",
     "httpPort": 80,
     "httpsPort": 443
@@ -22,9 +22,9 @@
 			"connectionString" : "db/helloWorld/helloWorld.db"
 		},
 		{
-			"appName" : "tiedotTest",
-			"driver" : "tiedot",
-			"connectionString" : "tiedotTestDB"
+			"appName" : "boltDBApp",
+			"driver" : "boltDB",
+			"connectionString" : "boltDBTest.db"
 		}
 	]
 }

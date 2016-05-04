@@ -3,7 +3,7 @@ package app
 import (
 
 	//--------Change Below for the application you want to run --------
-	_ "tiedotTest"
+	_ "boltDBApp"
 )
 
 func init() {

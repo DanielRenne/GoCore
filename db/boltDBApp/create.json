@@ -2,55 +2,57 @@
 	"collections":
 	[
 		{
-			"name":"testCollections",
-			"indexes":
-			[
-				"field1"
-			],
-			"schemaName":"testCollection",
+			"name":"Persons",
 			"schema":
 			{
-				"name": "testCollection",
+				"name": "Person",
 				"fields":
 				[
 					{
-						"name":"field1",
+						"name":"Id",
 						"type":"int",
+						"index":"primary",
 						"defaultValue":"0"
 					},
 					{
-						"name":"field2",
-						"type":"float",
+						"name":"worth",
+						"type":"float64",
+						"index":"",
 						"defaultValue":"0"
 					},
 					{
-						"name":"field3",
+						"name":"first",
 						"type":"string",
-						"defaultValue":"Hello"
+						"index":"index",
+						"defaultValue":"Dan"
 					},
 					{
-						"name":"field4",
+						"name":"isCool",
 						"type":"bool",
+						"index":"",
 						"defaultValue":"true"
 					},
 					{
-						"name":"field5",
+						"name":"blob",
 						"type":"byteArray",
+						"index":"",
 						"defaultValue":""
 					},
 					{
-						"name":"field6",
+						"name":"hand",
 						"type":"object",
 						"defaultValue":"",
+						"index":"",
 						"schema":
 						{
-							"name":"field6Sub",
+							"name":"handDetails",
 							"fields":
 							[
 								{
-									"name":"subField",
+									"name":"fingerCount",
 									"type":"int",
-									"defaultValue":"0"
+									"index":"",
+									"defaultValue":"5"
 								}
 							]
 						}
@@ -59,26 +61,31 @@
 					{
 						"name":"field7",
 						"type":"intArray",
+						"index":"",
 						"defaultValue":""
 					},
 					{
 						"name":"field8",
 						"type":"floatArray",
+						"index":"",
 						"defaultValue":""
 					},
 					{
 						"name":"field9",
 						"type":"stringArray",
+						"index":"",
 						"defaultValue":""
 					},
 					{
 						"name":"field10",
 						"type":"boolArray",
+						"index":"",
 						"defaultValue":"false"
 					},			
 					{
 						"name":"field12",
 						"type":"objectArray",
+						"index":"",
 						"defaultValue":"false",
 						"schema":
 						{
@@ -88,6 +95,7 @@
 								{
 									"name":"subField",
 									"type":"int",
+									"index":"",
 									"defaultValue":"0"
 								}
 							]
