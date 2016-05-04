@@ -61,7 +61,7 @@ func generateTieDotORM(schema NOSQLSchema, collection NOSQLCollection, packageNa
 	val := genPackageImport("model", []string{packageName + "/orm", "encoding/json"})
 
 	val += genTieDotCollection(collection)
-	val += genTieDotSchema(schema)
+	val += genTieDotSchema(schema, true)
 	val += genTieDotRuntime(collection, schema)
 	return val
 }
@@ -72,13 +72,17 @@ func genTieDotCollection(collection NOSQLCollection) string {
 	return val
 }
 
-func genTieDotSchema(schema NOSQLSchema) string {
+func genTieDotSchema(schema NOSQLSchema, isDocument bool) string {
 
 	val := ""
 	schemasToCreate := []NOSQLSchema{}
 
 	val += "type " + strings.Title(schema.Name) + " struct{\n"
-	val += "\n\tDocumentId\tint"
+
+	if isDocument == true {
+		val += "\n\tDocumentId\tint64"
+	}
+
 	for _, field := range schema.Fields {
 		if field.Type == "object" || field.Type == "objectArray" {
 			schemasToCreate = append(schemasToCreate, field.Schema)
@@ -90,7 +94,7 @@ func genTieDotSchema(schema NOSQLSchema) string {
 	val += "\n}\n\n"
 
 	for _, schemaToCreate := range schemasToCreate {
-		val += genTieDotSchema(schemaToCreate)
+		val += genTieDotSchema(schemaToCreate, false)
 	}
 
 	return val
@@ -127,9 +131,23 @@ func genTieDotFieldType(field NOSQLSchemaField) string {
 
 func genTieDotRuntime(collection NOSQLCollection, schema NOSQLSchema) string {
 	val := ""
+	val += genTieDotCollectionReadByDocId(collection)
 	val += genTieDotCollectionInsert(collection, strings.Title(schema.Name))
 	// val += genTieDotPersist(collection, schema)
 	// val += genTieDotIsDirty(schema)
+	return val
+}
+
+func genTieDotCollectionReadByDocId(collection NOSQLCollection) string {
+	val := ""
+	val += "func (obj *" + strings.Replace(strings.Title(collection.Name), " ", "_", -1) + ") ReadById(docId int) ([]byte, error){\n"
+	val += "col := orm.GetCollection(\"" + collection.Name + "\")\n"
+	val += "data, err := col.Read(docId)\n"
+	val += "if err != nil {\n"
+	val += "\treturn []byte{}, err\n"
+	val += "}\n"
+	val += "return json.Marshal(data)\n"
+	val += "}\n\n"
 	return val
 }
 
@@ -137,11 +155,29 @@ func genTieDotCollectionInsert(collection NOSQLCollection, schemaName string) st
 	val := ""
 	val += "func (obj *" + strings.Replace(strings.Title(collection.Name), " ", "_", -1) + ") Insert(item " + schemaName + ") (int, error){\n"
 	val += "itemBytes, _ := json.Marshal(item)\n"
-	val += collection.Name + " := orm.GetCollection(\"" + collection.Name + "\")\n"
+	val += "col := orm.GetCollection(\"" + collection.Name + "\")\n"
 	val += "var docMap map[string]interface{}\n"
 	val += "err := json.Unmarshal(itemBytes, &docMap)\n"
 	val += "if err != nil {\n return 0, err\n}\n\n"
-	val += "return " + collection.Name + ".Insert(docMap)"
+	val += "docID, err := col.Insert(docMap)\n"
+	val += "if err == nil {\n"
+
+	val += "item.DocumentId = docID\n"
+	val += "itemUpdatedBytes, _ := json.Marshal(item)\n"
+
+	val += "var docMapUpdated map[string]interface{}\n"
+	val += "errUnmarshal := json.Unmarshal(itemUpdatedBytes, &docMapUpdated)\n"
+	val += "if errUnmarshal != nil {\n"
+	val += "	return 0, errUnmarshal\n"
+	val += "}\n\n"
+
+	val += "errUpdate := col.Update(docID, docMapUpdated)\n"
+	val += "if errUpdate != nil {\n"
+	val += "	return 0, errUpdate\n"
+	val += "}\n"
+	val += "}\n\n"
+
+	val += "return docID, err\n"
 	val += "}\n\n"
 	return val
 }
