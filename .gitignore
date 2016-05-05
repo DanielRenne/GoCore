@@ -7,3 +7,4 @@ db/tiedotTest/tiedotTestDB/
 src/tieDotTest/model/
 src/tieDotTest/orm/
 src/boltDBApp/model/
+db/boltDBApp/db/

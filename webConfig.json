@@ -24,7 +24,7 @@
 		{
 			"appName" : "boltDBApp",
 			"driver" : "boltDB",
-			"connectionString" : "boltDBTest.db"
+			"connectionString" : "db/boltDBTest.db"
 		}
 	]
 }
