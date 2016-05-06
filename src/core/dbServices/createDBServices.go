@@ -84,31 +84,30 @@ func RunDBCreate() {
 		return
 	}
 
-	if serverSettings.WebConfig.DbConnection.Driver == "sqlite3" {
-		var co createObject
-		errUnmarshal := json.Unmarshal(jsonData, &co)
-		if errUnmarshal != nil {
-			color.Red("Parsing / Unmarshaling of create.json failed:  " + errUnmarshal.Error())
-			return
-		}
-		if serverSettings.WebConfig.DbConnection.Driver == "sqlite3" {
-			createSQLiteTables(co.Tables)
-			createSQLiteIndexes(co.Indexes)
-			createSQLiteForeignKeys(co.ForeignKeys, co.Tables)
-		}
+	// if serverSettings.WebConfig.DbConnection.Driver == "sqlite3" {
+	// 	var co createObject
+	// 	errUnmarshal := json.Unmarshal(jsonData, &co)
+	// 	if errUnmarshal != nil {
+	// 		color.Red("Parsing / Unmarshaling of create.json failed:  " + errUnmarshal.Error())
+	// 		return
+	// 	}
+	// 	if serverSettings.WebConfig.DbConnection.Driver == "sqlite3" {
+	// 		createSQLiteTables(co.Tables)
+	// 		createSQLiteIndexes(co.Indexes)
+	// 		createSQLiteForeignKeys(co.ForeignKeys, co.Tables)
+	// 	}
 
-	} else {
-		var schemaDB NOSQLSchemaDB
-		errUnmarshal := json.Unmarshal(jsonData, &schemaDB)
-		if errUnmarshal != nil {
-			color.Red("Parsing / Unmarshaling of create.json failed:  " + errUnmarshal.Error())
-			return
-		}
-
-		createNoSQLModel(schemaDB.Collections, serverSettings.WebConfig.DbConnection.AppName, serverSettings.WebConfig.DbConnection.Driver)
+	// } else {
+	var schemaDB NOSQLSchemaDB
+	errUnmarshal := json.Unmarshal(jsonData, &schemaDB)
+	if errUnmarshal != nil {
+		color.Red("Parsing / Unmarshaling of create.json failed:  " + errUnmarshal.Error())
+		return
 	}
 
-	// fmt.Printf("%+v\n", co)
+	createNoSQLModel(schemaDB.Collections, serverSettings.WebConfig.DbConnection.AppName, serverSettings.WebConfig.DbConnection.Driver)
+	// }
+
 }
 
 func createNoSQLModel(collections []NOSQLCollection, packageName string, driver string) {

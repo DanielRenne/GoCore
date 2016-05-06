@@ -76,7 +76,7 @@ Open a web browser to:  [http://127.0.0.1/web/helloWorld](http://127.0.0.1/web/h
 
 GoCore has a main web configuration file called `webConfig.json` located in the main directory.
 
-There you will see an application object.  The domain, httpPort, and httpsPort is used for your application to run on.  The name field is used to match database connections and generate Database files, schema, and a Golang ORM package.
+There you will see an application object.  The domain, httpPort, and httpsPort is used for your application to run on.  The name field is used to match database connections and generate Database files, schema, and a Golang model package.
 
 GoCore has a 2nd file to compile the proper application located at:
 
@@ -97,24 +97,31 @@ NOTE:  key files are ingored when running `getCore.go` as to not overwrite your 
 
 Additional Info on Golang https:  [https://www.kaihag.com/https-and-go/](https://www.kaihag.com/https-and-go/ "HTTPS&GO")
 
-###Create the helloWorld SQLite3 DB Tables
+## Building a Database Model
 
-####NOTE: Windows users we recommend installing gcc as a prerequisite for the sqlite3 golang module to compile via [tdb-gcc](http://tdm-gcc.tdragon.net/download).  Be sure to install 64 bit for 64 bit machines. 
-
-####More SQLite tools to verify your data in Windows [SQLite Studio](http://sqlitestudio.pl/)
-
-To create a SQLite3 DB GoCore has built in functions to read json configuration files to generate SQL Tables, indexes, primary & foreign keys, and the Golang ORM package.
+GoCore has built in functions to read json configuration files to generate SQL Tables, indexes, primary & foreign keys, and a Golang model package for your application.
 
 GoCore uses a file called `buildDB.go` by running the following:
 
 `go run buildDB.go`  
 
-This routine will read the webConfig.json file and read the db\\helloWorld\create.json file to create the SQLite3 Database files and Tables. The routine will then add Golang ORM package files to src\\helloWorld\orm and src\\helloWorld\model.
+This routine will read the webConfig.json file and read the db\\helloWorld\create.json file to create Database files and schemas. The routine will then add Golang model package to src\\helloWorld\model.
 
-To use the ORM package you will import into your source files the following:
+Note:  With certain drivers buildDB.go will also build an orm package for your application at src\\helloWorld\orm.
+
+To use the model package you will import into your source files the following:
 
 	import( 
-		"helloWorld/orm"
 		"helloWorld/model"
 	)
+
+## Building a Database Model with SQLite3
+
+####NOTE: Because SQLite3 requires gcc externally we separated the driver for compiling reasons.  Windows users we recommend installing gcc as a prerequisite for the sqlite3 golang module to compile via [tdb-gcc](http://tdm-gcc.tdragon.net/download).  Be sure to install 64 bit for 64 bit machines. 
+
+####More SQLite tools to verify your data in Windows [SQLite Studio](http://sqlitestudio.pl/)
+
+To create a SQLite3 Database schema and model package for your application run the following:
+
+`go run buildDBLite.go`  
 

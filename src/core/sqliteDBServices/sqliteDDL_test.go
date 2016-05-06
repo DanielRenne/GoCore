@@ -1,4 +1,4 @@
-package dbServices
+package sqliteDBServices
 
 import (
 	"reflect"

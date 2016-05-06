@@ -1,6 +1,6 @@
 {
 	"application":{
-    "name": "boltDBApp",
+    "name": "helloWorld",
     "domain": "127.0.0.1",
     "httpPort": 80,
     "httpsPort": 443
