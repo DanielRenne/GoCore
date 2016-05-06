@@ -112,6 +112,10 @@ func RunDBCreate() {
 
 func createNoSQLModel(collections []NOSQLCollection, packageName string, driver string) {
 
+	//Create a NOSQLBucket Model
+	bucket := generateNoSQLModelBucket(driver)
+	writeNOSQLModelBucket(bucket, "src/"+packageName+"/model/bucket.go")
+
 	for _, collection := range collections {
 		val := generateNoSQLModel(collection.Schema, collection, driver)
 		os.Mkdir("src/"+packageName+"/model", 0777)
@@ -135,11 +139,36 @@ func generateNoSQLModel(schema NOSQLSchema, collection NOSQLCollection, driver s
 	return val
 }
 
+func generateNoSQLModelBucket(driver string) string {
+	val := ""
+	switch driver {
+	case "boltDB":
+		val += genPackageImport("model", []string{"core/dbServices"})
+	}
+
+	val += genNoSQLBucketCore(driver)
+	return val
+}
+
 func writeNoSQLModelCollection(value string, path string, collection NOSQLCollection) {
 
 	err := ioutil.WriteFile(path, []byte(value), 0777)
 	if err != nil {
 		color.Red("Error creating Model for Collection " + collection.Name + ":  " + err.Error())
+	}
+
+	cmd := exec.Command("gofmt", "-w", path)
+	err = cmd.Start()
+	if err != nil {
+		color.Red("Failed to gofmt on file " + path + ":  " + err.Error())
+	}
+}
+
+func writeNOSQLModelBucket(value string, path string) {
+
+	err := ioutil.WriteFile(path, []byte(value), 0777)
+	if err != nil {
+		color.Red("Error creating Model for Bucket:  " + err.Error())
 	}
 
 	cmd := exec.Command("gofmt", "-w", path)
@@ -250,6 +279,7 @@ func genNoSQLRuntime(collection NOSQLCollection, schema NOSQLSchema, driver stri
 	val += genNoSQLSchemaAllByIndex(collection, schema, driver)
 	val += genNoSQLSchemaRange(collection, schema, driver)
 	val += genNoSQLSchemaIndex(collection, schema, driver)
+	val += genNoSQLSchemaRunTransaction(collection, schema, driver)
 	val += genNoSQLSchemaSave(schema, driver)
 	val += genNoSQLSchemaDelete(schema, driver)
 	val += genNoSQLSchemaJSONRuntime(schema)
@@ -475,6 +505,47 @@ func genNoSQLSchemaIndex(collection NOSQLCollection, schema NOSQLSchema, driver 
 	return val
 }
 
+func genNoSQLSchemaRunTransaction(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
+	val := ""
+
+	val += "func (obj *" + strings.Title(collection.Name) + ") RunTransaction(objects []Person) error {\n\n"
+	switch driver {
+	case "boltDB":
+		{
+
+			val += "tx, err := dbServices.BoltDB.Begin(true)\n\n"
+
+			val += "for _, object := range objects {\n"
+			val += "	err = tx.Save(&object)\n"
+			val += "	if err != nil {\n"
+			val += "		tx.Rollback()\n"
+			val += "		return err\n"
+			val += "	}\n"
+			val += "}\n\n"
+
+			val += "tx.Commit()\n\n"
+
+			val += "return nil\n"
+		}
+	}
+	val += "}\n\n"
+	return val
+}
+
+func genNoSQLSchemaSetKeyValue(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
+	val := ""
+
+	val += "func (obj *" + strings.Title(collection.Name) + ") SetKeyValue() error {\n"
+	switch driver {
+	case "boltDB":
+		{
+			val += "return dbServices.BoltDB.Init(&" + strings.Title(schema.Name) + "{})\n"
+		}
+	}
+	val += "}\n\n"
+	return val
+}
+
 func genNoSQLSchemaDelete(schema NOSQLSchema, driver string) string {
 	val := ""
 
@@ -483,6 +554,42 @@ func genNoSQLSchemaDelete(schema NOSQLSchema, driver string) string {
 	case "boltDB":
 		{
 			val += "return dbServices.BoltDB.Remove(&obj)\n"
+		}
+	}
+	val += "}\n\n"
+	return val
+}
+
+func genNoSQLBucketCore(driver string) string {
+	val := ""
+
+	val += "type Bucket struct{\n"
+	val += "	Name string\n"
+	val += "}\n\n"
+
+	val += "func (obj *Bucket) SetKeyValue(key interface{}, value interface{}) error {\n"
+	switch driver {
+	case "boltDB":
+		{
+			val += "return dbServices.BoltDB.Set(obj.Name, key, value)\n"
+		}
+	}
+	val += "}\n\n"
+
+	val += "func (obj *Bucket) GetKeyValue(key interface{}, value interface{}) error {\n"
+	switch driver {
+	case "boltDB":
+		{
+			val += "return dbServices.BoltDB.Get(obj.Name, key, value)\n"
+		}
+	}
+	val += "}\n\n"
+
+	val += "func (obj *Bucket) DeleteKey(key interface{}) error {\n"
+	switch driver {
+	case "boltDB":
+		{
+			val += "return dbServices.BoltDB.Delete(obj.Name, key)\n"
 		}
 	}
 	val += "}\n\n"
