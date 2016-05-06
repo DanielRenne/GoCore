@@ -249,6 +249,7 @@ func genNoSQLRuntime(collection NOSQLCollection, schema NOSQLSchema, driver stri
 	val += genNoSQLSchemaAll(collection, schema, driver)
 	val += genNoSQLSchemaAllByIndex(collection, schema, driver)
 	val += genNoSQLSchemaRange(collection, schema, driver)
+	val += genNoSQLSchemaIndex(collection, schema, driver)
 	val += genNoSQLSchemaSave(schema, driver)
 	val += genNoSQLSchemaDelete(schema, driver)
 	val += genNoSQLSchemaJSONRuntime(schema)
@@ -457,6 +458,20 @@ func genNoSQLSchemaRange(collection NOSQLCollection, schema NOSQLSchema, driver 
 	}
 	val += "}\n\n"
 
+	return val
+}
+
+func genNoSQLSchemaIndex(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
+	val := ""
+
+	val += "func (obj *" + strings.Title(collection.Name) + ") Index() error {\n"
+	switch driver {
+	case "boltDB":
+		{
+			val += "return dbServices.BoltDB.Init(&" + strings.Title(schema.Name) + "{})\n"
+		}
+	}
+	val += "}\n\n"
 	return val
 }
 

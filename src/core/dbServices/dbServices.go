@@ -9,6 +9,7 @@ import (
 	"github.com/fatih/color"
 	_ "github.com/go-sql-driver/mysql"
 	"os"
+	"path"
 )
 
 var DB *sql.DB
@@ -46,7 +47,7 @@ func openBolt() {
 
 	myDBDir := "db/" + serverSettings.WebConfig.DbConnection.AppName + "/" + serverSettings.WebConfig.DbConnection.ConnectionString
 
-	os.Mkdir("db/"+serverSettings.WebConfig.DbConnection.AppName, 0777)
+	os.Mkdir(path.Dir(myDBDir), 0777)
 
 	// (Create if not exist) open a database
 	var err error
