@@ -52,7 +52,7 @@
 					},
 					{
 						"name":"field8",
-						"type":"float64Array"
+						"type":"floatArray"
 					},
 					{
 						"name":"field9",

@@ -8,7 +8,9 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
+	"sync"
 )
 
 type fieldDef struct {
@@ -78,11 +80,11 @@ type NOSQLSchemaDB struct {
 
 func RunDBCreate() {
 
-	jsonData, err := ioutil.ReadFile("db/" + serverSettings.WebConfig.DbConnection.AppName + "/create.json")
-	if err != nil {
-		fmt.Println("Reading of create.json failed:  " + err.Error())
-		return
-	}
+	// jsonData, err := ioutil.ReadFile("db/" + serverSettings.WebConfig.DbConnection.AppName + "/create.json")
+	// if err != nil {
+	// 	fmt.Println("Reading of create.json failed:  " + err.Error())
+	// 	return
+	// }
 
 	// if serverSettings.WebConfig.DbConnection.Driver == "sqlite3" {
 	// 	var co createObject
@@ -98,15 +100,55 @@ func RunDBCreate() {
 	// 	}
 
 	// } else {
-	var schemaDB NOSQLSchemaDB
-	errUnmarshal := json.Unmarshal(jsonData, &schemaDB)
-	if errUnmarshal != nil {
-		color.Red("Parsing / Unmarshaling of create.json failed:  " + errUnmarshal.Error())
-		return
+	// var schemaDB NOSQLSchemaDB
+	// errUnmarshal := json.Unmarshal(jsonData, &schemaDB)
+	// if errUnmarshal != nil {
+	// 	color.Red("Parsing / Unmarshaling of create.json failed:  " + errUnmarshal.Error())
+	// 	return
+	// }
+
+	// createNoSQLModel(schemaDB.Collections, serverSettings.WebConfig.DbConnection.AppName, serverSettings.WebConfig.DbConnection.Driver)
+	// }
+
+	var wg sync.WaitGroup
+
+	err := filepath.Walk("db/"+serverSettings.WebConfig.DbConnection.AppName+"/schemas", func(path string, f os.FileInfo, errWalk error) error {
+
+		if errWalk != nil {
+			return errWalk
+		}
+
+		var e error
+
+		if filepath.Ext(f.Name()) == ".json" {
+			wg.Add(1)
+
+			go func() {
+				defer wg.Done()
+				jsonData, err := ioutil.ReadFile(path)
+				if err != nil {
+					color.Red("Reading of " + path + " failed:  " + err.Error())
+					e = err
+				}
+
+				var schemaDB NOSQLSchemaDB
+				errUnmarshal := json.Unmarshal(jsonData, &schemaDB)
+				if errUnmarshal != nil {
+					color.Red("Parsing / Unmarshaling of create.json failed:  " + errUnmarshal.Error())
+					e = errUnmarshal
+				}
+
+				createNoSQLModel(schemaDB.Collections, serverSettings.WebConfig.DbConnection.AppName, serverSettings.WebConfig.DbConnection.Driver)
+			}()
+		}
+
+		return e
+	})
+	if err != nil {
+		color.Red("Walk of path failed:  " + err.Error())
 	}
 
-	createNoSQLModel(schemaDB.Collections, serverSettings.WebConfig.DbConnection.AppName, serverSettings.WebConfig.DbConnection.Driver)
-	// }
+	wg.Wait()
 
 }
 
@@ -121,6 +163,7 @@ func createNoSQLModel(collections []NOSQLCollection, packageName string, driver 
 		os.Mkdir("src/"+packageName+"/model", 0777)
 		writeNoSQLModelCollection(val, "src/"+packageName+"/model/"+collection.Schema.Name+".go", collection)
 		color.Green("Created NOSQL Collection " + collection.Name + " successfully.")
+		fmt.Println()
 	}
 
 }
@@ -259,7 +302,7 @@ func genNoSQLFieldType(field NOSQLSchemaField) string {
 		return strings.Title(field.Schema.Name)
 	case "intArray":
 		return "[]int"
-	case "floatArray":
+	case "float64Array":
 		return "[]float64"
 	case "stringArray":
 		return "[]string"
@@ -280,6 +323,7 @@ func genNoSQLRuntime(collection NOSQLCollection, schema NOSQLSchema, driver stri
 	val += genNoSQLSchemaRange(collection, schema, driver)
 	val += genNoSQLSchemaIndex(collection, schema, driver)
 	val += genNoSQLSchemaRunTransaction(collection, schema, driver)
+	val += genNoSQLSchemaNew(collection, schema)
 	val += genNoSQLSchemaSave(schema, driver)
 	val += genNoSQLSchemaDelete(schema, driver)
 	val += genNoSQLSchemaJSONRuntime(schema)
@@ -508,7 +552,7 @@ func genNoSQLSchemaIndex(collection NOSQLCollection, schema NOSQLSchema, driver 
 func genNoSQLSchemaRunTransaction(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
 	val := ""
 
-	val += "func (obj *" + strings.Title(collection.Name) + ") RunTransaction(objects []Person) error {\n\n"
+	val += "func (obj *" + strings.Title(collection.Name) + ") RunTransaction(objects []" + strings.Title(schema.Name) + ") error {\n\n"
 	switch driver {
 	case "boltDB":
 		{
@@ -528,6 +572,15 @@ func genNoSQLSchemaRunTransaction(collection NOSQLCollection, schema NOSQLSchema
 			val += "return nil\n"
 		}
 	}
+	val += "}\n\n"
+	return val
+}
+
+func genNoSQLSchemaNew(collection NOSQLCollection, schema NOSQLSchema) string {
+	val := ""
+
+	val += "func (obj *" + strings.Title(collection.Name) + ") New() *" + strings.Title(schema.Name) + " {\n"
+	val += "return &" + strings.Title(schema.Name) + "{}\n"
 	val += "}\n\n"
 	return val
 }
