@@ -125,3 +125,6 @@ To create a SQLite3 Database schema and model package for your application run t
 
 `go run buildDBLite.go`  
 
+## References
+
+* [NOSQL Database Schema Model API](https://github.com/DanielRenne/GoCore/blob/master/doc/NOSQL_Schema_Model.md)
