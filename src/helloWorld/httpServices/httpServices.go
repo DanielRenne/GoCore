@@ -1,17 +1,17 @@
 package httpServices
 
-import(
-	"net/http"
+import (
+	"core/ginServer"
 	"fmt"
+	"github.com/gin-gonic/gin"
 )
 
 func init() {
-	fmt.Println("helloWorld httpServices initialized.")	
-	http.HandleFunc("/web/helloWorld/SayHello", sayHello)
-}
+	fmt.Println("helloWorld httpServices initialized.")
 
-func sayHello(w http.ResponseWriter, r *http.Request) {
-
-	w.Header().Set("Content-Type", "text/html")
-	fmt.Fprintf(w, "Say Hello To Go Core")
+	ginServer.Router.GET("WebAPI", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "pong",
+		})
+	})
 }

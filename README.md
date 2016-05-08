@@ -6,7 +6,7 @@ A Golang solution for building a full stack web application.
 
 Provide developers open source Golang tools and provide a complete project example/template for learning and implementing Golang technology.  Below are some targeted goals:
 
-* Http & Https Redirection & HTTP 2.0 with Golang 1.6
+* Http & Https Redirection & HTTP 2.0 with Golang 1.6 and [gin-gonic/gin](https://github.com/gin-gonic/gin)
 * Extension packages for common functions including:
 	* File IO Management & Manipulation
 	* Zip File Compression & Decompression 
@@ -18,6 +18,7 @@ Provide developers open source Golang tools and provide a complete project examp
 		* SQLite3
 		* MySQL
 		* Microsoft SQLServer
+		* BoltDB
 	* Create SQL Schema (DDL) from JSON Configuration.
 	* Create Golang ORM packages for RDBMS Transactions & Queries.
 
@@ -70,7 +71,7 @@ GoCore comes with a sample helloWorld project to manipulate to learn.  To run th
 
 `go run server.go`
 
-Open a web browser to:  [http://127.0.0.1/web/helloWorld](http://127.0.0.1/web/helloWorld)
+Open a web browser to:  [http://127.0.0.1](http://127.0.0.1)
 
 #### How to build your own web project in GoCore
 

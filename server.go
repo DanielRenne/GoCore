@@ -2,9 +2,11 @@ package main
 
 import (
 	_ "core/app"
+	"core/ginServer"
 	"core/serverSettings"
 	"encoding/json"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
@@ -16,19 +18,13 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-func redirectToHttps(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, "https://" + serverSettings.WebConfig.Application.Domain + ":" + strconv.Itoa(serverSettings.WebConfig.Application.HttpsPort) + r.RequestURI, http.StatusMovedPermanently)
-}
-
 type WebSocketAPIObj struct {
-	
-	Data       struct {
+	Data struct {
 		//ServerPropertyID int    `json:"ServerPropertyId"`
 		Controller string `json:"controller"`
 		Method     string `json:"method"`
-		CallBackID int 	`json:"callBackId"`
+		CallBackID int    `json:"callBackId"`
 	} `json:"data"`
-	
 }
 
 func webSocketHandler(w http.ResponseWriter, r *http.Request) {
@@ -65,12 +61,55 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 
-	http.HandleFunc("/websocket", webSocketHandler)
+	if serverSettings.WebConfig.Application.ReleaseMode == "release" {
+		gin.SetMode(gin.ReleaseMode)
+	}
 
-	http.Handle("/", http.FileServer(http.Dir(".")))
+	loadHTMLTemplates(serverSettings.WebConfig.Application.Name)
 
-	// http.Handle("/websocket", websocket.Handler(WebSocketServer))
-	go http.ListenAndServeTLS(":" + strconv.Itoa(serverSettings.WebConfig.Application.HttpsPort), "keys/cert.pem", "keys/key.pem", nil)
-	// Start the HTTP server and redirect all incoming connections to HTTPS
-	http.ListenAndServe(":" + strconv.Itoa(serverSettings.WebConfig.Application.HttpPort) , http.HandlerFunc(redirectToHttps))
+	ginServer.Router.Static("/web", "web")
+
+	ginServer.Router.GET("/ws", func(c *gin.Context) {
+		webSocketHandler(c.Writer, c.Request)
+	})
+
+	go ginServer.Router.RunTLS(":"+strconv.Itoa(serverSettings.WebConfig.Application.HttpsPort), "keys/cert.pem", "keys/key.pem")
+	ginServer.Router.Run(":" + strconv.Itoa(serverSettings.WebConfig.Application.HttpPort))
+
+	ginServer.Router.GET("/", func(c *gin.Context) {
+		c.Redirect(http.StatusMovedPermanently, "https://"+serverSettings.WebConfig.Application.Domain+":"+strconv.Itoa(serverSettings.WebConfig.Application.HttpsPort))
+	})
+
+}
+
+func loadHTMLTemplates(appName string) {
+
+	if serverSettings.WebConfig.Application.HtmlTemplates.Enabled {
+
+		levels := "/*"
+		dirLevel := ""
+
+		switch serverSettings.WebConfig.Application.HtmlTemplates.DirectoryLevels {
+		case 0:
+			levels = "/*"
+			dirLevel = ""
+		case 1:
+			levels = "/**/*"
+			dirLevel = "root/"
+		case 2:
+			levels = "/**/**/*"
+			dirLevel = "root/root/"
+		}
+
+		ginServer.Router.LoadHTMLGlob("web/" + appName + "/" + serverSettings.WebConfig.Application.HtmlTemplates.Directory + levels)
+
+		ginServer.Router.GET("", func(c *gin.Context) {
+			c.HTML(http.StatusOK, dirLevel+"index.tmpl", gin.H{})
+		})
+	} else {
+
+		ginServer.Router.GET("", func(c *gin.Context) {
+			ginServer.ReadHTMLFile("web/"+appName+"/index.html", c)
+		})
+	}
 }

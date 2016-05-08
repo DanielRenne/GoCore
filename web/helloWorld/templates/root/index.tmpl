@@ -1,0 +1,37 @@
+{{ define "root/index.tmpl" }}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags always come first -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="web/core/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="web/core/tether-1.2.0/dist/css/tether.min.css">
+    <link rel="stylesheet" href="web/core/font-awesome-4.5.0/css/font-awesome.min.css">
+
+
+    <!-- jQuery first, then Bootstrap JS. -->
+    <script src="web/core/js/jquery-2.2.2.min.js"></script>
+    <script src="web/core/js/jquery-2.2.2.min.js"></script>
+    <script src="web/core/tether-1.2.0/dist/js/tether.min.js" ></script>
+
+    <!-- Favicon -->
+  <link rel="icon" href="favicon.ico"/>
+<script type="text/javascript">
+    $(document).ready(function (){
+      $.getJSON( "WebAPI", function( data ) {
+        console.log(data);
+      });
+    });
+</script>
+
+  <title>Hello World.com</title>
+  </head>
+  <body>
+  Hello World
+  </body>
+</html>
+{{ end }}
