@@ -2,7 +2,7 @@
 	"application":{
     "name": "helloWorld",
     "domain": "127.0.0.1",
-    "httpPort": 80,
+    "httpPort": 82,
     "httpsPort": 443, 
     "releaseMode":"release",
     "webServiceOnly":false,
@@ -25,8 +25,8 @@
 		},
 		{
 			"appName" : "helloWorld",
-			"driver" : "sqlite3",
-			"connectionString" : "db/helloWorld/helloWorld.db"
+			"driver" : "boltDB",
+			"connectionString" : "db/helloWorld.db"
 		},
 		{
 			"appName" : "boltDBApp",

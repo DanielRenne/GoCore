@@ -1,6 +1,7 @@
 package dbServices
 
 import (
+	"core/extensions"
 	"core/serverSettings"
 	"encoding/json"
 	"fmt"
@@ -110,9 +111,36 @@ func RunDBCreate() {
 	// createNoSQLModel(schemaDB.Collections, serverSettings.WebConfig.DbConnection.AppName, serverSettings.WebConfig.DbConnection.Driver)
 	// }
 
+	walkNoSQLSchema()
+
+}
+
+func walkNoSQLSchema() {
+
+	basePath := "db/" + serverSettings.WebConfig.DbConnection.AppName + "/schemas"
+
+	fileNames, errReadDir := ioutil.ReadDir(basePath)
+	if errReadDir != nil {
+		color.Red("Reading of " + basePath + " failed:  " + errReadDir.Error())
+		return
+	}
+
+	for _, file := range fileNames {
+		if file.IsDir() == true {
+			version := extensions.Version{}
+			version.Init(file.Name())
+			versionDir := "v" + version.MajorString
+			walkNoSQLVersion(basePath+"/"+file.Name(), versionDir)
+		}
+	}
+
+}
+
+func walkNoSQLVersion(path string, versionDir string) {
+
 	var wg sync.WaitGroup
 
-	err := filepath.Walk("db/"+serverSettings.WebConfig.DbConnection.AppName+"/schemas", func(path string, f os.FileInfo, errWalk error) error {
+	err := filepath.Walk(path, func(path string, f os.FileInfo, errWalk error) error {
 
 		if errWalk != nil {
 			return errWalk
@@ -138,7 +166,7 @@ func RunDBCreate() {
 					e = errUnmarshal
 				}
 
-				createNoSQLModel(schemaDB.Collections, serverSettings.WebConfig.DbConnection.AppName, serverSettings.WebConfig.DbConnection.Driver)
+				createNoSQLModel(schemaDB.Collections, serverSettings.WebConfig.DbConnection.AppName, serverSettings.WebConfig.DbConnection.Driver, versionDir)
 			}()
 		}
 
@@ -149,21 +177,26 @@ func RunDBCreate() {
 	}
 
 	wg.Wait()
-
 }
 
-func createNoSQLModel(collections []NOSQLCollection, packageName string, driver string) {
+func createNoSQLModel(collections []NOSQLCollection, packageName string, driver string, versionDir string) {
 
 	//Create a NOSQLBucket Model
 	bucket := generateNoSQLModelBucket(driver)
-	writeNOSQLModelBucket(bucket, "src/"+packageName+"/model/bucket.go")
+	os.Mkdir("src/"+packageName+"/models/", 0777)
+	os.Mkdir("src/"+packageName+"/models/"+versionDir, 0777)
+	os.Mkdir("src/"+packageName+"/models/"+versionDir+"/model/", 0777)
+
+	writeNOSQLModelBucket(bucket, "src/"+packageName+"/models/"+versionDir+"/model/bucket.go")
 
 	for _, collection := range collections {
 		val := generateNoSQLModel(collection.Schema, collection, driver)
-		os.Mkdir("src/"+packageName+"/model", 0777)
-		writeNoSQLModelCollection(val, "src/"+packageName+"/model/"+collection.Schema.Name+".go", collection)
+		os.Mkdir("src/"+packageName+"/models/", 0777)
+		os.Mkdir("src/"+packageName+"/models/"+versionDir, 0777)
+		os.Mkdir("src/"+packageName+"/models/"+versionDir+"/model/", 0777)
+		writeNoSQLModelCollection(val, "src/"+packageName+"/models/"+versionDir+"/model/"+strings.ToLower(collection.Schema.Name)+".go", collection)
 		color.Green("Created NOSQL Collection " + collection.Name + " successfully.")
-		fmt.Println()
+		fmt.Println(genSchemaWebAPI(collection.Schema, packageName+"/models/"+versionDir+"/model", driver))
 	}
 
 }
@@ -173,7 +206,7 @@ func generateNoSQLModel(schema NOSQLSchema, collection NOSQLCollection, driver s
 	val := ""
 	switch driver {
 	case "boltDB":
-		val += genPackageImport("model", []string{"core/dbServices", "encoding/json", "github.com/asdine/storm"})
+		val += extensions.GenPackageImport("model", []string{"core/dbServices", "encoding/json", "github.com/asdine/storm"})
 	}
 
 	val += genNoSQLCollection(collection)
@@ -186,7 +219,7 @@ func generateNoSQLModelBucket(driver string) string {
 	val := ""
 	switch driver {
 	case "boltDB":
-		val += genPackageImport("model", []string{"core/dbServices"})
+		val += extensions.GenPackageImport("model", []string{"core/dbServices"})
 	}
 
 	val += genNoSQLBucketCore(driver)
@@ -219,18 +252,6 @@ func writeNOSQLModelBucket(value string, path string) {
 	if err != nil {
 		color.Red("Failed to gofmt on file " + path + ":  " + err.Error())
 	}
-}
-
-func genPackageImport(name string, imports []string) string {
-
-	val := "package " + name + "\n\n"
-	val += "import(\n"
-	for _, imp := range imports {
-		val += "\t\"" + imp + "\"\n"
-	}
-	val += ")\n\n"
-
-	return val
 }
 
 func genNoSQLCollection(collection NOSQLCollection) string {

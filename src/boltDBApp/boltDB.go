@@ -1,7 +1,7 @@
 package boltDBApp
 
 import (
-	"boltDBApp/model"
+	"boltDBApp/models/v1/model"
 	"fmt"
 	"github.com/fatih/color"
 )

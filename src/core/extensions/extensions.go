@@ -6,6 +6,15 @@ import (
 	"strings"
 )
 
+type Version struct {
+	Major          int
+	Minor          int
+	Revision       int
+	MajorString    string
+	MinorString    string
+	RevisionString string
+}
+
 func TrimSuffix(s, suffix string) string {
 	if strings.HasSuffix(s, suffix) {
 		s = s[:len(s)-len(suffix)]
@@ -61,4 +70,36 @@ func PrintZettaBytes(bytes int64) string {
 func FloatToString(input_num float64, decimals int) string {
 	// to convert a float number to a string
 	return strconv.FormatFloat(input_num, 'f', decimals, 64)
+}
+
+func (obj *Version) Init(value string) {
+	versionInfo := strings.Split(value, ".")
+
+	obj.MajorString = versionInfo[0]
+	obj.MinorString = versionInfo[1]
+	obj.RevisionString = versionInfo[2]
+
+	if val, err := strconv.Atoi(versionInfo[0]); err == nil {
+		obj.Major = val
+	}
+
+	if val, err := strconv.Atoi(versionInfo[1]); err == nil {
+		obj.Minor = val
+	}
+
+	if val, err := strconv.Atoi(versionInfo[2]); err == nil {
+		obj.Revision = val
+	}
+}
+
+func GenPackageImport(name string, imports []string) string {
+
+	val := "package " + name + "\n\n"
+	val += "import(\n"
+	for _, imp := range imports {
+		val += "\t\"" + imp + "\"\n"
+	}
+	val += ")\n\n"
+
+	return val
 }
