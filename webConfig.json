@@ -5,6 +5,7 @@
     "httpPort": 80,
     "httpsPort": 443, 
     "releaseMode":"release",
+    "webServiceOnly":false,
 	"htmlTemplates":{
 		"enabled":false,
 		"directory":"templates",

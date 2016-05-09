@@ -65,13 +65,16 @@ func main() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	loadHTMLTemplates(serverSettings.WebConfig.Application.Name)
+	if serverSettings.WebConfig.Application.WebServiceOnly == false {
 
-	ginServer.Router.Static("/web", "web")
+		loadHTMLTemplates(serverSettings.WebConfig.Application.Name)
 
-	ginServer.Router.GET("/ws", func(c *gin.Context) {
-		webSocketHandler(c.Writer, c.Request)
-	})
+		ginServer.Router.Static("/web", "web")
+
+		ginServer.Router.GET("/ws", func(c *gin.Context) {
+			webSocketHandler(c.Writer, c.Request)
+		})
+	}
 
 	go ginServer.Router.RunTLS(":"+strconv.Itoa(serverSettings.WebConfig.Application.HttpsPort), "keys/cert.pem", "keys/key.pem")
 	ginServer.Router.Run(":" + strconv.Itoa(serverSettings.WebConfig.Application.HttpPort))

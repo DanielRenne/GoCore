@@ -19,12 +19,13 @@ type dbConnection struct {
 }
 
 type application struct {
-	Name          string        `json:"name"`
-	Domain        string        `json:"domain"`
-	HttpPort      int           `json:"httpPort"`
-	HttpsPort     int           `json:"httpsPort"`
-	ReleaseMode   string        `json:"releaseMode"`
-	HtmlTemplates htmlTemplates `json:"htmlTemplates"`
+	Name           string        `json:"name"`
+	Domain         string        `json:"domain"`
+	HttpPort       int           `json:"httpPort"`
+	HttpsPort      int           `json:"httpsPort"`
+	ReleaseMode    string        `json:"releaseMode"`
+	WebServiceOnly bool          `json:"webServiceOnly"`
+	HtmlTemplates  htmlTemplates `json:"htmlTemplates"`
 }
 
 type webConfigObj struct {

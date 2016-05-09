@@ -27,6 +27,8 @@
 				"src/github.com/manucorporat/sse",
 				"src/github.com/Jeffail/gabs",
 				"src/golang.org/x/net",
+				"src/gopkg.in/go-playground",
+				"src/gopkg.in/yaml.v2",
 				"src/helloWorld"
 			]
 		},
@@ -57,6 +59,8 @@
 		        "src/github.com/manucorporat/sse",
 				"src/github.com/Jeffail/gabs",
 				"src/golang.org/x/net",
+				"src/gopkg.in/go-playground",
+				"src/gopkg.in/yaml.v2",
 				"src/helloWorld"
 			]
 		}
