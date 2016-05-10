@@ -407,6 +407,13 @@ func genNoSQLSchemaSave(schema NOSQLSchema, driver string) string {
 	return val
 }
 
+func genNoSQLSchemaArrayCheck(schema NOSQLSchema) string {
+	val := "if len(retObj) == 0 {\n"
+	val += "retObj = []" + strings.Title(schema.Name) + "{}\n"
+	val += "}\n"
+	return val
+}
+
 func genNoSQLSchemaSingle(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
 	val := ""
 
@@ -430,6 +437,7 @@ func genNoSQLSchemaSearch(collection NOSQLCollection, schema NOSQLSchema, driver
 	case "boltDB":
 		{
 			val += "dbServices.BoltDB.Find(field, value, &retObj)\n"
+			val += genNoSQLSchemaArrayCheck(schema)
 			val += "return\n"
 		}
 	}
@@ -441,18 +449,22 @@ func genNoSQLSchemaSearch(collection NOSQLCollection, schema NOSQLSchema, driver
 		{
 			val += "if limit == 0 && skip == 0{\n"
 			val += "	dbServices.BoltDB.Find(field, value, &retObj)\n"
+			val += genNoSQLSchemaArrayCheck(schema)
 			val += "	return\n"
 			val += "}\n"
 			val += "if limit > 0 && skip > 0{\n"
 			val += "	dbServices.BoltDB.Find(field, value, &retObj, storm.Limit(limit), storm.Skip(skip))\n"
+			val += genNoSQLSchemaArrayCheck(schema)
 			val += "	return\n"
 			val += "}\n"
 			val += "if limit > 0{\n"
 			val += "	dbServices.BoltDB.Find(field, value, &retObj, storm.Limit(limit))\n"
+			val += genNoSQLSchemaArrayCheck(schema)
 			val += "	return\n"
 			val += "}\n"
 			val += "if skip > 0{\n"
 			val += "	dbServices.BoltDB.Find(field, value, &retObj, storm.Skip(skip))\n"
+			val += genNoSQLSchemaArrayCheck(schema)
 			val += "	return\n"
 			val += "}\n"
 			val += "return\n"
@@ -470,6 +482,7 @@ func genNoSQLSchemaAll(collection NOSQLCollection, schema NOSQLSchema, driver st
 	case "boltDB":
 		{
 			val += "dbServices.BoltDB.All(&retObj)\n"
+			val += genNoSQLSchemaArrayCheck(schema)
 			val += "return\n"
 		}
 	}
@@ -481,18 +494,22 @@ func genNoSQLSchemaAll(collection NOSQLCollection, schema NOSQLSchema, driver st
 		{
 			val += "if limit == 0 && skip == 0{\n"
 			val += "	dbServices.BoltDB.All(&retObj)\n"
+			val += genNoSQLSchemaArrayCheck(schema)
 			val += "	return\n"
 			val += "}\n"
 			val += "if limit > 0 && skip > 0{\n"
 			val += "	dbServices.BoltDB.All(&retObj, storm.Limit(limit), storm.Skip(skip))\n"
+			val += genNoSQLSchemaArrayCheck(schema)
 			val += "	return\n"
 			val += "}\n"
 			val += "if limit > 0{\n"
 			val += "	dbServices.BoltDB.All(&retObj, storm.Limit(limit))\n"
+			val += genNoSQLSchemaArrayCheck(schema)
 			val += "	return\n"
 			val += "}\n"
 			val += "if skip > 0{\n"
 			val += "	dbServices.BoltDB.All(&retObj, storm.Skip(skip))\n"
+			val += genNoSQLSchemaArrayCheck(schema)
 			val += "	return\n"
 			val += "}\n"
 			val += "return\n"
@@ -511,6 +528,7 @@ func genNoSQLSchemaAllByIndex(collection NOSQLCollection, schema NOSQLSchema, dr
 	case "boltDB":
 		{
 			val += "dbServices.BoltDB.AllByIndex(index, &retObj)\n"
+			val += genNoSQLSchemaArrayCheck(schema)
 			val += "return\n"
 		}
 	}
@@ -522,18 +540,22 @@ func genNoSQLSchemaAllByIndex(collection NOSQLCollection, schema NOSQLSchema, dr
 		{
 			val += "if limit == 0 && skip == 0{\n"
 			val += "	dbServices.BoltDB.AllByIndex(index, &retObj)\n"
+			val += genNoSQLSchemaArrayCheck(schema)
 			val += "	return\n"
 			val += "}\n"
 			val += "if limit > 0 && skip > 0{\n"
 			val += "	dbServices.BoltDB.AllByIndex(index, &retObj, storm.Limit(limit), storm.Skip(skip))\n"
+			val += genNoSQLSchemaArrayCheck(schema)
 			val += "	return\n"
 			val += "}\n"
 			val += "if limit > 0{\n"
 			val += "	dbServices.BoltDB.AllByIndex(index, &retObj, storm.Limit(limit))\n"
+			val += genNoSQLSchemaArrayCheck(schema)
 			val += "	return\n"
 			val += "}\n"
 			val += "if skip > 0{\n"
 			val += "	dbServices.BoltDB.AllByIndex(index, &retObj, storm.Skip(skip))\n"
+			val += genNoSQLSchemaArrayCheck(schema)
 			val += "	return\n"
 			val += "}\n"
 			val += "return\n"
@@ -552,6 +574,7 @@ func genNoSQLSchemaRange(collection NOSQLCollection, schema NOSQLSchema, driver 
 	case "boltDB":
 		{
 			val += "dbServices.BoltDB.Range(field, min, max, &retObj)\n"
+			val += genNoSQLSchemaArrayCheck(schema)
 			val += "return\n"
 		}
 	}
@@ -563,18 +586,22 @@ func genNoSQLSchemaRange(collection NOSQLCollection, schema NOSQLSchema, driver 
 		{
 			val += "if limit == 0 && skip == 0{\n"
 			val += "	dbServices.BoltDB.Range(field, min, max, &retObj)\n"
+			val += genNoSQLSchemaArrayCheck(schema)
 			val += "	return\n"
 			val += "}\n"
 			val += "if limit > 0 && skip > 0{\n"
 			val += "	dbServices.BoltDB.Range(field, min, max, &retObj, storm.Limit(limit), storm.Skip(skip))\n"
+			val += genNoSQLSchemaArrayCheck(schema)
 			val += "	return\n"
 			val += "}\n"
 			val += "if limit > 0{\n"
 			val += "	dbServices.BoltDB.Range(field, min, max, &retObj, storm.Limit(limit))\n"
+			val += genNoSQLSchemaArrayCheck(schema)
 			val += "	return\n"
 			val += "}\n"
 			val += "if skip > 0{\n"
 			val += "	dbServices.BoltDB.Range(field, min, max, &retObj, storm.Skip(skip))\n"
+			val += genNoSQLSchemaArrayCheck(schema)
 			val += "	return\n"
 			val += "}\n"
 			val += "return\n"
