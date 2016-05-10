@@ -147,7 +147,7 @@ Example Code:
 	
 	func init(){
 	
-		var persons model.Persons{}
+		var persons model.Persons
 
 		person := persons.Single("name", "Dan")
 		
@@ -169,7 +169,7 @@ Example Code:
 	
 	func init(){
 	
-		var persons model.Persons{}
+		var persons model.Persons
 
 		somePeople := persons.Search("name", "Dan")
 		
@@ -194,7 +194,7 @@ Example Code:
 	
 	func init(){
 	
-		var persons model.Persons{}
+		var persons model.Persons
 
 		somePeople := persons.SearchAdvanced("name", "Dan", 10, 0)
 		
@@ -218,9 +218,9 @@ Example Code:
 	
 	func init(){
 	
-		var persons model.Persons{}
+		var persons model.Persons
 
-		somePeople := persons.All("name", "Dan")
+		somePeople := persons.All()
 		
 		for _, people := range somePeople{ 
 			fmt.Println(person.Name)
@@ -242,9 +242,9 @@ Example Code:
 	
 	func init(){
 	
-		var persons model.Persons{}
+		var persons model.Persons
 
-		somePeople := persons.AllAdvanced("name", "Dan", 10, 0)
+		somePeople := persons.AllAdvanced(10, 0)
 		
 		for _, people := range somePeople{ 
 			fmt.Println(person.Name)
@@ -265,7 +265,7 @@ Example Code:
 	
 	func init(){
 	
-		var persons model.Persons{}
+		var persons model.Persons
 
 		somePeople := persons.AllByIndex("name")
 		
@@ -288,7 +288,7 @@ Example Code:
 	
 	func init(){
 	
-		var persons model.Persons{}
+		var persons model.Persons
 
 		somePeople := persons.AllByIndexAdvanced("name", 10, 0)
 		
@@ -311,7 +311,7 @@ Example Code:
 	
 	func init(){
 	
-		var persons model.Persons{}
+		var persons model.Persons
 
 		somePeople := persons.Range("Bobby", "Dan", "name")
 		
@@ -334,7 +334,7 @@ Example Code:
 	
 	func init(){
 	
-		var persons model.Persons{}
+		var persons model.Persons
 
 		somePeople := persons.RangeAdvanced("Bobby", "Dan", "name", 10, 0)
 		
@@ -358,7 +358,7 @@ Example Code:
 	
 	func init(){
 	
-		var persons model.Persons{}
+		var persons model.Persons
 
 		err := persons.Index()
 
@@ -381,7 +381,7 @@ Example Code:
 	
 	func init(){
 	
-		var persons model.Persons{}
+		var persons model.Persons
 
 		err := persons.RunTransaction([]Person{Person{Name:"Dan"}, Person{Name:"Bobby"}})
 
@@ -404,7 +404,7 @@ Example Code:
 	
 	func init(){
 	
-		var persons model.Persons{}
+		var persons model.Persons
 
 		p := persons.New()
 
@@ -436,7 +436,7 @@ Example Code:
 	
 	func init(){
 	
-		var person model.Person{}
+		var person model.Person
 
 		person.Name = "David"
 
@@ -462,7 +462,7 @@ Example Code:
 	
 	func init(){
 	
-		var persons model.Persons{}
+		var persons model.Persons
 
 		person := persons.Single("name", "Dan")
 
@@ -488,7 +488,7 @@ Example Code:
 	
 	func init(){
 	
-		var person model.Person{}
+		var person model.Person
 
 		person.Name = "David"
 
@@ -520,7 +520,7 @@ Example Code:
 	
 	func init(){
 	
-		var person model.Person{}
+		var person model.Person
 
 		person.Name = "David"
 
@@ -559,7 +559,7 @@ Example Code:
 	
 	func init(){
 	
-		var bucket model.Bucket{}
+		var bucket model.Bucket
 
 		bucket.Name = "Items"
 
@@ -592,7 +592,7 @@ Example Code:
 	
 	func init(){
 	
-		var bucket model.Bucket{}
+		var bucket model.Bucket
 
 		bucket.Name = "Items"
 

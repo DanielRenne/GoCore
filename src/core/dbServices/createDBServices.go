@@ -4,7 +4,7 @@ import (
 	"core/extensions"
 	"core/serverSettings"
 	"encoding/json"
-	"fmt"
+	// "fmt"
 	"github.com/fatih/color"
 	"io/ioutil"
 	"os"
@@ -195,8 +195,13 @@ func createNoSQLModel(collections []NOSQLCollection, packageName string, driver 
 		os.Mkdir("src/"+packageName+"/models/"+versionDir, 0777)
 		os.Mkdir("src/"+packageName+"/models/"+versionDir+"/model/", 0777)
 		writeNoSQLModelCollection(val, "src/"+packageName+"/models/"+versionDir+"/model/"+strings.ToLower(collection.Schema.Name)+".go", collection)
-		color.Green("Created NOSQL Collection " + collection.Name + " successfully.")
-		fmt.Println(genSchemaWebAPI(collection.Schema, packageName+"/models/"+versionDir+"/model", driver))
+
+		os.Mkdir("src/"+packageName+"/webAPIs/", 0777)
+		os.Mkdir("src/"+packageName+"/webAPIs/"+versionDir, 0777)
+		os.Mkdir("src/"+packageName+"/webAPIs/"+versionDir+"/webAPI/", 0777)
+
+		cWebAPI := genSchemaWebAPI(collection, collection.Schema, packageName+"/models/"+versionDir+"/model", driver, versionDir)
+		writeNoSQLWebAPI(cWebAPI, "src/"+packageName+"/webAPIs/"+versionDir+"/webAPI/"+strings.ToLower(collection.Schema.Name)+".go", collection)
 	}
 
 }
@@ -226,18 +231,38 @@ func generateNoSQLModelBucket(driver string) string {
 	return val
 }
 
-func writeNoSQLModelCollection(value string, path string, collection NOSQLCollection) {
+func writeNoSQLWebAPI(value string, path string, collection NOSQLCollection) {
 
 	err := ioutil.WriteFile(path, []byte(value), 0777)
 	if err != nil {
-		color.Red("Error creating Model for Collection " + collection.Name + ":  " + err.Error())
+		color.Red("Error creating Web API for Collection " + collection.Name + ":  " + err.Error())
+		return
 	}
 
 	cmd := exec.Command("gofmt", "-w", path)
 	err = cmd.Start()
 	if err != nil {
 		color.Red("Failed to gofmt on file " + path + ":  " + err.Error())
+		return
 	}
+	color.Green("Created NOSQL Web API Collection " + collection.Name + " successfully.")
+}
+
+func writeNoSQLModelCollection(value string, path string, collection NOSQLCollection) {
+
+	err := ioutil.WriteFile(path, []byte(value), 0777)
+	if err != nil {
+		color.Red("Error creating Model for Collection " + collection.Name + ":  " + err.Error())
+		return
+	}
+
+	cmd := exec.Command("gofmt", "-w", path)
+	err = cmd.Start()
+	if err != nil {
+		color.Red("Failed to gofmt on file " + path + ":  " + err.Error())
+		return
+	}
+	color.Green("Created NOSQL Model Collection " + collection.Name + " successfully.")
 }
 
 func writeNOSQLModelBucket(value string, path string) {
@@ -245,13 +270,17 @@ func writeNOSQLModelBucket(value string, path string) {
 	err := ioutil.WriteFile(path, []byte(value), 0777)
 	if err != nil {
 		color.Red("Error creating Model for Bucket:  " + err.Error())
+		return
 	}
 
 	cmd := exec.Command("gofmt", "-w", path)
 	err = cmd.Start()
 	if err != nil {
 		color.Red("Failed to gofmt on file " + path + ":  " + err.Error())
+		return
 	}
+
+	color.Green("Created NOSQL Bucket successfully.")
 }
 
 func genNoSQLCollection(collection NOSQLCollection) string {

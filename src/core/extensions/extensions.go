@@ -72,6 +72,15 @@ func FloatToString(input_num float64, decimals int) string {
 	return strconv.FormatFloat(input_num, 'f', decimals, 64)
 }
 
+func StringToInt(val string) int {
+
+	r, err := strconv.Atoi(val)
+	if err != nil {
+		return 0
+	}
+	return r
+}
+
 func (obj *Version) Init(value string) {
 	versionInfo := strings.Split(value, ".")
 
