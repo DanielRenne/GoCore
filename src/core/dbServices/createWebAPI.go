@@ -24,6 +24,8 @@ func genSchemaWebAPI(collection NOSQLCollection, schema NOSQLSchema, dbPackageNa
 	val += genSortCollectionGET(collection)
 	val += genRangeCollectionGET(collection)
 	val += genCollectionGET(collection)
+
+	//Add Swagger Definitions
 	addCollectionGet("/"+strings.ToLower(collection.Name), collection)
 
 	return val
@@ -54,19 +56,9 @@ func genCollectionGET(collection NOSQLCollection) string {
 
 func addCollectionGet(path string, collection NOSQLCollection) {
 
-	var apiPath Swagger2Path
-	var op Swagger2Operation
-	op.Responses = make(map[string]Swagger2Response)
+	apiPath := getSwaggerGETPath()
 
-	var response200 Swagger2Response
-	// response200Schema := Swagger2Schema{Type: "array"}
-	response200.Description = "Successful operation"
-	// response200.Schema = &response200Schema
-
-	op.Responses["200"] = response200
-	op.Tags = append(op.Tags, strings.Title(collection.Name))
-
-	apiPath.GET = &op
+	apiPath.GET.Tags = append(apiPath.GET.Tags, strings.Title(collection.Name))
 
 	AddSwaggerPath(path, apiPath)
 	AddSwaggerTag(strings.Title(collection.Name), "A collection of "+strings.Title(collection.Name), "", "")

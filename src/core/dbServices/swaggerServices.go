@@ -219,3 +219,21 @@ func GetSwaggerDefinitionJSONString() string {
 	}
 	return string(bytes)
 }
+
+func getSwaggerGETPath() Swagger2Path {
+
+	var apiPath Swagger2Path
+	var op Swagger2Operation
+	op.Responses = make(map[string]Swagger2Response)
+
+	var response200 Swagger2Response
+	response200.Description = "Successful operation"
+
+	// response200Schema := Swagger2Schema{Type: "array"}
+	// response200.Schema = &response200Schema
+
+	op.Responses["200"] = response200
+	apiPath.GET = &op
+
+	return apiPath
+}
