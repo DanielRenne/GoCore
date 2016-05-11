@@ -134,6 +134,13 @@ func walkNoSQLSchema() {
 		}
 	}
 
+	//Write out the swagger api Definition to the Application
+	err := ioutil.WriteFile("web/swagger/dist/swagger.json", []byte(GetSwaggerDefinitionJSONString()), 0777)
+	if err != nil {
+		color.Red("Error writing swagger.json:  " + err.Error())
+		return
+	}
+	color.Green("Successfully created swagger.json.")
 }
 
 func walkNoSQLVersion(path string, versionDir string) {

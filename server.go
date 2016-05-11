@@ -76,13 +76,7 @@ func main() {
 		})
 	}
 
-	// ginServer.AddRouterGroup("/v1", "/test", "GET", func(c *gin.Context) {
-	// 	c.JSON(200, gin.H{
-	// 		"status":  "posted",
-	// 		"message": "message",
-	// 		"nick":    "nick",
-	// 	})
-	// })
+	initializeStaticRoutes(serverSettings.WebConfig.Application.Name)
 
 	go ginServer.Router.RunTLS(":"+strconv.Itoa(serverSettings.WebConfig.Application.HttpsPort), "keys/cert.pem", "keys/key.pem")
 
@@ -124,4 +118,13 @@ func loadHTMLTemplates(appName string) {
 			ginServer.ReadHTMLFile("web/"+appName+"/index.html", c)
 		})
 	}
+}
+
+func initializeStaticRoutes(appName string) {
+
+	ginServer.Router.GET("/swagger", func(c *gin.Context) {
+		c.Redirect(http.StatusMovedPermanently, "https://"+serverSettings.WebConfig.Application.Domain+":"+strconv.Itoa(serverSettings.WebConfig.Application.HttpsPort)+"/web/swagger/dist/index.html")
+
+		// ginServer.ReadHTMLFile("web/swagger/dist/index.html", c)
+	})
 }
