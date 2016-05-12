@@ -280,3 +280,12 @@ func getSwaggerGETPath() Swagger2Path {
 
 	return apiPath
 }
+
+func getSwaggerParameter(name string, in string, description string, required bool, valType string) (param Swagger2Parameter) {
+	param.Name = name
+	param.In = in
+	param.Description = description
+	param.Required = required
+	param.Type = valType
+	return
+}

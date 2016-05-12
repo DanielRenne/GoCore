@@ -27,7 +27,7 @@ func genSchemaWebAPI(collection NOSQLCollection, schema NOSQLSchema, dbPackageNa
 
 	//Add Swagger Definitions
 	addCollectionGet("/"+strings.ToLower(collection.Name), collection)
-
+	addSearchCollectionGet("/search"+strings.Title(collection.Name), collection)
 	return val
 }
 
@@ -62,23 +62,30 @@ func addCollectionGet(path string, collection NOSQLCollection) {
 	apiPath.GET.Summary = "Gets All " + strings.Title(collection.Name) + ".  Can be filtered by limit and skip."
 	apiPath.GET.Produces = []string{"application/json"}
 
-	limit := Swagger2Parameter{}
-	limit.Name = "limit"
-	limit.In = "query"
-	limit.Description = "Limit the number of records returned."
-	limit.Required = false
-	limit.Type = "integer"
-
-	skip := Swagger2Parameter{}
-	skip.Name = "skip"
-	skip.In = "query"
-	skip.Description = "Skip an amount of records from the collection returned from the database query."
-	skip.Required = false
-	skip.Type = "integer"
+	limit := getSwaggerParameter("limit", "query", "Limit the number of records returned.", false, "integer")
+	skip := getSwaggerParameter("skip", "query", "Skip an amount of records from the collection returned from the database query.", false, "integer")
 
 	apiPath.GET.Parameters = []Swagger2Parameter{limit, skip}
 	AddSwaggerPath(path, apiPath)
 	AddSwaggerTag(strings.Title(collection.Name), "A collection of "+strings.Title(collection.Name), "", "")
+}
+
+func addSearchCollectionGet(path string, collection NOSQLCollection) {
+
+	apiPath := getSwaggerGETPath()
+
+	apiPath.GET.Tags = append(apiPath.GET.Tags, "Search "+strings.Title(collection.Name))
+	apiPath.GET.Summary = "Searches " + strings.Title(collection.Name) + " by field and value.  Can be filtered by limit and skip."
+	apiPath.GET.Produces = []string{"application/json"}
+
+	field := getSwaggerParameter("field", "query", "Field to search for "+collection.Schema.Name+" on.", true, "string")
+	value := getSwaggerParameter("value", "query", "Value to search for "+collection.Schema.Name+" on.", true, "string")
+	limit := getSwaggerParameter("limit", "query", "Limit the number of records returned.", false, "integer")
+	skip := getSwaggerParameter("skip", "query", "Skip an amount of records from the collection returned from the database query.", false, "integer")
+
+	apiPath.GET.Parameters = []Swagger2Parameter{field, value, limit, skip}
+	AddSwaggerPath(path, apiPath)
+	AddSwaggerTag("Search "+strings.Title(collection.Name), "A collection of "+strings.Title(collection.Name), "", "")
 }
 
 func genSearchCollectionGET(collection NOSQLCollection) string {
