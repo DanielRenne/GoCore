@@ -13,6 +13,7 @@ type Version struct {
 	MajorString    string
 	MinorString    string
 	RevisionString string
+	Value          string
 }
 
 func TrimSuffix(s, suffix string) string {
@@ -87,6 +88,7 @@ func (obj *Version) Init(value string) {
 	obj.MajorString = versionInfo[0]
 	obj.MinorString = versionInfo[1]
 	obj.RevisionString = versionInfo[2]
+	obj.Value = value
 
 	if val, err := strconv.Atoi(versionInfo[0]); err == nil {
 		obj.Major = val

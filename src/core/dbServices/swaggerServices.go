@@ -1,6 +1,7 @@
 package dbServices
 
 import (
+	"core/serverSettings"
 	"encoding/json"
 	"fmt"
 	"github.com/fatih/color"
@@ -23,40 +24,40 @@ type Swagger2Contact struct {
 }
 
 type Swagger2Item struct {
-	Type             string          `json:"type"`
-	Format           string          `json:"format,omitempty"`
-	Items            *[]Swagger2Item `json:"items, omitempty"`
-	CollectionFormat string          `json:"collectionFormat,omitempty"`
-	Maximum          float64         `json:"maximum,omitempty"`
-	ExclusiveMaximum bool            `json:"exclusiveMaximum"`
-	Minimum          float64         `json:"minimum,omitempty"`
-	ExclusiveMinimum bool            `json:"exclusiveMinimum"`
-	MaxLength        int             `json:"maxLength,omitempty"`
-	MinLength        int             `json:"minLength,omitempty"`
-	Pattern          string          `json:"pattern,omitempty"`
-	MaxItems         int             `json:"maxItems,omitempty"`
-	MinItems         int             `json:"minItems,omitempty"`
-	UniqueItems      bool            `json:"uniqueItems,omitempty"`
-	MultipleOf       float64         `json:"multipleOf,omitempty"`
+	Type             string         `json:"type"`
+	Format           string         `json:"format,omitempty"`
+	Items            []Swagger2Item `json:"items, omitempty"`
+	CollectionFormat string         `json:"collectionFormat,omitempty"`
+	Maximum          float64        `json:"maximum,omitempty"`
+	ExclusiveMaximum bool           `json:"exclusiveMaximum"`
+	Minimum          float64        `json:"minimum,omitempty"`
+	ExclusiveMinimum bool           `json:"exclusiveMinimum"`
+	MaxLength        int            `json:"maxLength,omitempty"`
+	MinLength        int            `json:"minLength,omitempty"`
+	Pattern          string         `json:"pattern,omitempty"`
+	MaxItems         int            `json:"maxItems,omitempty"`
+	MinItems         int            `json:"minItems,omitempty"`
+	UniqueItems      bool           `json:"uniqueItems,omitempty"`
+	MultipleOf       float64        `json:"multipleOf,omitempty"`
 }
 
 type Swagger2Header struct {
-	Description      string          `json:"description"`
-	Type             string          `json:"type"`
-	Format           string          `json:"format,omitempty"`
-	Items            *[]Swagger2Item `json:"items, omitempty"`
-	CollectionFormat string          `json:"collectionFormat,omitempty"`
-	Maximum          float64         `json:"maximum,omitempty"`
-	ExclusiveMaximum bool            `json:"exclusiveMaximum"`
-	Minimum          float64         `json:"minimum,omitempty"`
-	ExclusiveMinimum bool            `json:"exclusiveMinimum"`
-	MaxLength        int             `json:"maxLength,omitempty"`
-	MinLength        int             `json:"minLength,omitempty"`
-	Pattern          string          `json:"pattern,omitempty"`
-	MaxItems         int             `json:"maxItems,omitempty"`
-	MinItems         int             `json:"minItems,omitempty"`
-	UniqueItems      bool            `json:"uniqueItems,omitempty"`
-	MultipleOf       float64         `json:"multipleOf,omitempty"`
+	Description      string         `json:"description"`
+	Type             string         `json:"type"`
+	Format           string         `json:"format,omitempty"`
+	Items            []Swagger2Item `json:"items, omitempty"`
+	CollectionFormat string         `json:"collectionFormat,omitempty"`
+	Maximum          float64        `json:"maximum,omitempty"`
+	ExclusiveMaximum bool           `json:"exclusiveMaximum"`
+	Minimum          float64        `json:"minimum,omitempty"`
+	ExclusiveMinimum bool           `json:"exclusiveMinimum"`
+	MaxLength        int            `json:"maxLength,omitempty"`
+	MinLength        int            `json:"minLength,omitempty"`
+	Pattern          string         `json:"pattern,omitempty"`
+	MaxItems         int            `json:"maxItems,omitempty"`
+	MinItems         int            `json:"minItems,omitempty"`
+	UniqueItems      bool           `json:"uniqueItems,omitempty"`
+	MultipleOf       float64        `json:"multipleOf,omitempty"`
 }
 
 type Swagger2SecurityScheme struct {
@@ -87,16 +88,16 @@ type Swagger2Parameter struct {
 	Name             string          `json:"name"`
 	Description      string          `json:"description,omitempty"`
 	Required         bool            `json:"required,omitempty"`
-	Schema           *Swagger2Schema `json:"schema, omitempty"`
+	Schema           *Swagger2Schema `json:"schema,omitempty"`
 	Type             string          `json:"type,omitempty"`
 	Format           string          `json:"format,omitempty"`
-	AllowEmptyValue  bool            `json:allowEmptyValue,omitempty"`
-	Items            *[]Swagger2Item `json:"items, omitempty"`
+	AllowEmptyValue  bool            `json:"allowEmptyValue,omitempty"`
+	Items            []Swagger2Item  `json:"items,omitempty"`
 	CollectionFormat string          `json:"collectionFormat,omitempty"`
 	Maximum          float64         `json:"maximum,omitempty"`
-	ExclusiveMaximum bool            `json:"exclusiveMaximum"`
+	ExclusiveMaximum bool            `json:"exclusiveMaximum,omitempty"`
 	Minimum          float64         `json:"minimum,omitempty"`
-	ExclusiveMinimum bool            `json:"exclusiveMinimum"`
+	ExclusiveMinimum bool            `json:"exclusiveMinimum,omitempty"`
 	MaxLength        int             `json:"maxLength,omitempty"`
 	MinLength        int             `json:"minLength,omitempty"`
 	Pattern          string          `json:"pattern,omitempty"`
@@ -114,22 +115,22 @@ type Swagger2Operation struct {
 	OperationId string                      `json:"operationId,omitempty"`
 	Consumes    []string                    `json:"consumes,omitempty"`
 	Produces    []string                    `json:"produces,omitempty"`
-	Parameters  *[]Swagger2Parameter        `json:"parameters,omitempty"`
+	Parameters  []Swagger2Parameter         `json:"parameters,omitempty"`
 	Schemes     []string                    `json:"schemes,omitempty"`
 	Deprecated  bool                        `json:"deprecated,omitempty"`
 	Security    []map[string][]string       `json:"security,omitempty"`
 }
 
 type Swagger2Path struct {
-	Ref        string               `json:"$ref,omitempty"`
-	GET        *Swagger2Operation   `json:"get,omitempty"`
-	PUT        *Swagger2Operation   `json:"put,omitempty"`
-	POST       *Swagger2Operation   `json:"post,omitempty"`
-	DELETE     *Swagger2Operation   `json:"delete,omitempty"`
-	OPTIONS    *Swagger2Operation   `json:"options,omitempty"`
-	HEAD       *Swagger2Operation   `json:"head,omitempty"`
-	PATCH      *Swagger2Operation   `json:"patch,omitempty"`
-	Parameters *[]Swagger2Parameter `json:"parameters,omitempty"`
+	Ref        string              `json:"$ref,omitempty"`
+	GET        *Swagger2Operation  `json:"get,omitempty"`
+	PUT        *Swagger2Operation  `json:"put,omitempty"`
+	POST       *Swagger2Operation  `json:"post,omitempty"`
+	DELETE     *Swagger2Operation  `json:"delete,omitempty"`
+	OPTIONS    *Swagger2Operation  `json:"options,omitempty"`
+	HEAD       *Swagger2Operation  `json:"head,omitempty"`
+	PATCH      *Swagger2Operation  `json:"patch,omitempty"`
+	Parameters []Swagger2Parameter `json:"parameters,omitempty"`
 }
 
 type Swagger2ExternalDoc struct {
@@ -218,6 +219,41 @@ func GetSwaggerDefinitionJSONString() string {
 		return ""
 	}
 	return string(bytes)
+}
+
+func writeSwaggerConfiguration(verisonPath string, version string) {
+
+	//Save Application Meta Data and Version information to Swagger
+	contact := Swagger2Contact{
+		Email: serverSettings.WebConfig.Application.Info.Contact.Email,
+		Name:  serverSettings.WebConfig.Application.Info.Contact.Name,
+		URL:   serverSettings.WebConfig.Application.Info.Contact.URL,
+	}
+
+	license := Swagger2License{
+		Name: serverSettings.WebConfig.Application.Info.License.Name,
+		URL:  serverSettings.WebConfig.Application.Info.License.URL,
+	}
+
+	info := Swagger2Info{
+		Title:       serverSettings.WebConfig.Application.Info.Title,
+		Description: serverSettings.WebConfig.Application.Info.Description,
+		Contact:     &contact,
+		License:     &license,
+		Version:     version,
+	}
+
+	SwaggerDefinition.BasePath = verisonPath
+	SwaggerDefinition.Host = serverSettings.WebConfig.Application.Domain
+	SwaggerDefinition.Info = &info
+
+	//Write out the swagger api Definition to the Application
+	err := ioutil.WriteFile("web/swagger/dist/swagger.json", []byte(GetSwaggerDefinitionJSONString()), 0777)
+	if err != nil {
+		color.Red("Error writing swagger.json:  " + err.Error())
+		return
+	}
+	color.Green("Successfully created swagger.json.")
 }
 
 func getSwaggerGETPath() Swagger2Path {

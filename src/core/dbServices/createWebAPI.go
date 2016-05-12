@@ -59,7 +59,24 @@ func addCollectionGet(path string, collection NOSQLCollection) {
 	apiPath := getSwaggerGETPath()
 
 	apiPath.GET.Tags = append(apiPath.GET.Tags, strings.Title(collection.Name))
+	apiPath.GET.Summary = "Gets All " + strings.Title(collection.Name) + ".  Can be filtered by limit and skip."
+	apiPath.GET.Produces = []string{"application/json"}
 
+	limit := Swagger2Parameter{}
+	limit.Name = "limit"
+	limit.In = "query"
+	limit.Description = "Limit the number of records returned."
+	limit.Required = false
+	limit.Type = "integer"
+
+	skip := Swagger2Parameter{}
+	skip.Name = "skip"
+	skip.In = "query"
+	skip.Description = "Skip an amount of records from the collection returned from the database query."
+	skip.Required = false
+	skip.Type = "integer"
+
+	apiPath.GET.Parameters = []Swagger2Parameter{limit, skip}
 	AddSwaggerPath(path, apiPath)
 	AddSwaggerTag(strings.Title(collection.Name), "A collection of "+strings.Title(collection.Name), "", "")
 }

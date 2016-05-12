@@ -18,6 +18,25 @@ type dbConnection struct {
 	Driver           string `json:"driver"`
 }
 
+type license struct {
+	Name string `json:"name"`
+	URL  string `json:"url"`
+}
+
+type contact struct {
+	Name  string `json:"name"`
+	URL   string `json:"url"`
+	Email string `json:"email"`
+}
+
+type info struct {
+	Title          string  `json:"title"`
+	Description    string  `json:"description"`
+	Contact        contact `json:"contact"`
+	License        license `json:"license"`
+	TermsOfService string  `json:termsOfService"`
+}
+
 type application struct {
 	Name           string        `json:"name"`
 	Domain         string        `json:"domain"`
@@ -25,6 +44,7 @@ type application struct {
 	HttpsPort      int           `json:"httpsPort"`
 	ReleaseMode    string        `json:"releaseMode"`
 	WebServiceOnly bool          `json:"webServiceOnly"`
+	Info           info          `json:"info"`
 	HtmlTemplates  htmlTemplates `json:"htmlTemplates"`
 }
 

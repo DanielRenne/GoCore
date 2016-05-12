@@ -125,28 +125,20 @@ func walkNoSQLSchema() {
 		return
 	}
 
-	latestVersion := "/api/v1"
+	verisonPath := "/api/v1"
+	versionNumber := ""
 	for _, file := range fileNames {
 		if file.IsDir() == true {
 			version := extensions.Version{}
 			version.Init(file.Name())
 			versionDir := "v" + version.MajorString
-			latestVersion = versionDir
+			verisonPath = verisonPath
+			versionNumber = version.Value
 			walkNoSQLVersion(basePath+"/"+file.Name(), versionDir)
 		}
 	}
 
-	//Save Application Meta Data and Version information to Swagger
-	SwaggerDefinition.BasePath = latestVersion
-	SwaggerDefinition.Host = serverSettings.WebConfig.Application.Domain
-
-	//Write out the swagger api Definition to the Application
-	err := ioutil.WriteFile("web/swagger/dist/swagger.json", []byte(GetSwaggerDefinitionJSONString()), 0777)
-	if err != nil {
-		color.Red("Error writing swagger.json:  " + err.Error())
-		return
-	}
-	color.Green("Successfully created swagger.json.")
+	writeSwaggerConfiguration(verisonPath, versionNumber)
 }
 
 func walkNoSQLVersion(path string, versionDir string) {
