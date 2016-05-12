@@ -173,18 +173,23 @@ type Swagger2 struct {
 var SwaggerDefinition Swagger2
 
 func init() {
+	LoadSwaggerTemplate()
+}
 
+func LoadSwaggerTemplate() {
 	jsonData, err := ioutil.ReadFile(SWAGGER_SCHEMA_PATH + "/" + CURRENT_SWAGGER_VERSION + "/swagger.json")
 	if err != nil {
 		color.Red("Reading of swagger.json failed:  " + err.Error())
 		return
 	}
 
-	errUnmarshal := json.Unmarshal(jsonData, &SwaggerDefinition)
+	var swagDef Swagger2
+	errUnmarshal := json.Unmarshal(jsonData, &swagDef)
 	if errUnmarshal != nil {
 		color.Red("Parsing / Unmarshaling of create.json failed:  " + errUnmarshal.Error())
 		return
 	}
+	SwaggerDefinition = swagDef
 	color.Green(SwaggerDefinition.Swagger)
 }
 
@@ -248,12 +253,14 @@ func writeSwaggerConfiguration(verisonPath string, version string) {
 	SwaggerDefinition.Info = &info
 
 	//Write out the swagger api Definition to the Application
-	err := ioutil.WriteFile("web/swagger/dist/swagger.json", []byte(GetSwaggerDefinitionJSONString()), 0777)
+	err := ioutil.WriteFile(serverSettings.SwaggerUIPath+"/swagger."+version+".json", []byte(GetSwaggerDefinitionJSONString()), 0777)
 	if err != nil {
 		color.Red("Error writing swagger.json:  " + err.Error())
 		return
 	}
-	color.Green("Successfully created swagger.json.")
+	color.Green("Successfully created " + serverSettings.SwaggerUIPath + "/swagger." + version + ".json")
+
+	LoadSwaggerTemplate()
 }
 
 func getSwaggerGETPath() Swagger2Path {

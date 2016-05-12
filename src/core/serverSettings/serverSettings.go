@@ -56,6 +56,8 @@ type webConfigObj struct {
 
 var WebConfig webConfigObj
 
+const SwaggerUIPath = "web/swagger/dist"
+
 func init() {
 	fmt.Println("core serverSettings initialized.")
 

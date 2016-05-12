@@ -125,20 +125,23 @@ func walkNoSQLSchema() {
 		return
 	}
 
-	verisonPath := "/api/v1"
 	versionNumber := ""
 	for _, file := range fileNames {
 		if file.IsDir() == true {
 			version := extensions.Version{}
 			version.Init(file.Name())
 			versionDir := "v" + version.MajorString
-			verisonPath = verisonPath
 			versionNumber = version.Value
 			walkNoSQLVersion(basePath+"/"+file.Name(), versionDir)
+
+			//Create Swagger Definition With the latest Version being equal to swagger.json, all others swagger_1.0.0.json etc...
+			writeSwaggerConfiguration("/api/"+versionDir, version.Value)
 		}
 	}
 
-	writeSwaggerConfiguration(verisonPath, versionNumber)
+	//Make a copy of the latest Swagger Version Definition for Swagger UI to default to swagger.json.  We will keep the latest version as a 2nd copy.
+	extensions.CopyFile(serverSettings.SwaggerUIPath+"/swagger."+versionNumber+".json", serverSettings.SwaggerUIPath+"/swagger.json")
+
 }
 
 func walkNoSQLVersion(path string, versionDir string) {
