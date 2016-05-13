@@ -9,7 +9,7 @@ const basePath = "/api"
 
 func genSchemaWebAPI(collection NOSQLCollection, schema NOSQLSchema, dbPackageName string, driver string, versionDir string) string {
 
-	val := extensions.GenPackageImport("webAPI", []string{dbPackageName, "core/ginServer", "github.com/gin-gonic/gin", "core/extensions"})
+	val := extensions.GenPackageImport("webAPI", []string{dbPackageName, "core/ginServer", "github.com/gin-gonic/gin", "core/extensions", "strings"})
 	val += "func init(){\n\n"
 	//val += "\tginServer.AddRouterGroup(\"" + versionDir + "\", \"/" + strings.ToLower(schema.Name) + "\", \"GET\", get" + strings.Title(schema.Name) + ")\n"
 	val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/single" + strings.Title(collection.Name) + "\", \"GET\", getSingle" + strings.Title(collection.Name) + ")\n"
@@ -19,11 +19,11 @@ func genSchemaWebAPI(collection NOSQLCollection, schema NOSQLSchema, dbPackageNa
 	val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/" + strings.ToLower(collection.Name) + "\", \"GET\", get" + strings.Title(collection.Name) + ")\n"
 	val += "}\n\n"
 
-	val += genSingleCollectionGET(collection)
-	val += genSearchCollectionGET(collection)
-	val += genSortCollectionGET(collection)
-	val += genRangeCollectionGET(collection)
-	val += genCollectionGET(collection)
+	val += genNOSQLSingleCollectionGET(collection)
+	val += genNOSQLSearchCollectionGET(collection)
+	val += genNOSQLSortCollectionGET(collection)
+	val += genNOSQLRangeCollectionGET(collection)
+	val += genNOSQLCollectionGET(collection)
 
 	//Add Swagger Paths
 	addNOSQLSwaggerCollectionGet("/"+strings.ToLower(collection.Name), collection)
@@ -34,7 +34,7 @@ func genSchemaWebAPI(collection NOSQLCollection, schema NOSQLSchema, dbPackageNa
 	return val
 }
 
-func genCollectionGET(collection NOSQLCollection) string {
+func genNOSQLCollectionGET(collection NOSQLCollection) string {
 
 	name := strings.Title(collection.Name)
 
@@ -64,30 +64,55 @@ func addNOSQLSwaggerSchemaDefinition(schema NOSQLSchema) {
 
 	def.Type = "object"
 
-	// if len(schema.Fields) > 0 {
-	// 	def.Properties = make(map[string]Swagger2Schema)
-	// }
+	if len(schema.Fields) > 0 {
+		def.Properties = make(map[string]Swagger2Schema)
+	}
 
-	// for _, field := range schema.Fields {
+	for _, field := range schema.Fields {
 
-	// 	if field.Required == true {
-	// 		requiredProperties = append(requiredProperties, field.Name)
-	// 	}
+		if field.Required == true {
+			requiredProperties = append(requiredProperties, field.Name)
+		}
 
-	// 	fieldSwaggerSchema := Swagger2Schema{}
-	// 	if field.Type == "object" {
-	// 		fieldSwaggerSchema.Ref = "#/definitions/" + strings.ToLower(field.Schema.Name)
-	// 		addNOSQLSwaggerSchemaDefinition(field.Schema)
-	// 	} else {
-	// 		fieldSwaggerSchema.Type = getSwaggerType(field.Type)
-	// 		fieldSwaggerSchema.Format = getSwaggerFormat(field.Type)
-	// 	}
+		fieldSwaggerSchema := getNOSQLSwaggerSchemaFieldDefinition(field)
 
-	// 	def.Properties[strings.ToLower(field.Name)] = fieldSwaggerSchema
-	// }
+		def.Properties[strings.ToLower(field.Name)] = fieldSwaggerSchema
+	}
 
 	def.Required = requiredProperties
 	AddSwaggerDefinition(strings.ToLower(schema.Name), def)
+}
+
+func getNOSQLSwaggerSchemaFieldDefinition(field NOSQLSchemaField) Swagger2Schema {
+
+	fieldSwaggerSchema := Swagger2Schema{}
+	if field.Type == "object" {
+		fieldSwaggerSchema.Ref = "#/definitions/" + strings.ToLower(field.Schema.Name)
+		addNOSQLSwaggerSchemaDefinition(field.Schema)
+	} else {
+		fieldSwaggerSchema.Type = getSwaggerType(field.Type)
+		fieldSwaggerSchema.Format = getSwaggerFormat(field.Type)
+
+		if fieldSwaggerSchema.Type == "array" {
+
+			if field.Type == "objectArray" {
+				item := Swagger2Item{
+					Ref: "#/definitions/" + strings.ToLower(field.Schema.Name),
+				}
+
+				fieldSwaggerSchema.Items = &item
+
+				addNOSQLSwaggerSchemaDefinition(field.Schema)
+			} else {
+				item := Swagger2Item{
+					Type: getSwaggerArrayType(field.Type),
+				}
+				fieldSwaggerSchema.Items = &item
+			}
+
+		}
+	}
+	return fieldSwaggerSchema
 }
 
 func addNOSQLSwaggerCollectionGet(path string, collection NOSQLCollection) {
@@ -127,14 +152,14 @@ func addNOSQLSwaggerSearchCollectionGet(path string, collection NOSQLCollection)
 	AddSwaggerTag("Search "+strings.Title(collection.Name), "A collection of "+strings.Title(collection.Name), "", "")
 }
 
-func genSearchCollectionGET(collection NOSQLCollection) string {
+func genNOSQLSearchCollectionGET(collection NOSQLCollection) string {
 
 	name := strings.Title(collection.Name)
 
 	val := ""
 	val += "func getSearch" + name + "(c *gin.Context){\n"
 
-	val += "\tfield := c.DefaultQuery(\"field\",\"\")\n"
+	val += "\tfield := strings.Title(c.DefaultQuery(\"field\",\"\"))\n"
 	val += "\tvalue := c.DefaultQuery(\"value\",\"\")\n"
 	val += "\tlimit := extensions.StringToInt(c.DefaultQuery(\"limit\",\"\"))\n"
 	val += "\tskip := extensions.StringToInt(c.DefaultQuery(\"skip\",\"\"))\n"
@@ -152,14 +177,14 @@ func genSearchCollectionGET(collection NOSQLCollection) string {
 	return val
 }
 
-func genSortCollectionGET(collection NOSQLCollection) string {
+func genNOSQLSortCollectionGET(collection NOSQLCollection) string {
 
 	name := strings.Title(collection.Name)
 
 	val := ""
 	val += "func getSort" + name + "(c *gin.Context){\n"
 
-	val += "\tfield := c.DefaultQuery(\"field\",\"\")\n"
+	val += "\tfield := strings.Title(c.DefaultQuery(\"field\",\"\"))\n"
 	val += "\tlimit := extensions.StringToInt(c.DefaultQuery(\"limit\",\"\"))\n"
 	val += "\tskip := extensions.StringToInt(c.DefaultQuery(\"skip\",\"\"))\n"
 	val += "\titems := model." + name + "{}\n"
@@ -176,14 +201,14 @@ func genSortCollectionGET(collection NOSQLCollection) string {
 	return val
 }
 
-func genRangeCollectionGET(collection NOSQLCollection) string {
+func genNOSQLRangeCollectionGET(collection NOSQLCollection) string {
 
 	name := strings.Title(collection.Name)
 
 	val := ""
 	val += "func getRange" + name + "(c *gin.Context){\n"
 
-	val += "\tfield := c.DefaultQuery(\"field\",\"\")\n"
+	val += "\tfield := strings.Title(c.DefaultQuery(\"field\",\"\"))\n"
 	val += "\tlimit := extensions.StringToInt(c.DefaultQuery(\"limit\",\"\"))\n"
 	val += "\tskip := extensions.StringToInt(c.DefaultQuery(\"skip\",\"\"))\n"
 	val += "\tmin := c.DefaultQuery(\"min\",\"\")\n"
@@ -202,14 +227,14 @@ func genRangeCollectionGET(collection NOSQLCollection) string {
 	return val
 }
 
-func genSingleCollectionGET(collection NOSQLCollection) string {
+func genNOSQLSingleCollectionGET(collection NOSQLCollection) string {
 
 	name := strings.Title(collection.Name)
 
 	val := ""
 	val += "func getSingle" + name + "(c *gin.Context){\n"
 
-	val += "\tfield := c.DefaultQuery(\"field\",\"\")\n"
+	val += "\tfield := strings.Title(c.DefaultQuery(\"field\",\"\"))\n"
 	val += "\tvalue := c.DefaultQuery(\"value\",\"\")\n"
 	val += "\titems := model." + name + "{}\n"
 	val += "\titemsArray := items.Single(field, value)\n"

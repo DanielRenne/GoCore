@@ -356,6 +356,21 @@ func getSwaggerType(value string) string {
 	return value
 }
 
+func getSwaggerArrayType(value string) string {
+
+	switch value {
+	case "intArray":
+		return "integer"
+	case "float64Array":
+		return "number"
+	case "stringArray":
+		return "string"
+	case "boolArray":
+		return "boolean"
+	}
+	return value
+}
+
 func getSwaggerFormat(value string) string {
 
 	switch value {

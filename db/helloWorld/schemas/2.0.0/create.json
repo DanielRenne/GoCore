@@ -9,7 +9,7 @@
 				"fields":
 				[
 					{
-						"name":"Id",
+						"name":"id",
 						"type":"int",
 						"index":"primary"
 					},
