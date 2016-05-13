@@ -28,6 +28,7 @@ func genSchemaWebAPI(collection NOSQLCollection, schema NOSQLSchema, dbPackageNa
 	//Add Swagger Paths
 	addNOSQLSwaggerCollectionGet("/"+strings.ToLower(collection.Name), collection)
 	addNOSQLSwaggerSearchCollectionGet("/search"+strings.Title(collection.Name), collection)
+	addNOSQLSwaggerSingleCollectionGet("/single"+strings.Title(collection.Name), collection)
 
 	addNOSQLSwaggerSchemaDefinition(schema)
 
@@ -120,7 +121,8 @@ func addNOSQLSwaggerCollectionGet(path string, collection NOSQLCollection) {
 	apiPath := getSwaggerGETPath()
 
 	apiPath.GET.Tags = append(apiPath.GET.Tags, strings.Title(collection.Name))
-	apiPath.GET.Summary = "Gets All " + strings.Title(collection.Name) + ".  Can be filtered by limit and skip."
+	apiPath.GET.Summary = "Gets All " + strings.Title(collection.Name) + ""
+	apiPath.GET.Description = "Can be filtered by limit and skip."
 	apiPath.GET.Produces = []string{"application/json"}
 
 	limit := getSwaggerParameter("limit", "query", "Limit the number of records returned.", false, "integer")
@@ -139,7 +141,8 @@ func addNOSQLSwaggerSearchCollectionGet(path string, collection NOSQLCollection)
 	apiPath := getSwaggerGETPath()
 
 	apiPath.GET.Tags = append(apiPath.GET.Tags, "Search "+strings.Title(collection.Name))
-	apiPath.GET.Summary = "Searches " + strings.Title(collection.Name) + " by field and value.  Can be filtered by limit and skip."
+	apiPath.GET.Summary = "Searches " + strings.Title(collection.Name)
+	apiPath.GET.Description = "Is searched by the field and value.  Can be filtered by limit and skip."
 	apiPath.GET.Produces = []string{"application/json"}
 
 	field := getSwaggerParameter("field", "query", "Field to search for "+collection.Schema.Name+" on.", true, "string")
@@ -148,8 +151,31 @@ func addNOSQLSwaggerSearchCollectionGet(path string, collection NOSQLCollection)
 	skip := getSwaggerParameter("skip", "query", "Skip an amount of records from the collection returned from the database query.", false, "integer")
 
 	apiPath.GET.Parameters = []Swagger2Parameter{field, value, limit, skip}
+
+	updateSwaggerOperationResponse(apiPath.GET, "array", "#/definitions/"+strings.ToLower(collection.Schema.Name))
+
 	AddSwaggerPath(path, apiPath)
 	AddSwaggerTag("Search "+strings.Title(collection.Name), "A collection of "+strings.Title(collection.Name), "", "")
+}
+
+func addNOSQLSwaggerSingleCollectionGet(path string, collection NOSQLCollection) {
+
+	apiPath := getSwaggerGETPath()
+
+	apiPath.GET.Tags = append(apiPath.GET.Tags, "Single "+strings.Title(collection.Schema.Name))
+	apiPath.GET.Summary = "Get a " + strings.Title(collection.Schema.Name)
+	apiPath.GET.Description = "Returns a single " + collection.Schema.Name + " searched by field and value."
+	apiPath.GET.Produces = []string{"application/json"}
+
+	field := getSwaggerParameter("field", "query", "Field to search for "+collection.Schema.Name+" on.", true, "string")
+	value := getSwaggerParameter("value", "query", "Value to search for "+collection.Schema.Name+" on.", true, "string")
+
+	apiPath.GET.Parameters = []Swagger2Parameter{field, value}
+
+	updateSwaggerOperationResponseRef(apiPath.GET, "#/definitions/"+strings.ToLower(collection.Schema.Name))
+
+	AddSwaggerPath(path, apiPath)
+	AddSwaggerTag("Single "+strings.Title(collection.Schema.Name), "A collection of "+strings.Title(collection.Name), "", "")
 }
 
 func genNOSQLSearchCollectionGET(collection NOSQLCollection) string {

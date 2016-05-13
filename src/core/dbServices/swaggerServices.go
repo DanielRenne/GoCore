@@ -322,6 +322,18 @@ func updateSwaggerOperationResponse(op *Swagger2Operation, responseType string, 
 	op.Responses["200"] = response200
 }
 
+func updateSwaggerOperationResponseRef(op *Swagger2Operation, itemReference string) {
+
+	response200 := op.Responses["200"]
+
+	s := Swagger2Schema{
+		Ref: itemReference,
+	}
+
+	response200.Schema = &s
+	op.Responses["200"] = response200
+}
+
 func getSwaggerParameter(name string, in string, description string, required bool, valType string) (param Swagger2Parameter) {
 	param.Name = name
 	param.In = in
