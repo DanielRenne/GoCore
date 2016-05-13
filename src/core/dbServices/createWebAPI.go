@@ -25,9 +25,12 @@ func genSchemaWebAPI(collection NOSQLCollection, schema NOSQLSchema, dbPackageNa
 	val += genRangeCollectionGET(collection)
 	val += genCollectionGET(collection)
 
-	//Add Swagger Definitions
-	addCollectionGet("/"+strings.ToLower(collection.Name), collection)
-	addSearchCollectionGet("/search"+strings.Title(collection.Name), collection)
+	//Add Swagger Paths
+	addNOSQLSwaggerCollectionGet("/"+strings.ToLower(collection.Name), collection)
+	addNOSQLSwaggerSearchCollectionGet("/search"+strings.Title(collection.Name), collection)
+
+	addNOSQLSwaggerSchemaDefinition(schema)
+
 	return val
 }
 
@@ -54,7 +57,40 @@ func genCollectionGET(collection NOSQLCollection) string {
 	return val
 }
 
-func addCollectionGet(path string, collection NOSQLCollection) {
+//Adds to the Swagger.json root the Definitions
+func addNOSQLSwaggerSchemaDefinition(schema NOSQLSchema) {
+	var def Swagger2Schema
+	requiredProperties := []string{}
+
+	def.Type = "object"
+
+	// if len(schema.Fields) > 0 {
+	// 	def.Properties = make(map[string]Swagger2Schema)
+	// }
+
+	// for _, field := range schema.Fields {
+
+	// 	if field.Required == true {
+	// 		requiredProperties = append(requiredProperties, field.Name)
+	// 	}
+
+	// 	fieldSwaggerSchema := Swagger2Schema{}
+	// 	if field.Type == "object" {
+	// 		fieldSwaggerSchema.Ref = "#/definitions/" + strings.ToLower(field.Schema.Name)
+	// 		addNOSQLSwaggerSchemaDefinition(field.Schema)
+	// 	} else {
+	// 		fieldSwaggerSchema.Type = getSwaggerType(field.Type)
+	// 		fieldSwaggerSchema.Format = getSwaggerFormat(field.Type)
+	// 	}
+
+	// 	def.Properties[strings.ToLower(field.Name)] = fieldSwaggerSchema
+	// }
+
+	def.Required = requiredProperties
+	AddSwaggerDefinition(strings.ToLower(schema.Name), def)
+}
+
+func addNOSQLSwaggerCollectionGet(path string, collection NOSQLCollection) {
 
 	apiPath := getSwaggerGETPath()
 
@@ -66,11 +102,14 @@ func addCollectionGet(path string, collection NOSQLCollection) {
 	skip := getSwaggerParameter("skip", "query", "Skip an amount of records from the collection returned from the database query.", false, "integer")
 
 	apiPath.GET.Parameters = []Swagger2Parameter{limit, skip}
+
+	updateSwaggerOperationResponse(apiPath.GET, "array", "#/definitions/"+strings.ToLower(collection.Schema.Name))
+
 	AddSwaggerPath(path, apiPath)
 	AddSwaggerTag(strings.Title(collection.Name), "A collection of "+strings.Title(collection.Name), "", "")
 }
 
-func addSearchCollectionGet(path string, collection NOSQLCollection) {
+func addNOSQLSwaggerSearchCollectionGet(path string, collection NOSQLCollection) {
 
 	apiPath := getSwaggerGETPath()
 

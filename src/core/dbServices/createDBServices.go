@@ -62,6 +62,7 @@ type NOSQLSchemaField struct {
 	Type         string      `json:"type"`
 	Index        string      `json:"index"`
 	DefaultValue string      `json:"defaultValue"`
+	Required     bool        `json:"required"`
 	Schema       NOSQLSchema `json:"schema"`
 }
 
