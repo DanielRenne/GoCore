@@ -197,7 +197,13 @@ func AddSwaggerPath(path string, swaggerPath Swagger2Path) error {
 	SwaggerDefinition.Lock()
 	SwaggerDefinition.Paths[path] = swaggerPath
 	SwaggerDefinition.Unlock()
-	fmt.Println(GetSwaggerDefinitionJSONString())
+	return nil
+}
+
+func AddSwaggerDefinition(name string, obj interface{}) error {
+	SwaggerDefinition.Lock()
+	SwaggerDefinition.Paths[Definitions] = obj
+	SwaggerDefinition.Unlock()
 	return nil
 }
 
