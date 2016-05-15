@@ -1,10 +1,15 @@
 package ginServer
 
 import (
+	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net/http"
 )
+
+type ErrorResponse struct {
+	Message string `json:"message"`
+}
 
 func ReadHTMLFile(path string, c *gin.Context) {
 	page, err := ioutil.ReadFile(path)
@@ -36,4 +41,11 @@ func RespondJSON(v interface{}, c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, v)
+}
+
+func RespondError(message string) []byte {
+	var msg ErrorResponse
+	msg.Message = message
+	b, _ := json.Marshal(msg)
+	return b
 }

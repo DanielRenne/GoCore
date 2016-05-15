@@ -279,6 +279,8 @@ func writeSwaggerConfiguration(verisonPath string, version string) {
 	SwaggerDefinition.Host = serverSettings.WebConfig.Application.Domain
 	SwaggerDefinition.Info = &info
 
+	addErrorResponseSwaggerDefinition()
+
 	//Write out the swagger api Definition to the Application
 	err := ioutil.WriteFile(serverSettings.SwaggerUIPath+"/swagger."+version+".json", []byte(GetSwaggerDefinitionJSONString()), 0777)
 	if err != nil {
@@ -288,6 +290,26 @@ func writeSwaggerConfiguration(verisonPath string, version string) {
 	color.Green("Successfully created " + serverSettings.SwaggerUIPath + "/swagger." + version + ".json")
 
 	LoadSwaggerTemplate()
+}
+
+func addErrorResponseSwaggerDefinition() {
+
+	var def Swagger2Schema
+	requiredProperties := []string{}
+
+	def.Type = "object"
+
+	def.Properties = make(map[string]Swagger2Schema)
+
+	fieldSwaggerSchema := Swagger2Schema{}
+
+	fieldSwaggerSchema.Type = "string"
+	fieldSwaggerSchema.Format = ""
+
+	def.Properties["message"] = fieldSwaggerSchema
+
+	def.Required = requiredProperties
+	AddSwaggerDefinition("errorResponse", def)
 }
 
 func getSwaggerGETPath() Swagger2Path {
@@ -301,6 +323,21 @@ func getSwaggerGETPath() Swagger2Path {
 
 	op.Responses["200"] = response200
 	apiPath.GET = &op
+
+	return apiPath
+}
+
+func getSwaggerPOSTPath() Swagger2Path {
+
+	var apiPath Swagger2Path
+	var op Swagger2Operation
+	op.Responses = make(map[string]Swagger2Response)
+
+	var response200 Swagger2Response
+	response200.Description = "Successful operation"
+
+	op.Responses["200"] = response200
+	apiPath.POST = &op
 
 	return apiPath
 }
@@ -322,16 +359,17 @@ func updateSwaggerOperationResponse(op *Swagger2Operation, responseType string, 
 	op.Responses["200"] = response200
 }
 
-func updateSwaggerOperationResponseRef(op *Swagger2Operation, itemReference string) {
+func updateSwaggerOperationResponseRef(op *Swagger2Operation, value string, itemReference string, description string) {
 
-	response200 := op.Responses["200"]
+	response := op.Responses[value]
 
 	s := Swagger2Schema{
 		Ref: itemReference,
 	}
 
-	response200.Schema = &s
-	op.Responses["200"] = response200
+	response.Schema = &s
+	response.Description = description
+	op.Responses[value] = response
 }
 
 func getSwaggerParameter(name string, in string, description string, required bool, valType string) (param Swagger2Parameter) {
@@ -340,6 +378,20 @@ func getSwaggerParameter(name string, in string, description string, required bo
 	param.Description = description
 	param.Required = required
 	param.Type = valType
+	return
+}
+
+func getSwaggerBodyParameter(description string, required bool, itemReference string) (param Swagger2Parameter) {
+
+	s := Swagger2Schema{
+		Ref: itemReference,
+	}
+
+	param.Name = "body"
+	param.In = "body"
+	param.Description = description
+	param.Required = required
+	param.Schema = &s
 	return
 }
 
