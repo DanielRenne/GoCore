@@ -83,6 +83,14 @@ func StringToInt(val string) int {
 	return r
 }
 
+func StringToUInt64(val string) uint64 {
+	i, err := strconv.ParseUint(val, 10, 64)
+	if err != nil {
+		return 0
+	}
+	return i
+}
+
 func IntToString(val int) string {
 	return strconv.Itoa(val)
 }
