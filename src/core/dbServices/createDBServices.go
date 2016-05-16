@@ -203,14 +203,14 @@ func createNoSQLModel(collections []NOSQLCollection, packageName string, driver 
 		os.Mkdir("src/"+packageName+"/models/", 0777)
 		os.Mkdir("src/"+packageName+"/models/"+versionDir, 0777)
 		os.Mkdir("src/"+packageName+"/models/"+versionDir+"/model/", 0777)
-		writeNoSQLModelCollection(val, "src/"+packageName+"/models/"+versionDir+"/model/"+strings.ToLower(collection.Schema.Name)+".go", collection)
+		writeNoSQLModelCollection(val, "src/"+packageName+"/models/"+versionDir+"/model/"+extensions.MakeFirstLowerCase(collection.Schema.Name)+".go", collection)
 
 		os.Mkdir("src/"+packageName+"/webAPIs/", 0777)
 		os.Mkdir("src/"+packageName+"/webAPIs/"+versionDir, 0777)
 		os.Mkdir("src/"+packageName+"/webAPIs/"+versionDir+"/webAPI/", 0777)
 
 		cWebAPI := genSchemaWebAPI(collection, collection.Schema, packageName+"/models/"+versionDir+"/model", driver, versionDir)
-		writeNoSQLWebAPI(cWebAPI, "src/"+packageName+"/webAPIs/"+versionDir+"/webAPI/"+strings.ToLower(collection.Schema.Name)+".go", collection)
+		writeNoSQLWebAPI(cWebAPI, "src/"+packageName+"/webAPIs/"+versionDir+"/webAPI/"+extensions.MakeFirstLowerCase(collection.Schema.Name)+".go", collection)
 	}
 
 }
@@ -313,7 +313,7 @@ func genNoSQLSchema(schema NOSQLSchema, driver string) string {
 
 		additionalTags := genNoSQLAdditionalTags(field, driver)
 
-		val += "\n\t" + strings.Replace(strings.Title(field.Name), " ", "_", -1) + "\t" + genNoSQLFieldType(field) + "\t\t`json:\"" + field.Name + "\"" + additionalTags + "`"
+		val += "\n\t" + strings.Replace(strings.Title(field.Name), " ", "_", -1) + "\t" + genNoSQLFieldType(field) + "\t\t`json:\"" + extensions.MakeFirstLowerCase(field.Name) + "\"" + additionalTags + "`"
 	}
 
 	val += "\n}\n\n"

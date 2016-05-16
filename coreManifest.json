@@ -58,7 +58,9 @@
 		        "src/github.com/golang/protobuf",
 		        "src/github.com/manucorporat/sse",
 				"src/github.com/Jeffail/gabs",
+				"src/github.com/stretchr/testify",
 				"src/golang.org/x/net",
+				"src/golang.org/x/crypto",
 				"src/gopkg.in/go-playground",
 				"src/gopkg.in/yaml.v2",
 				"src/helloWorld"

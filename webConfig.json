@@ -41,11 +41,6 @@
 			"appName" : "helloWorld",
 			"driver" : "boltDB",
 			"connectionString" : "db/helloWorld.db"
-		},
-		{
-			"appName" : "boltDBApp",
-			"driver" : "boltDB",
-			"connectionString" : "db/boltDBTest.db"
 		}
 	]
 }

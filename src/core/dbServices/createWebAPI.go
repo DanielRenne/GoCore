@@ -11,16 +11,16 @@ func genSchemaWebAPI(collection NOSQLCollection, schema NOSQLSchema, dbPackageNa
 
 	val := extensions.GenPackageImport("webAPI", []string{dbPackageName, "core/ginServer", "github.com/gin-gonic/gin", "core/extensions", "strings", "io/ioutil", "encoding/json"})
 	val += "func init(){\n\n"
-	//val += "\tginServer.AddRouterGroup(\"" + versionDir + "\", \"/" + strings.ToLower(schema.Name) + "\", \"GET\", get" + strings.Title(schema.Name) + ")\n"
+	//val += "\tginServer.AddRouterGroup(\"" + versionDir + "\", \"/" + extensions.MakeFirstLowerCase(schema.Name) + "\", \"GET\", get" + strings.Title(schema.Name) + ")\n"
 	val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/single" + strings.Title(collection.Name) + "\", \"GET\", getSingle" + strings.Title(collection.Name) + ")\n"
 	val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/search" + strings.Title(collection.Name) + "\", \"GET\", getSearch" + strings.Title(collection.Name) + ")\n"
 	val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/sort" + strings.Title(collection.Name) + "\", \"GET\", getSort" + strings.Title(collection.Name) + ")\n"
 	val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/range" + strings.Title(collection.Name) + "\", \"GET\", getRange" + strings.Title(collection.Name) + ")\n"
-	val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/" + strings.ToLower(collection.Name) + "\", \"GET\", get" + strings.Title(collection.Name) + ")\n"
+	val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/" + extensions.MakeFirstLowerCase(collection.Name) + "\", \"GET\", get" + strings.Title(collection.Name) + ")\n"
 
-	val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/" + strings.ToLower(schema.Name) + "\", \"POST\", post" + strings.Title(schema.Name) + ")\n"
-	val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/" + strings.ToLower(schema.Name) + "\", \"PUT\", put" + strings.Title(schema.Name) + ")\n"
-	val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/" + strings.ToLower(schema.Name) + "\", \"DELETE\", delete" + strings.Title(schema.Name) + ")\n"
+	val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/" + extensions.MakeFirstLowerCase(schema.Name) + "\", \"POST\", post" + strings.Title(schema.Name) + ")\n"
+	val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/" + extensions.MakeFirstLowerCase(schema.Name) + "\", \"PUT\", put" + strings.Title(schema.Name) + ")\n"
+	val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/" + extensions.MakeFirstLowerCase(schema.Name) + "\", \"DELETE\", delete" + strings.Title(schema.Name) + ")\n"
 
 	val += "}\n\n"
 
@@ -35,15 +35,15 @@ func genSchemaWebAPI(collection NOSQLCollection, schema NOSQLSchema, dbPackageNa
 	val += genNOSQLSchemaDelete(schema)
 
 	//Add Swagger Paths
-	addNOSQLSwaggerCollectionGet("/"+strings.ToLower(collection.Name), collection)
+	addNOSQLSwaggerCollectionGet("/"+extensions.MakeFirstLowerCase(collection.Name), collection)
 	addNOSQLSwaggerSearchCollectionGet("/search"+strings.Title(collection.Name), collection)
 	addNOSQLSwaggerSingleCollectionGet("/single"+strings.Title(collection.Name), collection)
 	addNOSQLSwaggerSortCollectionGet("/sort"+strings.Title(collection.Name), collection)
 	addNOSQLSwaggerRangeCollectionGet("/range"+strings.Title(collection.Name), collection)
 
-	addNOSQLSwaggerSchemaPostBody("/"+strings.ToLower(schema.Name), schema)
-	addNOSQLSwaggerSchemaPutBody("/"+strings.ToLower(schema.Name), schema)
-	addNOSQLSwaggerSchemaDeleteBody("/"+strings.ToLower(schema.Name), schema)
+	addNOSQLSwaggerSchemaPostBody("/"+extensions.MakeFirstLowerCase(schema.Name), schema)
+	addNOSQLSwaggerSchemaPutBody("/"+extensions.MakeFirstLowerCase(schema.Name), schema)
+	addNOSQLSwaggerSchemaDeleteBody("/"+extensions.MakeFirstLowerCase(schema.Name), schema)
 
 	addNOSQLSwaggerSchemaDefinition(schema)
 
@@ -92,18 +92,18 @@ func addNOSQLSwaggerSchemaDefinition(schema NOSQLSchema) {
 
 		fieldSwaggerSchema := getNOSQLSwaggerSchemaFieldDefinition(field)
 
-		def.Properties[strings.ToLower(field.Name)] = fieldSwaggerSchema
+		def.Properties[extensions.MakeFirstLowerCase(field.Name)] = fieldSwaggerSchema
 	}
 
 	def.Required = requiredProperties
-	AddSwaggerDefinition(strings.ToLower(schema.Name), def)
+	AddSwaggerDefinition(extensions.MakeFirstLowerCase(schema.Name), def)
 }
 
 func getNOSQLSwaggerSchemaFieldDefinition(field NOSQLSchemaField) Swagger2Schema {
 
 	fieldSwaggerSchema := Swagger2Schema{}
 	if field.Type == "object" {
-		fieldSwaggerSchema.Ref = "#/definitions/" + strings.ToLower(field.Schema.Name)
+		fieldSwaggerSchema.Ref = "#/definitions/" + extensions.MakeFirstLowerCase(field.Schema.Name)
 		addNOSQLSwaggerSchemaDefinition(field.Schema)
 	} else {
 		fieldSwaggerSchema.Type = getSwaggerType(field.Type)
@@ -113,7 +113,7 @@ func getNOSQLSwaggerSchemaFieldDefinition(field NOSQLSchemaField) Swagger2Schema
 
 			if field.Type == "objectArray" {
 				item := Swagger2Item{
-					Ref: "#/definitions/" + strings.ToLower(field.Schema.Name),
+					Ref: "#/definitions/" + extensions.MakeFirstLowerCase(field.Schema.Name),
 				}
 
 				fieldSwaggerSchema.Items = &item
@@ -140,10 +140,10 @@ func addNOSQLSwaggerSchemaPostBody(path string, schema NOSQLSchema) {
 	apiPath.POST.Description = "POST a new " + strings.Title(schema.Name) + " as JSON format via http body request."
 	apiPath.POST.Produces = []string{"application/json"}
 
-	body := getSwaggerBodyParameter(strings.Title(schema.Name)+" that needs to be added.", true, "#/definitions/"+strings.ToLower(schema.Name))
+	body := getSwaggerBodyParameter(strings.Title(schema.Name)+" that needs to be added.", true, "#/definitions/"+extensions.MakeFirstLowerCase(schema.Name))
 	apiPath.POST.Parameters = []Swagger2Parameter{body}
 
-	updateSwaggerOperationResponseRef(apiPath.POST, "200", "#/definitions/"+strings.ToLower(schema.Name), "successful operation")
+	updateSwaggerOperationResponseRef(apiPath.POST, "200", "#/definitions/"+extensions.MakeFirstLowerCase(schema.Name), "successful operation")
 	updateSwaggerOperationResponseRef(apiPath.POST, "406", "#/definitions/errorResponse", "Faild to parse JSON")
 	updateSwaggerOperationResponseRef(apiPath.POST, "500", "#/definitions/errorResponse", "Faild to save object to database")
 
@@ -160,10 +160,10 @@ func addNOSQLSwaggerSchemaPutBody(path string, schema NOSQLSchema) {
 	apiPath.PUT.Description = "PUT an existing " + strings.Title(schema.Name) + " as JSON format via http body request."
 	apiPath.PUT.Produces = []string{"application/json"}
 
-	body := getSwaggerBodyParameter(strings.Title(schema.Name)+" that needs to be updated.", true, "#/definitions/"+strings.ToLower(schema.Name))
+	body := getSwaggerBodyParameter(strings.Title(schema.Name)+" that needs to be updated.", true, "#/definitions/"+extensions.MakeFirstLowerCase(schema.Name))
 	apiPath.PUT.Parameters = []Swagger2Parameter{body}
 
-	updateSwaggerOperationResponseRef(apiPath.PUT, "200", "#/definitions/"+strings.ToLower(schema.Name), "successful operation")
+	updateSwaggerOperationResponseRef(apiPath.PUT, "200", "#/definitions/"+extensions.MakeFirstLowerCase(schema.Name), "successful operation")
 	// updateSwaggerOperationResponseRef(apiPath.PUT, "404", "#/definitions/errorResponse", strings.Title(schema.Name)+" not found")
 	updateSwaggerOperationResponseRef(apiPath.PUT, "406", "#/definitions/errorResponse", "Faild to parse JSON")
 	updateSwaggerOperationResponseRef(apiPath.PUT, "500", "#/definitions/errorResponse", "Faild to save object to database")
@@ -181,10 +181,10 @@ func addNOSQLSwaggerSchemaDeleteBody(path string, schema NOSQLSchema) {
 	apiPath.DELETE.Description = "DELETE an existing " + strings.Title(schema.Name) + " as JSON format via http body request."
 	apiPath.DELETE.Produces = []string{"application/json"}
 
-	body := getSwaggerBodyParameter(strings.Title(schema.Name)+" that needs to be updated.", true, "#/definitions/"+strings.ToLower(schema.Name))
+	body := getSwaggerBodyParameter(strings.Title(schema.Name)+" that needs to be updated.", true, "#/definitions/"+extensions.MakeFirstLowerCase(schema.Name))
 	apiPath.DELETE.Parameters = []Swagger2Parameter{body}
 
-	updateSwaggerOperationResponseRef(apiPath.DELETE, "200", "#/definitions/"+strings.ToLower(schema.Name), "successful operation")
+	updateSwaggerOperationResponseRef(apiPath.DELETE, "200", "#/definitions/"+extensions.MakeFirstLowerCase(schema.Name), "successful operation")
 	// updateSwaggerOperationResponseRef(apiPath.PUT, "404", "#/definitions/errorResponse", strings.Title(schema.Name)+" not found")
 	updateSwaggerOperationResponseRef(apiPath.DELETE, "406", "#/definitions/errorResponse", "Faild to parse JSON")
 	updateSwaggerOperationResponseRef(apiPath.DELETE, "500", "#/definitions/errorResponse", "Faild to delete object from database")
@@ -207,7 +207,7 @@ func addNOSQLSwaggerCollectionGet(path string, collection NOSQLCollection) {
 
 	apiPath.GET.Parameters = []Swagger2Parameter{limit, skip}
 
-	updateSwaggerOperationResponse(apiPath.GET, "array", "#/definitions/"+strings.ToLower(collection.Schema.Name))
+	updateSwaggerOperationResponse(apiPath.GET, "array", "#/definitions/"+extensions.MakeFirstLowerCase(collection.Schema.Name))
 
 	AddSwaggerGETPath(path, apiPath)
 	AddSwaggerTag(strings.Title(collection.Name), "All "+strings.Title(collection.Name), "", "")
@@ -229,7 +229,7 @@ func addNOSQLSwaggerSearchCollectionGet(path string, collection NOSQLCollection)
 
 	apiPath.GET.Parameters = []Swagger2Parameter{field, value, limit, skip}
 
-	updateSwaggerOperationResponse(apiPath.GET, "array", "#/definitions/"+strings.ToLower(collection.Schema.Name))
+	updateSwaggerOperationResponse(apiPath.GET, "array", "#/definitions/"+extensions.MakeFirstLowerCase(collection.Schema.Name))
 
 	AddSwaggerGETPath(path, apiPath)
 	AddSwaggerTag("Search "+strings.Title(collection.Name), "Search for "+strings.Title(collection.Name), "", "")
@@ -249,7 +249,7 @@ func addNOSQLSwaggerSingleCollectionGet(path string, collection NOSQLCollection)
 
 	apiPath.GET.Parameters = []Swagger2Parameter{field, value}
 
-	updateSwaggerOperationResponseRef(apiPath.GET, "200", "#/definitions/"+strings.ToLower(collection.Schema.Name), "successful operation")
+	updateSwaggerOperationResponseRef(apiPath.GET, "200", "#/definitions/"+extensions.MakeFirstLowerCase(collection.Schema.Name), "successful operation")
 
 	AddSwaggerGETPath(path, apiPath)
 	AddSwaggerTag("Single "+strings.Title(collection.Schema.Name), "A Single "+strings.Title(collection.Schema.Name), "", "")
@@ -270,7 +270,7 @@ func addNOSQLSwaggerSortCollectionGet(path string, collection NOSQLCollection) {
 
 	apiPath.GET.Parameters = []Swagger2Parameter{field, limit, skip}
 
-	updateSwaggerOperationResponse(apiPath.GET, "array", "#/definitions/"+strings.ToLower(collection.Schema.Name))
+	updateSwaggerOperationResponse(apiPath.GET, "array", "#/definitions/"+extensions.MakeFirstLowerCase(collection.Schema.Name))
 
 	AddSwaggerGETPath(path, apiPath)
 	AddSwaggerTag("Sort "+strings.Title(collection.Name), "Sorted "+strings.Title(collection.Name), "", "")
@@ -293,7 +293,7 @@ func addNOSQLSwaggerRangeCollectionGet(path string, collection NOSQLCollection) 
 
 	apiPath.GET.Parameters = []Swagger2Parameter{field, min, max, limit, skip}
 
-	updateSwaggerOperationResponse(apiPath.GET, "array", "#/definitions/"+strings.ToLower(collection.Schema.Name))
+	updateSwaggerOperationResponse(apiPath.GET, "array", "#/definitions/"+extensions.MakeFirstLowerCase(collection.Schema.Name))
 
 	AddSwaggerGETPath(path, apiPath)
 	AddSwaggerTag("Range "+strings.Title(collection.Name), "Range of "+strings.Title(collection.Name), "", "")

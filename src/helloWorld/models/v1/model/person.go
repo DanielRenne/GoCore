@@ -37,24 +37,39 @@ func (obj *Persons) Single(field string, value string) (retObj Person) {
 
 func (obj *Persons) Search(field string, value string) (retObj []Person) {
 	dbServices.BoltDB.Find(field, value, &retObj)
+	if len(retObj) == 0 {
+		retObj = []Person{}
+	}
 	return
 }
 
 func (obj *Persons) SearchAdvanced(field string, value string, limit int, skip int) (retObj []Person) {
 	if limit == 0 && skip == 0 {
 		dbServices.BoltDB.Find(field, value, &retObj)
+		if len(retObj) == 0 {
+			retObj = []Person{}
+		}
 		return
 	}
 	if limit > 0 && skip > 0 {
 		dbServices.BoltDB.Find(field, value, &retObj, storm.Limit(limit), storm.Skip(skip))
+		if len(retObj) == 0 {
+			retObj = []Person{}
+		}
 		return
 	}
 	if limit > 0 {
 		dbServices.BoltDB.Find(field, value, &retObj, storm.Limit(limit))
+		if len(retObj) == 0 {
+			retObj = []Person{}
+		}
 		return
 	}
 	if skip > 0 {
 		dbServices.BoltDB.Find(field, value, &retObj, storm.Skip(skip))
+		if len(retObj) == 0 {
+			retObj = []Person{}
+		}
 		return
 	}
 	return
@@ -62,24 +77,39 @@ func (obj *Persons) SearchAdvanced(field string, value string, limit int, skip i
 
 func (obj *Persons) All() (retObj []Person) {
 	dbServices.BoltDB.All(&retObj)
+	if len(retObj) == 0 {
+		retObj = []Person{}
+	}
 	return
 }
 
 func (obj *Persons) AllAdvanced(limit int, skip int) (retObj []Person) {
 	if limit == 0 && skip == 0 {
 		dbServices.BoltDB.All(&retObj)
+		if len(retObj) == 0 {
+			retObj = []Person{}
+		}
 		return
 	}
 	if limit > 0 && skip > 0 {
 		dbServices.BoltDB.All(&retObj, storm.Limit(limit), storm.Skip(skip))
+		if len(retObj) == 0 {
+			retObj = []Person{}
+		}
 		return
 	}
 	if limit > 0 {
 		dbServices.BoltDB.All(&retObj, storm.Limit(limit))
+		if len(retObj) == 0 {
+			retObj = []Person{}
+		}
 		return
 	}
 	if skip > 0 {
 		dbServices.BoltDB.All(&retObj, storm.Skip(skip))
+		if len(retObj) == 0 {
+			retObj = []Person{}
+		}
 		return
 	}
 	return
@@ -87,24 +117,39 @@ func (obj *Persons) AllAdvanced(limit int, skip int) (retObj []Person) {
 
 func (obj *Persons) AllByIndex(index string) (retObj []Person) {
 	dbServices.BoltDB.AllByIndex(index, &retObj)
+	if len(retObj) == 0 {
+		retObj = []Person{}
+	}
 	return
 }
 
 func (obj *Persons) AllByIndexAdvanced(index string, limit int, skip int) (retObj []Person) {
 	if limit == 0 && skip == 0 {
 		dbServices.BoltDB.AllByIndex(index, &retObj)
+		if len(retObj) == 0 {
+			retObj = []Person{}
+		}
 		return
 	}
 	if limit > 0 && skip > 0 {
 		dbServices.BoltDB.AllByIndex(index, &retObj, storm.Limit(limit), storm.Skip(skip))
+		if len(retObj) == 0 {
+			retObj = []Person{}
+		}
 		return
 	}
 	if limit > 0 {
 		dbServices.BoltDB.AllByIndex(index, &retObj, storm.Limit(limit))
+		if len(retObj) == 0 {
+			retObj = []Person{}
+		}
 		return
 	}
 	if skip > 0 {
 		dbServices.BoltDB.AllByIndex(index, &retObj, storm.Skip(skip))
+		if len(retObj) == 0 {
+			retObj = []Person{}
+		}
 		return
 	}
 	return
@@ -112,24 +157,39 @@ func (obj *Persons) AllByIndexAdvanced(index string, limit int, skip int) (retOb
 
 func (obj *Persons) Range(min, max, field string) (retObj []Person) {
 	dbServices.BoltDB.Range(field, min, max, &retObj)
+	if len(retObj) == 0 {
+		retObj = []Person{}
+	}
 	return
 }
 
 func (obj *Persons) RangeAdvanced(min, max, field string, limit int, skip int) (retObj []Person) {
 	if limit == 0 && skip == 0 {
 		dbServices.BoltDB.Range(field, min, max, &retObj)
+		if len(retObj) == 0 {
+			retObj = []Person{}
+		}
 		return
 	}
 	if limit > 0 && skip > 0 {
 		dbServices.BoltDB.Range(field, min, max, &retObj, storm.Limit(limit), storm.Skip(skip))
+		if len(retObj) == 0 {
+			retObj = []Person{}
+		}
 		return
 	}
 	if limit > 0 {
 		dbServices.BoltDB.Range(field, min, max, &retObj, storm.Limit(limit))
+		if len(retObj) == 0 {
+			retObj = []Person{}
+		}
 		return
 	}
 	if skip > 0 {
 		dbServices.BoltDB.Range(field, min, max, &retObj, storm.Skip(skip))
+		if len(retObj) == 0 {
+			retObj = []Person{}
+		}
 		return
 	}
 	return

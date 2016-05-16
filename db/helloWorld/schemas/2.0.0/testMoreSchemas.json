@@ -9,14 +9,18 @@
 				"fields":
 				[
 					{
-						"name":"Id",
-						"type":"int",
+						"name":"id",
+						"type":"string",
 						"index":"primary"
 					},
 					{
 						"name":"color",
 						"type":"string",
 						"index":"unique"
+					},
+					{
+						"name":"bodyType",
+						"type":"string"
 					}
 				]
 			}
