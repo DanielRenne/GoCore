@@ -348,7 +348,7 @@ func genNoSQLFieldType(field NOSQLSchemaField) string {
 
 	switch field.Type {
 	case "int":
-		return "int"
+		return "uint64"
 	case "float64":
 		return "float64"
 	case "string":
@@ -370,7 +370,7 @@ func genNoSQLFieldType(field NOSQLSchemaField) string {
 	case "objectArray":
 		return "[]" + strings.Title(field.Schema.Name)
 	}
-	return ""
+	return field.Type
 }
 
 func genNoSQLRuntime(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
@@ -733,4 +733,15 @@ func genNoSQLBucketCore(driver string) string {
 	}
 	val += "}\n\n"
 	return val
+}
+
+func getNoSQLSchemaPrimaryKey(schema NOSQLSchema) string {
+
+	for _, field := range schema.Fields {
+		if field.Index == "primary" {
+			return strings.Title(field.Name)
+		}
+	}
+
+	return ""
 }

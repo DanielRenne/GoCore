@@ -10,7 +10,7 @@
 				[
 					{
 						"name":"id",
-						"type":"string",
+						"type":"int",
 						"index":"primary"
 					},
 					{

@@ -31,7 +31,7 @@ func genSchemaWebAPI(collection NOSQLCollection, schema NOSQLSchema, dbPackageNa
 	val += genNOSQLCollectionGET(collection)
 
 	val += genNOSQLSchemaPost(schema)
-	val += genNOSQLSchemaPut(schema)
+	val += genNOSQLSchemaPut(collection, schema, getNoSQLSchemaPrimaryKey(schema))
 	val += genNOSQLSchemaDelete(schema)
 
 	//Add Swagger Paths
@@ -164,7 +164,7 @@ func addNOSQLSwaggerSchemaPutBody(path string, schema NOSQLSchema) {
 	apiPath.PUT.Parameters = []Swagger2Parameter{body}
 
 	updateSwaggerOperationResponseRef(apiPath.PUT, "200", "#/definitions/"+extensions.MakeFirstLowerCase(schema.Name), "successful operation")
-	// updateSwaggerOperationResponseRef(apiPath.PUT, "404", "#/definitions/errorResponse", strings.Title(schema.Name)+" not found")
+	updateSwaggerOperationResponseRef(apiPath.PUT, "404", "#/definitions/errorResponse", strings.Title(schema.Name)+" not found")
 	updateSwaggerOperationResponseRef(apiPath.PUT, "406", "#/definitions/errorResponse", "Faild to parse JSON")
 	updateSwaggerOperationResponseRef(apiPath.PUT, "500", "#/definitions/errorResponse", "Faild to save object to database")
 
@@ -420,9 +420,10 @@ func genNOSQLSchemaPost(schema NOSQLSchema) string {
 	return val
 }
 
-func genNOSQLSchemaPut(schema NOSQLSchema) string {
+func genNOSQLSchemaPut(collection NOSQLCollection, schema NOSQLSchema, pkFieldName string) string {
 
 	name := strings.Title(schema.Name)
+	colName := strings.Title(collection.Name)
 
 	val := ""
 	val += "func put" + name + "(c *gin.Context){\n"
@@ -434,6 +435,13 @@ func genNOSQLSchemaPut(schema NOSQLSchema) string {
 
 	val += "\tif errMarshal != nil{\n"
 	val += "\t\tc.Data(406, gin.MIMEHTML, ginServer.RespondError(errMarshal.Error()))\n"
+	val += "\treturn\n"
+	val += "\t}\n"
+
+	val += "obj" + colName + " := model." + colName + "{}\n"
+	val += "\t_ , errSingle := obj" + colName + ".Single(\"" + pkFieldName + "\",obj." + pkFieldName + ")\n"
+	val += "\tif errSingle != nil{\n"
+	val += "\t\tc.Data(404, gin.MIMEHTML, ginServer.RespondError(\"Existing " + name + " not found.  Please check your primary key to update.\"))\n"
 	val += "\treturn\n"
 	val += "\t}\n"
 
