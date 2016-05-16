@@ -19,6 +19,8 @@ func genSchemaWebAPI(collection NOSQLCollection, schema NOSQLSchema, dbPackageNa
 	val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/" + strings.ToLower(collection.Name) + "\", \"GET\", get" + strings.Title(collection.Name) + ")\n"
 
 	val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/" + strings.ToLower(schema.Name) + "\", \"POST\", post" + strings.Title(schema.Name) + ")\n"
+	val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/" + strings.ToLower(schema.Name) + "\", \"PUT\", put" + strings.Title(schema.Name) + ")\n"
+	val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/" + strings.ToLower(schema.Name) + "\", \"DELETE\", delete" + strings.Title(schema.Name) + ")\n"
 
 	val += "}\n\n"
 
@@ -29,6 +31,8 @@ func genSchemaWebAPI(collection NOSQLCollection, schema NOSQLSchema, dbPackageNa
 	val += genNOSQLCollectionGET(collection)
 
 	val += genNOSQLSchemaPost(schema)
+	val += genNOSQLSchemaPut(schema)
+	val += genNOSQLSchemaDelete(schema)
 
 	//Add Swagger Paths
 	addNOSQLSwaggerCollectionGet("/"+strings.ToLower(collection.Name), collection)
@@ -38,6 +42,8 @@ func genSchemaWebAPI(collection NOSQLCollection, schema NOSQLSchema, dbPackageNa
 	addNOSQLSwaggerRangeCollectionGet("/range"+strings.Title(collection.Name), collection)
 
 	addNOSQLSwaggerSchemaPostBody("/"+strings.ToLower(schema.Name), schema)
+	addNOSQLSwaggerSchemaPutBody("/"+strings.ToLower(schema.Name), schema)
+	addNOSQLSwaggerSchemaDeleteBody("/"+strings.ToLower(schema.Name), schema)
 
 	addNOSQLSwaggerSchemaDefinition(schema)
 
@@ -55,11 +61,11 @@ func genNOSQLCollectionGET(collection NOSQLCollection) string {
 	val += "\tskip := extensions.StringToInt(c.DefaultQuery(\"skip\",\"\"))\n"
 	val += "\titems := model." + name + "{}\n"
 	val += "\tif limit != 0 || skip != 0{\n"
-	val += "\titemsArray := items.AllAdvanced(limit, skip)\n"
+	val += "\titemsArray, _ := items.AllAdvanced(limit, skip)\n"
 	val += "\tginServer.RespondJSON(itemsArray, c)\n"
 	val += "\t\treturn"
 	val += "\t}\n"
-	val += "\titemsArray := items.All()\n"
+	val += "\titemsArray, _ := items.All()\n"
 	val += "\tginServer.RespondJSON(itemsArray, c)\n"
 
 	val += "}\n\n"
@@ -141,8 +147,50 @@ func addNOSQLSwaggerSchemaPostBody(path string, schema NOSQLSchema) {
 	updateSwaggerOperationResponseRef(apiPath.POST, "406", "#/definitions/errorResponse", "Faild to parse JSON")
 	updateSwaggerOperationResponseRef(apiPath.POST, "500", "#/definitions/errorResponse", "Faild to save object to database")
 
-	AddSwaggerPath(path, apiPath)
+	AddSwaggerPOSTPath(path, apiPath)
 	AddSwaggerTag(strings.Title(schema.Name), strings.Title(schema.Name)+" object", "", "")
+}
+
+func addNOSQLSwaggerSchemaPutBody(path string, schema NOSQLSchema) {
+
+	apiPath := getSwaggerPUTPath()
+
+	apiPath.PUT.Tags = append(apiPath.PUT.Tags, strings.Title(schema.Name))
+	apiPath.PUT.Summary = "Save an existing " + strings.Title(schema.Name) + ""
+	apiPath.PUT.Description = "PUT an existing " + strings.Title(schema.Name) + " as JSON format via http body request."
+	apiPath.PUT.Produces = []string{"application/json"}
+
+	body := getSwaggerBodyParameter(strings.Title(schema.Name)+" that needs to be updated.", true, "#/definitions/"+strings.ToLower(schema.Name))
+	apiPath.PUT.Parameters = []Swagger2Parameter{body}
+
+	updateSwaggerOperationResponseRef(apiPath.PUT, "200", "#/definitions/"+strings.ToLower(schema.Name), "successful operation")
+	// updateSwaggerOperationResponseRef(apiPath.PUT, "404", "#/definitions/errorResponse", strings.Title(schema.Name)+" not found")
+	updateSwaggerOperationResponseRef(apiPath.PUT, "406", "#/definitions/errorResponse", "Faild to parse JSON")
+	updateSwaggerOperationResponseRef(apiPath.PUT, "500", "#/definitions/errorResponse", "Faild to save object to database")
+
+	AddSwaggerPUTPath(path, apiPath)
+
+}
+
+func addNOSQLSwaggerSchemaDeleteBody(path string, schema NOSQLSchema) {
+
+	apiPath := getSwaggerDELETEPath()
+
+	apiPath.DELETE.Tags = append(apiPath.DELETE.Tags, strings.Title(schema.Name))
+	apiPath.DELETE.Summary = "Remove an existing " + strings.Title(schema.Name) + ""
+	apiPath.DELETE.Description = "DELETE an existing " + strings.Title(schema.Name) + " as JSON format via http body request."
+	apiPath.DELETE.Produces = []string{"application/json"}
+
+	body := getSwaggerBodyParameter(strings.Title(schema.Name)+" that needs to be updated.", true, "#/definitions/"+strings.ToLower(schema.Name))
+	apiPath.DELETE.Parameters = []Swagger2Parameter{body}
+
+	updateSwaggerOperationResponseRef(apiPath.DELETE, "200", "#/definitions/"+strings.ToLower(schema.Name), "successful operation")
+	// updateSwaggerOperationResponseRef(apiPath.PUT, "404", "#/definitions/errorResponse", strings.Title(schema.Name)+" not found")
+	updateSwaggerOperationResponseRef(apiPath.DELETE, "406", "#/definitions/errorResponse", "Faild to parse JSON")
+	updateSwaggerOperationResponseRef(apiPath.DELETE, "500", "#/definitions/errorResponse", "Faild to delete object from database")
+
+	AddSwaggerDELETEPath(path, apiPath)
+
 }
 
 func addNOSQLSwaggerCollectionGet(path string, collection NOSQLCollection) {
@@ -161,7 +209,7 @@ func addNOSQLSwaggerCollectionGet(path string, collection NOSQLCollection) {
 
 	updateSwaggerOperationResponse(apiPath.GET, "array", "#/definitions/"+strings.ToLower(collection.Schema.Name))
 
-	AddSwaggerPath(path, apiPath)
+	AddSwaggerGETPath(path, apiPath)
 	AddSwaggerTag(strings.Title(collection.Name), "All "+strings.Title(collection.Name), "", "")
 }
 
@@ -183,7 +231,7 @@ func addNOSQLSwaggerSearchCollectionGet(path string, collection NOSQLCollection)
 
 	updateSwaggerOperationResponse(apiPath.GET, "array", "#/definitions/"+strings.ToLower(collection.Schema.Name))
 
-	AddSwaggerPath(path, apiPath)
+	AddSwaggerGETPath(path, apiPath)
 	AddSwaggerTag("Search "+strings.Title(collection.Name), "Search for "+strings.Title(collection.Name), "", "")
 }
 
@@ -203,7 +251,7 @@ func addNOSQLSwaggerSingleCollectionGet(path string, collection NOSQLCollection)
 
 	updateSwaggerOperationResponseRef(apiPath.GET, "200", "#/definitions/"+strings.ToLower(collection.Schema.Name), "successful operation")
 
-	AddSwaggerPath(path, apiPath)
+	AddSwaggerGETPath(path, apiPath)
 	AddSwaggerTag("Single "+strings.Title(collection.Schema.Name), "A Single "+strings.Title(collection.Schema.Name), "", "")
 }
 
@@ -224,7 +272,7 @@ func addNOSQLSwaggerSortCollectionGet(path string, collection NOSQLCollection) {
 
 	updateSwaggerOperationResponse(apiPath.GET, "array", "#/definitions/"+strings.ToLower(collection.Schema.Name))
 
-	AddSwaggerPath(path, apiPath)
+	AddSwaggerGETPath(path, apiPath)
 	AddSwaggerTag("Sort "+strings.Title(collection.Name), "Sorted "+strings.Title(collection.Name), "", "")
 }
 
@@ -247,7 +295,7 @@ func addNOSQLSwaggerRangeCollectionGet(path string, collection NOSQLCollection) 
 
 	updateSwaggerOperationResponse(apiPath.GET, "array", "#/definitions/"+strings.ToLower(collection.Schema.Name))
 
-	AddSwaggerPath(path, apiPath)
+	AddSwaggerGETPath(path, apiPath)
 	AddSwaggerTag("Range "+strings.Title(collection.Name), "Range of "+strings.Title(collection.Name), "", "")
 }
 
@@ -264,11 +312,11 @@ func genNOSQLSearchCollectionGET(collection NOSQLCollection) string {
 	val += "\tskip := extensions.StringToInt(c.DefaultQuery(\"skip\",\"\"))\n"
 	val += "\titems := model." + name + "{}\n"
 	val += "\tif limit != 0 || skip != 0{\n"
-	val += "\titemsArray := items.SearchAdvanced(field, value, limit, skip)\n"
+	val += "\titemsArray, _ := items.SearchAdvanced(field, value, limit, skip)\n"
 	val += "\tginServer.RespondJSON(itemsArray, c)\n"
 	val += "\t\treturn"
 	val += "\t}\n"
-	val += "\titemsArray := items.Search(field, value)\n"
+	val += "\titemsArray, _  := items.Search(field, value)\n"
 	val += "\tginServer.RespondJSON(itemsArray, c)\n"
 
 	val += "}\n\n"
@@ -288,11 +336,11 @@ func genNOSQLSortCollectionGET(collection NOSQLCollection) string {
 	val += "\tskip := extensions.StringToInt(c.DefaultQuery(\"skip\",\"\"))\n"
 	val += "\titems := model." + name + "{}\n"
 	val += "\tif limit != 0 || skip != 0{\n"
-	val += "\titemsArray := items.AllByIndexAdvanced(field, limit, skip)\n"
+	val += "\titemsArray, _ := items.AllByIndexAdvanced(field, limit, skip)\n"
 	val += "\tginServer.RespondJSON(itemsArray, c)\n"
 	val += "\t\treturn"
 	val += "\t}\n"
-	val += "\titemsArray := items.AllByIndex(field)\n"
+	val += "\titemsArray, _ := items.AllByIndex(field)\n"
 	val += "\tginServer.RespondJSON(itemsArray, c)\n"
 
 	val += "}\n\n"
@@ -314,11 +362,11 @@ func genNOSQLRangeCollectionGET(collection NOSQLCollection) string {
 	val += "\tmax := c.DefaultQuery(\"max\",\"\")\n"
 	val += "\titems := model." + name + "{}\n"
 	val += "\tif limit != 0 || skip != 0{\n"
-	val += "\titemsArray := items.RangeAdvanced(min, max, field, limit, skip)\n"
+	val += "\titemsArray, _ := items.RangeAdvanced(min, max, field, limit, skip)\n"
 	val += "\tginServer.RespondJSON(itemsArray, c)\n"
 	val += "\t\treturn"
 	val += "\t}\n"
-	val += "\titemsArray := items.Range(min, max, field)\n"
+	val += "\titemsArray, _ := items.Range(min, max, field)\n"
 	val += "\tginServer.RespondJSON(itemsArray, c)\n"
 
 	val += "}\n\n"
@@ -336,7 +384,7 @@ func genNOSQLSingleCollectionGET(collection NOSQLCollection) string {
 	val += "\tfield := strings.Title(c.DefaultQuery(\"field\",\"\"))\n"
 	val += "\tvalue := c.DefaultQuery(\"value\",\"\")\n"
 	val += "\titems := model." + name + "{}\n"
-	val += "\titemsArray := items.Single(field, value)\n"
+	val += "\titemsArray, _ := items.Single(field, value)\n"
 	val += "\tginServer.RespondJSON(itemsArray, c)\n"
 
 	val += "}\n\n"
@@ -363,6 +411,64 @@ func genNOSQLSchemaPost(schema NOSQLSchema) string {
 	val += "\terrSave := obj.Save()\n"
 	val += "\tif errSave != nil{\n"
 	val += "\t\tc.Data(500, gin.MIMEHTML, ginServer.RespondError(errSave.Error()))\n"
+	val += "\treturn\n"
+	val += "\t}\n"
+	val += "\tginServer.RespondJSON(obj, c)\n"
+
+	val += "}\n\n"
+
+	return val
+}
+
+func genNOSQLSchemaPut(schema NOSQLSchema) string {
+
+	name := strings.Title(schema.Name)
+
+	val := ""
+	val += "func put" + name + "(c *gin.Context){\n"
+	val += "\tbody := c.Request.Body\n"
+	val += "\tx, _ := ioutil.ReadAll(body)\n"
+
+	val += "\tvar obj model." + name + "\n"
+	val += "\terrMarshal := json.Unmarshal(x, &obj)\n"
+
+	val += "\tif errMarshal != nil{\n"
+	val += "\t\tc.Data(406, gin.MIMEHTML, ginServer.RespondError(errMarshal.Error()))\n"
+	val += "\treturn\n"
+	val += "\t}\n"
+
+	val += "\terrSave := obj.Save()\n"
+	val += "\tif errSave != nil{\n"
+	val += "\t\tc.Data(500, gin.MIMEHTML, ginServer.RespondError(errSave.Error()))\n"
+	val += "\treturn\n"
+	val += "\t}\n"
+	val += "\tginServer.RespondJSON(obj, c)\n"
+
+	val += "}\n\n"
+
+	return val
+}
+
+func genNOSQLSchemaDelete(schema NOSQLSchema) string {
+
+	name := strings.Title(schema.Name)
+
+	val := ""
+	val += "func delete" + name + "(c *gin.Context){\n"
+	val += "\tbody := c.Request.Body\n"
+	val += "\tx, _ := ioutil.ReadAll(body)\n"
+
+	val += "\tvar obj model." + name + "\n"
+	val += "\terrMarshal := json.Unmarshal(x, &obj)\n"
+
+	val += "\tif errMarshal != nil{\n"
+	val += "\t\tc.Data(406, gin.MIMEHTML, ginServer.RespondError(errMarshal.Error()))\n"
+	val += "\treturn\n"
+	val += "\t}\n"
+
+	val += "\terrDelete := obj.Delete()\n"
+	val += "\tif errDelete != nil{\n"
+	val += "\t\tc.Data(500, gin.MIMEHTML, ginServer.RespondError(errDelete.Error()))\n"
 	val += "\treturn\n"
 	val += "\t}\n"
 	val += "\tginServer.RespondJSON(obj, c)\n"

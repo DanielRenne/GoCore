@@ -82,6 +82,10 @@ func StringToInt(val string) int {
 	return r
 }
 
+func IntToString(val int) string {
+	return strconv.Itoa(val)
+}
+
 func (obj *Version) Init(value string) {
 	versionInfo := strings.Split(value, ".")
 

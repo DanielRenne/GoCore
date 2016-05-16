@@ -214,9 +214,48 @@ func LoadSwaggerTemplate() {
 	color.Green(SwaggerDefinition.Swagger)
 }
 
-func AddSwaggerPath(path string, swaggerPath Swagger2Path) error {
+func AddSwaggerGETPath(path string, swaggerPath Swagger2Path) error {
 	SwaggerDefinition.Lock()
-	SwaggerDefinition.Paths[path] = swaggerPath
+	if val, ok := SwaggerDefinition.Paths[path]; ok {
+		val.GET = swaggerPath.GET
+	} else {
+		SwaggerDefinition.Paths[path] = swaggerPath
+	}
+	SwaggerDefinition.Unlock()
+	return nil
+}
+
+func AddSwaggerPOSTPath(path string, swaggerPath Swagger2Path) error {
+	SwaggerDefinition.Lock()
+	if val, ok := SwaggerDefinition.Paths[path]; ok {
+		val.POST = swaggerPath.POST
+	} else {
+		SwaggerDefinition.Paths[path] = swaggerPath
+	}
+	SwaggerDefinition.Unlock()
+	return nil
+}
+
+func AddSwaggerPUTPath(path string, swaggerPath Swagger2Path) error {
+	SwaggerDefinition.Lock()
+	if val, ok := SwaggerDefinition.Paths[path]; ok {
+		val.PUT = swaggerPath.PUT
+		SwaggerDefinition.Paths[path] = val
+	} else {
+		SwaggerDefinition.Paths[path] = swaggerPath
+	}
+	SwaggerDefinition.Unlock()
+	return nil
+}
+
+func AddSwaggerDELETEPath(path string, swaggerPath Swagger2Path) error {
+	SwaggerDefinition.Lock()
+	if val, ok := SwaggerDefinition.Paths[path]; ok {
+		val.DELETE = swaggerPath.DELETE
+		SwaggerDefinition.Paths[path] = val
+	} else {
+		SwaggerDefinition.Paths[path] = swaggerPath
+	}
 	SwaggerDefinition.Unlock()
 	return nil
 }
@@ -338,6 +377,36 @@ func getSwaggerPOSTPath() Swagger2Path {
 
 	op.Responses["200"] = response200
 	apiPath.POST = &op
+
+	return apiPath
+}
+
+func getSwaggerPUTPath() Swagger2Path {
+
+	var apiPath Swagger2Path
+	var op Swagger2Operation
+	op.Responses = make(map[string]Swagger2Response)
+
+	var response200 Swagger2Response
+	response200.Description = "Successful operation"
+
+	op.Responses["200"] = response200
+	apiPath.PUT = &op
+
+	return apiPath
+}
+
+func getSwaggerDELETEPath() Swagger2Path {
+
+	var apiPath Swagger2Path
+	var op Swagger2Operation
+	op.Responses = make(map[string]Swagger2Response)
+
+	var response200 Swagger2Response
+	response200.Description = "Successful operation"
+
+	op.Responses["200"] = response200
+	apiPath.DELETE = &op
 
 	return apiPath
 }

@@ -15,7 +15,8 @@
 					},
 					{
 						"name":"color",
-						"type":"string"
+						"type":"string",
+						"index":"unique"
 					}
 				]
 			}
