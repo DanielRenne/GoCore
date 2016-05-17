@@ -173,7 +173,7 @@ func cleanGoCore(v version) {
 
 	for _, directory := range v.GoDirectories {
 		fmt.Println("Removing Directory:  " + directory)
-		extensions.RemoveDirectory(directory)
+		os.RemoveAll(directory)
 	}
 }
 
