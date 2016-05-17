@@ -11,9 +11,9 @@ import (
 	"os"
 )
 
-const gitRepoName = "GoCore-master"
+const gitRepoName = "GoCoreDep-master"
 const manifestFileName = "downloadedManifest.json"
-const manifestURL = "https://raw.githubusercontent.com/DanielRenne/GoCore/master/coreManifest.json"
+const manifestURL = "https://raw.githubusercontent.com/DanielRenne/GoCoreDep/master/coreManifest.json"
 
 type version struct {
 	Version         string   `json:"version"`
@@ -44,10 +44,8 @@ func main() {
 
 	fmt.Println("Unzipping goCoreMaster.zip . . .")
 
-	excludedFiles := []string{v.ReleaseFileName + "/webConfig.json"}
-	excludedFiles = append(excludedFiles, v.ReleaseFileName+"/src/core/app/app.go")
-	excludedFiles = append(excludedFiles, v.ReleaseFileName+"/keys/cert.pem")
-	excludedFiles = append(excludedFiles, v.ReleaseFileName+"/keys/key.pem")
+	excludedFiles := []string{}
+	excludeFiles(excludedFiles, v)
 
 	errUnzip := zip.Unzip(v.ReleaseFileName+".zip", v.ReleaseFileName, excludedFiles)
 
@@ -56,7 +54,7 @@ func main() {
 		return
 	}
 
-	fmt.Println("Unzipped GoCore Master successfully.")
+	fmt.Println("Unzipped GoCoreDep Master successfully.")
 
 	errRemoveRepoZip := os.Remove(v.ReleaseFileName + ".zip")
 
@@ -85,7 +83,7 @@ func main() {
 
 func downloadRelease(url string, fileName string) {
 
-	fmt.Println("Downloading GoCore.  Please Wait . . .")
+	fmt.Println("Downloading GoCore Dependencies.  Please Wait . . .")
 
 	out, errCreateFile := os.Create(fileName)
 
@@ -98,7 +96,7 @@ func downloadRelease(url string, fileName string) {
 	defer resp.Body.Close()
 
 	if errHttpGet != nil {
-		fmt.Println("Failed to Download GoCore master zip file:  " + errHttpGet.Error())
+		fmt.Println("Failed to Download GoCoreDep master zip file:  " + errHttpGet.Error())
 		return
 	}
 
@@ -110,7 +108,7 @@ func downloadRelease(url string, fileName string) {
 	}
 	out.Close()
 
-	fmt.Println("Downloaded GoCore Master successfully:  " + extensions.PrintMegaBytes(n))
+	fmt.Println("Downloaded GoCoreDep Master successfully:  " + extensions.PrintMegaBytes(n))
 }
 
 func downloadManifest() {
@@ -128,7 +126,7 @@ func downloadManifest() {
 	defer resp.Body.Close()
 
 	if errHttpGet != nil {
-		fmt.Println("Failed to Download GoCore manifest:  " + errHttpGet.Error())
+		fmt.Println("Failed to Download GoCoreDep manifest:  " + errHttpGet.Error())
 		return
 	}
 
@@ -140,7 +138,7 @@ func downloadManifest() {
 	}
 	out.Close()
 
-	fmt.Println("Downloaded GoCore manifest successfully:  " + extensions.PrintMegaBytes(n))
+	fmt.Println("Downloaded GoCoreDep manifest successfully:  " + extensions.PrintMegaBytes(n))
 }
 
 func readManifest() (coreManifest, error) {
@@ -194,4 +192,27 @@ func getVersion(manifest coreManifest) version {
 	}
 
 	return v
+}
+
+func excludeFiles(excludedFiles []string, v version) {
+
+	_, err := os.Stat("webConfig.json")
+	if err == nil {
+		excludedFiles = append(excludedFiles, v.ReleaseFileName+"/webConfig.json")
+	}
+
+	_, err1 := os.Stat("src/github.com/DanielRenne/GoCore/core/app/app.go")
+	if err1 == nil {
+		excludedFiles = append(excludedFiles, v.ReleaseFileName+"/src/github.com/DanielRenne/GoCore/core/app/app.go")
+	}
+
+	_, err2 := os.Stat("/keys/cert.pem")
+	if err2 == nil {
+		excludedFiles = append(excludedFiles, v.ReleaseFileName+"/keys/cert.pem")
+	}
+
+	_, err3 := os.Stat("/keys/key.pem")
+	if err3 == nil {
+		excludedFiles = append(excludedFiles, v.ReleaseFileName+"/keys/key.pem")
+	}
 }
