@@ -3,6 +3,7 @@ package serverSettings
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/DanielRenne/GoCore/core/appGen"
 	"io/ioutil"
 )
 
@@ -56,12 +57,12 @@ type webConfigObj struct {
 
 var WebConfig webConfigObj
 
-const SwaggerUIPath = "web/swagger/dist"
+const SwaggerUIPath = appGen.APP_LOCATION + "/web/swagger/dist"
 
 func init() {
 	fmt.Println("core serverSettings initialized.")
 
-	jsonData, err := ioutil.ReadFile("webConfig.json")
+	jsonData, err := ioutil.ReadFile(appGen.APP_LOCATION + "/webConfig.json")
 	if err != nil {
 		fmt.Println("Reading of webConfig.json failed:  " + err.Error())
 		return

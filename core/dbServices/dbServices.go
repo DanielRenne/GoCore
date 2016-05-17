@@ -3,6 +3,7 @@ package dbServices
 import (
 	"database/sql"
 	"fmt"
+	"github.com/DanielRenne/GoCore/core/appGen"
 	"github.com/DanielRenne/GoCore/core/serverSettings"
 	"github.com/asdine/storm"
 	_ "github.com/denisenkom/go-mssqldb"
@@ -45,7 +46,7 @@ func openSQLDriver() {
 
 func openBolt() {
 
-	myDBDir := "db/" + serverSettings.WebConfig.DbConnection.AppName + "/" + serverSettings.WebConfig.DbConnection.ConnectionString
+	myDBDir := appGen.APP_LOCATION + "/db/" + serverSettings.WebConfig.DbConnection.ConnectionString
 
 	os.Mkdir(path.Dir(myDBDir), 0777)
 

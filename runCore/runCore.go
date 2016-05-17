@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	_ "github.com/DanielRenne/GoCore/core/app"
+	"github.com/DanielRenne/GoCore/core/appGen"
 	"github.com/DanielRenne/GoCore/core/ginServer"
 	"github.com/DanielRenne/GoCore/core/serverSettings"
 	"github.com/gin-gonic/gin"
@@ -67,18 +68,18 @@ func main() {
 
 	if serverSettings.WebConfig.Application.WebServiceOnly == false {
 
-		loadHTMLTemplates(serverSettings.WebConfig.Application.Name)
+		loadHTMLTemplates()
 
-		ginServer.Router.Static("/web", "web")
+		ginServer.Router.Static("/web", appGen.APP_LOCATION+"/web")
 
 		ginServer.Router.GET("/ws", func(c *gin.Context) {
 			webSocketHandler(c.Writer, c.Request)
 		})
 	}
 
-	initializeStaticRoutes(serverSettings.WebConfig.Application.Name)
+	initializeStaticRoutes()
 
-	go ginServer.Router.RunTLS(":"+strconv.Itoa(serverSettings.WebConfig.Application.HttpsPort), "keys/cert.pem", "keys/key.pem")
+	go ginServer.Router.RunTLS(":"+strconv.Itoa(serverSettings.WebConfig.Application.HttpsPort), appGen.APP_LOCATION+"/keys/cert.pem", appGen.APP_LOCATION+"/keys/key.pem")
 
 	ginServer.Router.Run(":" + strconv.Itoa(serverSettings.WebConfig.Application.HttpPort))
 
@@ -88,7 +89,7 @@ func main() {
 
 }
 
-func loadHTMLTemplates(appName string) {
+func loadHTMLTemplates() {
 
 	if serverSettings.WebConfig.Application.HtmlTemplates.Enabled {
 
@@ -107,7 +108,7 @@ func loadHTMLTemplates(appName string) {
 			dirLevel = "root/root/"
 		}
 
-		ginServer.Router.LoadHTMLGlob("web/" + appName + "/" + serverSettings.WebConfig.Application.HtmlTemplates.Directory + levels)
+		ginServer.Router.LoadHTMLGlob(appGen.APP_LOCATION + "web/" + serverSettings.WebConfig.Application.HtmlTemplates.Directory + levels)
 
 		ginServer.Router.GET("", func(c *gin.Context) {
 			c.HTML(http.StatusOK, dirLevel+"index.tmpl", gin.H{})
@@ -115,16 +116,16 @@ func loadHTMLTemplates(appName string) {
 	} else {
 
 		ginServer.Router.GET("", func(c *gin.Context) {
-			ginServer.ReadHTMLFile("web/"+appName+"/index.html", c)
+			ginServer.ReadHTMLFile(appGen.APP_LOCATION+"/web/index.html", c)
 		})
 	}
 }
 
-func initializeStaticRoutes(appName string) {
+func initializeStaticRoutes() {
 
 	ginServer.Router.GET("/swagger", func(c *gin.Context) {
-		c.Redirect(http.StatusMovedPermanently, "https://"+serverSettings.WebConfig.Application.Domain+":"+strconv.Itoa(serverSettings.WebConfig.Application.HttpsPort)+"/web/swagger/dist/index.html")
+		// c.Redirect(http.StatusMovedPermanently, "https://"+serverSettings.WebConfig.Application.Domain+":"+strconv.Itoa(serverSettings.WebConfig.Application.HttpsPort)+"/web/swagger/dist/index.html")
 
-		// ginServer.ReadHTMLFile("web/swagger/dist/index.html", c)
+		ginServer.ReadHTMLFile(appGen.APP_LOCATION+"/web/swagger/dist/index.html", c)
 	})
 }

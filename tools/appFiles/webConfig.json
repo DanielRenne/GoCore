@@ -1,0 +1,47 @@
+{
+	"application":{
+    "name": "helloWorld",
+    "domain": "127.0.0.1",
+    "httpPort": 80,
+    "httpsPort": 443, 
+    "releaseMode":"release",
+    "webServiceOnly":false,
+    "info":{
+    	"title": "Hello World Playground",
+    	"description":"A web site to try GoCore.",
+    	"contact":{
+    		"name":"DRenne",
+    		"email":"support@myWebSite.com",
+    		"url":"myWebSite.com"
+    	},
+    	"license": {
+    		"name": "Apache 2.0",
+  			"url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    	},
+    	"termsOfService":"http://127.0.0.1/terms"
+    },
+	"htmlTemplates":{
+		"enabled":false,
+		"directory":"templates",
+		"directoryLevels": 1
+	}
+	},
+	"dbConnections":[
+		{
+			"appName" : "app1",
+			"driver" : "mssql",
+			"connectionString" : "server=myServerAddress;Database=HelloWorld;user id=myUsername;Password=myPassword;Connection Timeout=3000;"
+		},
+		{
+			"appName" : "app2",
+			"driver" : "mysql",
+			"connectionString" : " myUsername:myPassword@/HelloWorld"
+		},
+		{
+			"appName" : "helloWorld",
+			"driver" : "boltDB",
+			"connectionString" : "db/helloWorld.db"
+		}
+	]
+}
+

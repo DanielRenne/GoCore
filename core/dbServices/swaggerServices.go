@@ -9,7 +9,7 @@ import (
 	"sync"
 )
 
-const SWAGGER_SCHEMA_PATH = "swagger/schemas"
+const SWAGGER_SCHEMA_PATH = "src/github.com/DanielRenne/GoCore/swagger/schemas"
 const CURRENT_SWAGGER_VERSION = "2.0"
 
 type Swagger2License struct {
