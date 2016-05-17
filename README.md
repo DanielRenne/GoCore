@@ -81,7 +81,7 @@ Then run
 
 	buildCore
 
-GoCore has built in functions to read json configuration files to generate SQL Tables, indexes, primary & foreign keys, NOSQL Collections & Buckets, auto-generated Golang model code files, auto-generated REST web api code files, and swagger.io schema files application.  See [BuildCore Readme](https://github.com/DanielRenne/GoCore/blob/master/doc/NOSQL_Schema_Model.md) for details.
+GoCore has built in functions to read json configuration files to generate SQL Tables, indexes, primary & foreign keys, NOSQL Collections & Buckets, auto-generated Golang model code files, auto-generated REST web api code files, and swagger.io schema files application.  See [BuildCore Readme](https://github.com/DanielRenne/GoCore/blob/master/buildCore/README.md) for details.
 
 ###Run GoCore
 
