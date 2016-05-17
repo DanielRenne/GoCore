@@ -58,6 +58,8 @@ Provide developers open source Golang tools and provide a complete project examp
 
 	`go get github.com/DanielRenne/GoCore/...`
 
+NOTE:  You will see an output message (unrecognized import path "helloWorld".  Please disregaurd.
+
 2.  GoCore comes with a getCore package which can be used to get all external dependencies and custom files as well as example applications.
 
 	`go install github.com/DanielRenne/GoCore/getCore`
