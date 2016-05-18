@@ -56,7 +56,7 @@ type createObject struct {
 
 func RunDBCreate() {
 
-	jsonData, err := ioutil.ReadFile("db/" + serverSettings.WebConfig.DbConnection.AppName + "/create.json")
+	jsonData, err := ioutil.ReadFile("db/schemas/create.json")
 	if err != nil {
 		fmt.Println("Reading of create.json failed:  " + err.Error())
 		return

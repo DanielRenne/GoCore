@@ -14,7 +14,6 @@ type htmlTemplates struct {
 }
 
 type dbConnection struct {
-	AppName          string `json:"appName"`
 	ConnectionString string `json:"connectionString"`
 	Driver           string `json:"driver"`
 }
@@ -75,10 +74,8 @@ func init() {
 	}
 
 	for _, dbConnection := range WebConfig.DbConnections {
-		if dbConnection.AppName == WebConfig.Application.Name {
-			WebConfig.DbConnection = dbConnection
-			return
-		}
+		WebConfig.DbConnection = dbConnection
+		return
 	}
 
 	// webConfigJSON, errParse := gabs.ParseJSONFile("webConfig.json")
