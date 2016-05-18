@@ -43,7 +43,7 @@ Provide developers open source Golang tools and provide a complete project examp
 ----------
 ## Getting Started ##
 
-### Install Golang 1.6 and setup your GOPATH ###
+### Install Golang 1.6 or greater and setup your GOPATH ###
 [Windows Golang Setup](http://www.wadewegner.com/2014/12/easy-go-programming-setup-for-windows/ "Windows Golang Setup")
 
 [Linux & MAC Setup](https://golang.org/doc/install/ "Linux & MAC Setup")
