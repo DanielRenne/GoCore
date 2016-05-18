@@ -99,7 +99,7 @@ Open a web browser to:  [http://127.0.0.1](http://127.0.0.1)
 
 #### How to build your own web project in GoCore
 
-See [Application Settings](https://github.com/DanielRenne/GoCore/doc/Application_Settings.md) within docs for information on how to setup your own custom application for GoCore.
+See [Application Settings](https://github.com/DanielRenne/GoCore/blob/master/doc/Application_Settings.md) within docs for information on how to setup your own custom application for GoCore.
 
 
 ## IMPORTANT NOTE for HTTPS (TLS) Security
