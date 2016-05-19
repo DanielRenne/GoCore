@@ -172,7 +172,7 @@ func walkNoSQLVersion(path string, versionDir string) {
 				var schemaDB NOSQLSchemaDB
 				errUnmarshal := json.Unmarshal(jsonData, &schemaDB)
 				if errUnmarshal != nil {
-					color.Red("Parsing / Unmarshaling of create.json failed:  " + errUnmarshal.Error())
+					color.Red("Parsing / Unmarshaling of " + path + " failed:  " + errUnmarshal.Error())
 					e = errUnmarshal
 				}
 
@@ -314,7 +314,7 @@ func genNoSQLSchema(schema NOSQLSchema, driver string) string {
 
 		additionalTags := genNoSQLAdditionalTags(field, driver)
 
-		val += "\n\t" + strings.Replace(strings.Title(field.Name), " ", "_", -1) + "\t" + genNoSQLFieldType(field) + "\t\t`json:\"" + extensions.MakeFirstLowerCase(field.Name) + "\"" + additionalTags + "`"
+		val += "\n\t" + strings.Replace(strings.Title(field.Name), " ", "_", -1) + "\t" + genNoSQLFieldType(schema, field) + "\t\t`json:\"" + extensions.MakeFirstLowerCase(field.Name) + "\"" + additionalTags + "`"
 	}
 
 	val += "\n}\n\n"
@@ -345,7 +345,7 @@ func genNoSQLAdditionalTags(field NOSQLSchemaField, driver string) string {
 	return ""
 }
 
-func genNoSQLFieldType(field NOSQLSchemaField) string {
+func genNoSQLFieldType(schema NOSQLSchema, field NOSQLSchemaField) string {
 
 	switch field.Type {
 	case "int":
@@ -370,7 +370,12 @@ func genNoSQLFieldType(field NOSQLSchemaField) string {
 		return "[]bool"
 	case "objectArray":
 		return "[]" + strings.Title(field.Schema.Name)
+	case "selfArray":
+		return "[]" + strings.Title(schema.Name)
+	case "self":
+		return strings.Title(schema.Name)
 	}
+
 	return field.Type
 }
 

@@ -485,6 +485,10 @@ func getSwaggerType(value string) string {
 		return "array"
 	case "objectArray":
 		return "array"
+	case "selfArray":
+		return "array"
+	case "self":
+		return "object"
 	}
 	return value
 }
@@ -500,6 +504,8 @@ func getSwaggerArrayType(value string) string {
 		return "string"
 	case "boolArray":
 		return "boolean"
+	case "selfArray":
+		return "object"
 	}
 	return value
 }
@@ -526,6 +532,8 @@ func getSwaggerFormat(value string) string {
 	case "boolArray":
 		return ""
 	case "objectArray":
+		return ""
+	case "selfArray":
 		return ""
 	}
 	return value

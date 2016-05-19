@@ -108,7 +108,7 @@ func loadHTMLTemplates() {
 			dirLevel = "root/root/"
 		}
 
-		ginServer.Router.LoadHTMLGlob(appGen.APP_LOCATION + "web/" + serverSettings.WebConfig.Application.HtmlTemplates.Directory + levels)
+		ginServer.Router.LoadHTMLGlob(appGen.APP_LOCATION + "/web/" + serverSettings.WebConfig.Application.HtmlTemplates.Directory + levels)
 
 		ginServer.Router.GET("", func(c *gin.Context) {
 			c.HTML(http.StatusOK, dirLevel+"index.tmpl", gin.H{})
