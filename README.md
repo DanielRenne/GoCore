@@ -1,10 +1,10 @@
 # GoCore
 
-A Golang solution for building a full stack web application.
+A Golang solution of tools for building a full stack web application.
 
 ## Goals of the Project ##
 
-Provide developers open source Golang tools and provide a complete project example/template for learning and implementing Golang technology.  Below are some targeted goals:
+Below are some targeted goals:
 
 * Http & Https Redirection & HTTP 2.0 with Golang 1.6 and [gin-gonic/gin](https://github.com/gin-gonic/gin)
 * Extension packages for common functions including:
