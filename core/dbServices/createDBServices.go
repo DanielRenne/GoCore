@@ -8,6 +8,7 @@ import (
 	// "fmt"
 	"github.com/fatih/color"
 	"io/ioutil"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -81,6 +82,10 @@ type NOSQLSchemaDB struct {
 	Collections []NOSQLCollection `json:"collections"`
 }
 
+// This array holds a list of the Schema's created for a model version.
+// It is used to NOT duplicate structs for the model.
+// When we process each version we clear the array out first, then add and check against it.
+
 func RunDBCreate() {
 
 	// jsonData, err := ioutil.ReadFile("db/" + serverSettings.WebConfig.DbConnection.AppName + "/create.json")
@@ -150,6 +155,8 @@ func walkNoSQLVersion(path string, versionDir string) {
 
 	var wg sync.WaitGroup
 
+	schemasCreated := make([]NOSQLSchema, 0)
+
 	err := filepath.Walk(path, func(path string, f os.FileInfo, errWalk error) error {
 
 		if errWalk != nil {
@@ -176,7 +183,7 @@ func walkNoSQLVersion(path string, versionDir string) {
 					e = errUnmarshal
 				}
 
-				createNoSQLModel(schemaDB.Collections, serverSettings.WebConfig.DbConnection.Driver, versionDir)
+				createNoSQLModel(schemaDB.Collections, serverSettings.WebConfig.DbConnection.Driver, versionDir, &schemasCreated)
 			}()
 		}
 
@@ -189,7 +196,7 @@ func walkNoSQLVersion(path string, versionDir string) {
 	wg.Wait()
 }
 
-func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir string) {
+func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir string, schemasCreated *[]NOSQLSchema) {
 
 	//Create a NOSQLBucket Model
 	bucket := generateNoSQLModelBucket(driver)
@@ -200,7 +207,7 @@ func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir s
 	writeNOSQLModelBucket(bucket, appGen.APP_LOCATION+"/models/"+versionDir+"/model/bucket.go")
 
 	for _, collection := range collections {
-		val := generateNoSQLModel(collection.Schema, collection, driver)
+		val := generateNoSQLModel(collection.Schema, collection, driver, schemasCreated)
 		os.Mkdir(appGen.APP_LOCATION+"/models/", 0777)
 		os.Mkdir(appGen.APP_LOCATION+"/models/"+versionDir, 0777)
 		os.Mkdir(appGen.APP_LOCATION+"/models/"+versionDir+"/model/", 0777)
@@ -216,7 +223,7 @@ func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir s
 
 }
 
-func generateNoSQLModel(schema NOSQLSchema, collection NOSQLCollection, driver string) string {
+func generateNoSQLModel(schema NOSQLSchema, collection NOSQLCollection, driver string, schemasCreated *[]NOSQLSchema) string {
 
 	val := ""
 	switch driver {
@@ -225,7 +232,7 @@ func generateNoSQLModel(schema NOSQLSchema, collection NOSQLCollection, driver s
 	}
 
 	val += genNoSQLCollection(collection)
-	val += genNoSQLSchema(schema, driver)
+	val += genNoSQLSchema(schema, driver, schemasCreated)
 	val += genNoSQLRuntime(collection, schema, driver)
 	return val
 }
@@ -299,10 +306,18 @@ func genNoSQLCollection(collection NOSQLCollection) string {
 	return val
 }
 
-func genNoSQLSchema(schema NOSQLSchema, driver string) string {
+// Recursive function that will recurse type object and objectArray's in order to create structs for the model.
+func genNoSQLSchema(schema NOSQLSchema, driver string, schemasCreated *[]NOSQLSchema) string {
 
 	val := ""
 	schemasToCreate := []NOSQLSchema{}
+
+	if hasGeneratedModelSchema(schema.Name, schemasCreated) == true {
+		log.Println("Skipping duplicate schema:  " + schema.Name)
+		return ""
+	}
+
+	*schemasCreated = append(*schemasCreated, schema)
 
 	val += "type " + strings.Title(schema.Name) + " struct{\n"
 
@@ -320,10 +335,20 @@ func genNoSQLSchema(schema NOSQLSchema, driver string) string {
 	val += "\n}\n\n"
 
 	for _, schemaToCreate := range schemasToCreate {
-		val += genNoSQLSchema(schemaToCreate, driver)
+		val += genNoSQLSchema(schemaToCreate, driver, schemasCreated)
 	}
 
 	return val
+}
+
+// Checks to see if the schema has been created for a model or not.
+func hasGeneratedModelSchema(name string, schemasCreated *[]NOSQLSchema) bool {
+	for _, schema := range *schemasCreated {
+		if schema.Name == name {
+			return true
+		}
+	}
+	return false
 }
 
 func genNoSQLAdditionalTags(field NOSQLSchemaField, driver string) string {
