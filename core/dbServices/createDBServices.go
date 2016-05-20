@@ -226,9 +226,15 @@ func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir s
 func generateNoSQLModel(schema NOSQLSchema, collection NOSQLCollection, driver string, schemasCreated *[]NOSQLSchema) string {
 
 	val := ""
+
+	timeImport := ""
+	if checkSchemaForDateTime(schema) {
+		timeImport = "time"
+	}
+
 	switch driver {
 	case "boltDB":
-		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "encoding/json", "github.com/asdine/storm"})
+		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "encoding/json", "github.com/asdine/storm", timeImport})
 	}
 
 	val += genNoSQLCollection(collection)
@@ -306,6 +312,25 @@ func genNoSQLCollection(collection NOSQLCollection) string {
 	return val
 }
 
+func checkSchemaForDateTime(schema NOSQLSchema) bool {
+
+	for _, field := range schema.Fields {
+
+		if field.Type == "dateTime" {
+			return true
+		}
+
+		if field.Type == "object" || field.Type == "objectArray" {
+			objContainsDateTime := checkSchemaForDateTime(field.Schema)
+			if objContainsDateTime {
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
 // Recursive function that will recurse type object and objectArray's in order to create structs for the model.
 func genNoSQLSchema(schema NOSQLSchema, driver string, schemasCreated *[]NOSQLSchema) string {
 
@@ -381,6 +406,8 @@ func genNoSQLFieldType(schema NOSQLSchema, field NOSQLSchemaField) string {
 		return "string"
 	case "bool":
 		return "bool"
+	case "dateTime":
+		return "time.Time"
 	case "byteArray":
 		return "[]byte"
 	case "object":

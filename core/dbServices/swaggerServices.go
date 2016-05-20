@@ -489,6 +489,8 @@ func getSwaggerType(value string) string {
 		return "array"
 	case "self":
 		return "object"
+	case "dateTime":
+		return "string"
 	}
 	return value
 }
@@ -535,6 +537,8 @@ func getSwaggerFormat(value string) string {
 		return ""
 	case "selfArray":
 		return ""
+	case "dateTime":
+		return "date-time"
 	}
 	return value
 }

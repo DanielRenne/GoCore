@@ -123,6 +123,9 @@ func GenPackageImport(name string, imports []string) string {
 	val := "package " + name + "\n\n"
 	val += "import(\n"
 	for _, imp := range imports {
+		if imp == "" {
+			continue
+		}
 		val += "\t\"" + imp + "\"\n"
 	}
 	val += ")\n\n"

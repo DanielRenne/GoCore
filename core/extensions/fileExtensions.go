@@ -3,7 +3,10 @@ package extensions
 import (
 	"fmt"
 	"io"
+	"io/ioutil"
+	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
 )
 
@@ -100,4 +103,27 @@ func CopyFile(source string, dest string) (err error) {
 	}
 
 	return
+}
+
+func WriteAndGoFormat(value string, path string) error {
+
+	err := ioutil.WriteFile(path, []byte(value), 0777)
+	if err != nil {
+		log.Println("Error writing file " + path + ":  " + err.Error())
+		return err
+	}
+
+	cmd := exec.Command("gofmt", "-w", path)
+	err = cmd.Start()
+	if err != nil {
+		log.Println("Failed to gofmt on file " + path + ":  " + err.Error())
+		return err
+	}
+
+	log.Println("Saved file " + path + " successfully.")
+	return nil
+}
+
+func ReadFile(path string) ([]byte, error) {
+	return ioutil.ReadFile(path)
 }
