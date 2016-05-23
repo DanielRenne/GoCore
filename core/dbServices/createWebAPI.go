@@ -12,10 +12,10 @@ func genSchemaWebAPI(collection NOSQLCollection, schema NOSQLSchema, dbPackageNa
 	val := extensions.GenPackageImport("webAPI", []string{dbPackageName, "github.com/DanielRenne/GoCore/core/ginServer", "github.com/gin-gonic/gin", "github.com/DanielRenne/GoCore/core/extensions", "strings", "io/ioutil", "encoding/json"})
 	val += "func init(){\n\n"
 	//val += "\tginServer.AddRouterGroup(\"" + versionDir + "\", \"/" + extensions.MakeFirstLowerCase(schema.Name) + "\", \"GET\", get" + strings.Title(schema.Name) + ")\n"
-	val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/single" + strings.Title(collection.Name) + "\", \"GET\", getSingle" + strings.Title(collection.Name) + ")\n"
-	val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/search" + strings.Title(collection.Name) + "\", \"GET\", getSearch" + strings.Title(collection.Name) + ")\n"
-	val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/sort" + strings.Title(collection.Name) + "\", \"GET\", getSort" + strings.Title(collection.Name) + ")\n"
-	val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/range" + strings.Title(collection.Name) + "\", \"GET\", getRange" + strings.Title(collection.Name) + ")\n"
+	val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/" + extensions.MakeFirstLowerCase(collection.Name) + "/singleBy\", \"GET\", getSingle" + strings.Title(collection.Name) + ")\n"
+	val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/" + extensions.MakeFirstLowerCase(collection.Name) + "/searchBy\", \"GET\", getSearch" + strings.Title(collection.Name) + ")\n"
+	val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/" + extensions.MakeFirstLowerCase(collection.Name) + "/sortBy\", \"GET\", getSort" + strings.Title(collection.Name) + ")\n"
+	val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/" + extensions.MakeFirstLowerCase(collection.Name) + "/rangeBy\", \"GET\", getRange" + strings.Title(collection.Name) + ")\n"
 	val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/" + extensions.MakeFirstLowerCase(collection.Name) + "\", \"GET\", get" + strings.Title(collection.Name) + ")\n"
 
 	val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/" + extensions.MakeFirstLowerCase(schema.Name) + "\", \"POST\", post" + strings.Title(schema.Name) + ")\n"
@@ -36,10 +36,10 @@ func genSchemaWebAPI(collection NOSQLCollection, schema NOSQLSchema, dbPackageNa
 
 	//Add Swagger Paths
 	addNOSQLSwaggerCollectionGet("/"+extensions.MakeFirstLowerCase(collection.Name), collection)
-	addNOSQLSwaggerSearchCollectionGet("/search"+strings.Title(collection.Name), collection)
-	addNOSQLSwaggerSingleCollectionGet("/single"+strings.Title(collection.Name), collection)
-	addNOSQLSwaggerSortCollectionGet("/sort"+strings.Title(collection.Name), collection)
-	addNOSQLSwaggerRangeCollectionGet("/range"+strings.Title(collection.Name), collection)
+	addNOSQLSwaggerSearchCollectionGet("/"+extensions.MakeFirstLowerCase(collection.Name)+"/searchBy", collection)
+	addNOSQLSwaggerSingleCollectionGet("/"+extensions.MakeFirstLowerCase(collection.Name)+"/singleBy", collection)
+	addNOSQLSwaggerSortCollectionGet("/"+extensions.MakeFirstLowerCase(collection.Name)+"/sortBy", collection)
+	addNOSQLSwaggerRangeCollectionGet("/"+extensions.MakeFirstLowerCase(collection.Name)+"/rangeBy", collection)
 
 	addNOSQLSwaggerSchemaPostBody("/"+extensions.MakeFirstLowerCase(schema.Name), schema)
 	addNOSQLSwaggerSchemaPutBody("/"+extensions.MakeFirstLowerCase(schema.Name), schema)
@@ -217,7 +217,7 @@ func addNOSQLSwaggerSearchCollectionGet(path string, collection NOSQLCollection)
 
 	apiPath := getSwaggerGETPath()
 
-	apiPath.GET.Tags = append(apiPath.GET.Tags, "Search "+strings.Title(collection.Name))
+	apiPath.GET.Tags = append(apiPath.GET.Tags, strings.Title(collection.Name))
 	apiPath.GET.Summary = "Searches " + strings.Title(collection.Name)
 	apiPath.GET.Description = "Is searched by the field and value.  Can be filtered by limit and skip."
 	apiPath.GET.Produces = []string{"application/json"}
@@ -239,7 +239,7 @@ func addNOSQLSwaggerSingleCollectionGet(path string, collection NOSQLCollection)
 
 	apiPath := getSwaggerGETPath()
 
-	apiPath.GET.Tags = append(apiPath.GET.Tags, "Single "+strings.Title(collection.Schema.Name))
+	apiPath.GET.Tags = append(apiPath.GET.Tags, strings.Title(collection.Schema.Name))
 	apiPath.GET.Summary = "Get a " + strings.Title(collection.Schema.Name)
 	apiPath.GET.Description = "Returns a single " + collection.Schema.Name + " searched by field and value."
 	apiPath.GET.Produces = []string{"application/json"}
@@ -259,7 +259,7 @@ func addNOSQLSwaggerSortCollectionGet(path string, collection NOSQLCollection) {
 
 	apiPath := getSwaggerGETPath()
 
-	apiPath.GET.Tags = append(apiPath.GET.Tags, "Sort "+strings.Title(collection.Name))
+	apiPath.GET.Tags = append(apiPath.GET.Tags, strings.Title(collection.Name))
 	apiPath.GET.Summary = "Sort " + strings.Title(collection.Name)
 	apiPath.GET.Description = "Sort Collection by Field.  Can be filtered by limit and skip."
 	apiPath.GET.Produces = []string{"application/json"}
@@ -280,7 +280,7 @@ func addNOSQLSwaggerRangeCollectionGet(path string, collection NOSQLCollection) 
 
 	apiPath := getSwaggerGETPath()
 
-	apiPath.GET.Tags = append(apiPath.GET.Tags, "Range "+strings.Title(collection.Name))
+	apiPath.GET.Tags = append(apiPath.GET.Tags, strings.Title(collection.Name))
 	apiPath.GET.Summary = "Range " + strings.Title(collection.Name)
 	apiPath.GET.Description = "Is searched by the field and value.  Can be filtered by limit and skip."
 	apiPath.GET.Produces = []string{"application/json"}
