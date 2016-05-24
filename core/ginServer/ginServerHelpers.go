@@ -11,6 +11,7 @@ type ErrorResponse struct {
 	Message string `json:"message"`
 }
 
+// Reads a file from the path parameter and returns to the client as text/html.
 func ReadHTMLFile(path string, c *gin.Context) {
 	page, err := ioutil.ReadFile(path)
 	if err != nil {
@@ -24,6 +25,13 @@ func ReadHTMLFile(path string, c *gin.Context) {
 	c.String(http.StatusOK, pageHTML)
 }
 
+// Takes a string and returns to the client as text/html.
+func RenderHTML(html string, c *gin.Context) {
+	c.Header("Content-Type", "text/html")
+	c.String(http.StatusOK, html)
+}
+
+// Reads a file from the path parameter and returns to the client application/json
 func ReadJSONFile(path string, c *gin.Context) {
 	js, err := ioutil.ReadFile(path)
 	if err != nil {
@@ -34,6 +42,7 @@ func ReadJSONFile(path string, c *gin.Context) {
 	c.Writer.Write(js)
 }
 
+// Returns to the client application/json format for the passed interface.
 func RespondJSON(v interface{}, c *gin.Context) {
 
 	if v == nil {
@@ -43,6 +52,7 @@ func RespondJSON(v interface{}, c *gin.Context) {
 	c.JSON(http.StatusOK, v)
 }
 
+//  Returns an byte array comprised of a JSON formated object with the error message.
 func RespondError(message string) []byte {
 	var msg ErrorResponse
 	msg.Message = message
