@@ -14,14 +14,26 @@ Any file with a .json extension will be processed to create a NOSQL model.  NOTE
 
 Each schema json file starts with and array of collections.  Each collection must have a name and schema.  The schema for the collection is the document you want to store to the NOSQL DB.  Each schema contains a name and fields array.
 
-Each Field requires a name and type.  Each field can optionally contain an index and schema.  A schema definition is required for type object or objectArray.  GoCore will recursively process object and objectArrays to build type structs.
+Each Field requires a name and type.  Each field can optionally contain an index, omitEmpty, and schema.  A schema definition is required for type object or objectArray.  GoCore will recursively process object and objectArrays to build type structs.
 
-Available Types:
+Available Types (type):
 
 	int
+	uint
+	uint8
+	uint16
+	uint32
+	uint64
+	int8
+	int16
+	ing32
+	int64
+	float32
 	float64
 	string
 	bool
+	dateTime
+	self
 	byteArray
 	object
 	intArray
@@ -29,12 +41,17 @@ Available Types:
 	stringArray
 	boolArray
 	objectArray
+	selfArray
 
-Available Indexes:
+Available Indexes (index):  NOTE:  primary indexed fields will be set to uint64.
 
 	primary
 	index
 	unique
+
+Optional Fields:
+
+	omitEmpty:  bool
 	
 
 Below is an example of an example schema:

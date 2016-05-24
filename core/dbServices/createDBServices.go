@@ -63,6 +63,7 @@ type NOSQLSchemaField struct {
 	Name         string      `json:"name"`
 	Type         string      `json:"type"`
 	Index        string      `json:"index"`
+	OmitEmpty    bool        `json:"omitEmpty"`
 	DefaultValue string      `json:"defaultValue"`
 	Required     bool        `json:"required"`
 	Schema       NOSQLSchema `json:"schema"`
@@ -397,15 +398,15 @@ func genNoSQLAdditionalTags(field NOSQLSchemaField, driver string) string {
 
 func genNoSQLFieldType(schema NOSQLSchema, field NOSQLSchemaField) string {
 
+	if field.Index == "primary" {
+		if field.Type == "string" {
+			return "string"
+		} else {
+			return "uint64"
+		}
+	}
+
 	switch field.Type {
-	case "int":
-		return "uint64"
-	case "float64":
-		return "float64"
-	case "string":
-		return "string"
-	case "bool":
-		return "bool"
 	case "dateTime":
 		return "time.Time"
 	case "byteArray":
