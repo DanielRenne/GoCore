@@ -7,8 +7,6 @@ import (
 	"strings"
 )
 
-const GOCORE_PATH = "src/github.com/DanielRenne/GoCore"
-
 type Version struct {
 	Major          int
 	Minor          int

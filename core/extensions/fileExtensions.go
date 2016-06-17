@@ -127,3 +127,10 @@ func WriteAndGoFormat(value string, path string) error {
 func ReadFile(path string) ([]byte, error) {
 	return ioutil.ReadFile(path)
 }
+
+func DoesFileExist(path string) bool {
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return false
+	}
+	return true
+}

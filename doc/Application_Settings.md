@@ -1,38 +1,41 @@
 #GoCore Application Settings
 
-There are 2 files in GoCore which must be configured to point to your application:
+There are 2 components to GoCore which must be configured within your application:
 
-##App.go
+##buildCore
 
-Add your package path to `github.com/DanielRenne/GoCore/core/app/app.go`
+Create a build package for your application with the following:
 
-	package app
-	
+	package main
+
 	import (
-	
-		//--------Change Below for the application you want to run --------
-		_ "github.com/DanielRenne/GoCoreHelloWorld"
+		"github.com/DanielRenne/GoCore/buildCore"
 	)
 	
-	func init() {
-	
+	func main() {
+		buildCore.Initialize("src/github.com/DanielRenne/GoCoreHelloWorld")
 	}
 
-##AppGenFiles.go
+##app
 
-Add your package path INCLUDING src/ to `github.com/DanielRenne/GoCore/core/appGen/appGenFiles.go` to the APP_LOCATION constant.
-
-	package appGen
+The GoCore/core/app package is what runs your application.  You must first Initialize() it with the root path of your application.  Then call the Run() method.
+	
+	package main
 	
 	import (
-	
-		// "fmt"
-		"github.com/DanielRenne/GoCore/core/extensions"
-		"github.com/DanielRenne/GoCore/core/log"
-		"os"
+		"github.com/DanielRenne/GoCore/core/app"
+		_ "github.com/DanielRenne/GoCoreHelloWorld/webAPIs/v1/webAPI"
 	)
 	
-	const APP_LOCATION = "src/github.com/DanielRenne/GoCoreHelloWorld"
+	func main() {
+		//Run First.
+		app.Initialize("src/github.com/DanielRenne/GoCoreHelloWorld")
+	
+		//Add your Application Code here.
+	
+		//Run Last.
+		app.Run()
+	}
 
 #App Settings
 

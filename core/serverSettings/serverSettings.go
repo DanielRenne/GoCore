@@ -3,8 +3,9 @@ package serverSettings
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/DanielRenne/GoCore/core/appGen"
 	"io/ioutil"
+	"runtime"
+	"strings"
 )
 
 type htmlTemplates struct {
@@ -55,13 +56,19 @@ type webConfigObj struct {
 }
 
 var WebConfig webConfigObj
+var APP_LOCATION string
+var GOCORE_PATH string
+var SWAGGER_UI_PATH string
 
-const SwaggerUIPath = appGen.APP_LOCATION + "/web/swagger/dist"
+func Initialize(path string) {
 
-func init() {
+	APP_LOCATION = path
+	SWAGGER_UI_PATH = APP_LOCATION + "/web/swagger/dist"
+	setGoCorePath()
+
 	fmt.Println("core serverSettings initialized.")
 
-	jsonData, err := ioutil.ReadFile(appGen.APP_LOCATION + "/webConfig.json")
+	jsonData, err := ioutil.ReadFile(APP_LOCATION + "/webConfig.json")
 	if err != nil {
 		fmt.Println("Reading of webConfig.json failed:  " + err.Error())
 		return
@@ -77,26 +84,16 @@ func init() {
 		WebConfig.DbConnection = dbConnection
 		return
 	}
+}
 
-	// webConfigJSON, errParse := gabs.ParseJSONFile("webConfig.json")
+//Sets the GoCore path for go core packages to reference.
+func setGoCorePath() {
 
-	// if errParse != nil {
-	// 	fmt.Println("Error parsing webConfig", errParse.Error())
-	// }
+	_, filename, _, ok := runtime.Caller(1)
 
-	// appName, ok := webConfigJSON.Path("application.name").Data().(string)
-	// if ok {
-
-	// 	children, _ := webConfigJSON.S("dbConnections").Children()
-	// 	for _, child := range children {
-
-	// 		if child.S("appName").Data().(string) == appName {
-	// 			WebConfig.DbConnection.ConnectionString = child.S("connectionString").Data().(string)
-	// 			WebConfig.DbConnection.Driver = child.S("driver").Data().(string)
-	// 			WebConfig.DbConnection.AppName = child.S("appName").Data().(string)
-	// 		}
-
-	// 	}
-	// }
-	// return
+	if ok == true {
+		GOCORE_PATH = strings.Replace(filename[strings.Index(filename, "/src"):], "/core/serverSettings/serverSettings.go", "", -1)
+	} else {
+		GOCORE_PATH = "src/github.com/DanielRenne/GoCore"
+	}
 }

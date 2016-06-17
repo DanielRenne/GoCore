@@ -321,12 +321,12 @@ func writeSwaggerConfiguration(verisonPath string, version string) {
 	addErrorResponseSwaggerDefinition()
 
 	//Write out the swagger api Definition to the Application
-	err := ioutil.WriteFile(serverSettings.SwaggerUIPath+"/swagger."+version+".json", []byte(GetSwaggerDefinitionJSONString()), 0777)
+	err := ioutil.WriteFile(serverSettings.SWAGGER_UI_PATH+"/swagger."+version+".json", []byte(GetSwaggerDefinitionJSONString()), 0777)
 	if err != nil {
 		color.Red("Error writing swagger.json:  " + err.Error())
 		return
 	}
-	color.Green("Successfully created " + serverSettings.SwaggerUIPath + "/swagger." + version + ".json")
+	color.Green("Successfully created " + serverSettings.SWAGGER_UI_PATH + "/swagger." + version + ".json")
 
 	LoadSwaggerTemplate()
 }
