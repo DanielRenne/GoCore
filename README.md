@@ -58,7 +58,7 @@ Below are some targeted goals:
 
 	`go get github.com/DanielRenne/GoCore/...`
 
-NOTE:  You will see an output message (unrecognized import path "helloWorld".  Please disregaurd.
+NOTE:  You will see an output message (no buildable Go source files in ....  Please disregaurd.
 
 2.  GoCore comes with a getCore package which can be used to get all external dependencies and custom files as well as example applications.
 
@@ -103,7 +103,7 @@ Open a web browser to:  [http://127.0.0.1](http://127.0.0.1)
 
 #### How to build your own web project in GoCore
 
-See [Application Settings](https://github.com/DanielRenne/GoCore/blob/master/doc/Application_Settings.md) within docs for information on how to setup your own custom application for GoCore.
+See [Application Settings](https://github.com/DanielRenne/GoCore/blob/master/doc/Application_Settings.md) within docs for information on how to setup your own custom application for GoCore.  Alternatively you can review GoCoreHelloWorld.
 
 
 ## IMPORTANT NOTE for HTTPS (TLS) Security
