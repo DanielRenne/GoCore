@@ -500,6 +500,8 @@ func getSwaggerArrayType(value string) string {
 	switch value {
 	case "intArray":
 		return "integer"
+	case "uint64Array":
+		return "integer"
 	case "float64Array":
 		return "number"
 	case "stringArray":
@@ -526,6 +528,8 @@ func getSwaggerFormat(value string) string {
 	case "byteArray":
 		return "binary"
 	case "intArray":
+		return ""
+	case "uint64Array":
 		return ""
 	case "float64Array":
 		return ""

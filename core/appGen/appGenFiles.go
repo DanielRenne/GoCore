@@ -8,7 +8,8 @@ import (
 	"os"
 )
 
-const APP_LOCATION = "src/github.com/DanielRenne/GoCoreHelloWorld"
+// const APP_LOCATION = "src/bitbucket.org/DRenne/ohHell"
+const APP_LOCATION = "src/github.com/thomsonreuters/aumentum-Web"
 
 func GenerateApp() {
 	moveAppFiles()
@@ -33,11 +34,13 @@ func moveAppFiles() {
 		log.Message("Copied keys to Application.", log.GREEN)
 	}
 
-	_, err = os.Stat(APP_LOCATION + "/web/core")
-	if err != nil {
-		extensions.CopyFolder(extensions.GOCORE_PATH+"/tools/appFiles/web/core", APP_LOCATION+"/web/core")
-		log.Message("Copied web/core to Application.", log.GREEN)
-	}
+	extensions.RemoveDirectory(APP_LOCATION + "/web/core")
+
+	// _, err = os.Stat(APP_LOCATION + "/web/core")
+	// if err != nil {
+	extensions.CopyFolder(extensions.GOCORE_PATH+"/tools/appFiles/web/core", APP_LOCATION+"/web/core")
+	log.Message("Copied web/core to Application.", log.GREEN)
+	// }
 
 	_, err = os.Stat(APP_LOCATION + "/web/swagger")
 	if err != nil {

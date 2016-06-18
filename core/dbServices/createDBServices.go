@@ -201,6 +201,7 @@ func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir s
 
 	//Create a NOSQLBucket Model
 	bucket := generateNoSQLModelBucket(driver)
+	extensions.RemoveDirectory(appGen.APP_LOCATION + "/models")
 	os.Mkdir(appGen.APP_LOCATION+"/models/", 0777)
 	os.Mkdir(appGen.APP_LOCATION+"/models/"+versionDir, 0777)
 	os.Mkdir(appGen.APP_LOCATION+"/models/"+versionDir+"/model/", 0777)
@@ -214,6 +215,7 @@ func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir s
 		os.Mkdir(appGen.APP_LOCATION+"/models/"+versionDir+"/model/", 0777)
 		writeNoSQLModelCollection(val, appGen.APP_LOCATION+"/models/"+versionDir+"/model/"+extensions.MakeFirstLowerCase(collection.Schema.Name)+".go", collection)
 
+		extensions.RemoveDirectory(appGen.APP_LOCATION + "/webAPIs")
 		os.Mkdir(appGen.APP_LOCATION+"/webAPIs/", 0777)
 		os.Mkdir(appGen.APP_LOCATION+"/webAPIs/"+versionDir, 0777)
 		os.Mkdir(appGen.APP_LOCATION+"/webAPIs/"+versionDir+"/webAPI/", 0777)
@@ -415,6 +417,8 @@ func genNoSQLFieldType(schema NOSQLSchema, field NOSQLSchemaField) string {
 		return strings.Title(field.Schema.Name)
 	case "intArray":
 		return "[]int"
+	case "uint64Array":
+		return "[]uint64"
 	case "float64Array":
 		return "[]float64"
 	case "stringArray":
