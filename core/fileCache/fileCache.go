@@ -20,7 +20,14 @@ var tempStringCacheSynced = struct {
 	cache map[string]string
 }{cache: make(map[string]string)}
 
-func init() {
+// func init() {
+// 	if serverSettings.WebConfig.Application.Domain != "" {
+// 		initializeGroupCache(serverSettings.WebConfig.Application.Domain)
+// 	}
+// }
+
+//Call Initialize in main before any calls to this package are performed.  serverSettings package must be initialized before fileCache.
+func Initialize() {
 	if serverSettings.WebConfig.Application.Domain != "" {
 		initializeGroupCache(serverSettings.WebConfig.Application.Domain)
 	}

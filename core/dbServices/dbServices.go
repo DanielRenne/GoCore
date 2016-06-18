@@ -3,7 +3,6 @@ package dbServices
 import (
 	"database/sql"
 	"fmt"
-	"github.com/DanielRenne/GoCore/core/appGen"
 	"github.com/DanielRenne/GoCore/core/serverSettings"
 	"github.com/asdine/storm"
 	_ "github.com/denisenkom/go-mssqldb"
@@ -17,6 +16,11 @@ var DB *sql.DB
 var BoltDB *storm.DB
 
 func init() {
+
+}
+
+func Initialize() {
+
 	fmt.Println("core dbServices initialized.")
 
 	switch serverSettings.WebConfig.DbConnection.Driver {
@@ -29,7 +33,6 @@ func init() {
 	case "boltDB":
 		openBolt()
 	}
-
 }
 
 func openSQLDriver() {
@@ -46,7 +49,7 @@ func openSQLDriver() {
 
 func openBolt() {
 
-	myDBDir := appGen.APP_LOCATION + "/db/" + serverSettings.WebConfig.DbConnection.ConnectionString
+	myDBDir := serverSettings.APP_LOCATION + "/db/" + serverSettings.WebConfig.DbConnection.ConnectionString
 
 	os.Mkdir(path.Dir(myDBDir), 0777)
 

@@ -58,7 +58,7 @@ Below are some targeted goals:
 
 	`go get github.com/DanielRenne/GoCore/...`
 
-NOTE:  You will see an output message (unrecognized import path "helloWorld".  Please disregaurd.
+NOTE:  You will see an output message (no buildable Go source files in ....  Please disregaurd.
 
 2.  GoCore comes with a getCore package which can be used to get all external dependencies and custom files as well as example applications.
 
@@ -75,13 +75,17 @@ By default getCore.go will pull down the latest master repository for Dependenci
 
 ###Build GoCore
 
-1.  By default GoCore is set to build a helloWorld sample project.  Start by installing buildCore package.
+1.  A sample project is available to build a GoCore project.
+
+	`go get github.com/DanielRenne/GoCoreHelloWorld`
+
+2.  Start by installing the buildHelloWorld package.
   
-	`go install github.com/DanielRenne/GoCore/buildCore`
+	`go install github.com/DanielRenne/GoCoreHelloWorld/buildHelloWorld`
 
 Then run
 
-	buildCore
+	buildHelloWorld
 
 GoCore has built in functions to read json configuration files to generate SQL Tables, indexes, primary & foreign keys, NOSQL Collections & Buckets, auto-generated Golang model code files, auto-generated REST web api code files, and swagger.io schema files application.  See [BuildCore Readme](https://github.com/DanielRenne/GoCore/blob/master/buildCore/README.md) for details.
 
@@ -89,17 +93,17 @@ GoCore has built in functions to read json configuration files to generate SQL T
 
 1.  Run the following to install the GoCore runtime.
 
-	`go install github.com/DanielRenne/GoCore/runCore`
+	`go install github.com/DanielRenne/GoCoreHelloWorld`
 
 Then run
 
-	runCore
+	GoCoreHelloWorld
 
 Open a web browser to:  [http://127.0.0.1](http://127.0.0.1)
 
 #### How to build your own web project in GoCore
 
-See [Application Settings](https://github.com/DanielRenne/GoCore/blob/master/doc/Application_Settings.md) within docs for information on how to setup your own custom application for GoCore.
+See [Application Settings](https://github.com/DanielRenne/GoCore/blob/master/doc/Application_Settings.md) within docs for information on how to setup your own custom application for GoCore.  Alternatively you can review GoCoreHelloWorld.
 
 
 ## IMPORTANT NOTE for HTTPS (TLS) Security

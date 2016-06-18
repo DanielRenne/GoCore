@@ -2,7 +2,6 @@ package dbServices
 
 import (
 	"encoding/json"
-	"github.com/DanielRenne/GoCore/core/appGen"
 	"github.com/DanielRenne/GoCore/core/extensions"
 	"github.com/DanielRenne/GoCore/core/serverSettings"
 	// "fmt"
@@ -125,7 +124,7 @@ func RunDBCreate() {
 
 func walkNoSQLSchema() {
 
-	basePath := appGen.APP_LOCATION + "/db/schemas"
+	basePath := serverSettings.APP_LOCATION + "/db/schemas"
 
 	fileNames, errReadDir := ioutil.ReadDir(basePath)
 	if errReadDir != nil {
@@ -148,7 +147,7 @@ func walkNoSQLSchema() {
 	}
 
 	//Make a copy of the latest Swagger Version Definition for Swagger UI to default to swagger.json.  We will keep the latest version as a 2nd copy.
-	extensions.CopyFile(serverSettings.SwaggerUIPath+"/swagger."+versionNumber+".json", serverSettings.SwaggerUIPath+"/swagger.json")
+	extensions.CopyFile(serverSettings.SWAGGER_UI_PATH+"/swagger."+versionNumber+".json", serverSettings.SWAGGER_UI_PATH+"/swagger.json")
 
 }
 
@@ -201,27 +200,25 @@ func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir s
 
 	//Create a NOSQLBucket Model
 	bucket := generateNoSQLModelBucket(driver)
-	extensions.RemoveDirectory(appGen.APP_LOCATION + "/models")
-	os.Mkdir(appGen.APP_LOCATION+"/models/", 0777)
-	os.Mkdir(appGen.APP_LOCATION+"/models/"+versionDir, 0777)
-	os.Mkdir(appGen.APP_LOCATION+"/models/"+versionDir+"/model/", 0777)
+	os.Mkdir(serverSettings.APP_LOCATION+"/models/", 0777)
+	os.Mkdir(serverSettings.APP_LOCATION+"/models/"+versionDir, 0777)
+	os.Mkdir(serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/", 0777)
 
-	writeNOSQLModelBucket(bucket, appGen.APP_LOCATION+"/models/"+versionDir+"/model/bucket.go")
+	writeNOSQLModelBucket(bucket, serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/bucket.go")
 
 	for _, collection := range collections {
 		val := generateNoSQLModel(collection.Schema, collection, driver, schemasCreated)
-		os.Mkdir(appGen.APP_LOCATION+"/models/", 0777)
-		os.Mkdir(appGen.APP_LOCATION+"/models/"+versionDir, 0777)
-		os.Mkdir(appGen.APP_LOCATION+"/models/"+versionDir+"/model/", 0777)
-		writeNoSQLModelCollection(val, appGen.APP_LOCATION+"/models/"+versionDir+"/model/"+extensions.MakeFirstLowerCase(collection.Schema.Name)+".go", collection)
+		os.Mkdir(serverSettings.APP_LOCATION+"/models/", 0777)
+		os.Mkdir(serverSettings.APP_LOCATION+"/models/"+versionDir, 0777)
+		os.Mkdir(serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/", 0777)
+		writeNoSQLModelCollection(val, serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/"+extensions.MakeFirstLowerCase(collection.Schema.Name)+".go", collection)
 
-		extensions.RemoveDirectory(appGen.APP_LOCATION + "/webAPIs")
-		os.Mkdir(appGen.APP_LOCATION+"/webAPIs/", 0777)
-		os.Mkdir(appGen.APP_LOCATION+"/webAPIs/"+versionDir, 0777)
-		os.Mkdir(appGen.APP_LOCATION+"/webAPIs/"+versionDir+"/webAPI/", 0777)
+		os.Mkdir(serverSettings.APP_LOCATION+"/webAPIs/", 0777)
+		os.Mkdir(serverSettings.APP_LOCATION+"/webAPIs/"+versionDir, 0777)
+		os.Mkdir(serverSettings.APP_LOCATION+"/webAPIs/"+versionDir+"/webAPI/", 0777)
 
-		cWebAPI := genSchemaWebAPI(collection, collection.Schema, strings.Replace(appGen.APP_LOCATION, "src/", "", -1)+"/models/"+versionDir+"/model", driver, versionDir)
-		writeNoSQLWebAPI(cWebAPI, appGen.APP_LOCATION+"/webAPIs/"+versionDir+"/webAPI/"+extensions.MakeFirstLowerCase(collection.Schema.Name)+".go", collection)
+		cWebAPI := genSchemaWebAPI(collection, collection.Schema, strings.Replace(serverSettings.APP_LOCATION, "src/", "", -1)+"/models/"+versionDir+"/model", driver, versionDir)
+		writeNoSQLWebAPI(cWebAPI, serverSettings.APP_LOCATION+"/webAPIs/"+versionDir+"/webAPI/"+extensions.MakeFirstLowerCase(collection.Schema.Name)+".go", collection)
 	}
 
 }
@@ -417,8 +414,6 @@ func genNoSQLFieldType(schema NOSQLSchema, field NOSQLSchemaField) string {
 		return strings.Title(field.Schema.Name)
 	case "intArray":
 		return "[]int"
-	case "uint64Array":
-		return "[]uint64"
 	case "float64Array":
 		return "[]float64"
 	case "stringArray":
