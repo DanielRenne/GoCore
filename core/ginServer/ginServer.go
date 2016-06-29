@@ -2,6 +2,7 @@ package ginServer
 
 import (
 	"github.com/fatih/color"
+	// "github.com/gin-gonic/contrib/gzip"
 	"github.com/gin-gonic/gin"
 	"sync"
 )
@@ -20,6 +21,7 @@ var groupRoutesSynced = struct {
 
 func init() {
 	Router = gin.Default()
+	// Router.Use(gzip.Gzip(gzip.DefaultCompression))
 }
 
 func AddRouterGroup(group string, route string, method string, fp func(*gin.Context)) {
