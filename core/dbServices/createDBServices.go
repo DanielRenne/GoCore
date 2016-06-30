@@ -198,6 +198,10 @@ func walkNoSQLVersion(path string, versionDir string) {
 
 func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir string, schemasCreated *[]NOSQLSchema) {
 
+	//Clean the Model and API Directory
+	extensions.RemoveDirectory(serverSettings.APP_LOCATION + "/models/" + versionDir + "/model")
+	extensions.RemoveDirectory(serverSettings.APP_LOCATION + "/webAPIs/" + versionDir + "/webAPI")
+
 	//Create a NOSQLBucket Model
 	bucket := generateNoSQLModelBucket(driver)
 	os.Mkdir(serverSettings.APP_LOCATION+"/models/", 0777)

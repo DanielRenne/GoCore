@@ -151,7 +151,7 @@ For a collection we will use Persons as the collection with a document called Pe
 
 	type Persons struct{}
 
-### func (obj *Persons) Single(field string, value string) (retObj Person)
+### func (obj *Persons) Single(field string, value string) (retObj Person, e error)
 
 Returns a Person based on an indexed field and value.  NOTE:  field must be indexed to return a single record.
 
@@ -166,13 +166,17 @@ Example Code:
 	
 		var persons model.Persons
 
-		person := persons.Single("name", "Dan")
-		
+		person, err := persons.Single("name", "Dan")
+
+		if err != nil{
+			fmt.Println(err.Error())
+			return
+		}
 		fmt.Println(person.Name)
 		
 	}
 
-### func (obj *Persons) Search(field string, value string) (retObj []Person)
+### func (obj *Persons) Search(field string, value string) (retObj []Person, e error)
 
 Returns an array of type Person based on a field and value.
 
@@ -188,8 +192,12 @@ Example Code:
 	
 		var persons model.Persons
 
-		somePeople := persons.Search("name", "Dan")
-		
+		somePeople, err := persons.Search("name", "Dan")
+
+		if err != nil{
+			fmt.Println(err.Error())
+			return
+		}
 		for _, people := range somePeople{ 
 			fmt.Println(person.Name)
 		}
@@ -197,7 +205,7 @@ Example Code:
 	}
 
 
-### func (obj *Persons) SearchAdvanced(field string, value string, limit int, skip int) (retObj []Person)
+### func (obj *Persons) SearchAdvanced(field string, value string, limit int, skip int) (retObj []Person, e error)
 
 Returns an array of type Person based on a field and value.  Additionally a limit of records can be returned.  Additionally records can be skipped.
 
@@ -213,15 +221,19 @@ Example Code:
 	
 		var persons model.Persons
 
-		somePeople := persons.SearchAdvanced("name", "Dan", 10, 0)
-		
+		somePeople err:= persons.SearchAdvanced("name", "Dan", 10, 0)
+
+		if err != nil{
+			fmt.Println(err.Error())
+			return
+		}
 		for _, people := range somePeople{ 
 			fmt.Println(person.Name)
 		}
 		
 	}
 
-### func (obj *Persons) All() (retObj []Person)
+### func (obj *Persons) All() (retObj []Person, e error)
 
 Returns an array of type Person for the entire collection.
 
@@ -237,7 +249,12 @@ Example Code:
 	
 		var persons model.Persons
 
-		somePeople := persons.All()
+		somePeople, err:= persons.All()
+
+		if err != nil{
+			fmt.Println(err.Error())
+			return
+		}
 		
 		for _, people := range somePeople{ 
 			fmt.Println(person.Name)
@@ -245,7 +262,7 @@ Example Code:
 		
 	}
 
-### func (obj *Persons) AllAdvanced(limit int, skip int) (retObj []Person)
+### func (obj *Persons) AllAdvanced(limit int, skip int) (retObj []Person, e error)
 
 Returns an array of type Person for the entire collection.  Additionally a limit of records can be returned.  Additionally records can be skipped.
 
@@ -261,15 +278,20 @@ Example Code:
 	
 		var persons model.Persons
 
-		somePeople := persons.AllAdvanced(10, 0)
+		somePeople, err := persons.AllAdvanced(10, 0)
 		
+		if err != nil{
+			fmt.Println(err.Error())
+			return
+		}
+
 		for _, people := range somePeople{ 
 			fmt.Println(person.Name)
 		}
 		
 	}
 
-### func (obj *Persons) AllByIndex(index string) (retObj []Person)
+### func (obj *Persons) AllByIndex(index string) (retObj []Person, e error)
 
 Returns an array of type Person for the entire collection sorted by index.  
 
@@ -284,15 +306,20 @@ Example Code:
 	
 		var persons model.Persons
 
-		somePeople := persons.AllByIndex("name")
+		somePeople, err:= persons.AllByIndex("name")
 		
+		if err != nil{
+			fmt.Println(err.Error())
+			return
+		}
+
 		for _, people := range somePeople{ 
 			fmt.Println(person.Name)
 		}
 		
 	}
 
-### func (obj *Persons) AllByIndexAdvanced(index string, limit int, skip int) (retObj []Person)
+### func (obj *Persons) AllByIndexAdvanced(index string, limit int, skip int) (retObj []Person, e error)
 
 Returns an array of type Person for the entire collection sorted by index.  Additionally a limit of records can be returned.  Additionally records can be skipped.
 
@@ -307,15 +334,20 @@ Example Code:
 	
 		var persons model.Persons
 
-		somePeople := persons.AllByIndexAdvanced("name", 10, 0)
-		
+		somePeople, err:= persons.AllByIndexAdvanced("name", 10, 0)
+
+		if err != nil{
+			fmt.Println(err.Error())
+			return
+		}
+
 		for _, people := range somePeople{ 
 			fmt.Println(person.Name)
 		}
 		
 	}
 
-### func (obj *Persons) Range(min, max, field string) (retObj []Person)
+### func (obj *Persons) Range(min, max, field string) (retObj []Person, e error)
 
 Returns an array of type Person for the field by including a range from and to.  The range can be any type that represents the field properly.  
 
@@ -330,15 +362,20 @@ Example Code:
 	
 		var persons model.Persons
 
-		somePeople := persons.Range("Bobby", "Dan", "name")
-		
+		somePeople, err := persons.Range("Bobby", "Dan", "name")
+
+		if err != nil{
+			fmt.Println(err.Error())
+			return
+		}		
+
 		for _, people := range somePeople{ 
 			fmt.Println(person.Name)
 		}
 		
 	}
 
-### func (obj *Persons) RangeAdvanced(min, max, field string, limit int, skip int) (retObj []Person) 
+### func (obj *Persons) RangeAdvanced(min, max, field string, limit int, skip int) (retObj []Person, e error) 
 
 Returns an array of type Person for the field by including a range from and to.  The range can be any type that represents the field properly.    Additionally a limit of records can be returned.  Additionally records can be skipped.
 
@@ -353,8 +390,13 @@ Example Code:
 	
 		var persons model.Persons
 
-		somePeople := persons.RangeAdvanced("Bobby", "Dan", "name", 10, 0)
+		somePeople, err := persons.RangeAdvanced("Bobby", "Dan", "name", 10, 0)
 		
+		if err != nil{
+			fmt.Println(err.Error())
+			return
+		}
+
 		for _, people := range somePeople{ 
 			fmt.Println(person.Name)
 		}
