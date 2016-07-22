@@ -1,6 +1,8 @@
 package extensions
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -133,4 +135,18 @@ func DoesFileExist(path string) bool {
 		return false
 	}
 	return true
+}
+
+func MD5(path string) (string, error) {
+	hasher := md5.New()
+
+	fileData, err := ReadFile(path)
+	if err != nil {
+		return "", err
+	}
+
+	hasher.Write([]byte(fileData))
+	val := hex.EncodeToString(hasher.Sum(nil))
+
+	return val, nil
 }
