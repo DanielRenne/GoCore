@@ -59,3 +59,11 @@ func RespondError(message string) []byte {
 	b, _ := json.Marshal(msg)
 	return b
 }
+
+func ReadGzipJSFile(path string, c *gin.Context) {
+
+	c.Header("Content-Type", "application/javascript")
+	c.Header("Content-Encoding", "gzip")
+	c.File(path)
+
+}

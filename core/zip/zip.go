@@ -24,14 +24,14 @@ func Unzip(archive, target string, excludedFiles []string) error {
 	for _, file := range reader.File {
 
 		excludeFile := false
-		for _, excludedFile := range excludedFiles{
-			if excludedFile == file.Name{
+		for _, excludedFile := range excludedFiles {
+			if excludedFile == file.Name {
 				excludeFile = true
 				break
 			}
 		}
 
-		if excludeFile == true{
+		if excludeFile == true {
 			fmt.Println("Excluding File:  " + file.Name)
 			continue
 		}

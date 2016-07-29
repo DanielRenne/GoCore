@@ -3,8 +3,19 @@ package ginServer
 import (
 	"github.com/fatih/color"
 	// "github.com/gin-gonic/contrib/gzip"
+	// "bufio"
+	// "compress/gzip"
 	"github.com/gin-gonic/gin"
+	// "io"
+	// "net"
+	// "net/http"
+	// "strings"
 	"sync"
+)
+
+const (
+	noWritten     = -1
+	defaultStatus = 200
 )
 
 type routeGroup struct {
@@ -19,12 +30,34 @@ var groupRoutesSynced = struct {
 	m map[string]routeGroup
 }{m: make(map[string]routeGroup)}
 
-func init() {
+type routerGroup struct {
+	group  string
+	route  string
+	method string
+	fp     func(*gin.Context)
+}
+
+var initializedRouterGroups []routerGroup
+var hasInitialized bool
+
+func Initialize(mode string) {
+	gin.SetMode(mode)
 	Router = gin.Default()
-	// Router.Use(gzip.Gzip(gzip.DefaultCompression))
+	hasInitialized = true
+
+	for _, group := range initializedRouterGroups {
+		AddRouterGroup(group.group, group.route, group.method, group.fp)
+	}
+	initializedRouterGroups = nil
 }
 
 func AddRouterGroup(group string, route string, method string, fp func(*gin.Context)) {
+
+	if !hasInitialized {
+		rgroup := routerGroup{group: group, route: route, method: method, fp: fp}
+		initializedRouterGroups = append(initializedRouterGroups, rgroup)
+		return
+	}
 
 	rg := getRouterSyncGroup(group)
 
@@ -74,3 +107,92 @@ func addRouterSyncGroup(group string, rg routeGroup) {
 	groupRoutesSynced.m[group] = rg
 	groupRoutesSynced.Unlock()
 }
+
+// type gzipResponseWriter struct {
+// 	io.Writer
+// 	http.ResponseWriter
+// 	size   int
+// 	status int
+// }
+
+// func (w *gzipResponseWriter) reset(writer http.ResponseWriter) {
+// 	w.ResponseWriter = writer
+// 	w.size = noWritten
+// 	w.status = defaultStatus
+// }
+
+// func (w *gzipResponseWriter) WriteHeader(code int) {
+// 	if code > 0 && w.status != code {
+// 		w.status = code
+// 	}
+// }
+
+// func (w *gzipResponseWriter) Write(b []byte) (int, error) {
+// 	if "" == w.Header().Get("Content-Type") {
+// 		// If no content type, apply sniffing algorithm to un-gzipped body.
+// 		w.Header().Set("Content-Type", http.DetectContentType(b))
+// 	}
+// 	return w.Writer.Write(b)
+// }
+
+// func (w *gzipResponseWriter) WriteHeaderNow() {
+// 	if !w.Written() {
+// 		w.size = 0
+// 		w.ResponseWriter.WriteHeader(w.status)
+// 	}
+// }
+
+// func (w *gzipResponseWriter) WriteString(s string) (n int, err error) {
+// 	w.WriteHeaderNow()
+// 	n, err = io.WriteString(w.ResponseWriter, s)
+// 	w.size += n
+// 	return
+// }
+
+// func (w *gzipResponseWriter) Written() bool {
+// 	return w.size != noWritten
+// }
+
+// func (w *gzipResponseWriter) Status() int {
+// 	return w.status
+// }
+
+// func (w *gzipResponseWriter) Size() int {
+// 	return w.size
+// }
+
+// // Implements the http.Hijacker interface
+// func (w *gzipResponseWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
+// 	if w.size < 0 {
+// 		w.size = 0
+// 	}
+// 	return w.ResponseWriter.(http.Hijacker).Hijack()
+// }
+
+// // Implements the http.CloseNotify interface
+// func (w *gzipResponseWriter) CloseNotify() <-chan bool {
+// 	return w.ResponseWriter.(http.CloseNotifier).CloseNotify()
+// }
+
+// // Implements the http.Flush interface
+// func (w *gzipResponseWriter) Flush() {
+// 	w.ResponseWriter.(http.Flusher).Flush()
+// }
+
+// func makeGzipHandler() gin.HandlerFunc {
+
+// 	return func(c *gin.Context) {
+// 		if !strings.Contains(c.Request.Header.Get("Accept-Encoding"), "gzip") {
+// 			c.Next()
+// 			return
+// 		}
+// 		c.Header("Content-Encoding", "gzip")
+
+// 		if strings.Contains(c.Request.URL.String(), ".js") {
+// 			c.Header("Content-Type", "application/javascript")
+// 		}
+
+// 		c.Next()
+// 	}
+
+// }

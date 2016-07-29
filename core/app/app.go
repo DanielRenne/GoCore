@@ -31,14 +31,18 @@ type WebSocketAPIObj struct {
 func Initialize(path string) {
 	serverSettings.Initialize(path)
 	dbServices.Initialize()
+
+	if serverSettings.WebConfig.Application.ReleaseMode == "release" {
+		ginServer.Initialize(gin.ReleaseMode)
+	} else {
+		ginServer.Initialize(gin.DebugMode)
+	}
+
 	fileCache.Initialize()
+
 }
 
 func Run() {
-
-	if serverSettings.WebConfig.Application.ReleaseMode == "release" {
-		gin.SetMode(gin.ReleaseMode)
-	}
 
 	if serverSettings.WebConfig.Application.WebServiceOnly == false {
 
