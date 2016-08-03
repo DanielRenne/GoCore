@@ -91,14 +91,14 @@ func (self *Debug) GetDump(values ...interface{}) string {
 	return buffer.String()
 }
 
-func (self *Debug)  Print(values ...interface{}) {
+func (self *Debug) Print(values ...interface{}) {
 	if self.Log() != nil {
 		//self.Log().Print(values...)
 		logger.Print(values...)
 	}
 }
 
-func (self *Debug)  Printf(format string, values ...interface{}) {
+func (self *Debug) Printf(format string, values ...interface{}) {
 	if self.Log() != nil {
 		//self.Log().Printf(format, values...)
 		logger.Printf(format, values...)
