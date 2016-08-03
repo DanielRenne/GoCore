@@ -10,10 +10,11 @@ import (
 	"runtime/debug"
 )
 
-// Set Logger to nil to suppress debug output
-var logger = log.New(os.Stdout, "", 0)
+type core_debug struct {}
 
-type Debug interface{}
+var core_logger = log.New(os.Stdout, "", 0)
+var Debug = core_debug{}
+var Logger = core_logger
 
 // Nop is a dummy function that can be called in source files where
 // other debug functions are constantly added and removed.
@@ -22,16 +23,11 @@ type Debug interface{}
 // Arbitrary objects can be passed as arguments to avoid "declared and not used"
 // error messages when commenting code out and in.
 // The result is a nil interface{} dummy value.
-func (self *Debug) Nop(dummiesIn ...interface{}) (dummyOut interface{}) {
+func (self *core_debug) Nop(dummiesIn ...interface{}) (dummyOut interface{}) {
 	return nil
 }
 
-func (self *Debug) Log() log {
-	return logger
-}
-
-//func (self *Debug) CallStackInfo(skip int) (info string) {
-func CallStackInfo(skip int) (info string) {
+func (self *core_debug) CallStackInfo(skip int) (info string) {
 	pc, file, line, ok := runtime.Caller(skip)
 	if ok {
 		funcName := runtime.FuncForPC(pc).Name()
@@ -44,46 +40,43 @@ func CallStackInfo(skip int) (info string) {
 	return info
 }
 
-func (self *Debug) PrintCallStack() {
+func (self *core_debug) PrintCallStack() {
 	debug.PrintStack()
 }
 
-func (self *Debug) LogCallStack() {
-	log.Print(Stack())
+func (self *core_debug) LogCallStack() {
+	log.Print(self.Stack())
 }
 
-func Stack() string {
+func (self *core_debug) Stack() string {
 	return string(debug.Stack())
 }
 
-func formatValue(value interface{}) string {
+func (self *core_debug) formatValue(value interface{}) string {
 	return fmt.Sprintf("\n     Type: %T\n    Value: %v\nGo Syntax: %#v", value, value, value)
 }
 
-func formatCallstack(skip int) string {
-	//return fmt.Sprintf("\nCallstack: %s", self.CallStackInfo(skip+1))
-	//return fmt.Sprintf("\nCallstack: %s", Debug.CallStackInfo(skip+1))
-	return fmt.Sprintf("\nCallstack: %s", CallStackInfo(skip+1))
+func (self *core_debug) formatCallstack(skip int) string {
+	return fmt.Sprintf("\nCallstack: %s", self.CallStackInfo(skip+1))
 }
 
-func FormatSkip(skip int, value interface{}) string {
-	return formatValue(value) + formatCallstack(skip+1)
+func (self *core_debug) FormatSkip(skip int, value interface{}) string {
+	return self.formatValue(value) + self.formatCallstack(skip+1)
 }
 
-func (self *Debug) Format(value interface{}) string {
-	return FormatSkip(2, value)
+func (self *core_debug) Format(value interface{}) string {
+	return self.FormatSkip(2, value)
 }
 
-func (self *Debug) Dump(values ...interface{}) {
-	if self.Log() != nil {
+func (self *core_debug) Dump(values ...interface{}) {
+	if Logger != nil {
 		for _, value := range values {
-			//self.Log().Println(fmt.Printf("%+v\n", value))
-			logger.Println(fmt.Printf("%+v\n", value))
+			Logger.Println(fmt.Printf("%+v\n", value))
 		}
 	}
 }
 
-func (self *Debug) GetDump(values ...interface{}) string {
+func (self *core_debug) GetDump(values ...interface{}) string {
 	var buffer bytes.Buffer
 	for _, value := range values {
 		buffer.WriteString(fmt.Sprintf("%+v\n", value))
@@ -91,16 +84,14 @@ func (self *Debug) GetDump(values ...interface{}) string {
 	return buffer.String()
 }
 
-func (self *Debug) Print(values ...interface{}) {
-	if self.Log() != nil {
-		//self.Log().Print(values...)
-		logger.Print(values...)
+func (self *core_debug) Print(values ...interface{}) {
+	if Logger != nil {
+		Logger.Print(values...)
 	}
 }
 
-func (self *Debug) Printf(format string, values ...interface{}) {
-	if self.Log() != nil {
-		//self.Log().Printf(format, values...)
-		logger.Printf(format, values...)
+func (self *core_debug) Printf(format string, values ...interface{}) {
+	if Logger != nil {
+		Logger.Printf(format, values...)
 	}
 }
