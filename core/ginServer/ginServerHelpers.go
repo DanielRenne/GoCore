@@ -67,3 +67,11 @@ func ReadGzipJSFile(path string, c *gin.Context) {
 	c.File(path)
 
 }
+
+func ReadGzipCSSFile(path string, c *gin.Context) {
+
+	c.Header("Content-Type", "text/css")
+	c.Header("Content-Encoding", "gzip")
+	c.File(path)
+
+}
