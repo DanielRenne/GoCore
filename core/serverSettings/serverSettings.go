@@ -17,6 +17,7 @@ type htmlTemplates struct {
 type dbConnection struct {
 	ConnectionString string `json:"connectionString"`
 	Driver           string `json:"driver"`
+	Database         string `json:"database"`
 }
 
 type license struct {
@@ -47,6 +48,7 @@ type application struct {
 	WebServiceOnly bool          `json:"webServiceOnly"`
 	Info           info          `json:"info"`
 	HtmlTemplates  htmlTemplates `json:"htmlTemplates"`
+	RootIndexPath  string        `json:"rootIndexPath"`
 }
 
 type webConfigObj struct {
