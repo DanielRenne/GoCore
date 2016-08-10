@@ -237,11 +237,14 @@ func generateNoSQLModel(schema NOSQLSchema, collection NOSQLCollection, driver s
 	}
 
 	switch driver {
-	case "boltDB":
+	case DATABASE_DRIVER_BOLTDB:
 		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "encoding/json", "github.com/asdine/storm", timeImport})
+	case DATABASE_DRIVER_MONGODB:
+		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "encoding/json", "gopkg.in/mgo.v2", "gopkg.in/mgo.v2/bson", "log", timeImport, "errors"})
+		// val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "encoding/json", "gopkg.in/mgo.v2/bson", "log", "time"})
 	}
 
-	val += genNoSQLCollection(collection)
+	val += genNoSQLCollection(collection, driver)
 	val += genNoSQLSchema(schema, driver, schemasCreated)
 	val += genNoSQLRuntime(collection, schema, driver)
 	return val
@@ -250,8 +253,9 @@ func generateNoSQLModel(schema NOSQLSchema, collection NOSQLCollection, driver s
 func generateNoSQLModelBucket(driver string) string {
 	val := ""
 	switch driver {
-	case "boltDB":
-		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices"})
+	case DATABASE_DRIVER_BOLTDB, DATABASE_DRIVER_MONGODB:
+		// val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices"})
+		val += extensions.GenPackageImport("model", []string{""})
 	}
 
 	val += genNoSQLBucketCore(driver)
@@ -310,9 +314,32 @@ func writeNOSQLModelBucket(value string, path string) {
 	color.Green("Created NOSQL Bucket successfully.")
 }
 
-func genNoSQLCollection(collection NOSQLCollection) string {
+func genNoSQLCollection(collection NOSQLCollection, driver string) string {
 	val := ""
 	val += "type " + strings.Title(collection.Name) + " struct{}\n\n"
+
+	if driver == DATABASE_DRIVER_MONGODB {
+
+		val += "var mongo" + strings.Title(collection.Name) + "Collection *mgo.Collection\n\n"
+
+		val += "func init(){\n"
+		val += "go func() {\n\n"
+		val += "for{\n"
+		val += "if dbServices.MongoDB != nil {\n"
+		val += "log.Println(\"Building Indexes for MongoDB collection " + collection.Name + ":\")\n"
+		val += "mongo" + strings.Title(collection.Name) + "Collection = dbServices.MongoDB.C(\"" + collection.Name + "\")\n"
+		val += "ci := mgo.CollectionInfo{ForceIdIndex: true}\n"
+		val += "mongo" + strings.Title(collection.Name) + "Collection.Create(&ci)\n"
+		val += "var obj " + strings.Title(collection.Name) + "\n"
+		val += "obj.Index()\n"
+		val += "return\n"
+		val += "}\n"
+		val += "<- dbServices.WaitForDatabase()\n"
+		val += "}\n"
+		val += "}()\n"
+		val += "}\n\n"
+	}
+
 	return val
 }
 
@@ -358,7 +385,7 @@ func genNoSQLSchema(schema NOSQLSchema, driver string, schemasCreated *[]NOSQLSc
 
 		additionalTags := genNoSQLAdditionalTags(field, driver)
 
-		val += "\n\t" + strings.Replace(strings.Title(field.Name), " ", "_", -1) + "\t" + genNoSQLFieldType(schema, field) + "\t\t`json:\"" + extensions.MakeFirstLowerCase(field.Name) + "\"" + additionalTags + "`"
+		val += "\n\t" + strings.Replace(strings.Title(field.Name), " ", "_", -1) + "\t" + genNoSQLFieldType(schema, field, driver) + "\t\t`json:\"" + extensions.MakeFirstLowerCase(field.Name) + "\"" + additionalTags + "`"
 	}
 
 	val += "\n}\n\n"
@@ -382,24 +409,40 @@ func hasGeneratedModelSchema(name string, schemasCreated *[]NOSQLSchema) bool {
 
 func genNoSQLAdditionalTags(field NOSQLSchemaField, driver string) string {
 	switch driver {
-	case "boltDB":
-		{
-			switch field.Index {
-			case "":
-				return ""
-			case "primary":
-				return " storm:\"id\""
-			case "index":
-				return " storm:\"index\""
-			case "unique":
-				return " storm:\"unique\""
-			}
+	case DATABASE_DRIVER_BOLTDB:
+
+		switch field.Index {
+		case "":
+			return ""
+		case "primary":
+			return " storm:\"id\""
+		case "index":
+			return " storm:\"index\""
+		case "unique":
+			return " storm:\"unique\""
+		}
+	case DATABASE_DRIVER_MONGODB:
+
+		tags := " bson:\"" + field.Name + "\""
+		switch field.Index {
+		case "":
+			return tags
+		case "primary":
+			return " bson:\"_id,omitempty\""
+		case "index":
+			return " dbIndex:\"index\"" + tags
+		case "unique":
+			return " dbIndex:\"unique\"" + tags
 		}
 	}
 	return ""
 }
 
-func genNoSQLFieldType(schema NOSQLSchema, field NOSQLSchemaField) string {
+func genNoSQLFieldType(schema NOSQLSchema, field NOSQLSchemaField, driver string) string {
+
+	if driver == "mongoDB" && field.Index == "primary" {
+		return "bson.ObjectId"
+	}
 
 	if field.Index == "primary" {
 		if field.Type == "string" {
@@ -445,8 +488,8 @@ func genNoSQLRuntime(collection NOSQLCollection, schema NOSQLSchema, driver stri
 	val += genNoSQLSchemaIndex(collection, schema, driver)
 	val += genNoSQLSchemaRunTransaction(collection, schema, driver)
 	val += genNoSQLSchemaNew(collection, schema)
-	val += genNoSQLSchemaSave(schema, driver)
-	val += genNoSQLSchemaDelete(schema, driver)
+	val += genNoSQLSchemaSave(collection, schema, driver)
+	val += genNoSQLSchemaDelete(collection, schema, driver)
 	val += genNoSQLSchemaJSONRuntime(schema)
 	return val
 }
@@ -465,14 +508,29 @@ func genNoSQLSchemaJSONRuntime(schema NOSQLSchema) string {
 	return val
 }
 
-func genNoSQLSchemaSave(schema NOSQLSchema, driver string) string {
+func genNoSQLSchemaSave(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
 	val := ""
-	val += "func (obj *" + strings.Title(schema.Name) + ") Save() error {\n"
+	val += "func (self *" + strings.Title(schema.Name) + ") Save() error {\n"
 	switch driver {
-	case "boltDB":
-		{
-			val += "return dbServices.BoltDB.Save(obj)\n"
-		}
+	case DATABASE_DRIVER_BOLTDB:
+		val += "return dbServices.BoltDB.Save(self)\n"
+	case DATABASE_DRIVER_MONGODB:
+		val += "if mongo" + strings.Title(collection.Name) + "Collection == nil{\n"
+		val += "return errors.New(\"Collection " + collection.Name + " not initialized\")\n"
+		val += "}\n"
+		val += "objectId := bson.NewObjectId()\n"
+		val += "if self.Id != \"\"{\n"
+		val += "objectId = self.Id\n"
+		val += "}\n"
+		val += "changeInfo, err := mongo" + strings.Title(collection.Name) + "Collection.UpsertId(objectId, &self)\n"
+		val += "if err != nil {\n"
+		val += "log.Println(\"Failed to upsertId for " + strings.Title(schema.Name) + ":  \" + err.Error())\n"
+		val += "return err\n"
+		val += "}\n"
+		val += "if changeInfo.UpsertedId != nil {\n"
+		val += "self.Id = changeInfo.UpsertedId.(bson.ObjectId)\n"
+		val += "}\n"
+		val += "return nil\n"
 	}
 	val += "}\n\n"
 	return val
@@ -488,13 +546,23 @@ func genNoSQLSchemaArrayCheck(schema NOSQLSchema) string {
 func genNoSQLSchemaSingle(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
 	val := ""
 
-	val += "func (obj *" + strings.Title(collection.Name) + ") Single(field string, value interface{}) (retObj " + strings.Title(schema.Name) + ",e error) {\n"
+	val += "func (self *" + strings.Title(collection.Name) + ") Single(field string, value interface{}) (retObj " + strings.Title(schema.Name) + ",e error) {\n"
 	switch driver {
-	case "boltDB":
-		{
-			val += "e = dbServices.BoltDB.One(field, value, &retObj)\n"
-			val += "return\n"
-		}
+	case DATABASE_DRIVER_BOLTDB:
+		val += "e = dbServices.BoltDB.One(field, value, &retObj)\n"
+		val += "return\n"
+	case DATABASE_DRIVER_MONGODB:
+
+		val += "if field == \"id\"{\n"
+		val += "query := mongo" + strings.Title(collection.Name) + "Collection.FindId(bson.ObjectIdHex(value.(string)))\n"
+		val += "e = query.One(&retObj)\n"
+		val += "return\n"
+		val += "}\n"
+		val += "m := make(bson.M)\n"
+		val += "m[field] = value\n"
+		val += "query := mongo" + strings.Title(collection.Name) + "Collection.Find(m)\n"
+		val += "e = query.One(&retObj)\n"
+		val += "return\n"
 	}
 	val += "}\n\n"
 	return val
@@ -505,86 +573,152 @@ func genNoSQLSchemaSearch(collection NOSQLCollection, schema NOSQLSchema, driver
 
 	val += "func (obj *" + strings.Title(collection.Name) + ") Search(field string, value interface{}) (retObj []" + strings.Title(schema.Name) + ",e error) {\n"
 	switch driver {
-	case "boltDB":
-		{
-			val += "e = dbServices.BoltDB.Find(field, value, &retObj)\n"
-			val += genNoSQLSchemaArrayCheck(schema)
-			val += "return\n"
-		}
+	case DATABASE_DRIVER_BOLTDB:
+
+		val += "e = dbServices.BoltDB.Find(field, value, &retObj)\n"
+		val += genNoSQLSchemaArrayCheck(schema)
+		val += "return\n"
+	case DATABASE_DRIVER_MONGODB:
+
+		val += "var query *mgo.Query\n"
+		val += "if field == \"id\"{\n"
+		val += "query = mongo" + strings.Title(collection.Name) + "Collection.FindId(bson.ObjectIdHex(value.(string)))\n"
+		val += "}else{\n"
+		val += "m := make(bson.M)\n"
+		val += "m[field] = value\n"
+		val += "query = mongo" + strings.Title(collection.Name) + "Collection.Find(m)\n"
+		val += "}\n\n"
+		val += "e = query.All(&retObj)\n"
+		val += "return\n"
 	}
 	val += "}\n\n"
 
 	val += "func (obj *" + strings.Title(collection.Name) + ") SearchAdvanced(field string, value interface{}, limit int, skip int) (retObj []" + strings.Title(schema.Name) + ",e error) {\n"
 	switch driver {
-	case "boltDB":
-		{
-			val += "if limit == 0 && skip == 0{\n"
-			val += "	e = dbServices.BoltDB.Find(field, value, &retObj)\n"
-			val += genNoSQLSchemaArrayCheck(schema)
-			val += "	return\n"
-			val += "}\n"
-			val += "if limit > 0 && skip > 0{\n"
-			val += "	e = dbServices.BoltDB.Find(field, value, &retObj, storm.Limit(limit), storm.Skip(skip))\n"
-			val += genNoSQLSchemaArrayCheck(schema)
-			val += "	return\n"
-			val += "}\n"
-			val += "if limit > 0{\n"
-			val += "	e = dbServices.BoltDB.Find(field, value, &retObj, storm.Limit(limit))\n"
-			val += genNoSQLSchemaArrayCheck(schema)
-			val += "	return\n"
-			val += "}\n"
-			val += "if skip > 0{\n"
-			val += "	e = dbServices.BoltDB.Find(field, value, &retObj, storm.Skip(skip))\n"
-			val += genNoSQLSchemaArrayCheck(schema)
-			val += "	return\n"
-			val += "}\n"
-			val += "return\n"
-		}
+	case DATABASE_DRIVER_BOLTDB:
+
+		val += "if limit == 0 && skip == 0{\n"
+		val += "	e = dbServices.BoltDB.Find(field, value, &retObj)\n"
+		val += genNoSQLSchemaArrayCheck(schema)
+		val += "	return\n"
+		val += "}\n"
+		val += "if limit > 0 && skip > 0{\n"
+		val += "	e = dbServices.BoltDB.Find(field, value, &retObj, storm.Limit(limit), storm.Skip(skip))\n"
+		val += genNoSQLSchemaArrayCheck(schema)
+		val += "	return\n"
+		val += "}\n"
+		val += "if limit > 0{\n"
+		val += "	e = dbServices.BoltDB.Find(field, value, &retObj, storm.Limit(limit))\n"
+		val += genNoSQLSchemaArrayCheck(schema)
+		val += "	return\n"
+		val += "}\n"
+		val += "if skip > 0{\n"
+		val += "	e = dbServices.BoltDB.Find(field, value, &retObj, storm.Skip(skip))\n"
+		val += genNoSQLSchemaArrayCheck(schema)
+		val += "	return\n"
+		val += "}\n"
+		val += "return\n"
+	case DATABASE_DRIVER_MONGODB:
+
+		val += "var query *mgo.Query\n"
+		val += "if field == \"id\"{\n"
+		val += "query = mongo" + strings.Title(collection.Name) + "Collection.FindId(bson.ObjectIdHex(value.(string)))\n"
+		val += "}else{\n"
+		val += "m := make(bson.M)\n"
+		val += "m[field] = value\n"
+		val += "query = mongo" + strings.Title(collection.Name) + "Collection.Find(m)\n"
+		val += "}\n\n"
+
+		val += "if limit == 0 && skip == 0{\n"
+		val += "e = query.All(&retObj)\n"
+		val += genNoSQLSchemaArrayCheck(schema)
+		val += "	return\n"
+		val += "}\n"
+		val += "if limit > 0 && skip > 0{\n"
+		val += "e = query.Limit(limit).Skip(skip).All(&retObj)\n"
+		val += genNoSQLSchemaArrayCheck(schema)
+		val += "	return\n"
+		val += "}\n"
+		val += "if limit > 0{\n"
+		val += "e = query.Limit(limit).All(&retObj)\n"
+		val += genNoSQLSchemaArrayCheck(schema)
+		val += "	return\n"
+		val += "}\n"
+		val += "if skip > 0{\n"
+		val += "e = query.Skip(skip).All(&retObj)\n"
+		val += genNoSQLSchemaArrayCheck(schema)
+		val += "	return\n"
+		val += "}\n"
+		val += "return\n"
 	}
 	val += "}\n\n"
 	return val
 }
 
 func genNoSQLSchemaAll(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
+
 	val := ""
 
 	val += "func (obj *" + strings.Title(collection.Name) + ") All() (retObj []" + strings.Title(schema.Name) + ",e error) {\n"
 	switch driver {
 	case "boltDB":
-		{
-			val += "e = dbServices.BoltDB.All(&retObj)\n"
-			val += genNoSQLSchemaArrayCheck(schema)
-			val += "return\n"
-		}
+		val += "e = dbServices.BoltDB.All(&retObj)\n"
+		val += genNoSQLSchemaArrayCheck(schema)
+		val += "return\n"
+	case "mongoDB":
+		val += "e = mongo" + strings.Title(collection.Name) + "Collection.Find(bson.M{}).All(&retObj)\n"
+		val += genNoSQLSchemaArrayCheck(schema)
+		val += "return\n"
 	}
 	val += "}\n\n"
 
 	val += "func (obj *" + strings.Title(collection.Name) + ") AllAdvanced(limit int, skip int) (retObj []" + strings.Title(schema.Name) + ",e error) {\n"
 	switch driver {
-	case "boltDB":
-		{
-			val += "if limit == 0 && skip == 0{\n"
-			val += "	e = dbServices.BoltDB.All(&retObj)\n"
-			val += genNoSQLSchemaArrayCheck(schema)
-			val += "	return\n"
-			val += "}\n"
-			val += "if limit > 0 && skip > 0{\n"
-			val += "	e = dbServices.BoltDB.All(&retObj, storm.Limit(limit), storm.Skip(skip))\n"
-			val += genNoSQLSchemaArrayCheck(schema)
-			val += "	return\n"
-			val += "}\n"
-			val += "if limit > 0{\n"
-			val += "	e = dbServices.BoltDB.All(&retObj, storm.Limit(limit))\n"
-			val += genNoSQLSchemaArrayCheck(schema)
-			val += "	return\n"
-			val += "}\n"
-			val += "if skip > 0{\n"
-			val += "	e = dbServices.BoltDB.All(&retObj, storm.Skip(skip))\n"
-			val += genNoSQLSchemaArrayCheck(schema)
-			val += "	return\n"
-			val += "}\n"
-			val += "return\n"
-		}
+	case DATABASE_DRIVER_BOLTDB:
+
+		val += "if limit == 0 && skip == 0{\n"
+		val += "	e = dbServices.BoltDB.All(&retObj)\n"
+		val += genNoSQLSchemaArrayCheck(schema)
+		val += "	return\n"
+		val += "}\n"
+		val += "if limit > 0 && skip > 0{\n"
+		val += "	e = dbServices.BoltDB.All(&retObj, storm.Limit(limit), storm.Skip(skip))\n"
+		val += genNoSQLSchemaArrayCheck(schema)
+		val += "	return\n"
+		val += "}\n"
+		val += "if limit > 0{\n"
+		val += "	e = dbServices.BoltDB.All(&retObj, storm.Limit(limit))\n"
+		val += genNoSQLSchemaArrayCheck(schema)
+		val += "	return\n"
+		val += "}\n"
+		val += "if skip > 0{\n"
+		val += "	e = dbServices.BoltDB.All(&retObj, storm.Skip(skip))\n"
+		val += genNoSQLSchemaArrayCheck(schema)
+		val += "	return\n"
+		val += "}\n"
+		val += "return\n"
+	case DATABASE_DRIVER_MONGODB:
+		val += "if limit == 0 && skip == 0{\n"
+		val += "e = mongo" + strings.Title(collection.Name) + "Collection.Find(bson.M{}).All(&retObj)\n"
+		val += genNoSQLSchemaArrayCheck(schema)
+		val += "	return\n"
+		val += "}\n"
+		val += "if limit > 0 && skip > 0{\n"
+		val += "e = mongo" + strings.Title(collection.Name) + "Collection.Find(bson.M{}).Limit(limit).Skip(skip).All(&retObj)\n"
+		val += genNoSQLSchemaArrayCheck(schema)
+		val += "	return\n"
+		val += "}\n"
+		val += "if limit > 0{\n"
+		val += "e = mongo" + strings.Title(collection.Name) + "Collection.Find(bson.M{}).Limit(limit).All(&retObj)\n"
+		val += genNoSQLSchemaArrayCheck(schema)
+		val += "	return\n"
+		val += "}\n"
+		val += "if skip > 0{\n"
+		val += "e = mongo" + strings.Title(collection.Name) + "Collection.Find(bson.M{}).Skip(skip).All(&retObj)\n"
+		val += genNoSQLSchemaArrayCheck(schema)
+		val += "	return\n"
+		val += "}\n"
+		val += "return\n"
 	}
 	val += "}\n\n"
 
@@ -596,41 +730,66 @@ func genNoSQLSchemaAllByIndex(collection NOSQLCollection, schema NOSQLSchema, dr
 
 	val += "func (obj *" + strings.Title(collection.Name) + ") AllByIndex(index string) (retObj []" + strings.Title(schema.Name) + ",e error) {\n"
 	switch driver {
-	case "boltDB":
-		{
-			val += "e = dbServices.BoltDB.AllByIndex(index, &retObj)\n"
-			val += genNoSQLSchemaArrayCheck(schema)
-			val += "return\n"
-		}
+	case DATABASE_DRIVER_BOLTDB:
+		val += "e = dbServices.BoltDB.AllByIndex(index, &retObj)\n"
+		val += genNoSQLSchemaArrayCheck(schema)
+		val += "return\n"
+	case DATABASE_DRIVER_MONGODB:
+		val += "e = mongo" + strings.Title(collection.Name) + "Collection.Find(bson.M{}).Sort(index).All(&retObj)\n"
+		val += genNoSQLSchemaArrayCheck(schema)
+		val += "return\n"
+
 	}
 	val += "}\n\n"
 
 	val += "func (obj *" + strings.Title(collection.Name) + ") AllByIndexAdvanced(index string, limit int, skip int) (retObj []" + strings.Title(schema.Name) + ",e error) {\n"
 	switch driver {
-	case "boltDB":
-		{
-			val += "if limit == 0 && skip == 0{\n"
-			val += "	e = dbServices.BoltDB.AllByIndex(index, &retObj)\n"
-			val += genNoSQLSchemaArrayCheck(schema)
-			val += "	return\n"
-			val += "}\n"
-			val += "if limit > 0 && skip > 0{\n"
-			val += "	e = dbServices.BoltDB.AllByIndex(index, &retObj, storm.Limit(limit), storm.Skip(skip))\n"
-			val += genNoSQLSchemaArrayCheck(schema)
-			val += "	return\n"
-			val += "}\n"
-			val += "if limit > 0{\n"
-			val += "	e = dbServices.BoltDB.AllByIndex(index, &retObj, storm.Limit(limit))\n"
-			val += genNoSQLSchemaArrayCheck(schema)
-			val += "	return\n"
-			val += "}\n"
-			val += "if skip > 0{\n"
-			val += "	e = dbServices.BoltDB.AllByIndex(index, &retObj, storm.Skip(skip))\n"
-			val += genNoSQLSchemaArrayCheck(schema)
-			val += "	return\n"
-			val += "}\n"
-			val += "return\n"
-		}
+	case DATABASE_DRIVER_BOLTDB:
+
+		val += "if limit == 0 && skip == 0{\n"
+		val += "	e = dbServices.BoltDB.AllByIndex(index, &retObj)\n"
+		val += genNoSQLSchemaArrayCheck(schema)
+		val += "	return\n"
+		val += "}\n"
+		val += "if limit > 0 && skip > 0{\n"
+		val += "	e = dbServices.BoltDB.AllByIndex(index, &retObj, storm.Limit(limit), storm.Skip(skip))\n"
+		val += genNoSQLSchemaArrayCheck(schema)
+		val += "	return\n"
+		val += "}\n"
+		val += "if limit > 0{\n"
+		val += "	e = dbServices.BoltDB.AllByIndex(index, &retObj, storm.Limit(limit))\n"
+		val += genNoSQLSchemaArrayCheck(schema)
+		val += "	return\n"
+		val += "}\n"
+		val += "if skip > 0{\n"
+		val += "	e = dbServices.BoltDB.AllByIndex(index, &retObj, storm.Skip(skip))\n"
+		val += genNoSQLSchemaArrayCheck(schema)
+		val += "	return\n"
+		val += "}\n"
+		val += "return\n"
+
+	case DATABASE_DRIVER_MONGODB:
+		val += "if limit == 0 && skip == 0{\n"
+		val += "e = mongo" + strings.Title(collection.Name) + "Collection.Find(bson.M{}).Sort(index).All(&retObj)\n"
+		val += genNoSQLSchemaArrayCheck(schema)
+		val += "	return\n"
+		val += "}\n"
+		val += "if limit > 0 && skip > 0{\n"
+		val += "e = mongo" + strings.Title(collection.Name) + "Collection.Find(bson.M{}).Sort(index).Limit(limit).Skip(skip).All(&retObj)\n"
+		val += genNoSQLSchemaArrayCheck(schema)
+		val += "	return\n"
+		val += "}\n"
+		val += "if limit > 0{\n"
+		val += "e = mongo" + strings.Title(collection.Name) + "Collection.Find(bson.M{}).Sort(index).Limit(limit).All(&retObj)\n"
+		val += genNoSQLSchemaArrayCheck(schema)
+		val += "	return\n"
+		val += "}\n"
+		val += "if skip > 0{\n"
+		val += "e = mongo" + strings.Title(collection.Name) + "Collection.Find(bson.M{}).Sort(index).Skip(skip).All(&retObj)\n"
+		val += genNoSQLSchemaArrayCheck(schema)
+		val += "	return\n"
+		val += "}\n"
+		val += "return\n"
 	}
 	val += "}\n\n"
 
@@ -642,41 +801,77 @@ func genNoSQLSchemaRange(collection NOSQLCollection, schema NOSQLSchema, driver 
 
 	val += "func (obj *" + strings.Title(collection.Name) + ") Range(min, max, field string) (retObj []" + strings.Title(schema.Name) + ",e error) {\n"
 	switch driver {
-	case "boltDB":
-		{
-			val += "e = dbServices.BoltDB.Range(field, min, max, &retObj)\n"
-			val += genNoSQLSchemaArrayCheck(schema)
-			val += "return\n"
-		}
+	case DATABASE_DRIVER_BOLTDB:
+
+		val += "e = dbServices.BoltDB.Range(field, min, max, &retObj)\n"
+		val += genNoSQLSchemaArrayCheck(schema)
+		val += "return\n"
+
+	case DATABASE_DRIVER_MONGODB:
+		val += "var query *mgo.Query\n"
+
+		val += "m := make(bson.M)\n"
+		val += "m[field] = bson.M{\"$gte\": min, \"$lte\": max}\n"
+		val += "query = mongo" + strings.Title(collection.Name) + "Collection.Find(m)\n"
+
+		val += "e = query.All(&retObj)\n"
+		val += "return\n"
 	}
 	val += "}\n\n"
 
 	val += "func (obj *" + strings.Title(collection.Name) + ") RangeAdvanced(min, max, field string, limit int, skip int) (retObj []" + strings.Title(schema.Name) + ",e error) {\n"
 	switch driver {
-	case "boltDB":
-		{
-			val += "if limit == 0 && skip == 0{\n"
-			val += "	e = dbServices.BoltDB.Range(field, min, max, &retObj)\n"
-			val += genNoSQLSchemaArrayCheck(schema)
-			val += "	return\n"
-			val += "}\n"
-			val += "if limit > 0 && skip > 0{\n"
-			val += "	e = dbServices.BoltDB.Range(field, min, max, &retObj, storm.Limit(limit), storm.Skip(skip))\n"
-			val += genNoSQLSchemaArrayCheck(schema)
-			val += "	return\n"
-			val += "}\n"
-			val += "if limit > 0{\n"
-			val += "	e = dbServices.BoltDB.Range(field, min, max, &retObj, storm.Limit(limit))\n"
-			val += genNoSQLSchemaArrayCheck(schema)
-			val += "	return\n"
-			val += "}\n"
-			val += "if skip > 0{\n"
-			val += "	e = dbServices.BoltDB.Range(field, min, max, &retObj, storm.Skip(skip))\n"
-			val += genNoSQLSchemaArrayCheck(schema)
-			val += "	return\n"
-			val += "}\n"
-			val += "return\n"
-		}
+	case DATABASE_DRIVER_BOLTDB:
+
+		val += "if limit == 0 && skip == 0{\n"
+		val += "	e = dbServices.BoltDB.Range(field, min, max, &retObj)\n"
+		val += genNoSQLSchemaArrayCheck(schema)
+		val += "	return\n"
+		val += "}\n"
+		val += "if limit > 0 && skip > 0{\n"
+		val += "	e = dbServices.BoltDB.Range(field, min, max, &retObj, storm.Limit(limit), storm.Skip(skip))\n"
+		val += genNoSQLSchemaArrayCheck(schema)
+		val += "	return\n"
+		val += "}\n"
+		val += "if limit > 0{\n"
+		val += "	e = dbServices.BoltDB.Range(field, min, max, &retObj, storm.Limit(limit))\n"
+		val += genNoSQLSchemaArrayCheck(schema)
+		val += "	return\n"
+		val += "}\n"
+		val += "if skip > 0{\n"
+		val += "	e = dbServices.BoltDB.Range(field, min, max, &retObj, storm.Skip(skip))\n"
+		val += genNoSQLSchemaArrayCheck(schema)
+		val += "	return\n"
+		val += "}\n"
+		val += "return\n"
+	case DATABASE_DRIVER_MONGODB:
+
+		val += "var query *mgo.Query\n"
+		val += "m := make(bson.M)\n"
+		val += "m[field] = bson.M{\"$gte\": min, \"$lte\": max}\n"
+		val += "query = mongo" + strings.Title(collection.Name) + "Collection.Find(m)\n"
+
+		val += "if limit == 0 && skip == 0{\n"
+		val += "e = query.All(&retObj)\n"
+		val += genNoSQLSchemaArrayCheck(schema)
+		val += "	return\n"
+		val += "}\n"
+		val += "if limit > 0 && skip > 0{\n"
+		val += "e = query.Limit(limit).Skip(skip).All(&retObj)\n"
+		val += genNoSQLSchemaArrayCheck(schema)
+		val += "	return\n"
+		val += "}\n"
+		val += "if limit > 0{\n"
+		val += "e = query.Limit(limit).All(&retObj)\n"
+		val += genNoSQLSchemaArrayCheck(schema)
+		val += "	return\n"
+		val += "}\n"
+		val += "if skip > 0{\n"
+		val += "e = query.Skip(skip).All(&retObj)\n"
+		val += genNoSQLSchemaArrayCheck(schema)
+		val += "	return\n"
+		val += "}\n"
+		val += "return\n"
 	}
 	val += "}\n\n"
 
@@ -688,10 +883,29 @@ func genNoSQLSchemaIndex(collection NOSQLCollection, schema NOSQLSchema, driver 
 
 	val += "func (obj *" + strings.Title(collection.Name) + ") Index() error {\n"
 	switch driver {
-	case "boltDB":
-		{
-			val += "return dbServices.BoltDB.Init(&" + strings.Title(schema.Name) + "{})\n"
-		}
+	case DATABASE_DRIVER_BOLTDB:
+		val += "return dbServices.BoltDB.Init(&" + strings.Title(schema.Name) + "{})\n"
+	case DATABASE_DRIVER_MONGODB:
+
+		val += "for key, value := range dbServices.GetDBIndexes(" + strings.Title(schema.Name) + "{}) {\n"
+		val += "index := mgo.Index{\n"
+		val += "Key:        []string{key},\n"
+		val += "Unique:     false,\n"
+		val += "Background: true,\n"
+		val += "}\n\n"
+		val += "if value == \"unique\" {\n"
+		val += "index.Unique = true\n"
+		val += "}\n"
+		val += "\n"
+		val += "err := mongo" + strings.Title(collection.Name) + "Collection.EnsureIndex(index)\n"
+		val += "if err != nil {\n"
+		val += "log.Println(\"Failed to create index for " + strings.Title(schema.Name) + ".\" + key + \":  \" + err.Error())\n"
+		val += "}else{\n"
+		val += "log.Println(\"Successfully created index for " + strings.Title(schema.Name) + ".\" + key)\n"
+		val += "}\n"
+		val += "}\n"
+
+		val += "return nil"
 	}
 	val += "}\n\n"
 	return val
@@ -702,23 +916,23 @@ func genNoSQLSchemaRunTransaction(collection NOSQLCollection, schema NOSQLSchema
 
 	val += "func (obj *" + strings.Title(collection.Name) + ") RunTransaction(objects []" + strings.Title(schema.Name) + ") error {\n\n"
 	switch driver {
-	case "boltDB":
-		{
+	case DATABASE_DRIVER_BOLTDB:
 
-			val += "tx, err := dbServices.BoltDB.Begin(true)\n\n"
+		val += "tx, err := dbServices.BoltDB.Begin(true)\n\n"
 
-			val += "for _, object := range objects {\n"
-			val += "	err = tx.Save(&object)\n"
-			val += "	if err != nil {\n"
-			val += "		tx.Rollback()\n"
-			val += "		return err\n"
-			val += "	}\n"
-			val += "}\n\n"
+		val += "for _, object := range objects {\n"
+		val += "	err = tx.Save(&object)\n"
+		val += "	if err != nil {\n"
+		val += "		tx.Rollback()\n"
+		val += "		return err\n"
+		val += "	}\n"
+		val += "}\n\n"
 
-			val += "tx.Commit()\n\n"
+		val += "tx.Commit()\n\n"
 
-			val += "return nil\n"
-		}
+		val += "return nil\n"
+	case DATABASE_DRIVER_MONGODB:
+		val += "return nil\n"
 	}
 	val += "}\n\n"
 	return val
@@ -747,15 +961,15 @@ func genNoSQLSchemaSetKeyValue(collection NOSQLCollection, schema NOSQLSchema, d
 	return val
 }
 
-func genNoSQLSchemaDelete(schema NOSQLSchema, driver string) string {
+func genNoSQLSchemaDelete(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
 	val := ""
 
-	val += "func (obj *" + strings.Title(schema.Name) + ") Delete() error {\n"
+	val += "func (self *" + strings.Title(schema.Name) + ") Delete() error {\n"
 	switch driver {
 	case "boltDB":
-		{
-			val += "return dbServices.BoltDB.Remove(obj)\n"
-		}
+		val += "return dbServices.BoltDB.Remove(self)\n"
+	case "mongoDB":
+		val += "return mongo" + strings.Title(collection.Name) + "Collection.Remove(self)"
 	}
 	val += "}\n\n"
 	return val
@@ -771,27 +985,27 @@ func genNoSQLBucketCore(driver string) string {
 	val += "func (obj *Bucket) SetKeyValue(key interface{}, value interface{}) error {\n"
 	switch driver {
 	case "boltDB":
-		{
-			val += "return dbServices.BoltDB.Set(obj.Name, key, value)\n"
-		}
+		val += "return dbServices.BoltDB.Set(obj.Name, key, value)\n"
+	case "mongoDB":
+		val += "return nil\n"
 	}
 	val += "}\n\n"
 
 	val += "func (obj *Bucket) GetKeyValue(key interface{}, value interface{}) error {\n"
 	switch driver {
 	case "boltDB":
-		{
-			val += "return dbServices.BoltDB.Get(obj.Name, key, value)\n"
-		}
+		val += "return dbServices.BoltDB.Get(obj.Name, key, value)\n"
+	case "mongoDB":
+		val += "return nil\n"
 	}
 	val += "}\n\n"
 
 	val += "func (obj *Bucket) DeleteKey(key interface{}) error {\n"
 	switch driver {
 	case "boltDB":
-		{
-			val += "return dbServices.BoltDB.Delete(obj.Name, key)\n"
-		}
+		val += "return dbServices.BoltDB.Delete(obj.Name, key)\n"
+	case "mongoDB":
+		val += "return nil\n"
 	}
 	val += "}\n\n"
 	return val
