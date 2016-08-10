@@ -126,7 +126,11 @@ func loadHTMLTemplates() {
 	} else {
 
 		ginServer.Router.GET("", func(c *gin.Context) {
-			ginServer.ReadHTMLFile(serverSettings.APP_LOCATION+"/web/index.html", c)
+			if serverSettings.WebConfig.Application.RootIndexPath == "" {
+				ginServer.ReadHTMLFile(serverSettings.APP_LOCATION+"/web/index.htm", c)
+			} else {
+				ginServer.ReadHTMLFile(serverSettings.APP_LOCATION+"/web/"+serverSettings.WebConfig.Application.RootIndexPath, c)
+			}
 		})
 	}
 }
