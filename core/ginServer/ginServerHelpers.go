@@ -25,6 +25,19 @@ func ReadHTMLFile(path string, c *gin.Context) {
 	c.String(http.StatusOK, pageHTML)
 }
 
+func ReadJSFile(path string, c *gin.Context) {
+	page, err := ioutil.ReadFile(path)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	pageHTML := string(page)
+
+	c.Header("Content-Type", "text/javascript")
+	c.String(http.StatusOK, pageHTML)
+}
+
 // Takes a string and returns to the client as text/html.
 func RenderHTML(html string, c *gin.Context) {
 	c.Header("Content-Type", "text/html")

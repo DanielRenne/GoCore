@@ -10,7 +10,7 @@ import (
 	"runtime/debug"
 )
 
-type core_debug struct {}
+type core_debug struct{}
 
 var core_logger = log.New(os.Stdout, "", 0)
 var Debug = core_debug{}
