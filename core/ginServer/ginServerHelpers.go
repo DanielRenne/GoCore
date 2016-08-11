@@ -2,6 +2,7 @@ package ginServer
 
 import (
 	"encoding/json"
+	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net/http"
@@ -17,6 +18,32 @@ type LocaleLanguage struct {
 	Language string
 }
 
+func GetSessionKey(c *gin.Context, key string) string {
+	session := sessions.Default(c)
+	value := session.Get(key)
+	if value == nil {
+		return ""
+	} else {
+		return session.Get(key).(string)
+	}
+}
+
+func SetSessionKey(c *gin.Context, key string, value string) {
+	session := sessions.Default(c)
+	session.Set(key, value)
+	session.Save()
+}
+
+func SaveSession(c *gin.Context) {
+	session := sessions.Default(c)
+	session.Save()
+}
+
+func ClearSession(c *gin.Context) {
+	session := sessions.Default(c)
+	session.Clear()
+}
+
 func GetLocaleLanguage(c *gin.Context) (ll LocaleLanguage) {
 	header := c.Request.Header.Get("Accept-Language")
 	locals := strings.Split(header, ",")
@@ -24,6 +51,11 @@ func GetLocaleLanguage(c *gin.Context) (ll LocaleLanguage) {
 	ll.Language = localsSplit[0]
 	ll.Locale = localsSplit[1]
 	return
+}
+
+func GetRequestBody(c *gin.Context) ([]byte, error) {
+	body := c.Request.Body
+	return ioutil.ReadAll(body)
 }
 
 // Reads a file from the path parameter and returns to the client as text/html.
