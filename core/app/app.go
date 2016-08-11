@@ -125,6 +125,10 @@ func loadHTMLTemplates() {
 		})
 	} else {
 
+		if serverSettings.WebConfig.Application.DisableRootIndex {
+			return
+		}
+
 		ginServer.Router.GET("", func(c *gin.Context) {
 			if serverSettings.WebConfig.Application.RootIndexPath == "" {
 				ginServer.ReadHTMLFile(serverSettings.APP_LOCATION+"/web/index.htm", c)

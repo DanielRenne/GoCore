@@ -5,10 +5,25 @@ import (
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 type ErrorResponse struct {
 	Message string `json:"message"`
+}
+
+type LocaleLanguage struct {
+	Locale   string
+	Language string
+}
+
+func GetLocaleLanguage(c *gin.Context) (ll LocaleLanguage) {
+	header := c.Request.Header.Get("Accept-Language")
+	locals := strings.Split(header, ",")
+	localsSplit := strings.Split(locals[0], "-")
+	ll.Language = localsSplit[0]
+	ll.Locale = localsSplit[1]
+	return
 }
 
 // Reads a file from the path parameter and returns to the client as text/html.

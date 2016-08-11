@@ -40,15 +40,16 @@ type info struct {
 }
 
 type application struct {
-	Name           string        `json:"name"`
-	Domain         string        `json:"domain"`
-	HttpPort       int           `json:"httpPort"`
-	HttpsPort      int           `json:"httpsPort"`
-	ReleaseMode    string        `json:"releaseMode"`
-	WebServiceOnly bool          `json:"webServiceOnly"`
-	Info           info          `json:"info"`
-	HtmlTemplates  htmlTemplates `json:"htmlTemplates"`
-	RootIndexPath  string        `json:"rootIndexPath"`
+	Name             string        `json:"name"`
+	Domain           string        `json:"domain"`
+	HttpPort         int           `json:"httpPort"`
+	HttpsPort        int           `json:"httpsPort"`
+	ReleaseMode      string        `json:"releaseMode"`
+	WebServiceOnly   bool          `json:"webServiceOnly"`
+	Info             info          `json:"info"`
+	HtmlTemplates    htmlTemplates `json:"htmlTemplates"`
+	RootIndexPath    string        `json:"rootIndexPath"`
+	DisableRootIndex bool          `json:"disableRootIndex"`
 }
 
 type webConfigObj struct {
