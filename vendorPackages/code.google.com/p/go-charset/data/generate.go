@@ -18,7 +18,7 @@ import (
 )
 
 type info struct {
-	Path    string
+	Path string
 }
 
 var tfuncs = template.FuncMap{
@@ -74,7 +74,7 @@ func main() {
 	}
 	for _, name := range names {
 		writeFile("data_"+name+".go", tmpl, info{
-			Path:    filepath.Join(dataDir, name),
+			Path: filepath.Join(dataDir, name),
 		})
 	}
 }
