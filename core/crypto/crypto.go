@@ -1,11 +1,11 @@
 package crypto
 
 import (
+	"bytes"
 	"crypto/cipher"
 	"crypto/des"
 	"fmt"
 	"strings"
-	"bytes"
 )
 
 func DecryptDES_CBC(data []byte, key string, iv []byte) string {
@@ -19,7 +19,6 @@ func DecryptDES_CBC(data []byte, key string, iv []byte) string {
 	//fmt.Printf("%d bytes NewCipher key with block size of %d bytes\n", len(key), block.BlockSize)
 	return DecryptDES_CBC_Byte(data, block, iv)
 }
-
 
 func DecryptDES_CBC_Byte(encrypted []byte, block cipher.Block, iv []byte) string {
 
@@ -39,14 +38,12 @@ func EncryptDES_CBC_PKCS7(plainText []byte, key string, iv []byte) string {
 
 	paddedPlainText, paddingError := pkcs7Pad(plainText, 8)
 
-
 	if paddingError != nil {
 		fmt.Printf("Error at core.crypto.EncryptDES_CBC_PKCS7 Padding PKCS7:  " + paddingError.Error())
 	}
 
 	return EncryptDES_CBC_Byte(paddedPlainText, block, iv)
 }
-
 
 func EncryptDES_CBC_Byte(plainText []byte, block cipher.Block, iv []byte) string {
 
@@ -55,19 +52,19 @@ func EncryptDES_CBC_Byte(plainText []byte, block cipher.Block, iv []byte) string
 	cbc := cipher.NewCBCEncrypter(block, iv)
 	cbc.CryptBlocks(encrypted, plainText)
 	return string(encrypted)
-	
+
 }
 
 // Appends padding.
 func pkcs7Pad(data []byte, blocklen int) ([]byte, error) {
-    if blocklen <= 0 {
-        return nil, fmt.Errorf("invalid blocklen %d", blocklen)
-    }
-    padlen := 1
-    for ((len(data) + padlen) % blocklen) != 0 {
-        padlen = padlen + 1
-    }
+	if blocklen <= 0 {
+		return nil, fmt.Errorf("invalid blocklen %d", blocklen)
+	}
+	padlen := 1
+	for ((len(data) + padlen) % blocklen) != 0 {
+		padlen = padlen + 1
+	}
 
-    pad := bytes.Repeat([]byte{byte(padlen)}, padlen)
-    return append(data, pad...), nil
+	pad := bytes.Repeat([]byte{byte(padlen)}, padlen)
+	return append(data, pad...), nil
 }
