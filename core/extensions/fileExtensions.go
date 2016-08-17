@@ -130,6 +130,15 @@ func ReadFile(path string) ([]byte, error) {
 	return ioutil.ReadFile(path)
 }
 
+func WriteToFile(value string, path string, perm os.FileMode) error {
+	err := ioutil.WriteFile(path, []byte(value), perm)
+	if err != nil {
+		log.Println("Error writing file " + path + ":  " + err.Error())
+		return err
+	}
+	return nil
+}
+
 func DoesFileExist(path string) bool {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		return false
