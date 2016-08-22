@@ -95,6 +95,18 @@ func IntToString(val int) string {
 	return strconv.Itoa(val)
 }
 
+func BoolToString(val bool) string {
+	return strconv.FormatBool(val)
+}
+
+func StringToBool(val string) bool {
+	r, err := strconv.ParseBool(val)
+	if err != nil {
+		return false
+	}
+	return r
+}
+
 func (obj *Version) Init(value string) {
 	versionInfo := strings.Split(value, ".")
 
