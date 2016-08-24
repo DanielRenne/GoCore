@@ -69,11 +69,19 @@ func (self *core_debug) Format(value interface{}) string {
 }
 
 func (self *core_debug) Dump(values ...interface{}) {
+	Logger.Println("!!!!!!!!!!!!!DEBUG!!!!!!!!!!!!!")
+	Logger.Println("")
+	Logger.Println("")
+	Logger.Println("")
 	if Logger != nil {
 		for _, value := range values {
 			Logger.Println(fmt.Printf("%+v\n", value))
 		}
 	}
+	Logger.Println("")
+	Logger.Println("")
+	Logger.Println("")
+	Logger.Println("!!!!!!!!!!!!!ENDDEBUG!!!!!!!!!!!!!")
 }
 
 func (self *core_debug) GetDump(values ...interface{}) string {
