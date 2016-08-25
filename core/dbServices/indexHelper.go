@@ -15,6 +15,12 @@ func GetDBIndexes(x interface{}) map[string]string {
 
 func getDBIndexesRecursive(val reflect.Value, keys map[string]string, key string) {
 
+	kind := val.Kind()
+
+	if kind == reflect.Slice {
+		return
+	}
+
 	for i := 0; i < val.NumField(); i++ {
 
 		valueField := val.Field(i)
