@@ -386,8 +386,12 @@ func genNoSQLSchema(schema NOSQLSchema, driver string, schemasCreated *[]NOSQLSc
 		}
 
 		additionalTags := genNoSQLAdditionalTags(field, driver)
+		omitEmpty := ""
+		if field.OmitEmpty {
+			omitEmpty = ",omitempty"
+		}
 
-		val += "\n\t" + strings.Replace(strings.Title(field.Name), " ", "_", -1) + "\t" + genNoSQLFieldType(schema, field, driver) + "\t\t`json:\"" + extensions.MakeFirstLowerCase(field.Name) + "\"" + additionalTags + "`"
+		val += "\n\t" + strings.Replace(strings.Title(field.Name), " ", "_", -1) + "\t" + genNoSQLFieldType(schema, field, driver) + "\t\t`json:\"" + extensions.MakeFirstLowerCase(field.Name) + omitEmpty + "\"" + additionalTags + "`"
 	}
 
 	val += "\n}\n\n"
@@ -952,25 +956,25 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 	val += "var v []" + strings.Title(schema.Name) + "\n"
 	val += "err = json.Unmarshal(data, &v)\n"
 
+	val += "if err != nil {\n"
+	val += "	log.Println(\"Failed to bootstrap data for " + strings.Title(collection.Name) + ":  \" + err.Error())\n"
+	val += "	return err\n"
+	val += "}\n\n"
+
 	switch driver {
 	case DATABASE_DRIVER_BOLTDB:
 		val += ""
 	case DATABASE_DRIVER_MONGODB:
-		val += "for _, doc := range v{\n"
-
-		val += "_, err := obj.Single(\"id\", doc.Id.Hex())\n\n"
-
-		val += "if err != nil{\n\n"
+		val += "for _, doc := range v{\n\n"
 
 		val += "err = doc.Save()\n"
 		val += "	if err != nil {\n"
-		val += "		log.Println(\"Failed to bootstrap data for Account:  \" + doc.Id.Hex() + \"  \" + err.Error())\n"
+		val += "		log.Println(\"Failed to bootstrap data for " + strings.Title(schema.Name) + ":  \" + doc.Id.Hex() + \"  \" + err.Error())\n"
 		val += "	}\n"
-		val += "	log.Println(\"Successfully bootstraped Account:  \" + doc.Id.Hex())\n\n"
+		val += "	log.Println(\"Successfully bootstraped " + strings.Title(schema.Name) + ":  \" + doc.Id.Hex())\n\n"
 		val += "	log.Printf(\"%+v\\n\", doc)\n\n"
 		val += "}\n\n"
 
-		val += "}\n"
 	}
 	val += "return nil"
 	val += "}\n\n"
