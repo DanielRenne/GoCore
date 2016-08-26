@@ -5,6 +5,7 @@ import (
 	"github.com/DanielRenne/GoCore/core/extensions"
 	"github.com/DanielRenne/GoCore/core/serverSettings"
 	// "fmt"
+	"encoding/base64"
 	"github.com/fatih/color"
 	"io/ioutil"
 	"log"
@@ -240,7 +241,7 @@ func generateNoSQLModel(schema NOSQLSchema, collection NOSQLCollection, driver s
 	case DATABASE_DRIVER_BOLTDB:
 		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "encoding/json", "github.com/asdine/storm", timeImport})
 	case DATABASE_DRIVER_MONGODB:
-		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "encoding/json", "gopkg.in/mgo.v2", "gopkg.in/mgo.v2/bson", "log", timeImport, "errors"})
+		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "encoding/json", "gopkg.in/mgo.v2", "gopkg.in/mgo.v2/bson", "log", timeImport, "errors", "encoding/base64"})
 		// val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "encoding/json", "gopkg.in/mgo.v2/bson", "log", "time"})
 	}
 
@@ -332,6 +333,7 @@ func genNoSQLCollection(collection NOSQLCollection, driver string) string {
 		val += "mongo" + strings.Title(collection.Name) + "Collection.Create(&ci)\n"
 		val += "var obj " + strings.Title(collection.Name) + "\n"
 		val += "obj.Index()\n"
+		val += "obj.Bootstrap()\n"
 		val += "return\n"
 		val += "}\n"
 		val += "<- dbServices.WaitForDatabase()\n"
@@ -486,6 +488,7 @@ func genNoSQLRuntime(collection NOSQLCollection, schema NOSQLSchema, driver stri
 	val += genNoSQLSchemaAllByIndex(collection, schema, driver)
 	val += genNoSQLSchemaRange(collection, schema, driver)
 	val += genNoSQLSchemaIndex(collection, schema, driver)
+	val += genNoSQLBootstrap(collection, schema, driver)
 	val += genNoSQLSchemaRunTransaction(collection, schema, driver)
 	val += genNoSQLSchemaNew(collection, schema)
 	val += genNoSQLSchemaSave(collection, schema, driver)
@@ -907,6 +910,69 @@ func genNoSQLSchemaIndex(collection NOSQLCollection, schema NOSQLSchema, driver 
 
 		val += "return nil"
 	}
+	val += "}\n\n"
+	return val
+}
+
+//Generates the Bootstrap Data for the application.
+func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
+	val := ""
+
+	val += "func (obj *" + strings.Title(collection.Name) + ") Bootstrap() error {\n"
+
+	//First check if the path exists to bootstrap data
+	path := serverSettings.APP_LOCATION + "/db/bootstrap/" + extensions.MakeFirstLowerCase(collection.Name) + "/" + extensions.MakeFirstLowerCase(collection.Name) + ".json"
+	if extensions.DoesFileExist(path) {
+
+		data, err := extensions.ReadFile(path)
+
+		if err != nil {
+			color.Red("Reading of " + path + " failed to create Bootstrap Data:  " + err.Error())
+			val += "dataString :=\"\"\n\n"
+		} else {
+			val += "dataString :=\"" + base64.StdEncoding.EncodeToString(data[:]) + "\"\n\n"
+		}
+
+	} else {
+		val += "dataString := \"\"\n\n"
+	}
+
+	//Now parse the data into an array of the collection
+
+	val += "if dataString == \"\"{\n"
+	val += "	return nil\n"
+	val += "}\n\n"
+
+	val += "data, err := base64.StdEncoding.DecodeString(dataString)\n"
+	val += "if err != nil{\n"
+	val += "	log.Println(\"Failed to bootstrap data for " + collection.Name + ":  \" + err.Error())\n"
+	val += "	return err\n"
+	val += "}\n\n"
+
+	val += "var v []" + strings.Title(schema.Name) + "\n"
+	val += "err = json.Unmarshal(data, &v)\n"
+
+	switch driver {
+	case DATABASE_DRIVER_BOLTDB:
+		val += ""
+	case DATABASE_DRIVER_MONGODB:
+		val += "for _, doc := range v{\n"
+
+		val += "_, err := obj.Single(\"id\", doc.Id.Hex())\n\n"
+
+		val += "if err != nil{\n\n"
+
+		val += "err = doc.Save()\n"
+		val += "	if err != nil {\n"
+		val += "		log.Println(\"Failed to bootstrap data for Account:  \" + doc.Id.Hex() + \"  \" + err.Error())\n"
+		val += "	}\n"
+		val += "	log.Println(\"Successfully bootstraped Account:  \" + doc.Id.Hex())\n\n"
+		val += "	log.Printf(\"%+v\\n\", doc)\n\n"
+		val += "}\n\n"
+
+		val += "}\n"
+	}
+	val += "return nil"
 	val += "}\n\n"
 	return val
 }
