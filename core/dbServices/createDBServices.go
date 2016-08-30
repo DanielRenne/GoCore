@@ -12,6 +12,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 	"sync"
 )
@@ -82,6 +83,15 @@ type NOSQLCollection struct {
 type NOSQLSchemaDB struct {
 	Collections []NOSQLCollection `json:"collections"`
 }
+
+var modelToWrite string
+
+// AxisSorter sorts planets by axis.
+type SchemaNameSorter []NOSQLCollection
+
+func (a SchemaNameSorter) Len() int           { return len(a) }
+func (a SchemaNameSorter) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a SchemaNameSorter) Less(i, j int) bool { return a[i].Schema.Name < a[j].Schema.Name }
 
 // This array holds a list of the Schema's created for a model version.
 // It is used to NOT duplicate structs for the model.
@@ -154,6 +164,10 @@ func walkNoSQLSchema() {
 
 func walkNoSQLVersion(path string, versionDir string) {
 
+	initializeModelFile()
+
+	var collections []NOSQLCollection
+
 	var wg sync.WaitGroup
 
 	schemasCreated := make([]NOSQLSchema, 0)
@@ -184,6 +198,10 @@ func walkNoSQLVersion(path string, versionDir string) {
 					e = errUnmarshal
 				}
 
+				for _, col := range schemaDB.Collections {
+					collections = append(collections, col)
+				}
+
 				createNoSQLModel(schemaDB.Collections, serverSettings.WebConfig.DbConnection.Driver, versionDir, &schemasCreated)
 			}()
 		}
@@ -195,6 +213,8 @@ func walkNoSQLVersion(path string, versionDir string) {
 	}
 
 	wg.Wait()
+
+	finalizeModelFile(versionDir, collections)
 }
 
 func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir string, schemasCreated *[]NOSQLSchema) {
@@ -211,12 +231,33 @@ func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir s
 
 	writeNOSQLModelBucket(bucket, serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/bucket.go")
 
+	//Copy Stub Files
+	if driver == DATABASE_DRIVER_MONGODB {
+		copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/mongo/stubs/transaction.go", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/transaction.go")
+		copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/mongo/stubs/transactionObjects.go", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/transactionObjects.go")
+	}
+
+	histTemplate, err := extensions.ReadFile(serverSettings.GOCORE_PATH + "/core/dbServices/mongo/stubs/histTemplate.go")
+
+	if err != nil {
+		color.Red("Error reading histTemplate.go:  " + err.Error())
+		return
+	}
+
+	//Create the Collection Models
 	for _, collection := range collections {
 		val := generateNoSQLModel(collection.Schema, collection, driver, schemasCreated)
 		os.Mkdir(serverSettings.APP_LOCATION+"/models/", 0777)
 		os.Mkdir(serverSettings.APP_LOCATION+"/models/"+versionDir, 0777)
 		os.Mkdir(serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/", 0777)
 		writeNoSQLModelCollection(val, serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/"+extensions.MakeFirstLowerCase(collection.Schema.Name)+".go", collection)
+
+		//Create the Transaction History Table for the Collection
+		histModified := strings.Replace(string(histTemplate[:]), "HistCollection", strings.Title(collection.Name)+"History", -1)
+		histModified = strings.Replace(histModified, "HistEntity", strings.Title(collection.Schema.Name)+"HistoryRecord", -1)
+		histModified = strings.Replace(histModified, "OriginalEntity", strings.Title(collection.Schema.Name), -1)
+
+		writeNoSQLStub(histModified, serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/"+extensions.MakeFirstLowerCase(collection.Schema.Name)+"_Hist.go")
 
 		os.Mkdir(serverSettings.APP_LOCATION+"/webAPIs/", 0777)
 		os.Mkdir(serverSettings.APP_LOCATION+"/webAPIs/"+versionDir, 0777)
@@ -226,6 +267,55 @@ func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir s
 		writeNoSQLWebAPI(cWebAPI, serverSettings.APP_LOCATION+"/webAPIs/"+versionDir+"/webAPI/"+extensions.MakeFirstLowerCase(collection.Schema.Name)+".go", collection)
 	}
 
+}
+
+func initializeModelFile() {
+
+	modelData, err := extensions.ReadFile(serverSettings.GOCORE_PATH + "/core/dbServices/mongo/stubs/model.go")
+
+	if err != nil {
+		color.Red("Failed to read and append model.go:  " + err.Error())
+		return
+	}
+
+	modelToWrite = string(modelData[:])
+	modelToWrite += "\n"
+
+}
+
+func finalizeModelFile(versionDir string, collections []NOSQLCollection) {
+
+	sort.Sort(SchemaNameSorter(collections))
+
+	modelToWrite += "func resolveEntity(key string) modelEntity{\n\n"
+	modelToWrite += "switch key{\n"
+
+	for _, collection := range collections {
+		modelToWrite += "case \"" + strings.Title(collection.Schema.Name) + "\":\n"
+		modelToWrite += " return &" + strings.Title(collection.Schema.Name) + "{}\n"
+
+		modelToWrite += "case \"" + strings.Title(collection.Schema.Name) + "HistoryRecord\":\n"
+		modelToWrite += " return &" + strings.Title(collection.Schema.Name) + "HistoryRecord{}\n"
+	}
+
+	modelToWrite += "}\n"
+	modelToWrite += "return nil\n"
+	modelToWrite += "}\n\n"
+
+	modelToWrite += "\n"
+	modelToWrite += "func resolveHistoryCollection(key string) modelCollection{\n\n"
+	modelToWrite += "switch key{\n"
+
+	for _, collection := range collections {
+		modelToWrite += "case \"" + strings.Title(collection.Name) + "History\":\n"
+		modelToWrite += " return &" + strings.Title(collection.Name) + "History{}\n"
+	}
+
+	modelToWrite += "}\n"
+	modelToWrite += "return nil\n"
+	modelToWrite += "}\n\n"
+
+	writeNoSQLStub(modelToWrite, serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/model.go")
 }
 
 func generateNoSQLModel(schema NOSQLSchema, collection NOSQLCollection, driver string, schemasCreated *[]NOSQLSchema) string {
@@ -278,6 +368,35 @@ func writeNoSQLWebAPI(value string, path string, collection NOSQLCollection) {
 		return
 	}
 	color.Green("Created NOSQL Web API Collection " + collection.Name + " successfully.")
+}
+
+func copyNoSQLStub(source string, dest string) {
+
+	err := extensions.CopyFile(source, dest)
+	if err != nil {
+		color.Red("Failed to copy stub file from " + source + " to " + dest + ":  " + err.Error())
+		return
+	}
+
+	color.Green("Successfully Copied Stub file to " + dest + ".")
+}
+
+func writeNoSQLStub(value string, path string) {
+
+	err := ioutil.WriteFile(path, []byte(value), 0777)
+	if err != nil {
+		color.Red("Failed to write stub file to " + path + ":  " + err.Error())
+		return
+	}
+
+	cmd := exec.Command("gofmt", "-w", path)
+	err = cmd.Start()
+	if err != nil {
+		color.Red("Failed to gofmt on file " + path + ":  " + err.Error())
+		return
+	}
+
+	color.Green("Successfully Wrote Stub file to " + path + ".")
 }
 
 func writeNoSQLModelCollection(value string, path string, collection NOSQLCollection) {
@@ -496,8 +615,12 @@ func genNoSQLRuntime(collection NOSQLCollection, schema NOSQLSchema, driver stri
 	val += genNoSQLSchemaRunTransaction(collection, schema, driver)
 	val += genNoSQLSchemaNew(collection, schema)
 	val += genNoSQLSchemaSave(collection, schema, driver)
+	val += genNoSQLSchemaSaveByTran(collection, schema, driver)
 	val += genNoSQLSchemaDelete(collection, schema, driver)
+	val += genNoSQLSchemaDeleteWithTran(collection, schema, driver)
+	val += genNoSQLUnMarshal(collection, schema, driver)
 	val += genNoSQLSchemaJSONRuntime(schema)
+
 	return val
 }
 
@@ -539,6 +662,111 @@ func genNoSQLSchemaSave(collection NOSQLCollection, schema NOSQLSchema, driver s
 		val += "}\n"
 		val += "return nil\n"
 	}
+	val += "}\n\n"
+	return val
+}
+
+func genNoSQLSchemaSaveByTran(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
+	val := ""
+	val += "func (self *" + strings.Title(schema.Name) + ") SaveWithTran(t *Transaction) error {\n\n"
+	switch driver {
+	case DATABASE_DRIVER_BOLTDB:
+		val += "return dbServices.BoltDB.Save(self)\n"
+	case DATABASE_DRIVER_MONGODB:
+		val += "transactionQueue.RLock()\n"
+		val += "tPersist, ok := transactionQueue.queue[t.Id.Hex()]\n"
+		val += "transactionQueue.RUnlock()\n\n"
+
+		val += "if ok == false {\n"
+		val += "	return errors.New(\"Transaction not present in queue.  Make sure to perform a Begin on your transaction.\")\n"
+		val += "}\n\n"
+
+		val += "t.Collections = append(t.Collections, \"" + strings.Title(collection.Name) + "History\")\n"
+
+		val += "isUpdate := true\n"
+		val += "if self.Id.Hex() == \"\"{\n"
+		val += "	isUpdate = false\n"
+		val += "	self.Id = bson.NewObjectId()\n"
+		val += "}\n"
+
+		val += "newJson, err := self.JSONString()\n\n"
+
+		val += "if err != nil {\n"
+		val += "	return err\n"
+		val += "}\n\n"
+
+		val += "newBase64 := getBase64(newJson)\n"
+
+		val += "var eTransactionNew entityTransaction\n"
+		val += "eTransactionNew.changeType = TRANSACTION_CHANGETYPE_INSERT\n"
+		val += "eTransactionNew.entity = self\n\n"
+
+		val += "var histRecord " + strings.Title(schema.Name) + "HistoryRecord\n"
+		val += "histRecord.TId = t.Id.Hex()\n"
+		val += "histRecord.Data = newBase64\n"
+		val += "histRecord.Type = TRANSACTION_CHANGETYPE_INSERT\n\n"
+
+		val += "var tObjNew TransactionObject\n"
+		val += "tObjNew.TId = t.Id.Hex()\n"
+		val += "tObjNew.DataType = TRANSACTION_DATATYPE_NEW\n"
+		val += "tObjNew.Collection = \"" + strings.Title(schema.Name) + "\"\n"
+		val += "tObjNew.ChgType = TRANSACTION_CHANGETYPE_INSERT\n\n"
+
+		val += "//Get the Original Record if it is a Update\n"
+		val += "if isUpdate {\n\n"
+
+		val += "	tObjNew.ChgType = TRANSACTION_CHANGETYPE_UPDATE\n"
+		val += "	histRecord.Type = TRANSACTION_CHANGETYPE_UPDATE\n"
+		val += "	eTransactionNew.changeType = TRANSACTION_CHANGETYPE_UPDATE\n\n"
+
+		val += "	var col " + strings.Title(collection.Name) + "\n"
+		val += "	original, err := col.Single(\"id\", self.Id.Hex())\n\n"
+
+		val += "	originalJson, err := original.JSONString()\n\n"
+
+		val += "	if err != nil {\n"
+		val += "		return err\n"
+		val += "	}\n\n"
+
+		val += "	originalBase64 := getBase64(originalJson)\n"
+		val += "	histRecord.Data = originalBase64\n\n"
+
+		val += "	var tObj TransactionObject\n"
+		val += "	tObj.TId = t.Id.Hex()\n"
+		val += "	tObj.DataType = TRANSACTION_DATATYPE_ORIGINAL\n"
+		val += "	tObj.Collection = \"" + strings.Title(schema.Name) + "\"\n\n"
+
+		val += "	tObj.Data = originalBase64\n"
+		val += "	tObj.Save()\n"
+		val += "}\n\n"
+
+		val += "var eTransactionOriginal entityTransaction\n"
+		val += "eTransactionOriginal.entity = &histRecord\n\n"
+
+		val += "tPersist.originalItems = append(tPersist.originalItems, eTransactionOriginal)\n"
+		val += "tPersist.newItems = append(tPersist.newItems, eTransactionNew)\n\n"
+
+		val += "tObjNew.Data = newBase64\n"
+		val += "tObjNew.Save()\n\n"
+
+		val += "return nil\n"
+
+		val += "}\n\n"
+	}
+	return val
+}
+
+func genNoSQLUnMarshal(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
+
+	val := ""
+	val += "func (self *" + strings.Title(schema.Name) + ") Unmarshal(data string) error {\n\n"
+
+	val += "err := json.Unmarshal([]byte(data), &self)\n"
+
+	val += "if err != nil {\n"
+	val += "	return err\n"
+	val += "}\n"
+	val += "return nil\n"
 	val += "}\n\n"
 	return val
 }
@@ -1040,6 +1268,68 @@ func genNoSQLSchemaDelete(collection NOSQLCollection, schema NOSQLSchema, driver
 		val += "return dbServices.BoltDB.Remove(self)\n"
 	case "mongoDB":
 		val += "return mongo" + strings.Title(collection.Name) + "Collection.Remove(self)"
+	}
+	val += "}\n\n"
+	return val
+}
+
+func genNoSQLSchemaDeleteWithTran(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
+	val := ""
+
+	val += "func (self *" + strings.Title(schema.Name) + ") DeleteWithTran(t *Transaction) error {\n"
+	switch driver {
+	case "boltDB":
+		val += "return dbServices.BoltDB.Remove(self)\n"
+	case "mongoDB":
+		val += "if self.Id.Hex() == \"\" {\n"
+		val += "return errors.New(\"This record does not exist in the database.  Deletion cannot occur.\")\n"
+		val += "}\n\n"
+
+		val += "transactionQueue.RLock()\n"
+		val += "tPersist, ok := transactionQueue.queue[t.Id.Hex()]\n"
+		val += "transactionQueue.RUnlock()\n\n"
+
+		val += "if ok == false {\n"
+		val += "	return errors.New(\"Transaction not present in queue.  Make sure to perform a Begin on your transaction.\")\n"
+		val += "}\n\n"
+
+		val += "var histRecord " + strings.Title(schema.Name) + "HistoryRecord\n"
+		val += "histRecord.TId = t.Id.Hex()\n\n"
+		val += "histRecord.Type = TRANSACTION_CHANGETYPE_DELETE\n"
+
+		val += "var eTransactionNew entityTransaction\n"
+		val += "eTransactionNew.changeType = TRANSACTION_CHANGETYPE_DELETE\n"
+		val += "eTransactionNew.entity = self\n\n"
+
+		val += "var eTransactionOriginal entityTransaction\n"
+		val += "eTransactionOriginal.changeType = TRANSACTION_CHANGETYPE_DELETE\n"
+		val += "eTransactionOriginal.entity = &histRecord\n\n"
+
+		val += "var col " + strings.Title(collection.Name) + "\n"
+		val += "original, err := col.Single(\"id\", self.Id.Hex())\n\n"
+
+		val += "originalJson, err := original.JSONString()\n\n"
+
+		val += "if err != nil {\n"
+		val += "	return err\n"
+		val += "}\n\n"
+
+		val += "originalBase64 := getBase64(originalJson)\n"
+		val += "histRecord.Data = originalBase64\n\n"
+
+		val += "//Save a TransactionObject for Long Running Transaction Support\n"
+		val += "var tObj TransactionObject\n"
+		val += "tObj.TId = t.Id.Hex()\n"
+		val += "tObj.DataType = TRANSACTION_DATATYPE_ORIGINAL\n"
+		val += "tObj.Collection = \"AccountRole\"\n"
+		val += "tObj.ChgType = TRANSACTION_CHANGETYPE_DELETE\n"
+		val += "tObj.Data = originalBase64\n"
+		val += "tObj.Save()\n\n"
+
+		val += "tPersist.originalItems = append(tPersist.originalItems, eTransactionOriginal)\n"
+		val += "tPersist.newItems = append(tPersist.newItems, eTransactionNew)\n"
+
+		val += "return nil"
 	}
 	val += "}\n\n"
 	return val
