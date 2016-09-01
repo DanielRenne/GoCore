@@ -865,7 +865,7 @@ func genNoSQLSchemaSingle(collection NOSQLCollection, schema NOSQLSchema, driver
 		val += "return\n"
 	case DATABASE_DRIVER_MONGODB:
 
-		val += "if field == \"id\"{\n"
+		val += "if field == \"Id\"{\n"
 		val += "query := mongo" + strings.Title(collection.Name) + "Collection.FindId(bson.ObjectIdHex(value.(string)))\n"
 		val += "e = query.One(&retObj)\n"
 		val += "return\n"
@@ -893,7 +893,7 @@ func genNoSQLSchemaSearch(collection NOSQLCollection, schema NOSQLSchema, driver
 	case DATABASE_DRIVER_MONGODB:
 
 		val += "var query *mgo.Query\n"
-		val += "if field == \"id\"{\n"
+		val += "if field == \"Id\"{\n"
 		val += "query = mongo" + strings.Title(collection.Name) + "Collection.FindId(bson.ObjectIdHex(value.(string)))\n"
 		val += "}else{\n"
 		val += "m := make(bson.M)\n"
@@ -933,7 +933,7 @@ func genNoSQLSchemaSearch(collection NOSQLCollection, schema NOSQLSchema, driver
 	case DATABASE_DRIVER_MONGODB:
 
 		val += "var query *mgo.Query\n"
-		val += "if field == \"id\"{\n"
+		val += "if field == \"Id\"{\n"
 		val += "query = mongo" + strings.Title(collection.Name) + "Collection.FindId(bson.ObjectIdHex(value.(string)))\n"
 		val += "}else{\n"
 		val += "m := make(bson.M)\n"
@@ -1383,7 +1383,7 @@ func genNoSQLSchemaDeleteWithTran(collection NOSQLCollection, schema NOSQLSchema
 		val += "eTransactionOriginal.entity = &histRecord\n\n"
 
 		val += "var col " + strings.Title(collection.Name) + "\n"
-		val += "original, err := col.Single(\"id\", self.Id.Hex())\n\n"
+		val += "original, err := col.Single(\"Id\", self.Id.Hex())\n\n"
 
 		val += "originalJson, err := original.JSONString()\n\n"
 
