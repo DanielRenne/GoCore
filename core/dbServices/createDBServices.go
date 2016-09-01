@@ -17,6 +17,16 @@ import (
 	"sync"
 )
 
+type fieldValidation struct {
+	Required  bool   `json:"required"`
+	Type      string `json:"type"`
+	Min       string `json:"min"`
+	Max       string `json:"max"`
+	Length    string `json:"length"`
+	LengthMax string `json:"lengthMax"`
+	LengthMin string `json:"lengthMin"`
+}
+
 type fieldDef struct {
 	Name      string `json:"name"`
 	Primary   bool   `json:"primary"`
@@ -61,13 +71,14 @@ type createObject struct {
 }
 
 type NOSQLSchemaField struct {
-	Name         string      `json:"name"`
-	Type         string      `json:"type"`
-	Index        string      `json:"index"`
-	OmitEmpty    bool        `json:"omitEmpty"`
-	DefaultValue string      `json:"defaultValue"`
-	Required     bool        `json:"required"`
-	Schema       NOSQLSchema `json:"schema"`
+	Name         string           `json:"name"`
+	Type         string           `json:"type"`
+	Index        string           `json:"index"`
+	OmitEmpty    bool             `json:"omitEmpty"`
+	DefaultValue string           `json:"defaultValue"`
+	Required     bool             `json:"required"`
+	Schema       NOSQLSchema      `json:"schema"`
+	Validation   *fieldValidation `json:"validate, omitempty"`
 }
 
 type NOSQLSchema struct {
@@ -234,7 +245,9 @@ func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir s
 	//Copy Stub Files
 	if driver == DATABASE_DRIVER_MONGODB {
 		copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/mongo/stubs/transaction.go", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/transaction.go")
-		copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/mongo/stubs/transactionObjects.go", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/transactionObjects.go")
+
+		////Support for Long Running Transactions Later Maybe
+		//copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/mongo/stubs/transactionObjects.go", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/transactionObjects.go")
 	}
 
 	histTemplate, err := extensions.ReadFile(serverSettings.GOCORE_PATH + "/core/dbServices/mongo/stubs/histTemplate.go")
@@ -331,12 +344,12 @@ func generateNoSQLModel(schema NOSQLSchema, collection NOSQLCollection, driver s
 	case DATABASE_DRIVER_BOLTDB:
 		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "encoding/json", "github.com/asdine/storm", timeImport})
 	case DATABASE_DRIVER_MONGODB:
-		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "encoding/json", "gopkg.in/mgo.v2", "gopkg.in/mgo.v2/bson", "log", timeImport, "errors", "encoding/base64"})
+		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "encoding/json", "gopkg.in/mgo.v2", "gopkg.in/mgo.v2/bson", "log", timeImport, "errors", "encoding/base64", "reflect"})
 		// val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "encoding/json", "gopkg.in/mgo.v2/bson", "log", "time"})
 	}
 
 	val += genNoSQLCollection(collection, driver)
-	val += genNoSQLSchema(schema, driver, schemasCreated)
+	val += genNoSQLSchema(schema, driver, schemasCreated, 0)
 	val += genNoSQLRuntime(collection, schema, driver)
 	return val
 }
@@ -484,7 +497,7 @@ func checkSchemaForDateTime(schema NOSQLSchema) bool {
 }
 
 // Recursive function that will recurse type object and objectArray's in order to create structs for the model.
-func genNoSQLSchema(schema NOSQLSchema, driver string, schemasCreated *[]NOSQLSchema) string {
+func genNoSQLSchema(schema NOSQLSchema, driver string, schemasCreated *[]NOSQLSchema, seed int) string {
 
 	val := ""
 	schemasToCreate := []NOSQLSchema{}
@@ -510,15 +523,62 @@ func genNoSQLSchema(schema NOSQLSchema, driver string, schemasCreated *[]NOSQLSc
 			omitEmpty = ",omitempty"
 		}
 
-		val += "\n\t" + strings.Replace(strings.Title(field.Name), " ", "_", -1) + "\t" + genNoSQLFieldType(schema, field, driver) + "\t\t`json:\"" + extensions.MakeFirstLowerCase(field.Name) + omitEmpty + "\"" + additionalTags + "`"
+		val += "\n\t" + strings.Replace(strings.Title(field.Name), " ", "_", -1) + "\t" + genNoSQLFieldType(schema, field, driver) + "\t\t`json:\"" + strings.Title(field.Name) + omitEmpty + "\"" + additionalTags + "`"
+	}
+
+	//Add Validation
+	if seed == 0 {
+		val += "\n"
+		val += "Errors struct{\n"
+
+		for _, field := range schema.Fields {
+			if field.Type == "object" {
+				val += strings.Title(field.Name) + " struct{\n"
+				val += genNoSQLValidationRecusion(field.Schema)
+				val += "} `json:\"" + strings.Title(field.Name) + "\"`\n"
+				continue
+			}
+			if field.Type == "objectArray" {
+				val += strings.Title(field.Name) + " []struct{\n"
+				val += genNoSQLValidationRecusion(field.Schema)
+				val += "} `json:\"" + strings.Title(field.Name) + "\"`\n"
+				continue
+			}
+
+			val += strings.Title(field.Name) + " string `json:\"" + strings.Title(field.Name) + "\"`\n"
+		}
+
+		val += "} `json:\"Errors\" bson:\"-\"`\n"
 	}
 
 	val += "\n}\n\n"
 
 	for _, schemaToCreate := range schemasToCreate {
-		val += genNoSQLSchema(schemaToCreate, driver, schemasCreated)
+		val += genNoSQLSchema(schemaToCreate, driver, schemasCreated, 1)
 	}
 
+	return val
+}
+
+//Recursive Function to Generate Validation Schema
+func genNoSQLValidationRecusion(schema NOSQLSchema) string {
+	val := ""
+	for _, field := range schema.Fields {
+		if field.Type == "object" {
+			val += strings.Title(field.Name) + "struct{\n"
+			val += genNoSQLValidationRecusion(field.Schema)
+			val += "} `json:\"" + strings.Title(field.Name) + "\""
+			continue
+		}
+		if field.Type == "objectArray" {
+			val += strings.Title(field.Name) + "[]struct{\n"
+			val += genNoSQLValidationRecusion(field.Schema)
+			val += "} `json:\"" + strings.Title(field.Name) + "\""
+			continue
+		}
+
+		val += strings.Title(field.Name) + " string `json:\"" + strings.Title(field.Name) + "\"`\n"
+	}
 	return val
 }
 
@@ -533,6 +593,21 @@ func hasGeneratedModelSchema(name string, schemasCreated *[]NOSQLSchema) bool {
 }
 
 func genNoSQLAdditionalTags(field NOSQLSchemaField, driver string) string {
+
+	validationTags := ""
+
+	if field.Validation != nil {
+		validationTags = "validate:\""
+
+		validationTags += extensions.BoolToString(field.Validation.Required) + ","
+		validationTags += field.Validation.Type + ","
+		validationTags += field.Validation.Min + ","
+		validationTags += field.Validation.Max + ","
+		validationTags += field.Validation.Length + ","
+		validationTags += field.Validation.LengthMax + ","
+		validationTags += field.Validation.LengthMin + "\""
+	}
+
 	switch driver {
 	case DATABASE_DRIVER_BOLTDB:
 
@@ -548,7 +623,7 @@ func genNoSQLAdditionalTags(field NOSQLSchemaField, driver string) string {
 		}
 	case DATABASE_DRIVER_MONGODB:
 
-		tags := " bson:\"" + field.Name + "\""
+		tags := " bson:\"" + strings.Title(field.Name) + "\"" + " " + validationTags
 		switch field.Index {
 		case "":
 			return tags
@@ -616,6 +691,7 @@ func genNoSQLRuntime(collection NOSQLCollection, schema NOSQLSchema, driver stri
 	val += genNoSQLSchemaNew(collection, schema)
 	val += genNoSQLSchemaSave(collection, schema, driver)
 	val += genNoSQLSchemaSaveByTran(collection, schema, driver)
+	val += genNoSQLValidate(collection, schema, driver)
 	val += genNoSQLSchemaDelete(collection, schema, driver)
 	val += genNoSQLSchemaDeleteWithTran(collection, schema, driver)
 	val += genNoSQLUnMarshal(collection, schema, driver)
@@ -673,12 +749,22 @@ func genNoSQLSchemaSaveByTran(collection NOSQLCollection, schema NOSQLSchema, dr
 	case DATABASE_DRIVER_BOLTDB:
 		val += "return dbServices.BoltDB.Save(self)\n"
 	case DATABASE_DRIVER_MONGODB:
+
+		val += "//Validate the Model first.  If it fails then clean up the transaction in memory\n"
+		val += "err := self.ValidateAndClean()\n"
+		val += "if err != nil {\n"
+		val += "transactionQueue.Lock()\n"
+		val += "delete(transactionQueue.queue, t.Id.Hex())\n"
+		val += "transactionQueue.Unlock()\n"
+		val += "return err\n"
+		val += "}\n"
+
 		val += "transactionQueue.RLock()\n"
 		val += "tPersist, ok := transactionQueue.queue[t.Id.Hex()]\n"
 		val += "transactionQueue.RUnlock()\n\n"
 
 		val += "if ok == false {\n"
-		val += "	return errors.New(\"Transaction not present in queue.  Make sure to perform a Begin on your transaction.\")\n"
+		val += "	return errors.New(dbServices.ERROR_CODE_TRANSACTION_NOT_PRESENT)\n"
 		val += "}\n\n"
 
 		val += "t.Collections = append(t.Collections, \"" + strings.Title(collection.Name) + "History\")\n"
@@ -706,16 +792,9 @@ func genNoSQLSchemaSaveByTran(collection NOSQLCollection, schema NOSQLSchema, dr
 		val += "histRecord.Data = newBase64\n"
 		val += "histRecord.Type = TRANSACTION_CHANGETYPE_INSERT\n\n"
 
-		val += "var tObjNew TransactionObject\n"
-		val += "tObjNew.TId = t.Id.Hex()\n"
-		val += "tObjNew.DataType = TRANSACTION_DATATYPE_NEW\n"
-		val += "tObjNew.Collection = \"" + strings.Title(schema.Name) + "\"\n"
-		val += "tObjNew.ChgType = TRANSACTION_CHANGETYPE_INSERT\n\n"
-
 		val += "//Get the Original Record if it is a Update\n"
 		val += "if isUpdate {\n\n"
 
-		val += "	tObjNew.ChgType = TRANSACTION_CHANGETYPE_UPDATE\n"
 		val += "	histRecord.Type = TRANSACTION_CHANGETYPE_UPDATE\n"
 		val += "	eTransactionNew.changeType = TRANSACTION_CHANGETYPE_UPDATE\n\n"
 
@@ -731,13 +810,6 @@ func genNoSQLSchemaSaveByTran(collection NOSQLCollection, schema NOSQLSchema, dr
 		val += "	originalBase64 := getBase64(originalJson)\n"
 		val += "	histRecord.Data = originalBase64\n\n"
 
-		val += "	var tObj TransactionObject\n"
-		val += "	tObj.TId = t.Id.Hex()\n"
-		val += "	tObj.DataType = TRANSACTION_DATATYPE_ORIGINAL\n"
-		val += "	tObj.Collection = \"" + strings.Title(schema.Name) + "\"\n\n"
-
-		val += "	tObj.Data = originalBase64\n"
-		val += "	tObj.Save()\n"
 		val += "}\n\n"
 
 		val += "var eTransactionOriginal entityTransaction\n"
@@ -746,13 +818,18 @@ func genNoSQLSchemaSaveByTran(collection NOSQLCollection, schema NOSQLSchema, dr
 		val += "tPersist.originalItems = append(tPersist.originalItems, eTransactionOriginal)\n"
 		val += "tPersist.newItems = append(tPersist.newItems, eTransactionNew)\n\n"
 
-		val += "tObjNew.Data = newBase64\n"
-		val += "tObjNew.Save()\n\n"
-
 		val += "return nil\n"
 
 		val += "}\n\n"
 	}
+	return val
+}
+
+func genNoSQLValidate(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
+	val := ""
+	val += "func (self *" + strings.Title(schema.Name) + ") ValidateAndClean() error {\n\n"
+	val += "return validateFields(" + strings.Title(schema.Name) + "{}, self, reflect.ValueOf(self).Elem())"
+	val += "}\n\n"
 	return val
 }
 
@@ -1282,7 +1359,7 @@ func genNoSQLSchemaDeleteWithTran(collection NOSQLCollection, schema NOSQLSchema
 		val += "return dbServices.BoltDB.Remove(self)\n"
 	case "mongoDB":
 		val += "if self.Id.Hex() == \"\" {\n"
-		val += "return errors.New(\"This record does not exist in the database.  Deletion cannot occur.\")\n"
+		val += "return errors.New(dbServices.ERROR_CODE_TRANSACTION_RECORD_NOT_EXISTS)\n"
 		val += "}\n\n"
 
 		val += "transactionQueue.RLock()\n"
@@ -1290,7 +1367,7 @@ func genNoSQLSchemaDeleteWithTran(collection NOSQLCollection, schema NOSQLSchema
 		val += "transactionQueue.RUnlock()\n\n"
 
 		val += "if ok == false {\n"
-		val += "	return errors.New(\"Transaction not present in queue.  Make sure to perform a Begin on your transaction.\")\n"
+		val += "	return errors.New(dbServices.ERROR_CODE_TRANSACTION_NOT_PRESENT)\n"
 		val += "}\n\n"
 
 		val += "var histRecord " + strings.Title(schema.Name) + "HistoryRecord\n"
@@ -1316,15 +1393,6 @@ func genNoSQLSchemaDeleteWithTran(collection NOSQLCollection, schema NOSQLSchema
 
 		val += "originalBase64 := getBase64(originalJson)\n"
 		val += "histRecord.Data = originalBase64\n\n"
-
-		val += "//Save a TransactionObject for Long Running Transaction Support\n"
-		val += "var tObj TransactionObject\n"
-		val += "tObj.TId = t.Id.Hex()\n"
-		val += "tObj.DataType = TRANSACTION_DATATYPE_ORIGINAL\n"
-		val += "tObj.Collection = \"AccountRole\"\n"
-		val += "tObj.ChgType = TRANSACTION_CHANGETYPE_DELETE\n"
-		val += "tObj.Data = originalBase64\n"
-		val += "tObj.Save()\n\n"
 
 		val += "tPersist.originalItems = append(tPersist.originalItems, eTransactionOriginal)\n"
 		val += "tPersist.newItems = append(tPersist.newItems, eTransactionNew)\n"

@@ -2,6 +2,11 @@ package model
 
 import (
 	"encoding/base64"
+	"errors"
+	"github.com/DanielRenne/GoCore/core/dbServices"
+	"github.com/asaskevich/govalidator"
+	"reflect"
+	"strings"
 	"sync"
 	"time"
 )
@@ -103,4 +108,66 @@ func removeDuplicates(elements []string) []string {
 	}
 	// Return the new slice.
 	return result
+}
+
+func validateFields(x interface{}, objectToUpdate interface{}, val reflect.Value) error {
+
+	isError := false
+	for key, value := range dbServices.GetValidationTags(x) {
+
+		fieldValue := dbServices.GetReflectionFieldValue(key, objectToUpdate)
+		validations := strings.Split(value, ",")
+
+		if validations[0] != "" {
+			if err := validateRequired(fieldValue, validations[0]); err != nil {
+				dbServices.SetFieldValue("Errors."+key, val, err.Error())
+				isError = true
+			}
+		}
+		if validations[1] != "" {
+
+			cleanup, err := validateType(fieldValue, validations[1])
+
+			if err != nil {
+				dbServices.SetFieldValue("Errors."+key, val, err.Error())
+				isError = true
+			}
+
+			if cleanup != "" {
+				dbServices.SetFieldValue(key, val, cleanup)
+			}
+
+		}
+
+	}
+	if isError {
+		return errors.New(dbServices.ERROR_CODE_VALIDATION)
+	}
+
+	return nil
+}
+
+func validateRequired(value string, tagValue string) error {
+	if tagValue == "true" {
+		if value == "" {
+			return errors.New(dbServices.ERROR_CODE_VALIDATION_REQUIRED)
+		}
+		return nil
+	}
+	return nil
+}
+
+func validateType(value string, tagValue string) (string, error) {
+	switch tagValue {
+	case dbServices.VALIDATION_TYPE_EMAIL:
+		return "", validateEmail(value)
+	}
+	return "", nil
+}
+
+func validateEmail(value string) error {
+	if !govalidator.IsEmail(value) {
+		return errors.New(dbServices.ERROR_CODE_VALIDATION_EMAIL)
+	}
+	return nil
 }

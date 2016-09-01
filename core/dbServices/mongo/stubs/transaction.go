@@ -307,15 +307,10 @@ func (self *Transaction) Delete() error {
 
 func (self *Transaction) Begin() error {
 
+	self.Id = bson.NewObjectId()
 	self.CreateDate = time.Now()
 	self.LastUpdate = time.Now()
 	self.CompleteDate = time.Unix(0, 0)
-
-	err := self.Save()
-	if err != nil {
-		log.Println("Failed to Insert new Transaction to DB:  " + err.Error())
-		return err
-	}
 
 	transactionQueue.Lock()
 	var persistObj transactionsToPersist
@@ -406,16 +401,6 @@ func (self *Transaction) Commit() error {
 
 	if !rollBack {
 
-		//Cleanup the transactionObjects Table
-		var transactionObjects TransactionObjects
-		tObjects, err := transactionObjects.Search("tId", self.Id.Hex())
-
-		if err == nil {
-			for _, tObj := range tObjects {
-				tObj.Delete() //May create Orphan transaction Objects if delete Fails.  A query could be performed to find orphans.
-			}
-		}
-
 		transactionQueue.Lock()
 		delete(transactionQueue.queue, self.Id.Hex())
 		transactionQueue.Unlock()
@@ -423,7 +408,7 @@ func (self *Transaction) Commit() error {
 		self.Committed = true
 		self.CompleteDate = time.Now()
 		self.Collections = removeDuplicates(self.Collections)
-		err = self.Save()
+		err := self.Save()
 		if err != nil {
 			return errors.New("Failed to Finalized Transaction Record.")
 		}
