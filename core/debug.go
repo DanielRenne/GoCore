@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"reflect"
 	"runtime"
 	"runtime/debug"
 )
@@ -75,6 +76,7 @@ func (self *core_debug) Dump(values ...interface{}) {
 	Logger.Println("")
 	if Logger != nil {
 		for _, value := range values {
+			Logger.Println("Instance Type:" + reflect.TypeOf(value).Name())
 			Logger.Println(fmt.Printf("%+v\n", value))
 		}
 	}
@@ -87,7 +89,7 @@ func (self *core_debug) Dump(values ...interface{}) {
 func (self *core_debug) GetDump(values ...interface{}) string {
 	var buffer bytes.Buffer
 	for _, value := range values {
-		buffer.WriteString(fmt.Sprintf("%+v\n", value))
+		buffer.WriteString("(" + reflect.TypeOf(value).Name() + ")" + fmt.Sprintf("%+v\n", value))
 	}
 	return buffer.String()
 }
