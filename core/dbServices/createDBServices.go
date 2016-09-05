@@ -245,6 +245,7 @@ func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir s
 	//Copy Stub Files
 	if driver == DATABASE_DRIVER_MONGODB {
 		copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/mongo/stubs/transaction.go", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/transaction.go")
+		copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/mongo/stubs/query.go", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/query.go")
 
 		////Support for Long Running Transactions Later Maybe
 		//copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/mongo/stubs/transactionObjects.go", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/transactionObjects.go")
@@ -680,11 +681,15 @@ func genNoSQLFieldType(schema NOSQLSchema, field NOSQLSchemaField, driver string
 
 func genNoSQLRuntime(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
 	val := ""
-	val += genNoSQLSchemaSingle(collection, schema, driver)
-	val += genNoSQLSchemaSearch(collection, schema, driver)
-	val += genNoSQLSchemaAll(collection, schema, driver)
-	val += genNoSQLSchemaAllByIndex(collection, schema, driver)
-	val += genNoSQLSchemaRange(collection, schema, driver)
+	if driver == DATABASE_DRIVER_BOLTDB {
+		val += genNoSQLSchemaSingle(collection, schema, driver)
+		val += genNoSQLSchemaSearch(collection, schema, driver)
+		val += genNoSQLSchemaAll(collection, schema, driver)
+		val += genNoSQLSchemaAllByIndex(collection, schema, driver)
+		val += genNoSQLSchemaRange(collection, schema, driver)
+	}
+
+	val += genNOSQLQuery(collection, schema, driver)
 	val += genNoSQLSchemaIndex(collection, schema, driver)
 	val += genNoSQLBootstrap(collection, schema, driver)
 	val += genNoSQLSchemaRunTransaction(collection, schema, driver)
@@ -697,6 +702,17 @@ func genNoSQLRuntime(collection NOSQLCollection, schema NOSQLSchema, driver stri
 	val += genNoSQLUnMarshal(collection, schema, driver)
 	val += genNoSQLSchemaJSONRuntime(schema)
 
+	return val
+}
+
+func genNOSQLQuery(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
+
+	val := ""
+	val += "func (obj " + strings.Title(collection.Name) + ") Query() *Query {\n"
+	val += "	var query Query\n"
+	val += "	query.collection = mongo" + strings.Title(collection.Name) + "Collection\n"
+	val += "	return &query\n"
+	val += "}\n"
 	return val
 }
 
@@ -798,8 +814,12 @@ func genNoSQLSchemaSaveByTran(collection NOSQLCollection, schema NOSQLSchema, dr
 		val += "	histRecord.Type = TRANSACTION_CHANGETYPE_UPDATE\n"
 		val += "	eTransactionNew.changeType = TRANSACTION_CHANGETYPE_UPDATE\n\n"
 
-		val += "	var col " + strings.Title(collection.Name) + "\n"
-		val += "	original, err := col.Single(\"id\", self.Id.Hex())\n\n"
+		val += "var original " + strings.Title(schema.Name) + "\n"
+		val += "err := Accounts{}.Query().ById(self.Id, &original)\n\n"
+
+		val += "if err != nil {\n"
+		val += "	return err\n"
+		val += "}\n\n"
 
 		val += "	originalJson, err := original.JSONString()\n\n"
 
@@ -1382,8 +1402,12 @@ func genNoSQLSchemaDeleteWithTran(collection NOSQLCollection, schema NOSQLSchema
 		val += "eTransactionOriginal.changeType = TRANSACTION_CHANGETYPE_DELETE\n"
 		val += "eTransactionOriginal.entity = &histRecord\n\n"
 
-		val += "var col " + strings.Title(collection.Name) + "\n"
-		val += "original, err := col.Single(\"Id\", self.Id.Hex())\n\n"
+		val += "var original " + strings.Title(schema.Name) + "\n"
+		val += "err := Accounts{}.Query().ById(self.Id, &original)\n\n"
+
+		val += "if err != nil {\n"
+		val += "	return err\n"
+		val += "}\n\n"
 
 		val += "originalJson, err := original.JSONString()\n\n"
 

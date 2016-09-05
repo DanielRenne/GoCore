@@ -9,4 +9,6 @@ const (
 	ERROR_CODE_TRANSACTION_RECORD_NOT_EXISTS = "transactionNoRecordExists"
 
 	VALIDATION_TYPE_EMAIL = "email"
+
+	SCHEMA_ID_FIELD = "Id"
 )
