@@ -329,12 +329,6 @@ func finalizeModelFile(versionDir string, collections []NOSQLCollection) {
 	modelToWrite += "return nil\n"
 	modelToWrite += "}\n\n"
 
-	for _, collection := range collections {
-		modelToWrite += "func Query" + strings.Title(collection.Name) + "() *Query{\n"
-		modelToWrite += "return " + strings.Title(collection.Name) + "{}.Query()"
-		modelToWrite += "}\n\n"
-	}
-
 	writeNoSQLStub(modelToWrite, serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/model.go")
 }
 
@@ -456,7 +450,8 @@ func writeNOSQLModelBucket(value string, path string) {
 
 func genNoSQLCollection(collection NOSQLCollection, driver string) string {
 	val := ""
-	val += "type " + strings.Title(collection.Name) + " struct{}\n\n"
+	val += "var " + strings.Title(collection.Name) + " model" + strings.Title(collection.Name) + "\n\n"
+	val += "type model" + strings.Title(collection.Name) + " struct{}\n\n"
 
 	if driver == DATABASE_DRIVER_MONGODB {
 
@@ -470,9 +465,8 @@ func genNoSQLCollection(collection NOSQLCollection, driver string) string {
 		val += "mongo" + strings.Title(collection.Name) + "Collection = dbServices.MongoDB.C(\"" + collection.Name + "\")\n"
 		val += "ci := mgo.CollectionInfo{ForceIdIndex: true}\n"
 		val += "mongo" + strings.Title(collection.Name) + "Collection.Create(&ci)\n"
-		val += "var obj " + strings.Title(collection.Name) + "\n"
-		val += "obj.Index()\n"
-		val += "obj.Bootstrap()\n"
+		val += strings.Title(collection.Name) + ".Index()\n"
+		val += strings.Title(collection.Name) + ".Bootstrap()\n"
 		val += "return\n"
 		val += "}\n"
 		val += "<- dbServices.WaitForDatabase()\n"
@@ -714,7 +708,7 @@ func genNoSQLRuntime(collection NOSQLCollection, schema NOSQLSchema, driver stri
 func genNOSQLQuery(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
 
 	val := ""
-	val += "func (obj " + strings.Title(collection.Name) + ") Query() *Query {\n"
+	val += "func (obj model" + strings.Title(collection.Name) + ") Query() *Query {\n"
 	val += "	var query Query\n"
 	val += "	query.collection = mongo" + strings.Title(collection.Name) + "Collection\n"
 	val += "	return &query\n"
@@ -821,7 +815,7 @@ func genNoSQLSchemaSaveByTran(collection NOSQLCollection, schema NOSQLSchema, dr
 		val += "	eTransactionNew.changeType = TRANSACTION_CHANGETYPE_UPDATE\n\n"
 
 		val += "var original " + strings.Title(schema.Name) + "\n"
-		val += "err := " + strings.Title(collection.Name) + "{}.Query().ById(self.Id, &original)\n\n"
+		val += "err := " + strings.Title(collection.Name) + ".Query().ById(self.Id, &original)\n\n"
 
 		val += "if err != nil {\n"
 		val += "	return err\n"
@@ -1219,7 +1213,7 @@ func genNoSQLSchemaRange(collection NOSQLCollection, schema NOSQLSchema, driver 
 func genNoSQLSchemaIndex(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
 	val := ""
 
-	val += "func (obj *" + strings.Title(collection.Name) + ") Index() error {\n"
+	val += "func (obj model" + strings.Title(collection.Name) + ") Index() error {\n"
 	switch driver {
 	case DATABASE_DRIVER_BOLTDB:
 		val += "return dbServices.BoltDB.Init(&" + strings.Title(schema.Name) + "{})\n"
@@ -1253,7 +1247,7 @@ func genNoSQLSchemaIndex(collection NOSQLCollection, schema NOSQLSchema, driver 
 func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
 	val := ""
 
-	val += "func (obj *" + strings.Title(collection.Name) + ") Bootstrap() error {\n"
+	val += "func (obj model" + strings.Title(collection.Name) + ") Bootstrap() error {\n"
 
 	//First check if the path exists to bootstrap data
 	path := serverSettings.APP_LOCATION + "/db/bootstrap/" + extensions.MakeFirstLowerCase(collection.Name) + "/" + extensions.MakeFirstLowerCase(collection.Name) + ".json"
@@ -1315,7 +1309,7 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 func genNoSQLSchemaRunTransaction(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
 	val := ""
 
-	val += "func (obj *" + strings.Title(collection.Name) + ") RunTransaction(objects []" + strings.Title(schema.Name) + ") error {\n\n"
+	val += "func (obj model" + strings.Title(collection.Name) + ") RunTransaction(objects []" + strings.Title(schema.Name) + ") error {\n\n"
 	switch driver {
 	case DATABASE_DRIVER_BOLTDB:
 
@@ -1342,7 +1336,7 @@ func genNoSQLSchemaRunTransaction(collection NOSQLCollection, schema NOSQLSchema
 func genNoSQLSchemaNew(collection NOSQLCollection, schema NOSQLSchema) string {
 	val := ""
 
-	val += "func (obj *" + strings.Title(collection.Name) + ") New() *" + strings.Title(schema.Name) + " {\n"
+	val += "func (obj model" + strings.Title(collection.Name) + ") New() *" + strings.Title(schema.Name) + " {\n"
 	val += "return &" + strings.Title(schema.Name) + "{}\n"
 	val += "}\n\n"
 	return val
@@ -1409,7 +1403,7 @@ func genNoSQLSchemaDeleteWithTran(collection NOSQLCollection, schema NOSQLSchema
 		val += "eTransactionOriginal.entity = &histRecord\n\n"
 
 		val += "var original " + strings.Title(schema.Name) + "\n"
-		val += "err := " + strings.Title(collection.Name) + "{}.Query().ById(self.Id, &original)\n\n"
+		val += "err := " + strings.Title(collection.Name) + ".Query().ById(self.Id, &original)\n\n"
 
 		val += "if err != nil {\n"
 		val += "	return err\n"
