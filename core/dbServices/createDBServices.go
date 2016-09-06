@@ -815,7 +815,7 @@ func genNoSQLSchemaSaveByTran(collection NOSQLCollection, schema NOSQLSchema, dr
 		val += "	eTransactionNew.changeType = TRANSACTION_CHANGETYPE_UPDATE\n\n"
 
 		val += "var original " + strings.Title(schema.Name) + "\n"
-		val += "err := Accounts{}.Query().ById(self.Id, &original)\n\n"
+		val += "err := " + strings.Title(collection.Name) + "{}.Query().ById(self.Id, &original)\n\n"
 
 		val += "if err != nil {\n"
 		val += "	return err\n"
@@ -1403,7 +1403,7 @@ func genNoSQLSchemaDeleteWithTran(collection NOSQLCollection, schema NOSQLSchema
 		val += "eTransactionOriginal.entity = &histRecord\n\n"
 
 		val += "var original " + strings.Title(schema.Name) + "\n"
-		val += "err := Accounts{}.Query().ById(self.Id, &original)\n\n"
+		val += "err := " + strings.Title(collection.Name) + "{}.Query().ById(self.Id, &original)\n\n"
 
 		val += "if err != nil {\n"
 		val += "	return err\n"

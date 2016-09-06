@@ -2,9 +2,10 @@ package model
 
 import (
 	"errors"
+	"reflect"
+
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"reflect"
 )
 
 const (
@@ -68,28 +69,49 @@ func (self *Query) Filter(criteria map[string]interface{}) *Query {
 	return self
 }
 
-func (self *Query) In(field string, values ...string) *Query {
+func (self *Query) In(criteria map[string]interface{}) *Query {
 
-	if field == "Id" {
-		var ids []bson.ObjectId
+	if self.m == nil {
+		self.m = make(bson.M)
+	}
 
-		for _, val := range values {
+	for key, value := range criteria {
 
-			objId, err := self.getIdHex(val)
-			if err != nil {
-				self.e = err
-				continue
+		if key == "Id" {
+			var ids []bson.ObjectId
+
+			k := reflect.TypeOf(value).Kind()
+			if k == reflect.Slice || k == reflect.Array {
+				values := reflect.ValueOf(value)
+
+				for i := 0; i < values.Len(); i++ {
+					val := values.Index(i).Interface()
+					objId, err := self.getIdHex(val)
+					if err != nil {
+						self.e = err
+						continue
+					}
+
+					ids = append(ids, objId)
+				}
+			} else {
+				objId, err := self.getIdHex(value)
+				if err != nil {
+					self.e = err
+					continue
+				}
+
+				ids = append(ids, objId)
 			}
 
-			ids = append(ids, objId)
+			self.m["_id"] = bson.M{"$in": ids}
+
+		} else {
+			self.m[key] = bson.M{"$in": value}
 		}
 
-		self.q = self.collection.Find(bson.M{"_id": bson.M{"$in": ids}})
-
-	} else {
-
-		self.q = self.collection.Find(bson.M{field: bson.M{"$in": values}})
 	}
+
 	return self
 
 }
@@ -199,7 +221,7 @@ func (self *Query) getIdHex(val interface{}) (bson.ObjectId, error) {
 
 	if myIdType.Name() != "ObjectId" && myIdType.Kind() == reflect.String && val.(string) != "" {
 		return bson.ObjectIdHex(val.(string)), nil
-	} else if myIdType.Name() == "ObjectId" && myIdType.Kind() == reflect.String && val.(string) != "" {
+	} else if myIdType.Name() == "ObjectId" && myIdType.Kind() == reflect.String {
 		return bson.ObjectIdHex(myIdInstanceHex.Call([]reflect.Value{})[0].String()), nil
 	} else {
 		return bson.NewObjectId(), errors.New(ERROR_INVALID_ID_VALUE)
