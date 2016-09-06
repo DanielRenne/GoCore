@@ -329,6 +329,12 @@ func finalizeModelFile(versionDir string, collections []NOSQLCollection) {
 	modelToWrite += "return nil\n"
 	modelToWrite += "}\n\n"
 
+	for _, collection := range collections {
+		modelToWrite += "func Query" + strings.Title(collection.Name) + "() *Query{\n"
+		modelToWrite += "return " + strings.Title(collection.Name) + "{}.Query()"
+		modelToWrite += "}\n\n"
+	}
+
 	writeNoSQLStub(modelToWrite, serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/model.go")
 }
 
