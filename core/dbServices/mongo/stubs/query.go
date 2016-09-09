@@ -27,6 +27,12 @@ type Query struct {
 	e          error
 }
 
+func Criteria(key string, value interface{}) map[string]interface{} {
+	criteria := make(map[string]interface{}, 1)
+	criteria[key] = value
+	return criteria
+}
+
 func (self *Query) ById(val interface{}, x interface{}) error {
 
 	objId, err := self.getIdHex(val)
@@ -69,12 +75,31 @@ func (self *Query) Filter(criteria map[string]interface{}) *Query {
 	return self
 }
 
+func (self *Query) Exclude(criteria map[string]interface{}) *Query {
+
+	if self.m == nil {
+		self.m = make(bson.M)
+	}
+
+	self.inNot(criteria, "$nin")
+
+	return self
+
+}
+
 func (self *Query) In(criteria map[string]interface{}) *Query {
 
 	if self.m == nil {
 		self.m = make(bson.M)
 	}
 
+	self.inNot(criteria, "$in")
+
+	return self
+
+}
+
+func (self *Query) inNot(criteria map[string]interface{}, queryType string) {
 	for key, value := range criteria {
 
 		if key == "Id" {
@@ -104,16 +129,27 @@ func (self *Query) In(criteria map[string]interface{}) *Query {
 				ids = append(ids, objId)
 			}
 
-			self.m["_id"] = bson.M{"$in": ids}
+			self.m["_id"] = bson.M{queryType: ids}
 
 		} else {
-			self.m[key] = bson.M{"$in": value}
+			var valuesToQuery []interface{}
+
+			k := reflect.TypeOf(value).Kind()
+			if k == reflect.Slice || k == reflect.Array {
+				values := reflect.ValueOf(value)
+				for i := 0; i < values.Len(); i++ {
+					val := values.Index(i).Interface()
+					valuesToQuery = append(valuesToQuery, val)
+				}
+
+			} else {
+				valuesToQuery = append(valuesToQuery, value)
+			}
+
+			self.m[key] = bson.M{queryType: valuesToQuery}
 		}
 
 	}
-
-	return self
-
 }
 
 func (self *Query) Range(criteria map[string]Range) *Query {
