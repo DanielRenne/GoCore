@@ -2,8 +2,12 @@ package model
 
 import (
 	"errors"
+	"log"
 	"reflect"
+	"strings"
+	"time"
 
+	"github.com/DanielRenne/GoCore/core/dbServices"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -11,6 +15,8 @@ import (
 const (
 	ERROR_INVALID_ID_VALUE = "Invalid Id value for query."
 )
+
+type queryError func() error
 
 type Range struct {
 	Min interface{}
@@ -40,8 +46,19 @@ func (self *Query) ById(val interface{}, x interface{}) error {
 		return err
 	}
 
-	self.q = self.collection.FindId(objId)
-	return self.q.One(x)
+	q := self.collection.FindId(objId)
+
+	err = q.One(x)
+
+	if err != nil {
+		callback := func() error {
+			return q.One(x)
+		}
+
+		return self.handleQueryError(err, callback)
+	}
+
+	return err
 
 }
 
@@ -189,7 +206,18 @@ func (self *Query) All(x interface{}) error {
 	}
 
 	q := self.generateQuery()
-	return q.All(x)
+
+	err := q.All(x)
+
+	if err != nil {
+
+		callback := func() error {
+			return q.All(x)
+		}
+
+		return self.handleQueryError(err, callback)
+	}
+	return err
 }
 
 func (self *Query) One(x interface{}) error {
@@ -199,7 +227,18 @@ func (self *Query) One(x interface{}) error {
 	}
 
 	q := self.generateQuery()
-	return q.One(x)
+
+	err := q.One(x)
+
+	if err != nil {
+
+		callback := func() error {
+			return q.One(x)
+		}
+
+		return self.handleQueryError(err, callback)
+	}
+	return err
 }
 
 func (self *Query) Count(x interface{}) (int, error) {
@@ -209,7 +248,19 @@ func (self *Query) Count(x interface{}) (int, error) {
 	}
 
 	q := self.generateQuery()
-	return q.Count()
+
+	count, err := q.Count()
+
+	if err != nil {
+
+		callback := func() error {
+			count, err = q.Count()
+			return err
+		}
+
+		return count, self.handleQueryError(err, callback)
+	}
+	return count, err
 }
 
 func (self *Query) Distinct(key string, x interface{}) error {
@@ -219,7 +270,54 @@ func (self *Query) Distinct(key string, x interface{}) error {
 	}
 
 	q := self.generateQuery()
-	return q.Distinct(key, x)
+
+	err := q.Distinct(key, x)
+
+	if err != nil {
+
+		callback := func() error {
+			return q.Distinct(key, x)
+		}
+
+		return self.handleQueryError(err, callback)
+	}
+	return err
+
+}
+
+func (self *Query) handleQueryError(err error, callback queryError) error {
+
+	log.Println("Hanlding Query Error:  " + err.Error())
+
+	if self.isDBConnectionError(err) {
+
+		for i := 0; i < 2; i++ {
+
+			log.Println("Attempting to Refresh Mongo Session")
+			dbServices.MongoSession.Refresh()
+
+			err = callback()
+			if !self.isDBConnectionError(err) {
+				return err
+			}
+
+			time.Sleep(200 * time.Millisecond)
+		}
+	}
+
+	return err
+
+}
+
+func (self *Query) isDBConnectionError(err error) bool {
+	if err == nil {
+		return false
+	}
+
+	if strings.Contains(err.Error(), "Closed explicitly") || strings.Contains(err.Error(), "read: operation timed out") || strings.Contains(err.Error(), "read: connection reset by peer") {
+		return true
+	}
+	return false
 }
 
 func (self *Query) generateQuery() *mgo.Query {
