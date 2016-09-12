@@ -287,8 +287,6 @@ func (self *Query) Distinct(key string, x interface{}) error {
 
 func (self *Query) handleQueryError(err error, callback queryError) error {
 
-	log.Println("Hanlding Query Error:  " + err.Error())
-
 	if self.isDBConnectionError(err) {
 
 		for i := 0; i < 2; i++ {
