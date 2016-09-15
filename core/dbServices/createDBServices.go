@@ -2,11 +2,11 @@ package dbServices
 
 import (
 	"encoding/json"
+
 	"github.com/DanielRenne/GoCore/core/extensions"
 	"github.com/DanielRenne/GoCore/core/serverSettings"
 	// "fmt"
 	"encoding/base64"
-	"github.com/fatih/color"
 	"io/ioutil"
 	"log"
 	"os"
@@ -15,6 +15,8 @@ import (
 	"sort"
 	"strings"
 	"sync"
+
+	"github.com/fatih/color"
 )
 
 type fieldValidation struct {
@@ -74,6 +76,7 @@ type NOSQLSchemaField struct {
 	Name         string           `json:"name"`
 	Type         string           `json:"type"`
 	Index        string           `json:"index"`
+	View         bool             `json:"view"`
 	OmitEmpty    bool             `json:"omitEmpty"`
 	DefaultValue string           `json:"defaultValue"`
 	Required     bool             `json:"required"`
@@ -231,7 +234,7 @@ func walkNoSQLVersion(path string, versionDir string) {
 func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir string, schemasCreated *[]NOSQLSchema) {
 
 	//Clean the Model and API Directory
-	extensions.RemoveDirectory(serverSettings.APP_LOCATION + "/models/" + versionDir + "/model")
+	// extensions.RemoveDirectory(serverSettings.APP_LOCATION + "/models/" + versionDir + "/model")
 	extensions.RemoveDirectory(serverSettings.APP_LOCATION + "/webAPIs/" + versionDir + "/webAPI")
 
 	//Create a NOSQLBucket Model
@@ -501,6 +504,8 @@ func checkSchemaForDateTime(schema NOSQLSchema) bool {
 func genNoSQLSchema(schema NOSQLSchema, driver string, schemasCreated *[]NOSQLSchema, seed int) string {
 
 	val := ""
+	hasViews := false
+
 	schemasToCreate := []NOSQLSchema{}
 
 	if hasGeneratedModelSchema(schema.Name, schemasCreated) == true {
@@ -513,6 +518,10 @@ func genNoSQLSchema(schema NOSQLSchema, driver string, schemasCreated *[]NOSQLSc
 	val += "type " + strings.Title(schema.Name) + " struct{\n"
 
 	for _, field := range schema.Fields {
+
+		if field.View {
+			hasViews = true
+		}
 
 		if field.Type == "object" || field.Type == "objectArray" {
 			schemasToCreate = append(schemasToCreate, field.Schema)
@@ -549,7 +558,21 @@ func genNoSQLSchema(schema NOSQLSchema, driver string, schemasCreated *[]NOSQLSc
 			val += strings.Title(field.Name) + " string `json:\"" + strings.Title(field.Name) + "\"`\n"
 		}
 
-		val += "} `json:\"Errors\" bson:\"-\"`\n"
+		val += "} `json:\"Errors\" bson:\"-\"`\n\n"
+	}
+
+	//Add Views
+	if hasViews {
+		val += "\n"
+		val += "Views struct{\n"
+
+		for _, field := range schema.Fields {
+			if field.View {
+				val += strings.Title(field.Name) + " " + genNoSQLFieldType(schema, field, driver) + " `json:\"" + strings.Title(field.Name) + "\"`\n"
+			}
+		}
+
+		val += "} `json:\"Views\" bson:\"-\"`\n\n"
 	}
 
 	val += "\n}\n\n"
