@@ -42,6 +42,7 @@ Available Types (type):
 	boolArray
 	objectArray
 	selfArray
+	join
 
 Available Indexes (index):  NOTE:  primary indexed fields will be set to uint64.
 
@@ -52,6 +53,41 @@ Available Indexes (index):  NOTE:  primary indexed fields will be set to uint64.
 Optional Fields:
 
 	omitEmpty:  bool
+		Omits empty values from serializing as a field to json string.
+	view: bool
+		Adds the field to a Views struct which is not persisted to the DB.  Only value types are supported.  NO objects or arrays.
+	validation: object
+		Validates the field on a SaveWithTran.  Adds a copy of the complete schema object fields as strings in an Errors struct.  See Validation fields... 
+	join: object
+		Provides references to establish foriegn collection objects.  See join fields....
+	 
+	
+
+Validation Fields:
+
+	required:  bool
+		Requires a string to NOT be empty.
+	type:  string
+		A custom validation for the field.  Supported types are "email".  More supported types are coming soon.
+	min: string
+		The minimum value for the field.
+	max: string
+		The maximum value for the field.
+	length: string
+		The length of the field.
+	lengthMax: string
+		The maximum length of the field.
+	lengthMin: string
+		The minimum length of the field.
+		
+Join Fields:
+
+	collectionName:  string
+		The name of the collection to be joined.
+	schemaName: string
+		The name of the schema based on the collection.
+	fieldName: string
+		The name of the key to be joined to the collection id field.
 	
 
 Below is an example of an example schema:

@@ -14,6 +14,7 @@ import (
 
 const (
 	ERROR_INVALID_ID_VALUE = "Invalid Id value for query."
+	JOIN_ALL               = "All"
 )
 
 type queryError func() error
@@ -21,6 +22,13 @@ type queryError func() error
 type Range struct {
 	Min interface{}
 	Max interface{}
+}
+
+type join struct {
+	collectionName   string
+	joinFieldRefName string
+	joinFieldName    string
+	joinSchemaName   string
 }
 
 type Query struct {
@@ -31,6 +39,8 @@ type Query struct {
 	sort       []string
 	collection *mgo.Collection
 	e          error
+	joins      []string
+	allJoins   bool
 }
 
 func Criteria(key string, value interface{}) map[string]interface{} {
@@ -52,14 +62,30 @@ func (self *Query) ById(val interface{}, x interface{}) error {
 
 	if err != nil {
 		callback := func() error {
-			return q.One(x)
+			err = q.One(x)
+			if err != nil {
+				return err
+			}
+			return self.processJoins(x)
 		}
 
 		return self.handleQueryError(err, callback)
 	}
 
-	return err
+	return self.processJoins(x)
 
+}
+
+func (self *Query) Join(criteria string) *Query {
+	if self.allJoins {
+		return self
+	}
+	if criteria == JOIN_ALL {
+		self.allJoins = true
+		return self
+	}
+	self.joins = append(self.joins, criteria)
+	return self
 }
 
 func (self *Query) Filter(criteria map[string]interface{}) *Query {
@@ -212,12 +238,16 @@ func (self *Query) All(x interface{}) error {
 	if err != nil {
 
 		callback := func() error {
-			return q.All(x)
+			err = q.All(x)
+			if err != nil {
+				return err
+			}
+			return self.processJoins(x)
 		}
 
 		return self.handleQueryError(err, callback)
 	}
-	return err
+	return self.processJoins(x)
 }
 
 func (self *Query) One(x interface{}) error {
@@ -233,12 +263,16 @@ func (self *Query) One(x interface{}) error {
 	if err != nil {
 
 		callback := func() error {
-			return q.One(x)
+			err = q.One(x)
+			if err != nil {
+				return err
+			}
+			return self.processJoins(x)
 		}
 
 		return self.handleQueryError(err, callback)
 	}
-	return err
+	return self.processJoins(x)
 }
 
 func (self *Query) Count(x interface{}) (int, error) {
@@ -276,14 +310,141 @@ func (self *Query) Distinct(key string, x interface{}) error {
 	if err != nil {
 
 		callback := func() error {
-			return q.Distinct(key, x)
+			err = q.Distinct(key, x)
+			if err != nil {
+				return err
+			}
+			return self.processJoins(x)
+
 		}
 
 		return self.handleQueryError(err, callback)
 	}
-	return err
+
+	return self.processJoins(x)
 
 }
+
+func (self *Query) processJoins(x interface{}) (err error) {
+
+	if self.allJoins || len(self.joins) > 0 {
+
+		//Check if x is a single struct or an Array
+		_, isArray := valueType(x)
+
+		if isArray {
+			source := reflect.ValueOf(x).Elem()
+
+			var joins []join
+			if source.Len() > 0 {
+				joins = self.getJoins(source.Index(0))
+			}
+
+			if len(joins) == 0 {
+				return
+			}
+
+			//Advanced way is to get the count and chunk.  For now we will iterate.
+			for i := 0; i < source.Len(); i++ {
+				s := source.Index(i)
+				for _, j := range joins {
+					id := reflect.ValueOf(s.FieldByName(j.joinFieldRefName).Interface()).String()
+					joinsField := s.FieldByName("Joins")
+					setField := joinsField.FieldByName(j.joinFieldName)
+
+					err = joinField(j.joinSchemaName, j.collectionName, id, setField)
+					if err != nil {
+						return
+					}
+				}
+			}
+
+		} else {
+			source := reflect.ValueOf(x).Elem()
+
+			var joins []join
+			joins = self.getJoins(source)
+
+			if len(joins) == 0 {
+				return
+			}
+
+			s := source
+			for _, j := range joins {
+				id := reflect.ValueOf(s.FieldByName(j.joinFieldRefName).Interface()).String()
+				joinsField := s.FieldByName("Joins")
+				setField := joinsField.FieldByName(j.joinFieldName)
+
+				err = joinField(j.joinSchemaName, j.collectionName, id, setField)
+				if err != nil {
+					return
+				}
+			}
+		}
+		return nil
+	}
+	return nil
+}
+
+func (self *Query) getJoins(x reflect.Value) (joins []join) {
+
+	joinsField := x.FieldByName("Joins")
+
+	if joinsField.Kind() != reflect.Struct {
+		return
+	}
+
+	if self.allJoins {
+		for i := 0; i < joinsField.NumField(); i++ {
+
+			typeField := joinsField.Type().Field(i)
+			name := typeField.Name
+			tagValue := typeField.Tag.Get("join")
+			splitValue := strings.Split(tagValue, ",")
+			var j join
+			j.collectionName = splitValue[0]
+			j.joinSchemaName = splitValue[1]
+			j.joinFieldRefName = splitValue[2]
+			j.joinFieldName = name
+			joins = append(joins, j)
+		}
+	} else {
+		for _, name := range self.joins {
+
+			typeField, ok := joinsField.Type().FieldByName(name)
+			if ok == false {
+				continue
+			}
+
+			tagValue := typeField.Tag.Get("join")
+			splitValue := strings.Split(tagValue, ",")
+			var j join
+			j.collectionName = splitValue[0]
+			j.joinSchemaName = splitValue[1]
+			j.joinFieldRefName = splitValue[2]
+			j.joinFieldName = name
+			joins = append(joins, j)
+		}
+	}
+
+	return
+}
+
+func valueType(m interface{}) (t reflect.Type, isArray bool) {
+	t = reflect.Indirect(reflect.ValueOf(m)).Type()
+	if t.Kind() == reflect.Slice || t.Kind() == reflect.Array {
+		isArray = true
+		t = t.Elem()
+		if t.Kind() == reflect.Ptr {
+			t = t.Elem()
+		}
+		return
+
+	}
+	return
+}
+
+// func (self *Query) processJoinReflection
 
 func (self *Query) handleQueryError(err error, callback queryError) error {
 

@@ -29,6 +29,12 @@ type fieldValidation struct {
 	LengthMin string `json:"lengthMin"`
 }
 
+type join struct {
+	CollectionName string `json:"collectionName"`
+	SchemaName     string `json:"schemaName"`
+	FieldName      string `json:"fieldName"`
+}
+
 type fieldDef struct {
 	Name      string `json:"name"`
 	Primary   bool   `json:"primary"`
@@ -82,6 +88,7 @@ type NOSQLSchemaField struct {
 	Required     bool             `json:"required"`
 	Schema       NOSQLSchema      `json:"schema"`
 	Validation   *fieldValidation `json:"validate, omitempty"`
+	Join         join             `json:"join"`
 }
 
 type NOSQLSchema struct {
@@ -320,6 +327,19 @@ func finalizeModelFile(versionDir string, collections []NOSQLCollection) {
 	modelToWrite += "}\n\n"
 
 	modelToWrite += "\n"
+	modelToWrite += "func resolveCollection(key string) collection{\n\n"
+	modelToWrite += "switch key{\n"
+
+	for _, collection := range collections {
+		modelToWrite += "case \"" + strings.Title(collection.Name) + "\":\n"
+		modelToWrite += " return &model" + strings.Title(collection.Name) + "{}\n"
+	}
+
+	modelToWrite += "}\n"
+	modelToWrite += "return nil\n"
+	modelToWrite += "}\n\n"
+
+	modelToWrite += "\n"
 	modelToWrite += "func resolveHistoryCollection(key string) modelCollection{\n\n"
 	modelToWrite += "switch key{\n"
 
@@ -330,6 +350,32 @@ func finalizeModelFile(versionDir string, collections []NOSQLCollection) {
 
 	modelToWrite += "}\n"
 	modelToWrite += "return nil\n"
+	modelToWrite += "}\n\n"
+
+	modelToWrite += "func joinField(fieldType string, collectionName string, id string, fieldToSet reflect.Value) (err error) {\n\n"
+	modelToWrite += "c := resolveCollection(collectionName)\n"
+	modelToWrite += "if c == nil {\n"
+	modelToWrite += "	err = errors.New(\"Failed to resolve collection:  \" + collectionName)\n"
+	modelToWrite += "	return\n"
+	modelToWrite += "}\n"
+
+	modelToWrite += "switch fieldType{\n"
+
+	for _, collection := range collections {
+		modelToWrite += "case \"" + strings.Title(collection.Schema.Name) + "\":\n"
+		modelToWrite += "var y " + strings.Title(collection.Schema.Name) + "\n"
+		modelToWrite += "err = c.Query().ById(id, &y)\n"
+		modelToWrite += "if err == nil {\n"
+
+		modelToWrite += " err = y.JoinFields() //Recursively join fields.\n"
+		modelToWrite += "if err == nil {\n"
+		modelToWrite += "	fieldToSet.Set(reflect.ValueOf(&y))\n"
+		modelToWrite += "}\n"
+		modelToWrite += "}\n"
+	}
+
+	modelToWrite += "}\n"
+	modelToWrite += "return \n"
 	modelToWrite += "}\n\n"
 
 	writeNoSQLStub(modelToWrite, serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/model.go")
@@ -505,6 +551,7 @@ func genNoSQLSchema(schema NOSQLSchema, driver string, schemasCreated *[]NOSQLSc
 
 	val := ""
 	hasViews := false
+	hasJoins := false
 
 	schemasToCreate := []NOSQLSchema{}
 
@@ -521,6 +568,11 @@ func genNoSQLSchema(schema NOSQLSchema, driver string, schemasCreated *[]NOSQLSc
 
 		if field.View {
 			hasViews = true
+			continue
+		}
+		if field.Type == "join" {
+			hasJoins = true
+			continue
 		}
 
 		if field.Type == "object" || field.Type == "objectArray" {
@@ -542,6 +594,11 @@ func genNoSQLSchema(schema NOSQLSchema, driver string, schemasCreated *[]NOSQLSc
 		val += "Errors struct{\n"
 
 		for _, field := range schema.Fields {
+
+			if field.View || field.Type == "join" {
+				continue
+			}
+
 			if field.Type == "object" {
 				val += strings.Title(field.Name) + " struct{\n"
 				val += genNoSQLValidationRecusion(field.Schema)
@@ -573,6 +630,20 @@ func genNoSQLSchema(schema NOSQLSchema, driver string, schemasCreated *[]NOSQLSc
 		}
 
 		val += "} `json:\"Views\" bson:\"-\"`\n\n"
+	}
+
+	//Add Joins
+	if hasJoins {
+		val += "\n"
+		val += "Joins struct{\n"
+
+		for _, field := range schema.Fields {
+			if field.Type == "join" {
+				val += strings.Title(field.Name) + " *" + field.Join.SchemaName + " `json:\"" + strings.Title(field.Name) + ",omitempty\" join:\"" + strings.Title(field.Join.CollectionName) + "," + strings.Title(field.Join.SchemaName) + "," + strings.Title(field.Join.FieldName) + "\"`\n"
+			}
+		}
+
+		val += "} `json:\"Joins\" bson:\"-\"`\n\n"
 	}
 
 	val += "\n}\n\n"
@@ -722,6 +793,7 @@ func genNoSQLRuntime(collection NOSQLCollection, schema NOSQLSchema, driver stri
 	val += genNoSQLValidate(collection, schema, driver)
 	val += genNoSQLSchemaDelete(collection, schema, driver)
 	val += genNoSQLSchemaDeleteWithTran(collection, schema, driver)
+	val += genNoSQLSchemaJoinFields(collection, schema, driver)
 	val += genNoSQLUnMarshal(collection, schema, driver)
 	val += genNoSQLSchemaJSONRuntime(schema)
 
@@ -1447,6 +1519,36 @@ func genNoSQLSchemaDeleteWithTran(collection NOSQLCollection, schema NOSQLSchema
 		val += "return nil"
 	}
 	val += "}\n\n"
+	return val
+}
+
+func genNoSQLSchemaJoinFields(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
+	val := ""
+	val += "func (self *" + strings.Title(schema.Name) + ") JoinFields() (err error) {\n\n"
+
+	val += "source := reflect.ValueOf(self).Elem()\n\n"
+
+	val += "var joins []join\n"
+	val += "joins = getJoins(source)\n\n"
+
+	val += "if len(joins) == 0 {\n"
+	val += "	return\n"
+	val += "}\n\n"
+
+	val += "s := source\n"
+	val += "for _, j := range joins {\n"
+	val += "	id := reflect.ValueOf(s.FieldByName(j.joinFieldRefName).Interface()).String()\n"
+	val += "	joinsField := s.FieldByName(\"Joins\")\n"
+	val += "	setField := joinsField.FieldByName(j.joinFieldName)\n\n"
+
+	val += "	err = joinField(j.joinSchemaName, j.collectionName, id, setField)\n"
+	val += "	if err != nil {\n"
+	val += "		return\n"
+	val += "	}\n"
+	val += "}\n"
+	val += "return\n"
+	val += "}\n\n"
+
 	return val
 }
 
