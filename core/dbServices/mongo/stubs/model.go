@@ -196,16 +196,40 @@ func validateEmail(value string) error {
 	return nil
 }
 
-func getJoins(x reflect.Value) (joins []join) {
+func getJoins(x reflect.Value, remainingRecursions string) (joins []join) {
+	if remainingRecursions == "" {
+		return
+	}
+
+	fields := strings.Split(remainingRecursions, ".")
+	fieldName := fields[0]
+
 	joinsField := x.FieldByName("Joins")
 
 	if joinsField.Kind() != reflect.Struct {
 		return
 	}
 
-	for i := 0; i < joinsField.NumField(); i++ {
+	if fieldName == JOIN_ALL {
+		for i := 0; i < joinsField.NumField(); i++ {
 
-		typeField := joinsField.Type().Field(i)
+			typeField := joinsField.Type().Field(i)
+			name := typeField.Name
+			tagValue := typeField.Tag.Get("join")
+			splitValue := strings.Split(tagValue, ",")
+			var j join
+			j.collectionName = splitValue[0]
+			j.joinSchemaName = splitValue[1]
+			j.joinFieldRefName = splitValue[2]
+			j.joinFieldName = name
+			j.joinSpecified = JOIN_ALL
+			joins = append(joins, j)
+		}
+	} else {
+		typeField, ok := joinsField.Type().FieldByName(fieldName)
+		if ok == false {
+			return
+		}
 		name := typeField.Name
 		tagValue := typeField.Tag.Get("join")
 		splitValue := strings.Split(tagValue, ",")
@@ -214,6 +238,7 @@ func getJoins(x reflect.Value) (joins []join) {
 		j.joinSchemaName = splitValue[1]
 		j.joinFieldRefName = splitValue[2]
 		j.joinFieldName = name
+		j.joinSpecified = strings.Replace(remainingRecursions, fieldName+".", "", 1)
 		joins = append(joins, j)
 	}
 	return

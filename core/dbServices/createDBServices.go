@@ -352,7 +352,7 @@ func finalizeModelFile(versionDir string, collections []NOSQLCollection) {
 	modelToWrite += "return nil\n"
 	modelToWrite += "}\n\n"
 
-	modelToWrite += "func joinField(fieldType string, collectionName string, id string, fieldToSet reflect.Value) (err error) {\n\n"
+	modelToWrite += "func joinField(fieldType string, collectionName string, id string, fieldToSet reflect.Value, remainingRecursions string) (err error) {\n\n"
 	modelToWrite += "c := resolveCollection(collectionName)\n"
 	modelToWrite += "if c == nil {\n"
 	modelToWrite += "	err = errors.New(\"Failed to resolve collection:  \" + collectionName)\n"
@@ -367,7 +367,7 @@ func finalizeModelFile(versionDir string, collections []NOSQLCollection) {
 		modelToWrite += "err = c.Query().ById(id, &y)\n"
 		modelToWrite += "if err == nil {\n"
 
-		modelToWrite += " err = y.JoinFields() //Recursively join fields.\n"
+		modelToWrite += " err = y.JoinFields(remainingRecursions) //Recursively join fields.\n"
 		modelToWrite += "if err == nil {\n"
 		modelToWrite += "	fieldToSet.Set(reflect.ValueOf(&y))\n"
 		modelToWrite += "}\n"
@@ -1524,12 +1524,12 @@ func genNoSQLSchemaDeleteWithTran(collection NOSQLCollection, schema NOSQLSchema
 
 func genNoSQLSchemaJoinFields(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
 	val := ""
-	val += "func (self *" + strings.Title(schema.Name) + ") JoinFields() (err error) {\n\n"
+	val += "func (self *" + strings.Title(schema.Name) + ") JoinFields(remainingRecursions string) (err error) {\n\n"
 
 	val += "source := reflect.ValueOf(self).Elem()\n\n"
 
 	val += "var joins []join\n"
-	val += "joins = getJoins(source)\n\n"
+	val += "joins = getJoins(source, remainingRecursions)\n\n"
 
 	val += "if len(joins) == 0 {\n"
 	val += "	return\n"
@@ -1541,7 +1541,7 @@ func genNoSQLSchemaJoinFields(collection NOSQLCollection, schema NOSQLSchema, dr
 	val += "	joinsField := s.FieldByName(\"Joins\")\n"
 	val += "	setField := joinsField.FieldByName(j.joinFieldName)\n\n"
 
-	val += "	err = joinField(j.joinSchemaName, j.collectionName, id, setField)\n"
+	val += "	err = joinField(j.joinSchemaName, j.collectionName, id, setField, j.joinSpecified)\n"
 	val += "	if err != nil {\n"
 	val += "		return\n"
 	val += "	}\n"

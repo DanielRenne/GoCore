@@ -29,6 +29,7 @@ type join struct {
 	joinFieldRefName string
 	joinFieldName    string
 	joinSchemaName   string
+	joinSpecified    string
 }
 
 type Query struct {
@@ -352,7 +353,7 @@ func (self *Query) processJoins(x interface{}) (err error) {
 					joinsField := s.FieldByName("Joins")
 					setField := joinsField.FieldByName(j.joinFieldName)
 
-					err = joinField(j.joinSchemaName, j.collectionName, id, setField)
+					err = joinField(j.joinSchemaName, j.collectionName, id, setField, j.joinSpecified)
 					if err != nil {
 						return
 					}
@@ -375,7 +376,7 @@ func (self *Query) processJoins(x interface{}) (err error) {
 				joinsField := s.FieldByName("Joins")
 				setField := joinsField.FieldByName(j.joinFieldName)
 
-				err = joinField(j.joinSchemaName, j.collectionName, id, setField)
+				err = joinField(j.joinSchemaName, j.collectionName, id, setField, j.joinSpecified)
 				if err != nil {
 					return
 				}
@@ -406,12 +407,16 @@ func (self *Query) getJoins(x reflect.Value) (joins []join) {
 			j.joinSchemaName = splitValue[1]
 			j.joinFieldRefName = splitValue[2]
 			j.joinFieldName = name
+			j.joinSpecified = JOIN_ALL
 			joins = append(joins, j)
 		}
 	} else {
 		for _, name := range self.joins {
 
-			typeField, ok := joinsField.Type().FieldByName(name)
+			fields := strings.Split(name, ".")
+			fieldName := fields[0]
+
+			typeField, ok := joinsField.Type().FieldByName(fieldName)
 			if ok == false {
 				continue
 			}
@@ -422,7 +427,8 @@ func (self *Query) getJoins(x reflect.Value) (joins []join) {
 			j.collectionName = splitValue[0]
 			j.joinSchemaName = splitValue[1]
 			j.joinFieldRefName = splitValue[2]
-			j.joinFieldName = name
+			j.joinFieldName = fieldName
+			j.joinSpecified = strings.Replace(name, fieldName+".", "", 1)
 			joins = append(joins, j)
 		}
 	}
