@@ -67,6 +67,10 @@ func init() {
 	go clearTransactionQueue()
 }
 
+func Q(k string, v interface{}) map[string]interface{} {
+	return map[string]interface{}{k: v}
+}
+
 //Every 12 hours check the transactionQueue and remove any outstanding stale transactions > 48 hours old
 func clearTransactionQueue() {
 

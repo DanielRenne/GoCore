@@ -394,7 +394,7 @@ func generateNoSQLModel(schema NOSQLSchema, collection NOSQLCollection, driver s
 	case DATABASE_DRIVER_BOLTDB:
 		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "encoding/json", "github.com/asdine/storm", timeImport})
 	case DATABASE_DRIVER_MONGODB:
-		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "encoding/json", "gopkg.in/mgo.v2", "gopkg.in/mgo.v2/bson", "log", timeImport, "errors", "encoding/base64", "reflect"})
+		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "encoding/json", "gopkg.in/mgo.v2", "gopkg.in/mgo.v2/bson", "log", "time", "errors", "encoding/base64", "reflect"})
 		// val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "encoding/json", "gopkg.in/mgo.v2/bson", "log", "time"})
 	}
 
@@ -587,6 +587,10 @@ func genNoSQLSchema(schema NOSQLSchema, driver string, schemasCreated *[]NOSQLSc
 
 		val += "\n\t" + strings.Replace(strings.Title(field.Name), " ", "_", -1) + "\t" + genNoSQLFieldType(schema, field, driver) + "\t\t`json:\"" + strings.Title(field.Name) + omitEmpty + "\"" + additionalTags + "`"
 	}
+
+	val += "\n\t CreateDate time.Time `json:\"CreateDate\" bson:\"CreateDate\"`"
+	val += "\n\t UpdateDate time.Time `json:\"UpdateDate\" bson:\"UpdateDate\"`"
+	val += "\n\t LastUpdateId string `json:\"LastUpdateId\" bson:\"LastUpdateId\"`"
 
 	//Add Validation
 	if seed == 0 {
@@ -884,7 +888,11 @@ func genNoSQLSchemaSaveByTran(collection NOSQLCollection, schema NOSQLSchema, dr
 		val += "if self.Id.Hex() == \"\"{\n"
 		val += "	isUpdate = false\n"
 		val += "	self.Id = bson.NewObjectId()\n"
+		val += "  self.CreateDate = time.Now()\n"
 		val += "}\n"
+
+		val += "	self.UpdateDate = time.Now()\n"
+		val += "	self.LastUpdateId = t.UserId\n"
 
 		val += "newJson, err := self.JSONString()\n\n"
 
