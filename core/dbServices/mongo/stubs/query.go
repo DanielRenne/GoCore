@@ -276,7 +276,7 @@ func (self *Query) One(x interface{}) error {
 	return self.processJoins(x)
 }
 
-func (self *Query) Count(x interface{}) (int, error) {
+func (self *Query) Count() (int, error) {
 
 	if self.e != nil {
 		return 0, self.e
