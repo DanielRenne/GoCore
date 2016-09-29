@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/DanielRenne/GoCore/core/dbServices"
+	"github.com/DanielRenne/GoCore/core/extensions"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -62,6 +63,7 @@ func (self *Query) ById(val interface{}, x interface{}) error {
 	err = q.One(x)
 
 	if err != nil {
+		// This callback is used for if the Ethernet port is unplugged
 		callback := func() error {
 			err = q.One(x)
 			if err != nil {
@@ -237,7 +239,7 @@ func (self *Query) All(x interface{}) error {
 	err := q.All(x)
 
 	if err != nil {
-
+		// This callback is used for if the Ethernet port is unplugged
 		callback := func() error {
 			err = q.All(x)
 			if err != nil {
@@ -263,16 +265,26 @@ func (self *Query) One(x interface{}) error {
 
 	if err != nil {
 
+		// This callback is used for if the Ethernet port is unplugged
 		callback := func() error {
 			err = q.One(x)
 			if err != nil {
 				return err
+			}
+			cnt, _ := q.Count()
+			if cnt != 1 {
+				return errors.New("Did not return exactly one row.  Returned " + extensions.IntToString(cnt))
 			}
 			return self.processJoins(x)
 		}
 
 		return self.handleQueryError(err, callback)
 	}
+	cnt, _ := q.Count()
+	if cnt != 1 {
+		return errors.New("Did not return exactly one row.  Returned " + extensions.IntToString(cnt))
+	}
+
 	return self.processJoins(x)
 }
 
@@ -288,6 +300,7 @@ func (self *Query) Count() (int, error) {
 
 	if err != nil {
 
+		// This callback is used for if the Ethernet port is unplugged
 		callback := func() error {
 			count, err = q.Count()
 			return err
@@ -310,6 +323,7 @@ func (self *Query) Distinct(key string, x interface{}) error {
 
 	if err != nil {
 
+		// This callback is used for if the Ethernet port is unplugged
 		callback := func() error {
 			err = q.Distinct(key, x)
 			if err != nil {
