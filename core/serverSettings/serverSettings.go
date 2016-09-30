@@ -39,7 +39,7 @@ type info struct {
 	TermsOfService string  `json:termsOfService"`
 }
 
-type application struct {
+type Application struct {
 	Name                  string        `json:"name"`
 	Domain                string        `json:"domain"`
 	HttpPort              int           `json:"httpPort"`
@@ -59,7 +59,7 @@ type application struct {
 
 type webConfigObj struct {
 	DbConnections []dbConnection `json:"dbConnections"`
-	Application   application    `json:"application"`
+	Application   Application    `json:"application"`
 	DbConnection  dbConnection
 }
 
