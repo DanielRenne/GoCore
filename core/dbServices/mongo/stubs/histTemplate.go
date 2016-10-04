@@ -2,14 +2,16 @@ package model
 
 import (
 	"encoding/json"
-	"errors"
+	"log"
+
 	"github.com/DanielRenne/GoCore/core/dbServices"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"log"
 )
 
-type HistCollection struct{}
+var HistCollection modelHistCollection
+
+type modelHistCollection struct{}
 
 var mongoHistCollectionCollection *mgo.Collection
 
@@ -18,17 +20,20 @@ func init() {
 
 		for {
 			if dbServices.MongoDB != nil {
-				log.Println("Building Indexes for MongoDB collection HistCollection:")
-				mongoHistCollectionCollection = dbServices.MongoDB.C("HistCollection")
-				ci := mgo.CollectionInfo{ForceIdIndex: true}
-				mongoHistCollectionCollection.Create(&ci)
-				var obj HistCollection
-				obj.Index()
+				initHistCollection()
 				return
 			}
 			<-dbServices.WaitForDatabase()
 		}
 	}()
+}
+
+func initHistCollection() {
+	log.Println("Building Indexes for MongoDB collection HistCollection:")
+	mongoHistCollectionCollection = dbServices.MongoDB.C("HistCollection")
+	ci := mgo.CollectionInfo{ForceIdIndex: true}
+	mongoHistCollectionCollection.Create(&ci)
+	HistCollection.Index()
 }
 
 type HistEntity struct {
@@ -38,21 +43,15 @@ type HistEntity struct {
 	Type int           `json:"type" bson:"type"`
 }
 
-func (self *HistCollection) Single(field string, value interface{}) (retObj HistEntity, e error) {
-	if field == "id" {
-		query := mongoHistCollectionCollection.FindId(bson.ObjectIdHex(value.(string)))
-		e = query.One(&retObj)
-		return
-	}
-	m := make(bson.M)
-	m[field] = value
-	query := mongoHistCollectionCollection.Find(m)
-	e = query.One(&retObj)
-	return
+func (obj modelHistCollection) Query() *Query {
+	var query Query
+	query.collection = mongoHistCollectionCollection
+	return &query
 }
 
-func (self *HistCollection) Rollback(transactionId string) error {
-	rows, err := self.Search("tId", transactionId)
+func (self *modelHistCollection) Rollback(transactionId string) error {
+	var rows []HistEntity
+	err := self.Query().Filter(Criteria("tId", transactionId)).All(&rows)
 
 	if err != nil {
 		return err
@@ -85,187 +84,7 @@ func (self *HistCollection) Rollback(transactionId string) error {
 	return err
 }
 
-func (obj *HistCollection) Search(field string, value interface{}) (retObj []HistEntity, e error) {
-	var query *mgo.Query
-	if field == "id" {
-		query = mongoHistCollectionCollection.FindId(bson.ObjectIdHex(value.(string)))
-	} else {
-		m := make(bson.M)
-		m[field] = value
-		query = mongoHistCollectionCollection.Find(m)
-	}
-
-	e = query.All(&retObj)
-	return
-}
-
-func (obj *HistCollection) SearchAdvanced(field string, value interface{}, limit int, skip int) (retObj []HistEntity, e error) {
-	var query *mgo.Query
-	if field == "id" {
-		query = mongoHistCollectionCollection.FindId(bson.ObjectIdHex(value.(string)))
-	} else {
-		m := make(bson.M)
-		m[field] = value
-		query = mongoHistCollectionCollection.Find(m)
-	}
-
-	if limit == 0 && skip == 0 {
-		e = query.All(&retObj)
-		if len(retObj) == 0 {
-			retObj = []HistEntity{}
-		}
-		return
-	}
-	if limit > 0 && skip > 0 {
-		e = query.Limit(limit).Skip(skip).All(&retObj)
-		if len(retObj) == 0 {
-			retObj = []HistEntity{}
-		}
-		return
-	}
-	if limit > 0 {
-		e = query.Limit(limit).All(&retObj)
-		if len(retObj) == 0 {
-			retObj = []HistEntity{}
-		}
-		return
-	}
-	if skip > 0 {
-		e = query.Skip(skip).All(&retObj)
-		if len(retObj) == 0 {
-			retObj = []HistEntity{}
-		}
-		return
-	}
-	return
-}
-
-func (obj *HistCollection) All() (retObj []HistEntity, e error) {
-	e = mongoHistCollectionCollection.Find(bson.M{}).All(&retObj)
-	if len(retObj) == 0 {
-		retObj = []HistEntity{}
-	}
-	return
-}
-
-func (obj *HistCollection) AllAdvanced(limit int, skip int) (retObj []HistEntity, e error) {
-	if limit == 0 && skip == 0 {
-		e = mongoHistCollectionCollection.Find(bson.M{}).All(&retObj)
-		if len(retObj) == 0 {
-			retObj = []HistEntity{}
-		}
-		return
-	}
-	if limit > 0 && skip > 0 {
-		e = mongoHistCollectionCollection.Find(bson.M{}).Limit(limit).Skip(skip).All(&retObj)
-		if len(retObj) == 0 {
-			retObj = []HistEntity{}
-		}
-		return
-	}
-	if limit > 0 {
-		e = mongoHistCollectionCollection.Find(bson.M{}).Limit(limit).All(&retObj)
-		if len(retObj) == 0 {
-			retObj = []HistEntity{}
-		}
-		return
-	}
-	if skip > 0 {
-		e = mongoHistCollectionCollection.Find(bson.M{}).Skip(skip).All(&retObj)
-		if len(retObj) == 0 {
-			retObj = []HistEntity{}
-		}
-		return
-	}
-	return
-}
-
-func (obj *HistCollection) AllByIndex(index string) (retObj []HistEntity, e error) {
-	e = mongoHistCollectionCollection.Find(bson.M{}).Sort(index).All(&retObj)
-	if len(retObj) == 0 {
-		retObj = []HistEntity{}
-	}
-	return
-}
-
-func (obj *HistCollection) AllByIndexAdvanced(index string, limit int, skip int) (retObj []HistEntity, e error) {
-	if limit == 0 && skip == 0 {
-		e = mongoHistCollectionCollection.Find(bson.M{}).Sort(index).All(&retObj)
-		if len(retObj) == 0 {
-			retObj = []HistEntity{}
-		}
-		return
-	}
-	if limit > 0 && skip > 0 {
-		e = mongoHistCollectionCollection.Find(bson.M{}).Sort(index).Limit(limit).Skip(skip).All(&retObj)
-		if len(retObj) == 0 {
-			retObj = []HistEntity{}
-		}
-		return
-	}
-	if limit > 0 {
-		e = mongoHistCollectionCollection.Find(bson.M{}).Sort(index).Limit(limit).All(&retObj)
-		if len(retObj) == 0 {
-			retObj = []HistEntity{}
-		}
-		return
-	}
-	if skip > 0 {
-		e = mongoHistCollectionCollection.Find(bson.M{}).Sort(index).Skip(skip).All(&retObj)
-		if len(retObj) == 0 {
-			retObj = []HistEntity{}
-		}
-		return
-	}
-	return
-}
-
-func (obj *HistCollection) Range(min, max, field string) (retObj []HistEntity, e error) {
-	var query *mgo.Query
-	m := make(bson.M)
-	m[field] = bson.M{"$gte": min, "$lte": max}
-	query = mongoHistCollectionCollection.Find(m)
-	e = query.All(&retObj)
-	return
-}
-
-func (obj *HistCollection) RangeAdvanced(min, max, field string, limit int, skip int) (retObj []HistEntity, e error) {
-	var query *mgo.Query
-	m := make(bson.M)
-	m[field] = bson.M{"$gte": min, "$lte": max}
-	query = mongoHistCollectionCollection.Find(m)
-	if limit == 0 && skip == 0 {
-		e = query.All(&retObj)
-		if len(retObj) == 0 {
-			retObj = []HistEntity{}
-		}
-		return
-	}
-	if limit > 0 && skip > 0 {
-		e = query.Limit(limit).Skip(skip).All(&retObj)
-		if len(retObj) == 0 {
-			retObj = []HistEntity{}
-		}
-		return
-	}
-	if limit > 0 {
-		e = query.Limit(limit).All(&retObj)
-		if len(retObj) == 0 {
-			retObj = []HistEntity{}
-		}
-		return
-	}
-	if skip > 0 {
-		e = query.Skip(skip).All(&retObj)
-		if len(retObj) == 0 {
-			retObj = []HistEntity{}
-		}
-		return
-	}
-	return
-}
-
-func (obj *HistCollection) Index() error {
+func (obj *modelHistCollection) Index() error {
 	for key, value := range dbServices.GetDBIndexes(HistEntity{}) {
 		index := mgo.Index{
 			Key:        []string{key},
@@ -287,13 +106,13 @@ func (obj *HistCollection) Index() error {
 	return nil
 }
 
-func (obj *HistCollection) New() *HistEntity {
+func (obj *modelHistCollection) New() *HistEntity {
 	return &HistEntity{}
 }
 
 func (self *HistEntity) Save() error {
 	if mongoHistCollectionCollection == nil {
-		return errors.New("Collection HistCollection not initialized")
+		initHistCollection()
 	}
 	objectId := bson.NewObjectId()
 	if self.Id != "" {

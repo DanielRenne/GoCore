@@ -23,17 +23,21 @@ func init() {
 
 		for {
 			if dbServices.MongoDB != nil {
-				log.Println("Building Indexes for MongoDB collection Transactions:")
-				mongoTransactionsCollection = dbServices.MongoDB.C("Transactions")
-				ci := mgo.CollectionInfo{ForceIdIndex: true}
-				mongoTransactionsCollection.Create(&ci)
-				var obj modelTransactions
-				obj.Index()
+				initTransactions()
 				return
 			}
 			<-dbServices.WaitForDatabase()
 		}
 	}()
+}
+
+func initTransactions() {
+	log.Println("Building Indexes for MongoDB collection Transactions:")
+	mongoTransactionsCollection = dbServices.MongoDB.C("Transactions")
+	ci := mgo.CollectionInfo{ForceIdIndex: true}
+	mongoTransactionsCollection.Create(&ci)
+	var obj modelTransactions
+	obj.Index()
 }
 
 // type Transaction struct {
@@ -100,7 +104,7 @@ func (obj *modelTransactions) New(userId string) (*Transaction, error) {
 
 func (self *Transaction) Save() error {
 	if mongoTransactionsCollection == nil {
-		return errors.New("Collection Transactions not initialized")
+		initTransactions()
 	}
 	objectId := bson.NewObjectId()
 	if self.Id != "" {

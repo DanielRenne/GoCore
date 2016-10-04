@@ -345,7 +345,7 @@ func finalizeModelFile(versionDir string, collections []NOSQLCollection) {
 
 	for _, collection := range collections {
 		modelToWrite += "case \"" + strings.Title(collection.Name) + "History\":\n"
-		modelToWrite += " return &" + strings.Title(collection.Name) + "History{}\n"
+		modelToWrite += " return &model" + strings.Title(collection.Name) + "History{}\n"
 	}
 
 	modelToWrite += "}\n"
@@ -510,18 +510,23 @@ func genNoSQLCollection(collection NOSQLCollection, driver string) string {
 		val += "go func() {\n\n"
 		val += "for{\n"
 		val += "if dbServices.MongoDB != nil {\n"
-		val += "log.Println(\"Building Indexes for MongoDB collection " + collection.Name + ":\")\n"
-		val += "mongo" + strings.Title(collection.Name) + "Collection = dbServices.MongoDB.C(\"" + collection.Name + "\")\n"
-		val += "ci := mgo.CollectionInfo{ForceIdIndex: true}\n"
-		val += "mongo" + strings.Title(collection.Name) + "Collection.Create(&ci)\n"
-		val += strings.Title(collection.Name) + ".Index()\n"
-		val += strings.Title(collection.Name) + ".Bootstrap()\n"
+		val += "init" + strings.Title(collection.Name) + "()\n"
 		val += "return\n"
 		val += "}\n"
 		val += "<- dbServices.WaitForDatabase()\n"
 		val += "}\n"
 		val += "}()\n"
 		val += "}\n\n"
+
+		val += "func init" + strings.Title(collection.Name) + "(){\n"
+		val += "log.Println(\"Building Indexes for MongoDB collection " + collection.Name + ":\")\n"
+		val += "mongo" + strings.Title(collection.Name) + "Collection = dbServices.MongoDB.C(\"" + collection.Name + "\")\n"
+		val += "ci := mgo.CollectionInfo{ForceIdIndex: true}\n"
+		val += "mongo" + strings.Title(collection.Name) + "Collection.Create(&ci)\n"
+		val += strings.Title(collection.Name) + ".Index()\n"
+		val += strings.Title(collection.Name) + ".Bootstrap()\n"
+		val += "}\n\n"
+
 	}
 
 	return val
@@ -837,7 +842,7 @@ func genNoSQLSchemaSave(collection NOSQLCollection, schema NOSQLSchema, driver s
 		val += "return dbServices.BoltDB.Save(self)\n"
 	case DATABASE_DRIVER_MONGODB:
 		val += "if mongo" + strings.Title(collection.Name) + "Collection == nil{\n"
-		val += "return errors.New(\"Collection " + collection.Name + " not initialized\")\n"
+		val += "init" + strings.Title(collection.Name) + "()\n"
 		val += "}\n"
 		val += "objectId := bson.NewObjectId()\n"
 		val += "if self.Id != \"\"{\n"
