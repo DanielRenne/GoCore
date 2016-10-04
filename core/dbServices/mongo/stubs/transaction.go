@@ -4,14 +4,17 @@ import (
 	// "encoding/base64"
 	"encoding/json"
 	"errors"
+	"log"
+	"time"
+
 	"github.com/DanielRenne/GoCore/core/dbServices"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"log"
-	"time"
 )
 
-type Transactions struct{}
+var Transactions modelTransactions
+
+type modelTransactions struct{}
 
 var mongoTransactionsCollection *mgo.Collection
 
@@ -24,7 +27,7 @@ func init() {
 				mongoTransactionsCollection = dbServices.MongoDB.C("Transactions")
 				ci := mgo.CollectionInfo{ForceIdIndex: true}
 				mongoTransactionsCollection.Create(&ci)
-				var obj Transactions
+				var obj modelTransactions
 				obj.Index()
 				return
 			}
@@ -59,200 +62,13 @@ type Transaction struct {
 	RollbackReason string        `json:"rollbackReason" bson:"rollbackReason"`
 }
 
-func (self *Transactions) Single(field string, value interface{}) (retObj Transaction, e error) {
-	if field == "id" {
-		query := mongoTransactionsCollection.FindId(bson.ObjectIdHex(value.(string)))
-		e = query.One(&retObj)
-		return
-	}
-	m := make(bson.M)
-	m[field] = value
-	query := mongoTransactionsCollection.Find(m)
-	e = query.One(&retObj)
-	return
+func (obj modelTransactions) Query() *Query {
+	var query Query
+	query.collection = mongoTransactionsCollection
+	return &query
 }
 
-func (obj *Transactions) Search(field string, value interface{}) (retObj []Transaction, e error) {
-	var query *mgo.Query
-	if field == "id" {
-		query = mongoTransactionsCollection.FindId(bson.ObjectIdHex(value.(string)))
-	} else {
-		m := make(bson.M)
-		m[field] = value
-		query = mongoTransactionsCollection.Find(m)
-	}
-
-	e = query.All(&retObj)
-	return
-}
-
-func (obj *Transactions) SearchAdvanced(field string, value interface{}, limit int, skip int) (retObj []Transaction, e error) {
-	var query *mgo.Query
-	if field == "id" {
-		query = mongoTransactionsCollection.FindId(bson.ObjectIdHex(value.(string)))
-	} else {
-		m := make(bson.M)
-		m[field] = value
-		query = mongoTransactionsCollection.Find(m)
-	}
-
-	if limit == 0 && skip == 0 {
-		e = query.All(&retObj)
-		if len(retObj) == 0 {
-			retObj = []Transaction{}
-		}
-		return
-	}
-	if limit > 0 && skip > 0 {
-		e = query.Limit(limit).Skip(skip).All(&retObj)
-		if len(retObj) == 0 {
-			retObj = []Transaction{}
-		}
-		return
-	}
-	if limit > 0 {
-		e = query.Limit(limit).All(&retObj)
-		if len(retObj) == 0 {
-			retObj = []Transaction{}
-		}
-		return
-	}
-	if skip > 0 {
-		e = query.Skip(skip).All(&retObj)
-		if len(retObj) == 0 {
-			retObj = []Transaction{}
-		}
-		return
-	}
-	return
-}
-
-func (obj *Transactions) All() (retObj []Transaction, e error) {
-	e = mongoTransactionsCollection.Find(bson.M{}).All(&retObj)
-	if len(retObj) == 0 {
-		retObj = []Transaction{}
-	}
-	return
-}
-
-func (obj *Transactions) AllAdvanced(limit int, skip int) (retObj []Transaction, e error) {
-	if limit == 0 && skip == 0 {
-		e = mongoTransactionsCollection.Find(bson.M{}).All(&retObj)
-		if len(retObj) == 0 {
-			retObj = []Transaction{}
-		}
-		return
-	}
-	if limit > 0 && skip > 0 {
-		e = mongoTransactionsCollection.Find(bson.M{}).Limit(limit).Skip(skip).All(&retObj)
-		if len(retObj) == 0 {
-			retObj = []Transaction{}
-		}
-		return
-	}
-	if limit > 0 {
-		e = mongoTransactionsCollection.Find(bson.M{}).Limit(limit).All(&retObj)
-		if len(retObj) == 0 {
-			retObj = []Transaction{}
-		}
-		return
-	}
-	if skip > 0 {
-		e = mongoTransactionsCollection.Find(bson.M{}).Skip(skip).All(&retObj)
-		if len(retObj) == 0 {
-			retObj = []Transaction{}
-		}
-		return
-	}
-	return
-}
-
-func (obj *Transactions) AllByIndex(index string) (retObj []Transaction, e error) {
-	e = mongoTransactionsCollection.Find(bson.M{}).Sort(index).All(&retObj)
-	if len(retObj) == 0 {
-		retObj = []Transaction{}
-	}
-	return
-}
-
-func (obj *Transactions) AllByIndexAdvanced(index string, limit int, skip int) (retObj []Transaction, e error) {
-	if limit == 0 && skip == 0 {
-		e = mongoTransactionsCollection.Find(bson.M{}).Sort(index).All(&retObj)
-		if len(retObj) == 0 {
-			retObj = []Transaction{}
-		}
-		return
-	}
-	if limit > 0 && skip > 0 {
-		e = mongoTransactionsCollection.Find(bson.M{}).Sort(index).Limit(limit).Skip(skip).All(&retObj)
-		if len(retObj) == 0 {
-			retObj = []Transaction{}
-		}
-		return
-	}
-	if limit > 0 {
-		e = mongoTransactionsCollection.Find(bson.M{}).Sort(index).Limit(limit).All(&retObj)
-		if len(retObj) == 0 {
-			retObj = []Transaction{}
-		}
-		return
-	}
-	if skip > 0 {
-		e = mongoTransactionsCollection.Find(bson.M{}).Sort(index).Skip(skip).All(&retObj)
-		if len(retObj) == 0 {
-			retObj = []Transaction{}
-		}
-		return
-	}
-	return
-}
-
-func (obj *Transactions) Range(min, max, field string) (retObj []Transaction, e error) {
-	var query *mgo.Query
-	m := make(bson.M)
-	m[field] = bson.M{"$gte": min, "$lte": max}
-	query = mongoTransactionsCollection.Find(m)
-	e = query.All(&retObj)
-	return
-}
-
-func (obj *Transactions) RangeAdvanced(min, max, field string, limit int, skip int) (retObj []Transaction, e error) {
-	var query *mgo.Query
-	m := make(bson.M)
-	m[field] = bson.M{"$gte": min, "$lte": max}
-	query = mongoTransactionsCollection.Find(m)
-	if limit == 0 && skip == 0 {
-		e = query.All(&retObj)
-		if len(retObj) == 0 {
-			retObj = []Transaction{}
-		}
-		return
-	}
-	if limit > 0 && skip > 0 {
-		e = query.Limit(limit).Skip(skip).All(&retObj)
-		if len(retObj) == 0 {
-			retObj = []Transaction{}
-		}
-		return
-	}
-	if limit > 0 {
-		e = query.Limit(limit).All(&retObj)
-		if len(retObj) == 0 {
-			retObj = []Transaction{}
-		}
-		return
-	}
-	if skip > 0 {
-		e = query.Skip(skip).All(&retObj)
-		if len(retObj) == 0 {
-			retObj = []Transaction{}
-		}
-		return
-	}
-	return
-}
-
-func (obj *Transactions) Index() error {
+func (obj *modelTransactions) Index() error {
 	for key, value := range dbServices.GetDBIndexes(Transaction{}) {
 		index := mgo.Index{
 			Key:        []string{key},
@@ -274,7 +90,7 @@ func (obj *Transactions) Index() error {
 	return nil
 }
 
-func (obj *Transactions) New(userId string) (*Transaction, error) {
+func (obj *modelTransactions) New(userId string) (*Transaction, error) {
 	t := Transaction{}
 	t.UserId = userId
 	err := t.Begin()
