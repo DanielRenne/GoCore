@@ -129,7 +129,7 @@ func IsValidationError(err error) bool {
 	if err == nil {
 		return false
 	}
-	if err.Error() == VALIDATION_ERROR {
+	if err.Error() == VALIDATION_ERROR || err.Error() == VALIDATION_ERROR_EMAIL {
 		return true
 	}
 	return false

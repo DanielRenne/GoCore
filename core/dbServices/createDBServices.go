@@ -19,7 +19,7 @@ import (
 	"github.com/fatih/color"
 )
 
-type fieldValidation struct {
+type FieldValidation struct {
 	Required  bool   `json:"required"`
 	Type      string `json:"type"`
 	Min       string `json:"min"`
@@ -87,7 +87,7 @@ type NOSQLSchemaField struct {
 	DefaultValue string           `json:"defaultValue"`
 	Required     bool             `json:"required"`
 	Schema       NOSQLSchema      `json:"schema"`
-	Validation   *fieldValidation `json:"validate, omitempty"`
+	Validation   *FieldValidation `json:"validate, omitempty"`
 	Join         join             `json:"join"`
 }
 
