@@ -1,10 +1,12 @@
 package dbServices
 
 import (
-	"github.com/DanielRenne/GoCore/core/extensions"
+	"fmt"
 	"reflect"
 	"strconv"
 	"strings"
+
+	"github.com/DanielRenne/GoCore/core/extensions"
 )
 
 //GetIndexes provides a way to reflect on your structure to get structs tagged with `dbIndex`.
@@ -154,20 +156,20 @@ func GetReflectionFieldValue(key string, x interface{}) string {
 
 			case reflect.Struct:
 				if len(splitKey) > 1 {
-					return getStructReflectionValue(strings.Replace(key, originalPropertyName+".", "", 1), arrayItem)
+					return GetStructReflectionValue(strings.Replace(key, originalPropertyName+".", "", 1), arrayItem)
 				}
 			}
 
 		case reflect.Struct:
 			if len(splitKey) > 1 {
-				return getStructReflectionValue(strings.Replace(key, propertyName+".", "", 1), val)
+				return GetStructReflectionValue(strings.Replace(key, propertyName+".", "", 1), val)
 			}
 		}
 	}
 	return ""
 }
 
-func getStructReflectionValue(key string, val reflect.Value) string {
+func GetStructReflectionValue(key string, val reflect.Value) string {
 
 	splitKey := strings.Split(key, ".")
 
@@ -195,6 +197,9 @@ func getStructReflectionValue(key string, val reflect.Value) string {
 
 		f := valueField.Interface()
 		val := reflect.ValueOf(f)
+
+		// log.Printf("%+v\n", f)
+		// log.Println(reflect.TypeOf(valueField).Elem().Name())
 
 		switch val.Kind() {
 
@@ -224,14 +229,14 @@ func getStructReflectionValue(key string, val reflect.Value) string {
 
 			case reflect.Struct:
 				if len(splitKey) > 1 {
-					return getStructReflectionValue(strings.Replace(key, originalPropertyName+".", "", 1), arrayItem)
+					return GetStructReflectionValue(strings.Replace(key, originalPropertyName+".", "", 1), arrayItem)
 				}
 			}
 		case reflect.Struct:
 			if len(splitKey) > 1 {
-				return getStructReflectionValue(strings.Replace(key, propertyName+".", "", 1), val)
+				return GetStructReflectionValue(strings.Replace(key, propertyName+".", "", 1), val)
 			}
-
+			return fmt.Sprintf("%+v\n", f)
 		}
 	}
 	return ""

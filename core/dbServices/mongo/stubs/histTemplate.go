@@ -129,6 +129,10 @@ func (self *HistEntity) Save() error {
 	return nil
 }
 
+func (obj *HistEntity) Reflect() []Field {
+	return Reflect(HistEntity{})
+}
+
 func (self *HistEntity) Delete() error {
 	return mongoHistCollectionCollection.Remove(self)
 }

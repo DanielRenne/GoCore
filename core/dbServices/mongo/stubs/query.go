@@ -33,16 +33,30 @@ type join struct {
 	joinSpecified    string
 }
 
+type view struct {
+	fieldName string
+	ref       string
+	format    string
+}
+
 type Query struct {
-	q          *mgo.Query
-	m          bson.M
-	limit      int
-	skip       int
-	sort       []string
-	collection *mgo.Collection
-	e          error
-	joins      []string
-	allJoins   bool
+	q           *mgo.Query
+	m           bson.M
+	limit       int
+	skip        int
+	sort        []string
+	collection  *mgo.Collection
+	e           error
+	joins       []string
+	allJoins    bool
+	format      DataFormat
+	renderViews bool
+}
+
+type DataFormat struct {
+	Language      string
+	DateFormat    string
+	LocalTimeZone string
 }
 
 func Criteria(key string, value interface{}) map[string]interface{} {
@@ -143,6 +157,14 @@ func (self *Query) In(criteria map[string]interface{}) *Query {
 
 	return self
 
+}
+
+func (self *Query) RenderViews(format DataFormat) *Query {
+
+	self.renderViews = true
+	self.format = format
+
+	return self
 }
 
 func (self *Query) inNot(criteria map[string]interface{}, queryType string) {
@@ -342,6 +364,13 @@ func (self *Query) Distinct(key string, x interface{}) error {
 
 func (self *Query) processJoins(x interface{}) (err error) {
 
+	if self.renderViews {
+		err = self.processViews(x)
+		if err != nil {
+			return
+		}
+	}
+
 	if self.allJoins || len(self.joins) > 0 {
 
 		//Check if x is a single struct or an Array
@@ -465,6 +494,95 @@ func valueType(m interface{}) (t reflect.Type, isArray bool) {
 }
 
 // func (self *Query) processJoinReflection
+
+func (self *Query) processViews(x interface{}) (err error) {
+
+	//Check if x is a single struct or an Array
+	_, isArray := valueType(x)
+
+	if isArray {
+
+		source := reflect.ValueOf(x).Elem()
+
+		var views []view
+		if source.Len() > 0 {
+			views = self.getViews(source.Index(0))
+		}
+
+		if len(views) == 0 {
+			return
+		}
+
+		for i := 0; i < source.Len(); i++ {
+			s := source.Index(i)
+			for _, v := range views { //Update and format the view fields that have ref
+
+				viewValue := dbServices.GetStructReflectionValue(v.ref, s)
+				dbServices.SetFieldValue(v.fieldName, s.FieldByName("Views"), viewValue)
+				// log.Println(v.ref)
+				// log.Println(v.fieldName)
+				// log.Println(viewValue)
+
+			}
+		}
+	} else {
+
+		source := reflect.ValueOf(x).Elem()
+
+		var views []view
+		views = self.getViews(source)
+
+		if len(views) == 0 {
+			return
+		}
+
+		for _, v := range views { //Update and format the view fields that have ref
+
+			viewValue := dbServices.GetStructReflectionValue(v.ref, source)
+			dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), viewValue)
+			// log.Println(v.ref)
+			// log.Println(v.fieldName)
+			// log.Println(viewValue)
+
+		}
+
+	}
+
+	return
+}
+
+func (self *Query) getViews(x reflect.Value) (views []view) {
+
+	viewsField := x.FieldByName("Views")
+
+	if viewsField.Kind() != reflect.Struct {
+		return
+	}
+
+	for i := 0; i < viewsField.NumField(); i++ {
+
+		typeField := viewsField.Type().Field(i)
+		name := typeField.Name
+		tagValue := typeField.Tag.Get("ref")
+
+		if tagValue == "" {
+			continue
+		}
+
+		tagValues := strings.Split(tagValue, ",")
+
+		var v view
+		v.fieldName = name
+		v.ref = strings.Title(tagValues[0])
+		if len(tagValues) > 1 {
+			v.format = tagValues[1]
+		}
+
+		views = append(views, v)
+	}
+
+	return
+}
 
 func (self *Query) handleQueryError(err error, callback queryError) error {
 

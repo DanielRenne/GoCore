@@ -279,7 +279,7 @@ func (self *Transaction) Commit() error {
 func (self *Transaction) Rollback(userId string, reason string) error {
 
 	for _, collection := range self.Collections {
-		col := resolveHistoryCollection(collection)
+		col := ResolveHistoryCollection(collection)
 		if col == nil {
 			continue
 		}

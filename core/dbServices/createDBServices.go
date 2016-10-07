@@ -311,7 +311,7 @@ func finalizeModelFile(versionDir string, collections []NOSQLCollection) {
 
 	sort.Sort(SchemaNameSorter(collections))
 
-	modelToWrite += "func resolveEntity(key string) modelEntity{\n\n"
+	modelToWrite += "func ResolveEntity(key string) modelEntity{\n\n"
 	modelToWrite += "switch key{\n"
 
 	for _, collection := range collections {
@@ -327,7 +327,7 @@ func finalizeModelFile(versionDir string, collections []NOSQLCollection) {
 	modelToWrite += "}\n\n"
 
 	modelToWrite += "\n"
-	modelToWrite += "func resolveCollection(key string) collection{\n\n"
+	modelToWrite += "func ResolveCollection(key string) collection{\n\n"
 	modelToWrite += "switch key{\n"
 
 	for _, collection := range collections {
@@ -340,7 +340,7 @@ func finalizeModelFile(versionDir string, collections []NOSQLCollection) {
 	modelToWrite += "}\n\n"
 
 	modelToWrite += "\n"
-	modelToWrite += "func resolveHistoryCollection(key string) modelCollection{\n\n"
+	modelToWrite += "func ResolveHistoryCollection(key string) modelCollection{\n\n"
 	modelToWrite += "switch key{\n"
 
 	for _, collection := range collections {
@@ -353,7 +353,7 @@ func finalizeModelFile(versionDir string, collections []NOSQLCollection) {
 	modelToWrite += "}\n\n"
 
 	modelToWrite += "func joinField(fieldType string, collectionName string, id string, fieldToSet reflect.Value, remainingRecursions string) (err error) {\n\n"
-	modelToWrite += "c := resolveCollection(collectionName)\n"
+	modelToWrite += "c := ResolveCollection(collectionName)\n"
 	modelToWrite += "if c == nil {\n"
 	modelToWrite += "	err = errors.New(\"Failed to resolve collection:  \" + collectionName)\n"
 	modelToWrite += "	return\n"
@@ -800,6 +800,7 @@ func genNoSQLRuntime(collection NOSQLCollection, schema NOSQLSchema, driver stri
 	val += genNoSQLSchemaSave(collection, schema, driver)
 	val += genNoSQLSchemaSaveByTran(collection, schema, driver)
 	val += genNoSQLValidate(collection, schema, driver)
+	val += genNoSQLReflect(collection, schema, driver)
 	val += genNoSQLSchemaDelete(collection, schema, driver)
 	val += genNoSQLSchemaDeleteWithTran(collection, schema, driver)
 	val += genNoSQLSchemaJoinFields(collection, schema, driver)
@@ -956,7 +957,15 @@ func genNoSQLSchemaSaveByTran(collection NOSQLCollection, schema NOSQLSchema, dr
 func genNoSQLValidate(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
 	val := ""
 	val += "func (self *" + strings.Title(schema.Name) + ") ValidateAndClean() error {\n\n"
-	val += "return validateFields(" + strings.Title(schema.Name) + "{}, self, reflect.ValueOf(self).Elem())"
+	val += "return validateFields(" + strings.Title(schema.Name) + "{}, self, reflect.ValueOf(self).Elem())\n"
+	val += "}\n\n"
+	return val
+}
+
+func genNoSQLReflect(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
+	val := ""
+	val += "func (self *" + strings.Title(schema.Name) + ") Reflect() []Field {\n\n"
+	val += "return Reflect(" + strings.Title(schema.Name) + "{})\n"
 	val += "}\n\n"
 	return val
 }
