@@ -83,6 +83,8 @@ type NOSQLSchemaField struct {
 	Type         string           `json:"type"`
 	Index        string           `json:"index"`
 	View         bool             `json:"view"`
+	Ref          string           `json:"ref"`
+	Format       string           `json:"format"`
 	OmitEmpty    bool             `json:"omitEmpty"`
 	DefaultValue string           `json:"defaultValue"`
 	Required     bool             `json:"required"`
@@ -634,7 +636,21 @@ func genNoSQLSchema(schema NOSQLSchema, driver string, schemasCreated *[]NOSQLSc
 
 		for _, field := range schema.Fields {
 			if field.View {
-				val += strings.Title(field.Name) + " " + genNoSQLFieldType(schema, field, driver) + " `json:\"" + strings.Title(field.Name) + "\"`\n"
+
+				viewTags := ""
+				viewTagSpace := ""
+
+				if field.Ref != "" {
+					viewTagSpace = " "
+					viewTags += "ref:\""
+					viewTags += strings.Title(field.Ref)
+					if field.Format != "" {
+						viewTags += "," + field.Format
+					}
+					viewTags += "\""
+				}
+
+				val += strings.Title(field.Name) + " " + genNoSQLFieldType(schema, field, driver) + " `json:\"" + strings.Title(field.Name) + "\"" + viewTagSpace + viewTags + "`\n"
 			}
 		}
 
@@ -1534,6 +1550,8 @@ func genNoSQLSchemaDeleteWithTran(collection NOSQLCollection, schema NOSQLSchema
 
 		val += "originalBase64 := getBase64(originalJson)\n"
 		val += "histRecord.Data = originalBase64\n\n"
+
+		val += "t.Collections = append(t.Collections, \"" + strings.Title(collection.Name) + "History\")\n"
 
 		val += "tPersist.originalItems = append(tPersist.originalItems, eTransactionOriginal)\n"
 		val += "tPersist.newItems = append(tPersist.newItems, eTransactionNew)\n"
