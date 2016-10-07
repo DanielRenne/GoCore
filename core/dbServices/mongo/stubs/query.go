@@ -4,6 +4,7 @@ import (
 	"errors"
 	"log"
 	"reflect"
+	"strconv"
 	"strings"
 	"time"
 
@@ -516,13 +517,7 @@ func (self *Query) processViews(x interface{}) (err error) {
 		for i := 0; i < source.Len(); i++ {
 			s := source.Index(i)
 			for _, v := range views { //Update and format the view fields that have ref
-
-				viewValue := dbServices.GetStructReflectionValue(v.ref, s)
-				dbServices.SetFieldValue(v.fieldName, s.FieldByName("Views"), viewValue)
-				// log.Println(v.ref)
-				// log.Println(v.fieldName)
-				// log.Println(viewValue)
-
+				setViewValue(v, s)
 			}
 		}
 	} else {
@@ -537,18 +532,55 @@ func (self *Query) processViews(x interface{}) (err error) {
 		}
 
 		for _, v := range views { //Update and format the view fields that have ref
-
-			viewValue := dbServices.GetStructReflectionValue(v.ref, source)
-			dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), viewValue)
-			// log.Println(v.ref)
-			// log.Println(v.fieldName)
-			// log.Println(viewValue)
-
+			setViewValue(v, source)
 		}
 
 	}
 
 	return
+}
+
+func setViewValue(v view, source reflect.Value) {
+	viewValue := dbServices.GetStructReflectionValue(v.ref, source)
+
+	switch v.format {
+	case "DateNumericSlash":
+		i, _ := strconv.ParseInt(viewValue, 10, 64)
+		t := time.Unix(i, 0)
+		dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), t.Format("01/02/2006"))
+	case "DateNumericDash":
+		i, _ := strconv.ParseInt(viewValue, 10, 64)
+		t := time.Unix(i, 0)
+		dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), t.Format("01-02-2006"))
+	case "DateLong":
+		i, _ := strconv.ParseInt(viewValue, 10, 64)
+		t := time.Unix(i, 0)
+		dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), t.Format("Monday, January 01, 2006"))
+	case "DateShort":
+		i, _ := strconv.ParseInt(viewValue, 10, 64)
+		t := time.Unix(i, 0)
+		dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), t.Format("January 01, 2006"))
+	case "DateMonthYearShort":
+		i, _ := strconv.ParseInt(viewValue, 10, 64)
+		t := time.Unix(i, 0)
+		dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), t.Format("Jan 2006"))
+	case "Time":
+		i, _ := strconv.ParseInt(viewValue, 10, 64)
+		t := time.Unix(i, 0)
+		dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), t.Format("03:04:05 PM"))
+	case "TimeMilitary":
+		i, _ := strconv.ParseInt(viewValue, 10, 64)
+		t := time.Unix(i, 0)
+		dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), t.Format("15:04:05"))
+	case "TimeFromNow":
+		i, _ := strconv.ParseInt(viewValue, 10, 64)
+		t := time.Unix(i, 0)
+		dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), t.Format("15:04:05"))
+	case "":
+		dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), viewValue)
+
+	}
+
 }
 
 func (self *Query) getViews(x reflect.Value) (views []view) {
