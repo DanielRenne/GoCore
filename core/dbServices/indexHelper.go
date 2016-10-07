@@ -205,6 +205,8 @@ func GetStructReflectionValue(key string, val reflect.Value) string {
 
 		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 			return strconv.FormatInt(val.Int(), 10)
+		case reflect.Bool:
+			return extensions.BoolToString(val.Bool())
 		case reflect.Float32:
 			return strconv.FormatFloat(val.Float(), 'E', -1, 32)
 		case reflect.Float64:
@@ -220,6 +222,8 @@ func GetStructReflectionValue(key string, val reflect.Value) string {
 			switch arrayItem.Kind() {
 			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 				return strconv.FormatInt(arrayItem.Int(), 10)
+			case reflect.Bool:
+				return extensions.BoolToString(val.Bool())
 			case reflect.Float32:
 				return strconv.FormatFloat(arrayItem.Float(), 'E', -1, 32)
 			case reflect.Float64:
@@ -236,7 +240,12 @@ func GetStructReflectionValue(key string, val reflect.Value) string {
 			if len(splitKey) > 1 {
 				return GetStructReflectionValue(strings.Replace(key, propertyName+".", "", 1), val)
 			}
-			return fmt.Sprintf("%+v\n", f)
+			if val.MethodByName("Clock").CanInterface() {
+				in := make([]reflect.Value, 0)
+				retValues := val.MethodByName("Unix").Call(in)
+				return extensions.Int64ToString(retValues[0].Int())
+			}
+			return fmt.Sprintf("%v", f)
 		}
 	}
 	return ""

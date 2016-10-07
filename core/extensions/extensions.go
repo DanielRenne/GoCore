@@ -95,6 +95,10 @@ func IntToString(val int) string {
 	return strconv.Itoa(val)
 }
 
+func Int64ToString(val int64) string {
+	return strconv.FormatInt(val, 10)
+}
+
 func BoolToString(val bool) string {
 	return strconv.FormatBool(val)
 }
