@@ -10,6 +10,7 @@ import (
 
 	"github.com/DanielRenne/GoCore/core/dbServices"
 	"github.com/DanielRenne/GoCore/core/extensions"
+	dateformatter "github.com/altipla-consulting/i18n-dateformatter"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -128,7 +129,7 @@ func (self *Query) Filter(criteria map[string]interface{}) *Query {
 
 		for key, val := range criteria {
 			if key != "" {
-				self.m[key] = val
+				self.m[key] = self.checkForObjectId(val)
 			}
 		}
 
@@ -208,11 +209,11 @@ func (self *Query) inNot(criteria map[string]interface{}, queryType string) {
 				values := reflect.ValueOf(value)
 				for i := 0; i < values.Len(); i++ {
 					val := values.Index(i).Interface()
-					valuesToQuery = append(valuesToQuery, val)
+					valuesToQuery = append(valuesToQuery, self.checkForObjectId(val))
 				}
 
 			} else {
-				valuesToQuery = append(valuesToQuery, value)
+				valuesToQuery = append(valuesToQuery, self.checkForObjectId(value))
 			}
 
 			self.m[key] = bson.M{queryType: valuesToQuery}
@@ -517,7 +518,7 @@ func (self *Query) processViews(x interface{}) (err error) {
 		for i := 0; i < source.Len(); i++ {
 			s := source.Index(i)
 			for _, v := range views { //Update and format the view fields that have ref
-				setViewValue(v, s)
+				self.setViewValue(v, s)
 			}
 		}
 	} else {
@@ -532,7 +533,7 @@ func (self *Query) processViews(x interface{}) (err error) {
 		}
 
 		for _, v := range views { //Update and format the view fields that have ref
-			setViewValue(v, source)
+			self.setViewValue(v, source)
 		}
 
 	}
@@ -540,42 +541,108 @@ func (self *Query) processViews(x interface{}) (err error) {
 	return
 }
 
-func setViewValue(v view, source reflect.Value) {
+func (self *Query) setViewValue(v view, source reflect.Value) {
 	viewValue := dbServices.GetStructReflectionValue(v.ref, source)
 
+	//Check for Bools first
+	if viewValue == "true" || viewValue == "false" {
+		substitute := ""
+		switch v.format {
+		case "YesNo":
+			substitute = "No"
+			if viewValue == "true" {
+				substitute = "Yes"
+			}
+			dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), substitute)
+
+		case "yesno":
+			substitute = "no"
+			if viewValue == "true" {
+				substitute = "yes"
+			}
+			dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), substitute)
+		case "EnabledDisabled":
+			substitute = "Disabled"
+			if viewValue == "true" {
+				substitute = "Enabled"
+			}
+			dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), substitute)
+		case "enableddisabled":
+			substitute = "disabled"
+			if viewValue == "true" {
+				substitute = "enabled"
+			}
+			dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), substitute)
+		case "TrueFalse":
+			substitute = "False"
+			if viewValue == "true" {
+				substitute = "True"
+			}
+			dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), substitute)
+		case "":
+			dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), viewValue)
+		}
+		return
+	}
+
+	locale := "en"
+	if self.format.Language != "" {
+		locale = self.format.Language
+	}
+
+	dateFormat := "mm/dd/yyyy"
+	if self.format.DateFormat != "" {
+		dateFormat = self.substituteDateFormat(self.format.DateFormat)
+	} else {
+		dateFormat = self.substituteDateFormat(dateFormat)
+	}
+
+	timeZone := "US/Eastern"
+	if self.format.LocalTimeZone != "" {
+		timeZone = self.format.LocalTimeZone
+	}
+
+	location, _ := time.LoadLocation(timeZone)
+
 	switch v.format {
-	case "DateNumericSlash":
+	case "DateNumeric":
 		i, _ := strconv.ParseInt(viewValue, 10, 64)
-		t := time.Unix(i, 0)
-		dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), t.Format("01/02/2006"))
-	case "DateNumericDash":
-		i, _ := strconv.ParseInt(viewValue, 10, 64)
-		t := time.Unix(i, 0)
-		dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), t.Format("01-02-2006"))
+		t := time.Unix(i, 0).In(location)
+		dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), dateformatter.Format(t, locale, dateFormat))
 	case "DateLong":
 		i, _ := strconv.ParseInt(viewValue, 10, 64)
-		t := time.Unix(i, 0)
-		dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), t.Format("Monday, January 01, 2006"))
+		t := time.Unix(i, 0).In(location)
+		dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), dateformatter.Format(t, locale, "Monday, January 01, 2006"))
 	case "DateShort":
 		i, _ := strconv.ParseInt(viewValue, 10, 64)
-		t := time.Unix(i, 0)
-		dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), t.Format("January 01, 2006"))
+		t := time.Unix(i, 0).In(location)
+		dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), dateformatter.Format(t, locale, "January 01, 2006"))
 	case "DateMonthYearShort":
 		i, _ := strconv.ParseInt(viewValue, 10, 64)
-		t := time.Unix(i, 0)
-		dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), t.Format("Jan 2006"))
+		t := time.Unix(i, 0).In(location)
+		dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), dateformatter.Format(t, locale, "Jan 2006"))
 	case "Time":
 		i, _ := strconv.ParseInt(viewValue, 10, 64)
-		t := time.Unix(i, 0)
+		t := time.Unix(i, 0).In(location)
 		dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), t.Format("03:04:05 PM"))
+	case "DateTime":
+		i, _ := strconv.ParseInt(viewValue, 10, 64)
+		t := time.Unix(i, 0).In(location)
+		dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), dateformatter.Format(t, locale, dateFormat)+t.Format("03:04:05 PM"))
 	case "TimeMilitary":
 		i, _ := strconv.ParseInt(viewValue, 10, 64)
-		t := time.Unix(i, 0)
+		t := time.Unix(i, 0).In(location)
 		dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), t.Format("15:04:05"))
-	case "TimeFromNow":
+	case "HoursFromNow":
 		i, _ := strconv.ParseInt(viewValue, 10, 64)
-		t := time.Unix(i, 0)
-		dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), t.Format("15:04:05"))
+		t := time.Unix(i, 0).In(location)
+		diff := time.Now().Sub(t)
+		dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), extensions.FloatToString(diff.Hours(), 0)+" Hours") //Translate Hours
+	case "DaysFromNow":
+		i, _ := strconv.ParseInt(viewValue, 10, 64)
+		t := time.Unix(i, 0).In(location)
+		diff := time.Now().Sub(t)
+		dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), extensions.FloatToString(diff.Hours()/24, 1)+" Days") //Translate Hours
 	case "":
 		dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), viewValue)
 
@@ -614,6 +681,21 @@ func (self *Query) getViews(x reflect.Value) (views []view) {
 	}
 
 	return
+}
+
+func (self *Query) substituteDateFormat(dateFormat string) string {
+	dateFormat = strings.Replace(dateFormat, "dd", "02", -1)
+	dateFormat = strings.Replace(dateFormat, "d", "2", -1)
+
+	dateFormat = strings.Replace(dateFormat, "mmmm", "January", -1)
+	dateFormat = strings.Replace(dateFormat, "mmm", "Jan", -1)
+	dateFormat = strings.Replace(dateFormat, "mm", "01", -1)
+	dateFormat = strings.Replace(dateFormat, "m", "1", -1)
+
+	dateFormat = strings.Replace(dateFormat, "yyyy", "2006", -1)
+	dateFormat = strings.Replace(dateFormat, "yy", "06", -1)
+
+	return dateFormat
 }
 
 func (self *Query) handleQueryError(err error, callback queryError) error {
@@ -688,5 +770,18 @@ func (self *Query) getIdHex(val interface{}) (bson.ObjectId, error) {
 		return bson.ObjectIdHex(myIdInstanceHex.Call([]reflect.Value{})[0].String()), nil
 	} else {
 		return bson.NewObjectId(), errors.New(ERROR_INVALID_ID_VALUE)
+	}
+}
+
+func (self *Query) checkForObjectId(val interface{}) interface{} {
+
+	myIdType := reflect.TypeOf(val)
+	myIdInstance := reflect.ValueOf(val)
+	myIdInstanceHex := myIdInstance.MethodByName("Hex")
+
+	if myIdType.Name() == "ObjectId" && myIdType.Kind() == reflect.String {
+		return myIdInstanceHex.Call([]reflect.Value{})[0].String()
+	} else {
+		return val
 	}
 }

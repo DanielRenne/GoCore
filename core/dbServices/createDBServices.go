@@ -107,6 +107,18 @@ type NOSQLSchemaDB struct {
 	Collections []NOSQLCollection `json:"collections"`
 }
 
+type entityList struct {
+	Constants []string
+}
+
+type collectionsSet struct {
+	sync.RWMutex
+	Collections []NOSQLCollection
+	Entities    map[string]entityList
+}
+
+var allCollections collectionsSet
+
 var modelToWrite string
 
 // AxisSorter sorts planets by axis.
@@ -158,6 +170,7 @@ func RunDBCreate() {
 
 func walkNoSQLSchema() {
 
+	allCollections.Entities = make(map[string]entityList)
 	basePath := serverSettings.APP_LOCATION + "/db/schemas"
 
 	fileNames, errReadDir := ioutil.ReadDir(basePath)
@@ -188,8 +201,6 @@ func walkNoSQLSchema() {
 func walkNoSQLVersion(path string, versionDir string) {
 
 	initializeModelFile()
-
-	var collections []NOSQLCollection
 
 	var wg sync.WaitGroup
 
@@ -222,7 +233,9 @@ func walkNoSQLVersion(path string, versionDir string) {
 				}
 
 				for _, col := range schemaDB.Collections {
-					collections = append(collections, col)
+					allCollections.Lock()
+					allCollections.Collections = append(allCollections.Collections, col)
+					allCollections.Unlock()
 				}
 
 				createNoSQLModel(schemaDB.Collections, serverSettings.WebConfig.DbConnection.Driver, versionDir, &schemasCreated)
@@ -237,7 +250,7 @@ func walkNoSQLVersion(path string, versionDir string) {
 
 	wg.Wait()
 
-	finalizeModelFile(versionDir, collections)
+	finalizeModelFile(versionDir)
 }
 
 func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir string, schemasCreated *[]NOSQLSchema) {
@@ -258,7 +271,8 @@ func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir s
 	if driver == DATABASE_DRIVER_MONGODB {
 		copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/mongo/stubs/transaction.go", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/transaction.go")
 		copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/mongo/stubs/query.go", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/query.go")
-
+		copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/mongo/stubs/timeZone.go", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/timeZone.go")
+		copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/mongo/stubs/timeZoneLocations.go", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/timeZoneLocations.go")
 		////Support for Long Running Transactions Later Maybe
 		//copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/mongo/stubs/transactionObjects.go", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/transactionObjects.go")
 	}
@@ -309,14 +323,14 @@ func initializeModelFile() {
 
 }
 
-func finalizeModelFile(versionDir string, collections []NOSQLCollection) {
+func finalizeModelFile(versionDir string) {
 
-	sort.Sort(SchemaNameSorter(collections))
+	sort.Sort(SchemaNameSorter(allCollections.Collections))
 
 	modelToWrite += "func ResolveEntity(key string) modelEntity{\n\n"
 	modelToWrite += "switch key{\n"
 
-	for _, collection := range collections {
+	for _, collection := range allCollections.Collections {
 		modelToWrite += "case \"" + strings.Title(collection.Schema.Name) + "\":\n"
 		modelToWrite += " return &" + strings.Title(collection.Schema.Name) + "{}\n"
 
@@ -332,7 +346,7 @@ func finalizeModelFile(versionDir string, collections []NOSQLCollection) {
 	modelToWrite += "func ResolveCollection(key string) collection{\n\n"
 	modelToWrite += "switch key{\n"
 
-	for _, collection := range collections {
+	for _, collection := range allCollections.Collections {
 		modelToWrite += "case \"" + strings.Title(collection.Name) + "\":\n"
 		modelToWrite += " return &model" + strings.Title(collection.Name) + "{}\n"
 	}
@@ -345,7 +359,7 @@ func finalizeModelFile(versionDir string, collections []NOSQLCollection) {
 	modelToWrite += "func ResolveHistoryCollection(key string) modelCollection{\n\n"
 	modelToWrite += "switch key{\n"
 
-	for _, collection := range collections {
+	for _, collection := range allCollections.Collections {
 		modelToWrite += "case \"" + strings.Title(collection.Name) + "History\":\n"
 		modelToWrite += " return &model" + strings.Title(collection.Name) + "History{}\n"
 	}
@@ -363,7 +377,7 @@ func finalizeModelFile(versionDir string, collections []NOSQLCollection) {
 
 	modelToWrite += "switch fieldType{\n"
 
-	for _, collection := range collections {
+	for _, collection := range allCollections.Collections {
 		modelToWrite += "case \"" + strings.Title(collection.Schema.Name) + "\":\n"
 		modelToWrite += "var y " + strings.Title(collection.Schema.Name) + "\n"
 		modelToWrite += "err = c.Query().ById(id, &y)\n"
@@ -379,6 +393,19 @@ func finalizeModelFile(versionDir string, collections []NOSQLCollection) {
 	modelToWrite += "}\n"
 	modelToWrite += "return \n"
 	modelToWrite += "}\n\n"
+
+	modelToWrite += "const (\n"
+
+	log.Printf("%+v\n", allCollections.Entities)
+
+	for key, value := range allCollections.Entities {
+
+		for _, constValue := range value.Constants {
+			modelToWrite += "FIELD_" + strings.ToUpper(key) + "_" + strings.ToUpper(constValue) + " = \"" + constValue + "\"\n"
+		}
+	}
+
+	modelToWrite += ")\n\n"
 
 	writeNoSQLStub(modelToWrite, serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/model.go")
 }
@@ -403,6 +430,7 @@ func generateNoSQLModel(schema NOSQLSchema, collection NOSQLCollection, driver s
 	val += genNoSQLCollection(collection, driver)
 	val += genNoSQLSchema(schema, driver, schemasCreated, 0)
 	val += genNoSQLRuntime(collection, schema, driver)
+
 	return val
 }
 
@@ -556,6 +584,11 @@ func checkSchemaForDateTime(schema NOSQLSchema) bool {
 // Recursive function that will recurse type object and objectArray's in order to create structs for the model.
 func genNoSQLSchema(schema NOSQLSchema, driver string, schemasCreated *[]NOSQLSchema, seed int) string {
 
+	allCollections.Lock()
+	var el entityList
+	allCollections.Entities[strings.Title(schema.Name)] = el
+	allCollections.Unlock()
+
 	val := ""
 	hasViews := false
 	hasJoins := false
@@ -591,6 +624,12 @@ func genNoSQLSchema(schema NOSQLSchema, driver string, schemasCreated *[]NOSQLSc
 		if field.OmitEmpty {
 			omitEmpty = ",omitempty"
 		}
+
+		allCollections.Lock()
+		entityConsts := allCollections.Entities[strings.Title(schema.Name)]
+		entityConsts.Constants = append(entityConsts.Constants, strings.Title(field.Name))
+		allCollections.Entities[strings.Title(schema.Name)] = entityConsts
+		allCollections.Unlock()
 
 		val += "\n\t" + strings.Replace(strings.Title(field.Name), " ", "_", -1) + "\t" + genNoSQLFieldType(schema, field, driver) + "\t\t`json:\"" + strings.Title(field.Name) + omitEmpty + "\"" + additionalTags + "`"
 	}
@@ -715,9 +754,11 @@ func hasGeneratedModelSchema(name string, schemasCreated *[]NOSQLSchema) bool {
 func genNoSQLAdditionalTags(field NOSQLSchemaField, driver string) string {
 
 	validationTags := ""
+	validationTagsGap := ""
 
 	if field.Validation != nil {
 		validationTags = "validate:\""
+		validationTagsGap = " "
 
 		validationTags += extensions.BoolToString(field.Validation.Required) + ","
 		validationTags += field.Validation.Type + ","
@@ -743,7 +784,7 @@ func genNoSQLAdditionalTags(field NOSQLSchemaField, driver string) string {
 		}
 	case DATABASE_DRIVER_MONGODB:
 
-		tags := " bson:\"" + strings.Title(field.Name) + "\"" + " " + validationTags
+		tags := " bson:\"" + strings.Title(field.Name) + "\"" + validationTagsGap + validationTags
 		switch field.Index {
 		case "":
 			return tags
