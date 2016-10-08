@@ -6,7 +6,10 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
+
+	"encoding/json"
 
 	"github.com/DanielRenne/GoCore/core/dbServices"
 	"github.com/DanielRenne/GoCore/core/extensions"
@@ -56,9 +59,19 @@ type Query struct {
 }
 
 type DataFormat struct {
-	Language      string
-	DateFormat    string
-	LocalTimeZone string
+	Language      string `json:"Language"`
+	DateFormat    string `json:"DateFormat"`
+	LocalTimeZone string `json:"LocalTimeZone"`
+}
+
+func (obj *DataFormat) JSONString() (string, error) {
+	bytes, err := json.Marshal(obj)
+	return string(bytes), err
+}
+
+func (self *DataFormat) Parse(data string) (err error) {
+	err = json.Unmarshal([]byte(data), &self)
+	return
 }
 
 func Criteria(key string, value interface{}) map[string]interface{} {
@@ -515,11 +528,25 @@ func (self *Query) processViews(x interface{}) (err error) {
 			return
 		}
 
+		var wg sync.WaitGroup
 		for i := 0; i < source.Len(); i++ {
+
+			wg.Add(1)
+
 			s := source.Index(i)
-			for _, v := range views { //Update and format the view fields that have ref
-				self.setViewValue(v, s)
-			}
+			go func(s reflect.Value) {
+				defer wg.Done()
+				var wgSetViews sync.WaitGroup
+				for _, v := range views { //Update and format the view fields that have ref
+					wgSetViews.Add(1)
+					go func(v view, s reflect.Value) {
+						defer wgSetViews.Done()
+						self.setViewValue(v, s)
+					}(v, s)
+				}
+				wgSetViews.Wait()
+			}(s)
+			wg.Wait()
 		}
 	} else {
 
@@ -532,9 +559,15 @@ func (self *Query) processViews(x interface{}) (err error) {
 			return
 		}
 
+		var wgSetViews sync.WaitGroup
 		for _, v := range views { //Update and format the view fields that have ref
-			self.setViewValue(v, source)
+			wgSetViews.Add(1)
+			go func(v view, s reflect.Value) {
+				defer wgSetViews.Done()
+				self.setViewValue(v, s)
+			}(v, source)
 		}
+		wgSetViews.Wait()
 
 	}
 
@@ -633,21 +666,67 @@ func (self *Query) setViewValue(v view, source reflect.Value) {
 		i, _ := strconv.ParseInt(viewValue, 10, 64)
 		t := time.Unix(i, 0).In(location)
 		dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), t.Format("15:04:05"))
-	case "HoursFromNow":
+	case "DateTimeMilitary":
+		i, _ := strconv.ParseInt(viewValue, 10, 64)
+		t := time.Unix(i, 0).In(location)
+		dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), dateformatter.Format(t, locale, dateFormat)+t.Format("15:04:05"))
+	case "TimeFromNow":
 		i, _ := strconv.ParseInt(viewValue, 10, 64)
 		t := time.Unix(i, 0).In(location)
 		diff := time.Now().Sub(t)
-		dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), extensions.FloatToString(diff.Hours(), 0)+" Hours") //Translate Hours
-	case "DaysFromNow":
-		i, _ := strconv.ParseInt(viewValue, 10, 64)
-		t := time.Unix(i, 0).In(location)
-		diff := time.Now().Sub(t)
-		dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), extensions.FloatToString(diff.Hours()/24, 1)+" Days") //Translate Hours
+		self.processTimeFromNow(v.fieldName, source.FieldByName("Views"), diff)
+
 	case "":
 		dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), viewValue)
 
 	}
 
+}
+
+func (self *Query) processTimeFromNow(key string, field reflect.Value, diff time.Duration) {
+	if diff.Minutes() < 1 { //Seconds
+		label := "Second"
+		if diff.Seconds() > 1 {
+			label = "Seconds"
+		}
+		dbServices.SetFieldValue(key, field, extensions.FloatToString(diff.Seconds(), 0)+" "+label) //Translate label
+	} else if diff.Hours() < 1 { //Minutes
+		label := "Minute"
+		if diff.Minutes() > 1 {
+			label = "Minutes"
+		}
+		dbServices.SetFieldValue(key, field, extensions.FloatToString(diff.Minutes(), 0)+" "+label) //Translate label
+	} else if diff.Hours() < 24 { //Hours
+		label := "Hour"
+		if diff.Hours() > 1 {
+			label = "Hours"
+		}
+		dbServices.SetFieldValue(key, field, extensions.FloatToString(diff.Hours(), 0)+" "+label) //Translate label
+	} else if diff.Hours() < 24*7 { //Days
+		label := "Day"
+		if diff.Hours() > 24*2 {
+			label = "Days"
+		}
+		dbServices.SetFieldValue(key, field, extensions.FloatToString(diff.Hours()/24, 0)+" "+label) //Translate label
+	} else if diff.Hours() < 24*30 { // Weeks
+		label := "Week"
+		if diff.Hours() > 24*7+24*3.5 {
+			label = "Weeks"
+		}
+		dbServices.SetFieldValue(key, field, extensions.FloatToString(diff.Hours()/(24*7), 0)+" "+label) //Translate label
+	} else if diff.Hours() < 24*365 { // Months
+		label := "Month"
+		if diff.Hours() > 24*30+24*15 {
+			label = "Months"
+		}
+		dbServices.SetFieldValue(key, field, extensions.FloatToString(diff.Hours()/(24*30), 0)+" "+label) //Translate label
+	} else { // Years
+		label := "Year"
+		if diff.Hours() > 24*365+24*182.5 {
+			label = "Years"
+		}
+		dbServices.SetFieldValue(key, field, extensions.FloatToString(diff.Hours()/(24*365), 0)+" "+label) //Translate label
+	}
 }
 
 func (self *Query) getViews(x reflect.Value) (views []view) {
