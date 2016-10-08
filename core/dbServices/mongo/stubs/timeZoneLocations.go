@@ -2,9 +2,9 @@ package model
 
 // Timezone holds data gathered from CSV files on http://timezonedb.com/download.
 type Timezone struct {
-	Location string
-	Code     string
-	Country  string
+	Location string `json:"Location"`
+	Code     string `json:"Code"`
+	Country  string `json:"Country"`
 }
 
 // Locations is a list of all IANA timezone locations and country codes.

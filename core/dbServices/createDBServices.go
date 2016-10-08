@@ -273,6 +273,7 @@ func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir s
 		copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/mongo/stubs/query.go", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/query.go")
 		copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/mongo/stubs/timeZone.go", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/timeZone.go")
 		copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/mongo/stubs/timeZoneLocations.go", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/timeZoneLocations.go")
+		copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/mongo/stubs/locales.go", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/locales.go")
 		////Support for Long Running Transactions Later Maybe
 		//copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/mongo/stubs/transactionObjects.go", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/transactionObjects.go")
 	}
@@ -395,8 +396,6 @@ func finalizeModelFile(versionDir string) {
 	modelToWrite += "}\n\n"
 
 	modelToWrite += "const (\n"
-
-	log.Printf("%+v\n", allCollections.Entities)
 
 	for key, value := range allCollections.Entities {
 
