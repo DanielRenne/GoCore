@@ -683,7 +683,7 @@ func genNoSQLSchema(schema NOSQLSchema, driver string, schemasCreated *[]NOSQLSc
 					viewTags += "ref:\""
 					viewTags += strings.Title(field.Ref)
 					if field.Format != "" {
-						viewTags += "," + field.Format
+						viewTags += "~" + field.Format
 					}
 					viewTags += "\""
 				}

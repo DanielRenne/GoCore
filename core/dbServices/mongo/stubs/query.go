@@ -661,7 +661,7 @@ func (self *Query) setViewValue(v view, source reflect.Value) {
 	case "DateTime":
 		i, _ := strconv.ParseInt(viewValue, 10, 64)
 		t := time.Unix(i, 0).In(location)
-		dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), dateformatter.Format(t, locale, dateFormat)+t.Format("03:04:05 PM"))
+		dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), dateformatter.Format(t, locale, dateFormat)+" "+t.Format("03:04:05 PM"))
 	case "TimeMilitary":
 		i, _ := strconv.ParseInt(viewValue, 10, 64)
 		t := time.Unix(i, 0).In(location)
@@ -669,15 +669,17 @@ func (self *Query) setViewValue(v view, source reflect.Value) {
 	case "DateTimeMilitary":
 		i, _ := strconv.ParseInt(viewValue, 10, 64)
 		t := time.Unix(i, 0).In(location)
-		dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), dateformatter.Format(t, locale, dateFormat)+t.Format("15:04:05"))
+		dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), dateformatter.Format(t, locale, dateFormat)+" "+t.Format("15:04:05"))
 	case "TimeFromNow":
 		i, _ := strconv.ParseInt(viewValue, 10, 64)
 		t := time.Unix(i, 0).In(location)
 		diff := time.Now().Sub(t)
 		self.processTimeFromNow(v.fieldName, source.FieldByName("Views"), diff)
-
 	case "":
 		dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), viewValue)
+	}
+
+	if strings.Contains(v.format, "Concatenate:") {
 
 	}
 
@@ -747,7 +749,7 @@ func (self *Query) getViews(x reflect.Value) (views []view) {
 			continue
 		}
 
-		tagValues := strings.Split(tagValue, ",")
+		tagValues := strings.Split(tagValue, "~")
 
 		var v view
 		v.fieldName = name
