@@ -56,6 +56,10 @@ Optional Fields:
 		Omits empty values from serializing as a field to json string.
 	view: bool
 		Adds the field to a Views struct which is not persisted to the DB.  Only value types are supported.  NO objects or arrays.
+	ref:  string
+		The name of the field for a view to field to be cloned with data.
+	format: string
+		Formats view fields only based on the key string.  See format keys....
 	validation: object
 		Validates the field on a SaveWithTran.  Adds a copy of the complete schema object fields as strings in an Errors struct.  See Validation fields... 
 	join: object
@@ -88,6 +92,28 @@ Join Fields:
 		The name of the schema based on the collection.
 	fieldName: string
 		The name of the key to be joined to the collection id field.
+
+Format Keys:
+
+	------Boolean Formats----------------
+	
+	YesNo: Sets "Yes" for true and "No" for false
+	yesno: Sets "yes" for true and "no" for false
+	enableddisabled:  Sets "enabled" for true and "disabled" for false
+	EnabledDisabled:  Sets "Enabled" for true and "Disabled" for false
+	TrueFalse:  Sets "True" for true and "False" for false.
+	
+	------Date & Time Formats ------------
+	
+	DateNumeric:  Date in numeric format adjusted for locale format ex..  01/01/1979
+	DateLong:  Date in Long format ex..  Monday, January 1, 1979
+	DateShort:  Date in short format ex.. January 1, 1979
+	DateMonthYearShort:  Date in Short Month format ex..  Jan 1, 1979 
+	DateTime:  Combination of DateNumeric and Time ex..  01/01/1979 01:25:30 AM
+	DateTimeMilitary:  Combination of DateNumeric and Military Time ex..  01/01/1979 15:04:05
+	Time:  Standard Time
+	TimeMilitary:  Military Time
+	TimeFromNow:  Time from now in seconds, minutes, days, weeks, months, years
 	
 
 Below is an example of an example schema:
