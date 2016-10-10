@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"unicode"
 )
 
 type Version struct {
@@ -159,4 +160,25 @@ func MakeFirstLowerCase(s string) string {
 	rest := bts[1:]
 
 	return string(bytes.Join([][]byte{lc, rest}, nil))
+}
+
+func ExtractArgsWithinBrackets(str string) (res []string) {
+
+	brackets := &unicode.RangeTable{
+		R16: []unicode.Range16{
+			// {0x0028, 0x0029, 1}, // ( )
+			// {0x005b, 0x005d, 1}, // [ ]
+			{0x007b, 0x007d, 1}, // { }
+		},
+	}
+
+	isBracket := func(r rune) bool {
+		if unicode.In(r, brackets) {
+			return true
+		}
+		return false
+	}
+
+	res = strings.FieldsFunc(str, isBracket)
+	return
 }

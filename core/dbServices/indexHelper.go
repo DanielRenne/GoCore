@@ -246,7 +246,13 @@ func GetStructReflectionValue(key string, val reflect.Value) string {
 				return extensions.Int64ToString(retValues[0].Int())
 			}
 			return fmt.Sprintf("%v", f)
+		case reflect.Ptr:
+			if len(splitKey) > 1 {
+				return GetStructReflectionValue(strings.Replace(key, propertyName+".", "", 1), val.Elem())
+			}
+
 		}
+
 	}
 	return ""
 }

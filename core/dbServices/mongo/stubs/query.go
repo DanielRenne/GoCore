@@ -98,13 +98,13 @@ func (self *Query) ById(val interface{}, x interface{}) error {
 			if err != nil {
 				return err
 			}
-			return self.processJoins(x)
+			return self.processJoinsAndViews(x)
 		}
 
 		return self.handleQueryError(err, callback)
 	}
 
-	return self.processJoins(x)
+	return self.processJoinsAndViews(x)
 
 }
 
@@ -282,12 +282,12 @@ func (self *Query) All(x interface{}) error {
 			if err != nil {
 				return err
 			}
-			return self.processJoins(x)
+			return self.processJoinsAndViews(x)
 		}
 
 		return self.handleQueryError(err, callback)
 	}
-	return self.processJoins(x)
+	return self.processJoinsAndViews(x)
 }
 
 func (self *Query) One(x interface{}) error {
@@ -312,7 +312,7 @@ func (self *Query) One(x interface{}) error {
 			if cnt != 1 {
 				return errors.New("Did not return exactly one row.  Returned " + extensions.IntToString(cnt))
 			}
-			return self.processJoins(x)
+			return self.processJoinsAndViews(x)
 		}
 
 		return self.handleQueryError(err, callback)
@@ -322,7 +322,7 @@ func (self *Query) One(x interface{}) error {
 		return errors.New("Did not return exactly one row.  Returned " + extensions.IntToString(cnt))
 	}
 
-	return self.processJoins(x)
+	return self.processJoinsAndViews(x)
 }
 
 func (self *Query) Count() (int, error) {
@@ -366,18 +366,21 @@ func (self *Query) Distinct(key string, x interface{}) error {
 			if err != nil {
 				return err
 			}
-			return self.processJoins(x)
+			return self.processJoinsAndViews(x)
 
 		}
 
 		return self.handleQueryError(err, callback)
 	}
 
-	return self.processJoins(x)
-
+	return self.processJoinsAndViews(x)
 }
 
-func (self *Query) processJoins(x interface{}) (err error) {
+func (self *Query) processJoinsAndViews(x interface{}) (err error) {
+	err = self.processJoins(x)
+	if err != nil {
+		return
+	}
 
 	if self.renderViews {
 		err = self.processViews(x)
@@ -385,6 +388,10 @@ func (self *Query) processJoins(x interface{}) (err error) {
 			return
 		}
 	}
+	return
+}
+
+func (self *Query) processJoins(x interface{}) (err error) {
 
 	if self.allJoins || len(self.joins) > 0 {
 
@@ -411,7 +418,7 @@ func (self *Query) processJoins(x interface{}) (err error) {
 					joinsField := s.FieldByName("Joins")
 					setField := joinsField.FieldByName(j.joinFieldName)
 
-					err = joinField(j.joinSchemaName, j.collectionName, id, setField, j.joinSpecified)
+					err = joinField(j.joinSchemaName, j.collectionName, id, setField, j.joinSpecified, self)
 					if err != nil {
 						return
 					}
@@ -434,7 +441,7 @@ func (self *Query) processJoins(x interface{}) (err error) {
 				joinsField := s.FieldByName("Joins")
 				setField := joinsField.FieldByName(j.joinFieldName)
 
-				err = joinField(j.joinSchemaName, j.collectionName, id, setField, j.joinSpecified)
+				err = joinField(j.joinSchemaName, j.collectionName, id, setField, j.joinSpecified, self)
 				if err != nil {
 					return
 				}
@@ -550,7 +557,10 @@ func (self *Query) processViews(x interface{}) (err error) {
 		}
 	} else {
 
-		source := reflect.ValueOf(x).Elem()
+		source := reflect.ValueOf(x)
+		if source.Kind() == reflect.Ptr {
+			source = source.Elem()
+		}
 
 		var views []view
 		views = self.getViews(source)
@@ -680,7 +690,13 @@ func (self *Query) setViewValue(v view, source reflect.Value) {
 	}
 
 	if strings.Contains(v.format, "Concatenate:") {
-
+		concatenateData := v.format[12:]
+		args := extensions.ExtractArgsWithinBrackets(concatenateData)
+		for _, arg := range args {
+			substitution := dbServices.GetStructReflectionValue(strings.Title(arg), source)
+			concatenateData = strings.Replace(concatenateData, "{"+arg+"}", substitution, 1)
+		}
+		dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), viewValue+concatenateData)
 	}
 
 }
