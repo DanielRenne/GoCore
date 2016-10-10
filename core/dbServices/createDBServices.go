@@ -369,7 +369,7 @@ func finalizeModelFile(versionDir string) {
 	modelToWrite += "return nil\n"
 	modelToWrite += "}\n\n"
 
-	modelToWrite += "func joinField(fieldType string, collectionName string, id string, fieldToSet reflect.Value, remainingRecursions string, q *Query) (err error) {\n\n"
+	modelToWrite += "func joinField(fieldType string, collectionName string, id string, fieldToSet reflect.Value, remainingRecursions string, q *Query, endRecursion bool, recursionCount int) (err error) {\n\n"
 	modelToWrite += "c := ResolveCollection(collectionName)\n"
 	modelToWrite += "if c == nil {\n"
 	modelToWrite += "	err = errors.New(\"Failed to resolve collection:  \" + collectionName)\n"
@@ -384,7 +384,10 @@ func finalizeModelFile(versionDir string) {
 		modelToWrite += "err = c.Query().ById(id, &y)\n"
 		modelToWrite += "if err == nil {\n"
 
-		modelToWrite += " err = y.JoinFields(remainingRecursions, q) //Recursively join fields.\n"
+		modelToWrite += "if endRecursion == false && recursionCount > 0{\n"
+		modelToWrite += "recursionCount--\n"
+		modelToWrite += " err = y.JoinFields(remainingRecursions, q, recursionCount) //Recursively join fields.\n"
+		modelToWrite += "}\n"
 		modelToWrite += "if err == nil {\n"
 		modelToWrite += "	fieldToSet.Set(reflect.ValueOf(&y))\n\n"
 
@@ -1612,7 +1615,7 @@ func genNoSQLSchemaDeleteWithTran(collection NOSQLCollection, schema NOSQLSchema
 
 func genNoSQLSchemaJoinFields(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
 	val := ""
-	val += "func (self *" + strings.Title(schema.Name) + ") JoinFields(remainingRecursions string, q *Query) (err error) {\n\n"
+	val += "func (self *" + strings.Title(schema.Name) + ") JoinFields(remainingRecursions string, q *Query, recursionCount int) (err error) {\n\n"
 
 	val += "source := reflect.ValueOf(self).Elem()\n\n"
 
@@ -1628,8 +1631,11 @@ func genNoSQLSchemaJoinFields(collection NOSQLCollection, schema NOSQLSchema, dr
 	val += "	id := reflect.ValueOf(s.FieldByName(j.joinFieldRefName).Interface()).String()\n"
 	val += "	joinsField := s.FieldByName(\"Joins\")\n"
 	val += "	setField := joinsField.FieldByName(j.joinFieldName)\n\n"
-
-	val += "	err = joinField(j.joinSchemaName, j.collectionName, id, setField, j.joinSpecified, q)\n"
+	val += " endRecursion := false\n"
+	val += " if remainingRecursions == j.joinSpecified {\n"
+	val += " endRecursion = true\n"
+	val += "}\n"
+	val += "	err = joinField(j.joinSchemaName, j.collectionName, id, setField, j.joinSpecified, q, endRecursion, recursionCount)\n"
 	val += "	if err != nil {\n"
 	val += "		return\n"
 	val += "	}\n"

@@ -418,7 +418,7 @@ func (self *Query) processJoins(x interface{}) (err error) {
 					joinsField := s.FieldByName("Joins")
 					setField := joinsField.FieldByName(j.joinFieldName)
 
-					err = joinField(j.joinSchemaName, j.collectionName, id, setField, j.joinSpecified, self)
+					err = joinField(j.joinSchemaName, j.collectionName, id, setField, j.joinSpecified, self, false, 10)
 					if err != nil {
 						return
 					}
@@ -441,7 +441,7 @@ func (self *Query) processJoins(x interface{}) (err error) {
 				joinsField := s.FieldByName("Joins")
 				setField := joinsField.FieldByName(j.joinFieldName)
 
-				err = joinField(j.joinSchemaName, j.collectionName, id, setField, j.joinSpecified, self)
+				err = joinField(j.joinSchemaName, j.collectionName, id, setField, j.joinSpecified, self, false, 10)
 				if err != nil {
 					return
 				}
