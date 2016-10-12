@@ -135,3 +135,10 @@ func ReadGzipCSSFile(path string, c *gin.Context) {
 	c.File(path)
 
 }
+
+func ReadPngFile(path string, c *gin.Context) {
+
+	c.Header("Content-Type", "image/png")
+	c.File(path)
+
+}
