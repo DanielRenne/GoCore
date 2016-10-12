@@ -380,6 +380,7 @@ func finalizeModelFile(versionDir string) {
 
 	for _, collection := range allCollections.Collections {
 		modelToWrite += "case \"" + strings.Title(collection.Schema.Name) + "\":\n"
+		modelToWrite += "if IsZeroOfUnderlyingType(fieldToSet.Interface()) {\n"
 		modelToWrite += "var y " + strings.Title(collection.Schema.Name) + "\n"
 		modelToWrite += "err = c.Query().ById(id, &y)\n"
 		modelToWrite += "if err == nil {\n"
@@ -390,7 +391,6 @@ func finalizeModelFile(versionDir string) {
 		modelToWrite += "}\n"
 		modelToWrite += "if err == nil {\n"
 		modelToWrite += "	fieldToSet.Set(reflect.ValueOf(&y))\n\n"
-
 		modelToWrite += "if q.renderViews {\n"
 		modelToWrite += "	err = q.processViews(&y)\n"
 		modelToWrite += "	if err != nil {\n"
@@ -398,6 +398,22 @@ func finalizeModelFile(versionDir string) {
 		modelToWrite += "	}\n"
 		modelToWrite += "}\n\n"
 
+		modelToWrite += "}\n"
+		modelToWrite += "}\n"
+		modelToWrite += "}else {\n"
+		modelToWrite += "if endRecursion == false && recursionCount > 0 {\n"
+		modelToWrite += "	recursionCount--\n"
+		modelToWrite += "	method := fieldToSet.MethodByName(\"JoinFields\")\n"
+		modelToWrite += "	in := []reflect.Value{}\n"
+		modelToWrite += "	in = append(in, reflect.ValueOf(remainingRecursions))\n"
+		modelToWrite += "	in = append(in, reflect.ValueOf(q))\n"
+		modelToWrite += "	in = append(in, reflect.ValueOf(recursionCount))\n"
+		modelToWrite += "	values := method.Call(in)\n"
+		modelToWrite += "	if values[0].Interface() == nil {\n"
+		modelToWrite += "	err = nil\n"
+		modelToWrite += "	return\n"
+		modelToWrite += "	}\n"
+		modelToWrite += "	err = values[0].Interface().(error)\n"
 		modelToWrite += "}\n"
 		modelToWrite += "}\n"
 	}
@@ -644,9 +660,11 @@ func genNoSQLSchema(schema NOSQLSchema, driver string, schemasCreated *[]NOSQLSc
 		val += "\n\t" + strings.Replace(strings.Title(field.Name), " ", "_", -1) + "\t" + genNoSQLFieldType(schema, field, driver) + "\t\t`json:\"" + strings.Title(field.Name) + omitEmpty + "\"" + additionalTags + "`"
 	}
 
-	val += "\n\t CreateDate time.Time `json:\"CreateDate\" bson:\"CreateDate\"`"
-	val += "\n\t UpdateDate time.Time `json:\"UpdateDate\" bson:\"UpdateDate\"`"
-	val += "\n\t LastUpdateId string `json:\"LastUpdateId\" bson:\"LastUpdateId\"`"
+	if seed == 0 {
+		val += "\n\t CreateDate time.Time `json:\"CreateDate\" bson:\"CreateDate\"`"
+		val += "\n\t UpdateDate time.Time `json:\"UpdateDate\" bson:\"UpdateDate\"`"
+		val += "\n\t LastUpdateId string `json:\"LastUpdateId\" bson:\"LastUpdateId\"`"
+	}
 
 	//Add Validation
 	if seed == 0 {

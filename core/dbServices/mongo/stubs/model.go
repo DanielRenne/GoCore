@@ -258,6 +258,10 @@ func getJoins(x reflect.Value, remainingRecursions string) (joins []join) {
 	return
 }
 
+func IsZeroOfUnderlyingType(x interface{}) bool {
+	return reflect.DeepEqual(x, reflect.Zero(reflect.TypeOf(x)).Interface())
+}
+
 func Reflect(obj interface{}) []Field {
 	var ret []Field
 	val := reflect.ValueOf(obj)

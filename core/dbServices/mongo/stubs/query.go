@@ -36,6 +36,11 @@ type join struct {
 	joinFieldName    string
 	joinSchemaName   string
 	joinSpecified    string
+	joinType         string
+}
+
+type joinType struct {
+	Type string
 }
 
 type view struct {
@@ -52,8 +57,7 @@ type Query struct {
 	sort        []string
 	collection  *mgo.Collection
 	e           error
-	joins       []string
-	allJoins    bool
+	joins       map[string]joinType
 	format      DataFormat
 	renderViews bool
 }
@@ -109,14 +113,34 @@ func (self *Query) ById(val interface{}, x interface{}) error {
 }
 
 func (self *Query) Join(criteria string) *Query {
-	if self.allJoins {
+
+	if self.joins == nil {
+		self.joins = make(map[string]joinType)
+	}
+
+	_, ok := self.joins[JOIN_ALL]
+	if ok {
 		return self
 	}
-	if criteria == JOIN_ALL {
-		self.allJoins = true
+
+	self.joins[criteria] = joinType{Type: "Inner"}
+
+	return self
+}
+
+func (self *Query) LeftJoin(criteria string) *Query {
+
+	if self.joins == nil {
+		self.joins = make(map[string]joinType)
+	}
+
+	_, ok := self.joins[JOIN_ALL]
+	if ok {
 		return self
 	}
-	self.joins = append(self.joins, criteria)
+
+	self.joins[criteria] = joinType{Type: "Left"}
+
 	return self
 }
 
@@ -393,7 +417,7 @@ func (self *Query) processJoinsAndViews(x interface{}) (err error) {
 
 func (self *Query) processJoins(x interface{}) (err error) {
 
-	if self.allJoins || len(self.joins) > 0 {
+	if len(self.joins) > 0 {
 
 		//Check if x is a single struct or an Array
 		_, isArray := valueType(x)
@@ -410,7 +434,8 @@ func (self *Query) processJoins(x interface{}) (err error) {
 				return
 			}
 
-			//Advanced way is to get the count and chunk.  For now we will iterate.
+			//Advanced way is to get the count and chunk with an IN query.  For now we will iterate.
+
 			for i := 0; i < source.Len(); i++ {
 				s := source.Index(i)
 				for _, j := range joins {
@@ -418,9 +443,13 @@ func (self *Query) processJoins(x interface{}) (err error) {
 					joinsField := s.FieldByName("Joins")
 					setField := joinsField.FieldByName(j.joinFieldName)
 
-					err = joinField(j.joinSchemaName, j.collectionName, id, setField, j.joinSpecified, self, false, 10)
-					if err != nil {
-						return
+					errJoin := joinField(j.joinSchemaName, j.collectionName, id, setField, j.joinSpecified, self, false, 10)
+					if errJoin != nil {
+						if j.joinType == "Inner" {
+							fields := self.printStruct(s)
+							err = errors.New("Failed to Inner Join on " + j.collectionName + " with id = " + id + "\n\nFailed to Join Object: " + s.Type().Name() + " \n" + fields)
+							return
+						}
 					}
 				}
 			}
@@ -441,9 +470,13 @@ func (self *Query) processJoins(x interface{}) (err error) {
 				joinsField := s.FieldByName("Joins")
 				setField := joinsField.FieldByName(j.joinFieldName)
 
-				err = joinField(j.joinSchemaName, j.collectionName, id, setField, j.joinSpecified, self, false, 10)
-				if err != nil {
-					return
+				errJoin := joinField(j.joinSchemaName, j.collectionName, id, setField, j.joinSpecified, self, false, 10)
+				if errJoin != nil {
+					if j.joinType == "Inner" {
+						fields := self.printStruct(source)
+						err = errors.New("Failed to Inner Join on " + j.collectionName + " with id = " + id + "\n\tFailed to Join Object:\n" + fields)
+						return
+					}
 				}
 			}
 		}
@@ -460,7 +493,9 @@ func (self *Query) getJoins(x reflect.Value) (joins []join) {
 		return
 	}
 
-	if self.allJoins {
+	allJoin, ok := self.joins[JOIN_ALL]
+
+	if ok {
 		for i := 0; i < joinsField.NumField(); i++ {
 
 			typeField := joinsField.Type().Field(i)
@@ -473,12 +508,13 @@ func (self *Query) getJoins(x reflect.Value) (joins []join) {
 			j.joinFieldRefName = splitValue[2]
 			j.joinFieldName = name
 			j.joinSpecified = JOIN_ALL
+			j.joinType = allJoin.Type
 			joins = append(joins, j)
 		}
 	} else {
-		for _, name := range self.joins {
+		for key, val := range self.joins {
 
-			fields := strings.Split(name, ".")
+			fields := strings.Split(key, ".")
 			fieldName := fields[0]
 
 			typeField, ok := joinsField.Type().FieldByName(fieldName)
@@ -493,7 +529,8 @@ func (self *Query) getJoins(x reflect.Value) (joins []join) {
 			j.joinSchemaName = splitValue[1]
 			j.joinFieldRefName = splitValue[2]
 			j.joinFieldName = fieldName
-			j.joinSpecified = strings.Replace(name, fieldName+".", "", 1)
+			j.joinSpecified = strings.Replace(key, fieldName+".", "", 1)
+			j.joinType = val.Type
 			joins = append(joins, j)
 		}
 	}
@@ -881,4 +918,36 @@ func (self *Query) checkForObjectId(val interface{}) interface{} {
 	} else {
 		return val
 	}
+}
+
+func (self *Query) printStruct(s reflect.Value) string {
+	fields := ""
+	for i := 0; i < s.NumField(); i++ {
+		valField := s.Field(i)
+		typeField := s.Type().Field(i)
+		name := typeField.Name
+		if valField.Kind() == reflect.Ptr {
+			// fields +=  name + ":*\n"
+		} else if valField.Kind() == reflect.Struct {
+			// fields += name + ":{}\n"
+		} else if valField.Kind() == reflect.Array || valField.Kind() == reflect.Slice {
+			// fields += name + ":{}\n"
+		} else if valField.Kind() == reflect.String {
+			if name == "Id" {
+				myIdInstanceHex := valField.MethodByName("Hex")
+				fields += "\t" + name + ":  " + myIdInstanceHex.Call([]reflect.Value{})[0].String() + "\n"
+			} else {
+				fields += "\t" + name + ":  " + valField.String() + "\n"
+			}
+		} else if valField.Kind() == reflect.Int || valField.Kind() == reflect.Int8 || valField.Kind() == reflect.Int16 || valField.Kind() == reflect.Int32 || valField.Kind() == reflect.Int64 {
+			fields += "\t" + name + ":  " + strconv.FormatInt(valField.Int(), 10) + "\n"
+		} else if valField.Kind() == reflect.Bool {
+			fields += "\t" + name + ":  " + extensions.BoolToString(valField.Bool()) + "\n"
+		} else if valField.Kind() == reflect.Float32 {
+			fields += "\t" + name + ":  " + strconv.FormatFloat(valField.Float(), 'E', -1, 32) + "\n"
+		} else if valField.Kind() == reflect.Float64 {
+			fields += "\t" + name + ":  " + strconv.FormatFloat(valField.Float(), 'E', -1, 64) + "\n"
+		}
+	}
+	return fields
 }
