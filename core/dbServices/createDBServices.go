@@ -260,12 +260,12 @@ func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir s
 	extensions.RemoveDirectory(serverSettings.APP_LOCATION + "/webAPIs/" + versionDir + "/webAPI")
 
 	//Create a NOSQLBucket Model
-	bucket := generateNoSQLModelBucket(driver)
+	// bucket := generateNoSQLModelBucket(driver)
 	os.Mkdir(serverSettings.APP_LOCATION+"/models/", 0777)
 	os.Mkdir(serverSettings.APP_LOCATION+"/models/"+versionDir, 0777)
 	os.Mkdir(serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/", 0777)
 
-	writeNOSQLModelBucket(bucket, serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/bucket.go")
+	// writeNOSQLModelBucket(bucket, serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/bucket.go")
 
 	//Copy Stub Files
 	if driver == DATABASE_DRIVER_MONGODB {
@@ -449,7 +449,7 @@ func generateNoSQLModel(schema NOSQLSchema, collection NOSQLCollection, driver s
 	case DATABASE_DRIVER_BOLTDB:
 		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "encoding/json", "github.com/asdine/storm", timeImport})
 	case DATABASE_DRIVER_MONGODB:
-		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "encoding/json", "gopkg.in/mgo.v2", "gopkg.in/mgo.v2/bson", "log", "time", "errors", "encoding/base64", "reflect"})
+		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "github.com/DanielRenne/GoCore/core/serverSettings", "encoding/json", "gopkg.in/mgo.v2", "gopkg.in/mgo.v2/bson", "log", "time", "errors", "encoding/base64", "reflect"})
 		// val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "encoding/json", "gopkg.in/mgo.v2/bson", "log", "time"})
 	}
 
@@ -1451,6 +1451,10 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 
 	val += "func (obj model" + strings.Title(collection.Name) + ") Bootstrap() error {\n"
 
+	val += "if serverSettings.WebConfig.Application.BootstrapData == false {\n"
+	val += "	return nil\n"
+	val += "}\n"
+
 	//First check if the path exists to bootstrap data
 	path := serverSettings.APP_LOCATION + "/db/bootstrap/" + extensions.MakeFirstLowerCase(collection.Name) + "/" + extensions.MakeFirstLowerCase(collection.Name) + ".json"
 	if extensions.DoesFileExist(path) {
@@ -1492,14 +1496,21 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 	case DATABASE_DRIVER_BOLTDB:
 		val += ""
 	case DATABASE_DRIVER_MONGODB:
+		val += "var isError bool\n"
 		val += "for _, doc := range v{\n\n"
 
 		val += "err = doc.Save()\n"
 		val += "	if err != nil {\n"
 		val += "		log.Println(\"Failed to bootstrap data for " + strings.Title(schema.Name) + ":  \" + doc.Id.Hex() + \"  \" + err.Error())\n"
+		val += "isError = true\n"
 		val += "	}\n"
-		val += "	log.Println(\"Successfully bootstraped " + strings.Title(schema.Name) + ":  \" + doc.Id.Hex())\n\n"
-		val += "	log.Printf(\"%+v\\n\", doc)\n\n"
+
+		// val += "	log.Printf(\"%+v\\n\", doc)\n\n"
+		val += "}\n"
+		val += "if isError{\n"
+		val += "	log.Println(\"FAILED to bootstrap " + strings.Title(collection.Name) + "\")\n"
+		val += "}else{\n"
+		val += "	log.Println(\"Successfully bootstraped " + strings.Title(collection.Name) + "\")\n"
 		val += "}\n\n"
 
 	}

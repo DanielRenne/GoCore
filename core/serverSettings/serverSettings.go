@@ -55,6 +55,7 @@ type Application struct {
 	SessionExpirationDays int           `json:"sessionExpirationDays"`
 	SessionSecureCookie   bool          `json:"sessionSecureCookie"`
 	CSRFSecret            string        `json:"csrfSecret"`
+	BootstrapData         bool          `json:"bootstrapData"`
 }
 
 type webConfigObj struct {
