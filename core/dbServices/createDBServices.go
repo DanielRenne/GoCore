@@ -2,13 +2,13 @@ package dbServices
 
 import (
 	"encoding/json"
+	"log"
 
 	"github.com/DanielRenne/GoCore/core/extensions"
 	"github.com/DanielRenne/GoCore/core/serverSettings"
 	// "fmt"
 	"encoding/base64"
 	"io/ioutil"
-	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -117,6 +117,11 @@ type collectionsSet struct {
 	Entities    map[string]entityList
 }
 
+type schemasCreatedSync struct {
+	sync.RWMutex
+	schemasCreated map[string]NOSQLSchema
+}
+
 var allCollections collectionsSet
 
 var modelToWrite string
@@ -204,7 +209,9 @@ func walkNoSQLVersion(path string, versionDir string) {
 
 	var wg sync.WaitGroup
 
-	schemasCreated := make([]NOSQLSchema, 0)
+	var scs schemasCreatedSync
+
+	scs.schemasCreated = make(map[string]NOSQLSchema, 0)
 
 	err := filepath.Walk(path, func(path string, f os.FileInfo, errWalk error) error {
 
@@ -238,7 +245,7 @@ func walkNoSQLVersion(path string, versionDir string) {
 					allCollections.Unlock()
 				}
 
-				createNoSQLModel(schemaDB.Collections, serverSettings.WebConfig.DbConnection.Driver, versionDir, &schemasCreated)
+				createNoSQLModel(schemaDB.Collections, serverSettings.WebConfig.DbConnection.Driver, versionDir, &scs)
 			}()
 		}
 
@@ -253,7 +260,7 @@ func walkNoSQLVersion(path string, versionDir string) {
 	finalizeModelFile(versionDir)
 }
 
-func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir string, schemasCreated *[]NOSQLSchema) {
+func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir string, scs *schemasCreatedSync) {
 
 	//Clean the Model and API Directory
 	// extensions.RemoveDirectory(serverSettings.APP_LOCATION + "/models/" + versionDir + "/model")
@@ -287,7 +294,7 @@ func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir s
 
 	//Create the Collection Models
 	for _, collection := range collections {
-		val := generateNoSQLModel(collection.Schema, collection, driver, schemasCreated)
+		val := generateNoSQLModel(collection.Schema, collection, driver, scs)
 		os.Mkdir(serverSettings.APP_LOCATION+"/models/", 0777)
 		os.Mkdir(serverSettings.APP_LOCATION+"/models/"+versionDir, 0777)
 		os.Mkdir(serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/", 0777)
@@ -436,7 +443,7 @@ func finalizeModelFile(versionDir string) {
 	writeNoSQLStub(modelToWrite, serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/model.go")
 }
 
-func generateNoSQLModel(schema NOSQLSchema, collection NOSQLCollection, driver string, schemasCreated *[]NOSQLSchema) string {
+func generateNoSQLModel(schema NOSQLSchema, collection NOSQLCollection, driver string, scs *schemasCreatedSync) string {
 
 	val := ""
 
@@ -454,7 +461,7 @@ func generateNoSQLModel(schema NOSQLSchema, collection NOSQLCollection, driver s
 	}
 
 	val += genNoSQLCollection(collection, driver)
-	val += genNoSQLSchema(schema, driver, schemasCreated, 0)
+	val += genNoSQLSchema(collection.Name, schema, driver, scs, 0)
 	val += genNoSQLRuntime(collection, schema, driver)
 
 	return val
@@ -608,30 +615,40 @@ func checkSchemaForDateTime(schema NOSQLSchema) bool {
 }
 
 // Recursive function that will recurse type object and objectArray's in order to create structs for the model.
-func genNoSQLSchema(schema NOSQLSchema, driver string, schemasCreated *[]NOSQLSchema, seed int) string {
+func genNoSQLSchema(collectionName string, schema NOSQLSchema, driver string, scs *schemasCreatedSync, seed int) string {
 
 	allCollections.Lock()
 	var el entityList
 	allCollections.Entities[strings.Title(schema.Name)] = el
 	allCollections.Unlock()
 
+	schemasToCreate := []NOSQLSchema{}
 	val := ""
 	hasViews := false
 	hasJoins := false
+	prefix := ""
 
-	schemasToCreate := []NOSQLSchema{}
+	if seed > 0 {
+		prefix = strings.Title(collectionName)
+	}
 
-	if hasGeneratedModelSchema(schema.Name, schemasCreated) == true {
-		log.Println("Skipping duplicate schema:  " + schema.Name)
+	scs.Lock()
+	_, ok := scs.schemasCreated[prefix+schema.Name]
+	if ok {
+		color.Cyan("%v", "Duplicate Entity:\n")
+		log.Println("Skipping duplicate schema:  " + prefix + schema.Name)
+		scs.Unlock()
 		return ""
 	}
 
-	*schemasCreated = append(*schemasCreated, schema)
+	scs.schemasCreated[prefix+schema.Name] = schema
+	scs.Unlock()
 
-	val += "type " + strings.Title(schema.Name) + " struct{\n"
+	val += "type " + prefix + strings.Title(schema.Name) + " struct{\n"
 
 	for _, field := range schema.Fields {
 
+		fieldPrefix := ""
 		if field.View {
 			hasViews = true
 			continue
@@ -643,6 +660,7 @@ func genNoSQLSchema(schema NOSQLSchema, driver string, schemasCreated *[]NOSQLSc
 
 		if field.Type == "object" || field.Type == "objectArray" {
 			schemasToCreate = append(schemasToCreate, field.Schema)
+			fieldPrefix = strings.Title(collectionName)
 		}
 
 		additionalTags := genNoSQLAdditionalTags(field, driver)
@@ -657,7 +675,7 @@ func genNoSQLSchema(schema NOSQLSchema, driver string, schemasCreated *[]NOSQLSc
 		allCollections.Entities[strings.Title(schema.Name)] = entityConsts
 		allCollections.Unlock()
 
-		val += "\n\t" + strings.Replace(strings.Title(field.Name), " ", "_", -1) + "\t" + genNoSQLFieldType(schema, field, driver) + "\t\t`json:\"" + strings.Title(field.Name) + omitEmpty + "\"" + additionalTags + "`"
+		val += "\n\t" + strings.Replace(strings.Title(field.Name), " ", "_", -1) + "\t" + genNoSQLFieldType(fieldPrefix, schema, field, driver) + "\t\t`json:\"" + strings.Title(field.Name) + omitEmpty + "\"" + additionalTags + "`"
 	}
 
 	if seed == 0 {
@@ -717,7 +735,7 @@ func genNoSQLSchema(schema NOSQLSchema, driver string, schemasCreated *[]NOSQLSc
 					viewTags += "\""
 				}
 
-				val += strings.Title(field.Name) + " " + genNoSQLFieldType(schema, field, driver) + " `json:\"" + strings.Title(field.Name) + "\"" + viewTagSpace + viewTags + "`\n"
+				val += strings.Title(field.Name) + " " + genNoSQLFieldType("", schema, field, driver) + " `json:\"" + strings.Title(field.Name) + "\"" + viewTagSpace + viewTags + "`\n"
 			}
 		}
 
@@ -741,7 +759,7 @@ func genNoSQLSchema(schema NOSQLSchema, driver string, schemasCreated *[]NOSQLSc
 	val += "\n}\n\n"
 
 	for _, schemaToCreate := range schemasToCreate {
-		val += genNoSQLSchema(schemaToCreate, driver, schemasCreated, 1)
+		val += genNoSQLSchema(collectionName, schemaToCreate, driver, scs, 1)
 	}
 
 	return val
@@ -767,16 +785,6 @@ func genNoSQLValidationRecusion(schema NOSQLSchema) string {
 		val += strings.Title(field.Name) + " string `json:\"" + strings.Title(field.Name) + "\"`\n"
 	}
 	return val
-}
-
-// Checks to see if the schema has been created for a model or not.
-func hasGeneratedModelSchema(name string, schemasCreated *[]NOSQLSchema) bool {
-	for _, schema := range *schemasCreated {
-		if schema.Name == name {
-			return true
-		}
-	}
-	return false
 }
 
 func genNoSQLAdditionalTags(field NOSQLSchemaField, driver string) string {
@@ -827,7 +835,7 @@ func genNoSQLAdditionalTags(field NOSQLSchemaField, driver string) string {
 	return ""
 }
 
-func genNoSQLFieldType(schema NOSQLSchema, field NOSQLSchemaField, driver string) string {
+func genNoSQLFieldType(prefix string, schema NOSQLSchema, field NOSQLSchemaField, driver string) string {
 
 	if driver == "mongoDB" && field.Index == "primary" {
 		return "bson.ObjectId"
@@ -847,7 +855,7 @@ func genNoSQLFieldType(schema NOSQLSchema, field NOSQLSchemaField, driver string
 	case "byteArray":
 		return "[]byte"
 	case "object":
-		return strings.Title(field.Schema.Name)
+		return prefix + strings.Title(field.Schema.Name)
 	case "intArray":
 		return "[]int"
 	case "float64Array":
@@ -857,11 +865,11 @@ func genNoSQLFieldType(schema NOSQLSchema, field NOSQLSchemaField, driver string
 	case "boolArray":
 		return "[]bool"
 	case "objectArray":
-		return "[]" + strings.Title(field.Schema.Name)
+		return "[]" + prefix + strings.Title(field.Schema.Name)
 	case "selfArray":
-		return "[]" + strings.Title(schema.Name)
+		return "[]" + prefix + strings.Title(schema.Name)
 	case "self":
-		return strings.Title(schema.Name)
+		return prefix + strings.Title(schema.Name)
 	}
 
 	return field.Type
