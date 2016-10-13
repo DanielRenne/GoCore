@@ -384,6 +384,8 @@ func (self *Query) GetOrCreate(x interface{}, t *Transaction) (err error) {
 			return
 		}
 		err = values[0].Interface().(error)
+		err = self.processJoinsAndViews(x)
+		return
 
 	} else {
 		err = errors.New("More than one record exists for GetOrCreate.")
