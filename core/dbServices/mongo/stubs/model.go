@@ -33,6 +33,7 @@ const (
 type modelEntity interface {
 	Save() error
 	Delete() error
+	SaveWithTran(*Transaction) error
 	Reflect() []Field
 }
 

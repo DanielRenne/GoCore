@@ -349,6 +349,48 @@ func (self *Query) One(x interface{}) error {
 	return self.processJoinsAndViews(x)
 }
 
+func (self *Query) GetOrCreate(x interface{}, t *Transaction) (err error) {
+
+	count, err := self.Count()
+
+	if err != nil {
+		return
+	}
+
+	if count == 1 {
+		err = self.q.One(&x)
+		return
+	} else if count == 0 {
+
+		valToCall := reflect.ValueOf(x)
+		val := reflect.ValueOf(x).Elem()
+
+		for key, value := range self.m {
+			if key == "Id" {
+				continue
+			}
+			fieldVal := val.FieldByName(key)
+			if fieldVal.CanSet() {
+				fieldVal.Set(reflect.ValueOf(value))
+			}
+		}
+
+		method := valToCall.MethodByName("SaveWithTran")
+		in := []reflect.Value{}
+		in = append(in, reflect.ValueOf(t))
+		values := method.Call(in)
+		if values[0].Interface() == nil {
+			err = nil
+			return
+		}
+		err = values[0].Interface().(error)
+
+	} else {
+		err = errors.New("More than one record exists for GetOrCreate.")
+	}
+	return
+}
+
 func (self *Query) Count() (int, error) {
 
 	if self.e != nil {

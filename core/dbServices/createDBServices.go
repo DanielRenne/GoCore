@@ -1001,11 +1001,14 @@ func genNoSQLSchemaSaveByTran(collection NOSQLCollection, schema NOSQLSchema, dr
 		val += "histRecord.TId = t.Id.Hex()\n"
 		val += "histRecord.Data = newBase64\n"
 		val += "histRecord.Type = TRANSACTION_CHANGETYPE_INSERT\n\n"
+		val += "histRecord.ObjId = self.Id.Hex()\n"
+		val += "histRecord.CreateDate = time.Now()\n"
 
 		val += "//Get the Original Record if it is a Update\n"
 		val += "if isUpdate {\n\n"
 
 		val += "	histRecord.Type = TRANSACTION_CHANGETYPE_UPDATE\n"
+
 		val += "	eTransactionNew.changeType = TRANSACTION_CHANGETYPE_UPDATE\n\n"
 
 		val += "var original " + strings.Title(schema.Name) + "\n"
@@ -1606,6 +1609,8 @@ func genNoSQLSchemaDeleteWithTran(collection NOSQLCollection, schema NOSQLSchema
 		val += "var histRecord " + strings.Title(schema.Name) + "HistoryRecord\n"
 		val += "histRecord.TId = t.Id.Hex()\n\n"
 		val += "histRecord.Type = TRANSACTION_CHANGETYPE_DELETE\n"
+		val += "histRecord.ObjId = self.Id.Hex()\n"
+		val += "histRecord.CreateDate = time.Now()\n"
 
 		val += "var eTransactionNew entityTransaction\n"
 		val += "eTransactionNew.changeType = TRANSACTION_CHANGETYPE_DELETE\n"

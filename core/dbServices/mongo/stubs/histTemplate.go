@@ -3,6 +3,7 @@ package model
 import (
 	"encoding/json"
 	"log"
+	"time"
 
 	"github.com/DanielRenne/GoCore/core/dbServices"
 	"gopkg.in/mgo.v2"
@@ -37,10 +38,12 @@ func initHistCollection() {
 }
 
 type HistEntity struct {
-	Id   bson.ObjectId `json:"id" bson:"_id,omitempty"`
-	TId  string        `json:"tId" dbIndex:"index" bson:"tId"`
-	Data string        `json:"data" bson:"data"`
-	Type int           `json:"type" bson:"type"`
+	Id         bson.ObjectId `json:"id" bson:"_id,omitempty"`
+	TId        string        `json:"tId" dbIndex:"index" bson:"tId"`
+	ObjId      string        `json:"objId" dbIndex:"index" bson:"objId"`
+	Data       string        `json:"data" bson:"data"`
+	Type       int           `json:"type" bson:"type"`
+	CreateDate time.Time     `json:"createDate" dbIndex:"index" bson:"createDate"`
 }
 
 func (obj modelHistCollection) Query() *Query {
@@ -135,6 +138,10 @@ func (obj *HistEntity) Reflect() []Field {
 
 func (self *HistEntity) Delete() error {
 	return mongoHistCollectionCollection.Remove(self)
+}
+
+func (self *HistEntity) SaveWithTran(t *Transaction) error {
+	return nil
 }
 
 func (self *HistEntity) GetType() int {
