@@ -31,12 +31,14 @@ type Range struct {
 }
 
 type join struct {
-	collectionName   string
-	joinFieldRefName string
-	joinFieldName    string
-	joinSchemaName   string
-	joinSpecified    string
-	joinType         string
+	collectionName       string
+	joinFieldRefName     string
+	joinFieldName        string
+	joinSchemaName       string
+	joinSpecified        string
+	joinType             string
+	isMany               bool
+	joinForeignFieldName string
 }
 
 type joinType struct {
@@ -166,7 +168,7 @@ func (self *Query) Filter(criteria map[string]interface{}) *Query {
 
 		for key, val := range criteria {
 			if key != "" {
-				self.m[key] = self.checkForObjectId(val)
+				self.m[key] = self.CheckForObjectId(val)
 			}
 		}
 
@@ -246,11 +248,11 @@ func (self *Query) inNot(criteria map[string]interface{}, queryType string) {
 				values := reflect.ValueOf(value)
 				for i := 0; i < values.Len(); i++ {
 					val := values.Index(i).Interface()
-					valuesToQuery = append(valuesToQuery, self.checkForObjectId(val))
+					valuesToQuery = append(valuesToQuery, self.CheckForObjectId(val))
 				}
 
 			} else {
-				valuesToQuery = append(valuesToQuery, self.checkForObjectId(value))
+				valuesToQuery = append(valuesToQuery, self.CheckForObjectId(value))
 			}
 
 			self.m[key] = bson.M{queryType: valuesToQuery}
@@ -384,7 +386,13 @@ func (self *Query) GetOrCreate(x interface{}, t *Transaction) (err error) {
 			return
 		}
 		err = values[0].Interface().(error)
+
+		if err != nil {
+			return
+		}
+
 		err = self.processJoinsAndViews(x)
+		log.Printf("%+v\n\n", x)
 		return
 
 	} else {
@@ -483,11 +491,11 @@ func (self *Query) processJoins(x interface{}) (err error) {
 			for i := 0; i < source.Len(); i++ {
 				s := source.Index(i)
 				for _, j := range joins {
-					id := reflect.ValueOf(s.FieldByName(j.joinFieldRefName).Interface()).String()
+					id := reflect.ValueOf(self.CheckForObjectId(s.FieldByName(j.joinFieldRefName).Interface())).String()
 					joinsField := s.FieldByName("Joins")
 					setField := joinsField.FieldByName(j.joinFieldName)
 
-					errJoin := joinField(j.joinSchemaName, j.collectionName, id, setField, j.joinSpecified, self, false, 10)
+					errJoin := joinField(j, id, setField, j.joinSpecified, self, false, 10)
 					if errJoin != nil {
 						if j.joinType == "Inner" {
 							fields := self.printStruct(s)
@@ -510,11 +518,11 @@ func (self *Query) processJoins(x interface{}) (err error) {
 
 			s := source
 			for _, j := range joins {
-				id := reflect.ValueOf(s.FieldByName(j.joinFieldRefName).Interface()).String()
+				id := reflect.ValueOf(self.CheckForObjectId(s.FieldByName(j.joinFieldRefName).Interface())).String()
 				joinsField := s.FieldByName("Joins")
 				setField := joinsField.FieldByName(j.joinFieldName)
 
-				errJoin := joinField(j.joinSchemaName, j.collectionName, id, setField, j.joinSpecified, self, false, 10)
+				errJoin := joinField(j, id, setField, j.joinSpecified, self, false, 10)
 				if errJoin != nil {
 					if j.joinType == "Inner" {
 						fields := self.printStruct(source)
@@ -550,6 +558,8 @@ func (self *Query) getJoins(x reflect.Value) (joins []join) {
 			j.collectionName = splitValue[0]
 			j.joinSchemaName = splitValue[1]
 			j.joinFieldRefName = splitValue[2]
+			j.isMany = extensions.StringToBool(splitValue[3])
+			j.joinForeignFieldName = splitValue[4]
 			j.joinFieldName = name
 			j.joinSpecified = JOIN_ALL
 			j.joinType = allJoin.Type
@@ -572,6 +582,8 @@ func (self *Query) getJoins(x reflect.Value) (joins []join) {
 			j.collectionName = splitValue[0]
 			j.joinSchemaName = splitValue[1]
 			j.joinFieldRefName = splitValue[2]
+			j.isMany = extensions.StringToBool(splitValue[3])
+			j.joinForeignFieldName = splitValue[4]
 			j.joinFieldName = fieldName
 			j.joinSpecified = strings.Replace(key, fieldName+".", "", 1)
 			j.joinType = val.Type
@@ -951,7 +963,7 @@ func (self *Query) getIdHex(val interface{}) (bson.ObjectId, error) {
 	}
 }
 
-func (self *Query) checkForObjectId(val interface{}) interface{} {
+func (self *Query) CheckForObjectId(val interface{}) interface{} {
 
 	myIdType := reflect.TypeOf(val)
 	myIdInstance := reflect.ValueOf(val)

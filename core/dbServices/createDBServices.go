@@ -30,9 +30,11 @@ type FieldValidation struct {
 }
 
 type join struct {
-	CollectionName string `json:"collectionName"`
-	SchemaName     string `json:"schemaName"`
-	FieldName      string `json:"fieldName"`
+	CollectionName   string `json:"collectionName"`
+	SchemaName       string `json:"schemaName"`
+	FieldName        string `json:"fieldName"`
+	ForeignFieldName string `json:"foreignFieldName"`
+	IsMany           bool   `json:"IsMany"`
 }
 
 type fieldDef struct {
@@ -376,52 +378,24 @@ func finalizeModelFile(versionDir string) {
 	modelToWrite += "return nil\n"
 	modelToWrite += "}\n\n"
 
-	modelToWrite += "func joinField(fieldType string, collectionName string, id string, fieldToSet reflect.Value, remainingRecursions string, q *Query, endRecursion bool, recursionCount int) (err error) {\n\n"
-	modelToWrite += "c := ResolveCollection(collectionName)\n"
+	modelToWrite += "func joinField(j join, id string, fieldToSet reflect.Value, remainingRecursions string, q *Query, endRecursion bool, recursionCount int) (err error) {\n\n"
+	modelToWrite += "c := ResolveCollection(j.collectionName)\n"
 	modelToWrite += "if c == nil {\n"
-	modelToWrite += "	err = errors.New(\"Failed to resolve collection:  \" + collectionName)\n"
+	modelToWrite += "	err = errors.New(\"Failed to resolve collection:  \" + j.collectionName)\n"
 	modelToWrite += "	return\n"
 	modelToWrite += "}\n"
 
-	modelToWrite += "switch fieldType{\n"
+	modelToWrite += "switch j.joinSchemaName{\n"
 
 	for _, collection := range allCollections.Collections {
 		modelToWrite += "case \"" + strings.Title(collection.Schema.Name) + "\":\n"
-		modelToWrite += "if IsZeroOfUnderlyingType(fieldToSet.Interface()) {\n"
 		modelToWrite += "var y " + strings.Title(collection.Schema.Name) + "\n"
-		modelToWrite += "err = c.Query().ById(id, &y)\n"
-		modelToWrite += "if err == nil {\n"
-
-		modelToWrite += "if endRecursion == false && recursionCount > 0{\n"
-		modelToWrite += "recursionCount--\n"
-		modelToWrite += " err = y.JoinFields(remainingRecursions, q, recursionCount) //Recursively join fields.\n"
-		modelToWrite += "}\n"
-		modelToWrite += "if err == nil {\n"
-		modelToWrite += "	fieldToSet.Set(reflect.ValueOf(&y))\n\n"
-		modelToWrite += "if q.renderViews {\n"
-		modelToWrite += "	err = q.processViews(&y)\n"
-		modelToWrite += "	if err != nil {\n"
-		modelToWrite += "		return\n"
-		modelToWrite += "	}\n"
-		modelToWrite += "}\n\n"
-
-		modelToWrite += "}\n"
-		modelToWrite += "}\n"
-		modelToWrite += "}else {\n"
-		modelToWrite += "if endRecursion == false && recursionCount > 0 {\n"
-		modelToWrite += "	recursionCount--\n"
-		modelToWrite += "	method := fieldToSet.MethodByName(\"JoinFields\")\n"
-		modelToWrite += "	in := []reflect.Value{}\n"
-		modelToWrite += "	in = append(in, reflect.ValueOf(remainingRecursions))\n"
-		modelToWrite += "	in = append(in, reflect.ValueOf(q))\n"
-		modelToWrite += "	in = append(in, reflect.ValueOf(recursionCount))\n"
-		modelToWrite += "	values := method.Call(in)\n"
-		modelToWrite += "	if values[0].Interface() == nil {\n"
-		modelToWrite += "	err = nil\n"
-		modelToWrite += "	return\n"
-		modelToWrite += "	}\n"
-		modelToWrite += "	err = values[0].Interface().(error)\n"
-		modelToWrite += "}\n"
+		modelToWrite += "if j.isMany {\n"
+		modelToWrite += "var z []" + strings.Title(collection.Schema.Name) + "\n"
+		modelToWrite += "var ji " + strings.Title(collection.Schema.Name) + "JoinItems\n"
+		modelToWrite += "JoinEntity(c.Query(), &z, j, id, ji, fieldToSet, remainingRecursions, q, endRecursion, recursionCount)\n"
+		modelToWrite += "}else{\n"
+		modelToWrite += "JoinEntity(c.Query(), &y, j, id, nil, fieldToSet, remainingRecursions, q, endRecursion, recursionCount)\n"
 		modelToWrite += "}\n"
 	}
 
@@ -460,7 +434,7 @@ func generateNoSQLModel(schema NOSQLSchema, collection NOSQLCollection, driver s
 		// val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "encoding/json", "gopkg.in/mgo.v2/bson", "log", "time"})
 	}
 
-	val += genNoSQLCollection(collection, driver)
+	val += genNoSQLCollection(collection, schema, driver)
 	val += genNoSQLSchema(collection.Name, schema, driver, scs, 0)
 	val += genNoSQLRuntime(collection, schema, driver)
 
@@ -560,10 +534,14 @@ func writeNOSQLModelBucket(value string, path string) {
 	color.Green("Created NOSQL Bucket successfully.")
 }
 
-func genNoSQLCollection(collection NOSQLCollection, driver string) string {
+func genNoSQLCollection(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
 	val := ""
 	val += "var " + strings.Title(collection.Name) + " model" + strings.Title(collection.Name) + "\n\n"
 	val += "type model" + strings.Title(collection.Name) + " struct{}\n\n"
+	val += "type " + strings.Title(schema.Name) + "JoinItems struct{\n"
+	val += " Count int `json:\"Count\"`\n"
+	val += " Items *[]" + strings.Title(schema.Name) + " `json:\"Items\"`\n"
+	val += "}\n\n"
 
 	if driver == DATABASE_DRIVER_MONGODB {
 
@@ -749,7 +727,19 @@ func genNoSQLSchema(collectionName string, schema NOSQLSchema, driver string, sc
 
 		for _, field := range schema.Fields {
 			if field.Type == "join" {
-				val += strings.Title(field.Name) + " *" + field.Join.SchemaName + " `json:\"" + strings.Title(field.Name) + ",omitempty\" join:\"" + strings.Title(field.Join.CollectionName) + "," + strings.Title(field.Join.SchemaName) + "," + strings.Title(field.Join.FieldName) + "\"`\n"
+
+				schemaName := field.Join.SchemaName
+
+				if field.Join.IsMany {
+					schemaName = field.Join.SchemaName + "JoinItems"
+				}
+
+				val += strings.Title(field.Name) + " *" + schemaName + " `json:\"" + strings.Title(field.Name) + ",omitempty\" join:\"" + strings.Title(field.Join.CollectionName) + "," +
+					strings.Title(field.Join.SchemaName) + "," +
+					strings.Title(field.Join.FieldName) + "," +
+					extensions.BoolToString(field.Join.IsMany) + "," +
+					strings.Title(field.Join.ForeignFieldName) +
+					"\"`\n"
 			}
 		}
 
@@ -1670,14 +1660,14 @@ func genNoSQLSchemaJoinFields(collection NOSQLCollection, schema NOSQLSchema, dr
 
 	val += "s := source\n"
 	val += "for _, j := range joins {\n"
-	val += "	id := reflect.ValueOf(s.FieldByName(j.joinFieldRefName).Interface()).String()\n"
+	val += "	id := reflect.ValueOf(q.CheckForObjectId(s.FieldByName(j.joinFieldRefName).Interface())).String()\n"
 	val += "	joinsField := s.FieldByName(\"Joins\")\n"
 	val += "	setField := joinsField.FieldByName(j.joinFieldName)\n\n"
 	val += " endRecursion := false\n"
 	val += " if remainingRecursions == j.joinSpecified {\n"
 	val += " endRecursion = true\n"
 	val += "}\n"
-	val += "	err = joinField(j.joinSchemaName, j.collectionName, id, setField, j.joinSpecified, q, endRecursion, recursionCount)\n"
+	val += "	err = joinField(j, id, setField, j.joinSpecified, q, endRecursion, recursionCount)\n"
 	val += "	if err != nil {\n"
 	val += "		return\n"
 	val += "	}\n"

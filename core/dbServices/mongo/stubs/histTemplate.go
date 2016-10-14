@@ -144,6 +144,10 @@ func (self *HistEntity) SaveWithTran(t *Transaction) error {
 	return nil
 }
 
+func (self *HistEntity) JoinFields(s string, q *Query, x int) error {
+	return nil
+}
+
 func (self *HistEntity) GetType() int {
 	return self.Type
 }
