@@ -393,9 +393,10 @@ func finalizeModelFile(versionDir string) {
 		modelToWrite += "if j.isMany {\n"
 		modelToWrite += "var z []" + strings.Title(collection.Schema.Name) + "\n"
 		modelToWrite += "var ji " + strings.Title(collection.Schema.Name) + "JoinItems\n"
-		modelToWrite += "JoinEntity(c.Query(), &z, j, id, ji, fieldToSet, remainingRecursions, q, endRecursion, recursionCount)\n"
+		modelToWrite += "fieldToSet.Set(reflect.ValueOf(&ji))\n"
+		modelToWrite += "JoinEntity(c.Query(), &z, j, id, fieldToSet, remainingRecursions, q, endRecursion, recursionCount)\n"
 		modelToWrite += "}else{\n"
-		modelToWrite += "JoinEntity(c.Query(), &y, j, id, nil, fieldToSet, remainingRecursions, q, endRecursion, recursionCount)\n"
+		modelToWrite += "JoinEntity(c.Query(), &y, j, id, fieldToSet, remainingRecursions, q, endRecursion, recursionCount)\n"
 		modelToWrite += "}\n"
 	}
 

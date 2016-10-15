@@ -255,6 +255,9 @@ func getJoins(x reflect.Value, remainingRecursions string) (joins []join) {
 		j.joinFieldRefName = splitValue[2]
 		j.joinFieldName = name
 		j.joinSpecified = strings.Replace(remainingRecursions, fieldName+".", "", 1)
+		if strings.Contains(j.joinSpecified, "Count") && j.joinSpecified[:5] == "Count" {
+			j.joinSpecified = "Count"
+		}
 		joins = append(joins, j)
 	}
 	return
@@ -331,10 +334,21 @@ func Reflect(obj interface{}) []Field {
 	return ret
 }
 
-func JoinEntity(collectionQ *Query, y interface{}, j join, id string, manyItems interface{}, fieldToSet reflect.Value, remainingRecursions string, q *Query, endRecursion bool, recursionCount int) (err error) {
-	if IsZeroOfUnderlyingType(fieldToSet.Interface()) {
+func JoinEntity(collectionQ *Query, y interface{}, j join, id string, fieldToSet reflect.Value, remainingRecursions string, q *Query, endRecursion bool, recursionCount int) (err error) {
+	if IsZeroOfUnderlyingType(fieldToSet.Interface()) || j.isMany {
 
 		if j.isMany {
+			if remainingRecursions == "Count" {
+				cnt, err := collectionQ.Filter(Q(j.joinForeignFieldName, id)).Count()
+				if err != nil {
+					// err = errCnt
+					return err
+				}
+				countField := fieldToSet.Elem().FieldByName("Count")
+				countField.Set(reflect.ValueOf(cnt))
+				return err
+			}
+
 			err = collectionQ.Filter(Q(j.joinForeignFieldName, id)).All(y)
 		} else {
 			if j.joinForeignFieldName == "" {
@@ -367,8 +381,6 @@ func JoinEntity(collectionQ *Query, y interface{}, j join, id string, manyItems 
 			}
 			if err == nil {
 				if j.isMany {
-					var ji AccountJoinItems
-					fieldToSet.Set(reflect.ValueOf(&ji))
 
 					itemsField := fieldToSet.Elem().FieldByName("Items")
 					countField := fieldToSet.Elem().FieldByName("Count")
