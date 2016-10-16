@@ -2,11 +2,12 @@ package ginServer
 
 import (
 	"encoding/json"
-	"github.com/gin-gonic/contrib/sessions"
-	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net/http"
 	"strings"
+
+	"github.com/gin-gonic/contrib/sessions"
+	"github.com/gin-gonic/gin"
 )
 
 type ErrorResponse struct {
@@ -46,10 +47,19 @@ func ClearSession(c *gin.Context) {
 
 func GetLocaleLanguage(c *gin.Context) (ll LocaleLanguage) {
 	header := c.Request.Header.Get("Accept-Language")
-	locals := strings.Split(header, ",")
+	allLanguages := strings.Split(header, ";")
+
+	locals := strings.Split(allLanguages[0], ",")
 	localsSplit := strings.Split(locals[0], "-")
+
+	if len(localsSplit) == 1 && len(locals) == 2 {
+		localsSplit = strings.Split(locals[1], "-")
+	}
+
 	ll.Language = localsSplit[0]
-	ll.Locale = localsSplit[1]
+	if len(localsSplit) == 2 {
+		ll.Locale = localsSplit[1]
+	}
 	return
 }
 
