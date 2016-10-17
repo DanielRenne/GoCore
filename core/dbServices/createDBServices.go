@@ -34,7 +34,7 @@ type join struct {
 	SchemaName       string `json:"schemaName"`
 	FieldName        string `json:"fieldName"`
 	ForeignFieldName string `json:"foreignFieldName"`
-	IsMany           bool   `json:"IsMany"`
+	IsMany           bool   `json:"isMany"`
 }
 
 type fieldDef struct {

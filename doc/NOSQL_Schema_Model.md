@@ -92,6 +92,27 @@ Join Fields:
 		The name of the schema based on the collection.
 	fieldName: string
 		The name of the key to be joined to the collection id field.
+	foreignFieldName:  string
+		Alternate foreign field name to join against.  Default is Id.
+	isMany: bool
+		If true the join will query for an array of results.
+		
+Join Many vs Join One:
+
+	Join One will result in a single record of the intended model.
+	
+	Join Many will result in a struct with the following structure:
+	
+		{
+			Count int
+			Items *[]model.Entity
+		}
+	
+	Calling .Join("Entities.Count") will only resolve a database count from the database.  
+	Items will remain a nil pointer.  
+	A call to .Join("Entities") will resolve both the Count and Items.
+		
+		
 
 Format Keys:
 
