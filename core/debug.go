@@ -3,7 +3,9 @@ package core
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"github.com/oleiade/reflections"
 	"log"
 	"os"
 	"reflect"
@@ -74,10 +76,37 @@ func (self *core_debug) Dump(values ...interface{}) {
 	Logger.Println("")
 	Logger.Println("")
 	Logger.Println("")
+
+	var err error
+	var jsonString string
+	isAllJSON := true
+	var structKeys []string
 	if Logger != nil {
 		for _, value := range values {
 			Logger.Println("Instance Type:" + reflect.TypeOf(value).Name())
-			Logger.Println(fmt.Printf("%+v\n", value))
+
+			structKeys, err = reflections.FieldsDeep(value)
+			if err == nil {
+				for _, field := range structKeys {
+					jsonString, err = reflections.GetFieldTag(value, field, "json")
+					if err != nil {
+						isAllJSON = false
+					}
+					if jsonString == "" {
+						isAllJSON = false
+					}
+				}
+			}
+			if isAllJSON {
+				var rawBytes []byte
+				rawBytes, err = json.MarshalIndent(value, "", "\t")
+				if err == nil {
+					value = string(rawBytes[:])
+				}
+				Logger.Println(fmt.Printf("%+v\n", value))
+			} else {
+				Logger.Println(fmt.Printf("%+v\n", value))
+			}
 		}
 	}
 	Logger.Println("")
