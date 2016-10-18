@@ -5,6 +5,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/DanielRenne/GoCore/core/extensions"
+	"github.com/go-errors/errors"
 	"github.com/oleiade/reflections"
 	"log"
 	"os"
@@ -71,6 +73,14 @@ func (self *core_debug) Format(value interface{}) string {
 	return self.FormatSkip(2, value)
 }
 
+func (self *core_debug) DumpQuiet(values ...interface{}) {
+	// uncomment below to find your callers to quiet
+	self.Print("Silently not dumping " + extensions.IntToString(len(values)) + " values")
+	//Logger.Println("DumpQuiet has " + extensions.IntToString(len(values)) + " parameters called")
+	//Logger.Println("")
+	//self.ThrowAndPrintError()
+}
+
 func (self *core_debug) Dump(values ...interface{}) {
 	Logger.Println("!!!!!!!!!!!!!DEBUG!!!!!!!!!!!!!")
 	Logger.Println("")
@@ -111,8 +121,22 @@ func (self *core_debug) Dump(values ...interface{}) {
 	}
 	Logger.Println("")
 	Logger.Println("")
+	self.ThrowAndPrintError()
+	Logger.Println("")
 	Logger.Println("")
 	Logger.Println("!!!!!!!!!!!!!ENDDEBUG!!!!!!!!!!!!!")
+}
+
+func (self *core_debug) ThrowAndPrintError() {
+	Logger.Println("")
+	Logger.Println("Dump Caller:")
+	Logger.Println("")
+	errorInfo := self.ThrowError()
+	Logger.Println(errorInfo.ErrorStack())
+}
+
+func (self *core_debug) ThrowError() *errors.Error {
+	return errors.Errorf("Debug Dump")
 }
 
 func (self *core_debug) GetDump(values ...interface{}) string {
