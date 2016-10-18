@@ -93,7 +93,7 @@ func (self *core_debug) Dump(values ...interface{}) {
 	var structKeys []string
 	if Logger != nil {
 		for _, value := range values {
-			Logger.Println("Instance Type:" + reflect.TypeOf(value).Name())
+			//Logger.Println("Instance Type:" + reflect.TypeOf(value).Name())
 
 			structKeys, err = reflections.FieldsDeep(value)
 			if err == nil {
