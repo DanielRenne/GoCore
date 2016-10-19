@@ -360,7 +360,7 @@ func (self *Query) GetOrCreate(x interface{}, t *Transaction) (err error) {
 	}
 
 	if count == 1 {
-		err = self.One(&x)
+		err = self.One(x)
 		return
 	} else if count == 0 {
 
