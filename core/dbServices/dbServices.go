@@ -104,6 +104,9 @@ func openMongo() error {
 
 	MongoDB = MongoSession.DB(serverSettings.WebConfig.DbConnection.Database)
 	notifyDBWaits()
+
+	color.Green("Mongo Database Connected Successfully.")
+
 	return nil
 }
 
