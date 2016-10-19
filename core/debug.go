@@ -6,13 +6,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/DanielRenne/GoCore/core/extensions"
+	"github.com/davidrenne/reflections"
 	"github.com/go-errors/errors"
-	"github.com/oleiade/reflections"
 	"log"
 	"os"
 	"reflect"
 	"runtime"
 	"runtime/debug"
+	"strings"
 )
 
 type core_debug struct{}
@@ -85,16 +86,14 @@ func (self *core_debug) Dump(values ...interface{}) {
 	Logger.Println("!!!!!!!!!!!!!DEBUG!!!!!!!!!!!!!")
 	Logger.Println("")
 	Logger.Println("")
-	Logger.Println("")
-
-	var err error
 	var jsonString string
+	var err error
 	isAllJSON := true
 	var structKeys []string
+	self.ThrowAndPrintError()
 	if Logger != nil {
 		for _, value := range values {
-			//Logger.Println("Instance Type:" + reflect.TypeOf(value).Name())
-
+			kind := reflections.ReflectKind(value)
 			structKeys, err = reflections.FieldsDeep(value)
 			if err == nil {
 				for _, field := range structKeys {
@@ -113,15 +112,13 @@ func (self *core_debug) Dump(values ...interface{}) {
 				if err == nil {
 					value = string(rawBytes[:])
 				}
-				Logger.Println(fmt.Printf("%+v\n", value))
+				Logger.Println(fmt.Sprintf("%s: %+v\n", kind, value))
 			} else {
-				Logger.Println(fmt.Printf("%+v\n", value))
+				//  (%#v) can be used later possibly to reuse whats in memory into golang
+				Logger.Println(fmt.Sprintf("%s: %+v\n\n", kind, value))
 			}
 		}
 	}
-	Logger.Println("")
-	Logger.Println("")
-	self.ThrowAndPrintError()
 	Logger.Println("")
 	Logger.Println("")
 	Logger.Println("!!!!!!!!!!!!!ENDDEBUG!!!!!!!!!!!!!")
@@ -129,10 +126,21 @@ func (self *core_debug) Dump(values ...interface{}) {
 
 func (self *core_debug) ThrowAndPrintError() {
 	Logger.Println("")
-	Logger.Println("Dump Caller:")
-	Logger.Println("")
 	errorInfo := self.ThrowError()
-	Logger.Println(errorInfo.ErrorStack())
+	stack := strings.Split(errorInfo.ErrorStack(), "\n")
+	filePathSplit := strings.Split(stack[7], ".go:")
+	filePaths := strings.Split(filePathSplit[0], "/")
+	fileName := filePaths[len(filePaths)-1] + ".go"
+	lineParts := strings.Split(filePathSplit[1], "(")
+	lineNumber := strings.TrimSpace(lineParts[0])
+
+	Logger.Println("Dump Caller (" + fileName + ":" + lineNumber + "):")
+	Logger.Println("---------------")
+	Logger.Println(" goline ==> " + strings.TrimSpace(stack[8]))
+	Logger.Println("---------------")
+	Logger.Println("")
+	Logger.Println("")
+
 }
 
 func (self *core_debug) ThrowError() *errors.Error {
