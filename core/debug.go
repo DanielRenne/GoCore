@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/DanielRenne/GoCore/core/extensions"
+	"github.com/DanielRenne/GoCore/core/serverSettings"
 	"github.com/davidrenne/reflections"
 	"github.com/go-errors/errors"
 	"log"
@@ -14,6 +15,7 @@ import (
 	"runtime"
 	"runtime/debug"
 	"strings"
+	"time"
 )
 
 type core_debug struct{}
@@ -82,65 +84,102 @@ func (self *core_debug) DumpQuiet(values ...interface{}) {
 	//self.ThrowAndPrintError()
 }
 
+func IsZeroOfUnderlyingType(x interface{}) bool {
+	return reflect.DeepEqual(x, reflect.Zero(reflect.TypeOf(x)).Interface())
+}
+
 func (self *core_debug) Dump(values ...interface{}) {
-	Logger.Println("!!!!!!!!!!!!!DEBUG!!!!!!!!!!!!!")
-	Logger.Println("")
-	Logger.Println("")
-	var jsonString string
-	var err error
-	isAllJSON := true
-	var structKeys []string
-	self.ThrowAndPrintError()
-	if Logger != nil {
-		for _, value := range values {
-			kind := reflections.ReflectKind(value)
-			structKeys, err = reflections.FieldsDeep(value)
-			if err == nil {
-				for _, field := range structKeys {
-					jsonString, err = reflections.GetFieldTag(value, field, "json")
-					if err != nil {
-						isAllJSON = false
-					}
-					if jsonString == "" {
+	if serverSettings.WebConfig.Application.FlushCoreDebugToStandardOut {
+		//golog "github.com/DanielRenne/GoCore/core/log"
+		//defer golog.TimeTrack(time.Now(), "Dump")
+		t := time.Now()
+		Logger.Println("!!!!!!!!!!!!! DEBUG " + t.String() + "!!!!!!!!!!!!!")
+		Logger.Println("")
+		Logger.Println("")
+		var jsonString string
+		var err error
+		var structKeys []string
+		self.ThrowAndPrintError()
+		if Logger != nil {
+			for _, value := range values {
+				isAllJSON := true
+				kind := reflections.ReflectKind(value)
+				if IsZeroOfUnderlyingType(value) {
+					isAllJSON = false
+				} else {
+					structKeys, err = reflections.FieldsDeep(value)
+					if err == nil {
+						for _, field := range structKeys {
+							jsonString, err = reflections.GetFieldTag(value, field, "json")
+							if err != nil {
+								isAllJSON = false
+							}
+							if jsonString == "" {
+								isAllJSON = false
+							}
+						}
+					} else {
 						isAllJSON = false
 					}
 				}
-			}
-			if isAllJSON {
-				var rawBytes []byte
-				rawBytes, err = json.MarshalIndent(value, "", "\t")
-				if err == nil {
-					value = string(rawBytes[:])
+
+				//%T
+				if isAllJSON || strings.TrimSpace(kind) == "map" {
+					var rawBytes []byte
+					rawBytes, err = json.MarshalIndent(value, "", "\t")
+					if err == nil {
+						value = string(rawBytes[:])
+					}
+					Logger.Println(fmt.Sprintf("%s: %+v\n", kind, value))
+				} else {
+					//  (%#v) can be used later possibly to reuse whats in memory into golang
+					if strings.TrimSpace(kind) == "string" {
+						var stringVal = value.(string)
+						position := strings.Index(stringVal, "Desc->")
+						if position == -1 {
+							Logger.Println(fmt.Sprintf("%s:", kind))
+							for _, tmp := range strings.Split(stringVal, "\\n") {
+								Logger.Println(tmp)
+							}
+							Logger.Println()
+							Logger.Println()
+						} else {
+							Logger.Print(stringVal[6:] + " --> ")
+						}
+					} else {
+						Logger.Println(fmt.Sprintf("%s: %+v\n\n", kind, value))
+					}
 				}
-				Logger.Println(fmt.Sprintf("%s: %+v\n", kind, value))
-			} else {
-				//  (%#v) can be used later possibly to reuse whats in memory into golang
-				Logger.Println(fmt.Sprintf("%s: %+v\n\n", kind, value))
 			}
 		}
+		Logger.Println("")
+		Logger.Println("")
+		Logger.Println("!!!!!!!!!!!!! ENDDEBUG " + t.String() + "!!!!!!!!!!!!!")
 	}
-	Logger.Println("")
-	Logger.Println("")
-	Logger.Println("!!!!!!!!!!!!!ENDDEBUG!!!!!!!!!!!!!")
 }
 
 func (self *core_debug) ThrowAndPrintError() {
-	Logger.Println("")
-	errorInfo := self.ThrowError()
-	stack := strings.Split(errorInfo.ErrorStack(), "\n")
-	filePathSplit := strings.Split(stack[7], ".go:")
-	filePaths := strings.Split(filePathSplit[0], "/")
-	fileName := filePaths[len(filePaths)-1] + ".go"
-	lineParts := strings.Split(filePathSplit[1], "(")
-	lineNumber := strings.TrimSpace(lineParts[0])
+	if serverSettings.WebConfig.Application.CoreDebugStackTrace {
+		Logger.Println("")
+		errorInfo := self.ThrowError()
+		stack := strings.Split(errorInfo.ErrorStack(), "\n")
+		filePathSplit := strings.Split(stack[7], ".go:")
+		filePaths := strings.Split(filePathSplit[0], "/")
+		fileName := filePaths[len(filePaths)-1] + ".go"
+		lineParts := strings.Split(filePathSplit[1], "(")
+		lineNumber := strings.TrimSpace(lineParts[0])
 
-	Logger.Println("Dump Caller (" + fileName + ":" + lineNumber + "):")
-	Logger.Println("---------------")
-	Logger.Println(" goline ==> " + strings.TrimSpace(stack[8]))
-	Logger.Println("---------------")
-	Logger.Println("")
-	Logger.Println("")
+		finalLineOfCode := strings.TrimSpace(stack[8])
 
+		if strings.Index(finalLineOfCode, "Desc->Caller for Query") == -1 {
+			Logger.Println("Dump Caller (" + fileName + ":" + lineNumber + "):")
+			Logger.Println("---------------")
+			Logger.Println(" goline ==> " + strings.TrimSpace(stack[8]))
+			Logger.Println("---------------")
+			Logger.Println("")
+			Logger.Println("")
+		}
+	}
 }
 
 func (self *core_debug) ThrowError() *errors.Error {

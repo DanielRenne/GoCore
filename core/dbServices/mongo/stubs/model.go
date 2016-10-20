@@ -3,14 +3,14 @@ package model
 import (
 	"encoding/base64"
 	"errors"
+	"github.com/DanielRenne/GoCore/core/dbServices"
+	"github.com/DanielRenne/GoCore/core/serverSettings"
+	"github.com/asaskevich/govalidator"
+	"github.com/fatih/camelcase"
 	"reflect"
 	"strings"
 	"sync"
 	"time"
-
-	"github.com/DanielRenne/GoCore/core/dbServices"
-	"github.com/asaskevich/govalidator"
-	"github.com/fatih/camelcase"
 )
 
 const (
@@ -81,6 +81,16 @@ func init() {
 
 func Q(k string, v interface{}) map[string]interface{} {
 	return map[string]interface{}{k: v}
+}
+
+func RangeQ(k string, min interface{}, max interface{}) map[string]Range {
+	var rge map[string]Range
+	rge = make(map[string]Range)
+	rge[k] = Range{
+		Max: max,
+		Min: min,
+	}
+	return rge
 }
 
 //Every 12 hours check the transactionQueue and remove any outstanding stale transactions > 48 hours old
@@ -339,7 +349,10 @@ func JoinEntity(collectionQ *Query, y interface{}, j join, id string, fieldToSet
 
 		if j.isMany {
 			if remainingRecursions == "Count" {
-				cnt, err := collectionQ.Filter(Q(j.joinForeignFieldName, id)).Count()
+				cnt, err := collectionQ.ToggleLogFlag(true).Filter(Q(j.joinForeignFieldName, id)).Count()
+				if serverSettings.WebConfig.Application.LogJoinQueries {
+					collectionQ.LogQuery("JoinEntity() Recursion Count Only")
+				}
 				if err != nil {
 					// err = errCnt
 					return err
@@ -348,13 +361,21 @@ func JoinEntity(collectionQ *Query, y interface{}, j join, id string, fieldToSet
 				countField.Set(reflect.ValueOf(cnt))
 				return err
 			}
-
-			err = collectionQ.Filter(Q(j.joinForeignFieldName, id)).All(y)
+			err = collectionQ.ToggleLogFlag(true).Filter(Q(j.joinForeignFieldName, id)).All(y)
+			if serverSettings.WebConfig.Application.LogJoinQueries {
+				collectionQ.LogQuery("JoinEntity({" + j.joinForeignFieldName + ": " + id + "}) Recursion Many")
+			}
 		} else {
 			if j.joinForeignFieldName == "" {
-				err = collectionQ.ById(id, y)
+				err = collectionQ.ToggleLogFlag(true).ById(id, y)
+				if serverSettings.WebConfig.Application.LogJoinQueries {
+					collectionQ.LogQuery("JoinEntity() Recursion Single By Id (" + id + ")")
+				}
 			} else {
-				err = collectionQ.Filter(Q(j.joinForeignFieldName, id)).One(y)
+				err = collectionQ.ToggleLogFlag(true).Filter(Q(j.joinForeignFieldName, id)).One(y)
+				if serverSettings.WebConfig.Application.LogJoinQueries {
+					collectionQ.LogQuery("JoinEntity({" + j.joinForeignFieldName + ": " + id + "}) Recursion Single")
+				}
 			}
 		}
 

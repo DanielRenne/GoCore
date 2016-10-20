@@ -1,7 +1,11 @@
 package log
 
 import (
+	"fmt"
 	"github.com/fatih/color"
+	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
+	"time"
 )
 
 type Color int
@@ -33,4 +37,30 @@ func Message(message string, c Color) {
 	case 7:
 		color.White(message)
 	}
+}
+
+func TimeTrack(start time.Time, name string) {
+	elapsed := time.Since(start)
+	fmt.Print("<Timing>")
+	fmt.Printf("%s took %s", name, elapsed)
+	fmt.Println("</Timing>")
+}
+
+func TimeTrackQuery(start time.Time, name string, collection *mgo.Collection, m bson.M, q *mgo.Query) {
+	elapsed := time.Since(start)
+	fmt.Println("<Timing>")
+	fmt.Println()
+	fmt.Printf("%#v", collection)
+	fmt.Println()
+	fmt.Println()
+	fmt.Printf("%#v", m)
+	fmt.Println()
+	fmt.Println()
+	fmt.Printf("%#v", q)
+	fmt.Println()
+	fmt.Println()
+
+	fmt.Printf("%s took %s", name, elapsed)
+	fmt.Println()
+	fmt.Println("</Timing>")
 }

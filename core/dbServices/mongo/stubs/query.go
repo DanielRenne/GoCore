@@ -11,8 +11,13 @@ import (
 
 	"encoding/json"
 
+	"github.com/DanielRenne/GoCore/core/serverSettings"
+	stacktrace "github.com/go-errors/errors"
+
+	"github.com/DanielRenne/GoCore/core"
 	"github.com/DanielRenne/GoCore/core/dbServices"
 	"github.com/DanielRenne/GoCore/core/extensions"
+	golog "github.com/DanielRenne/GoCore/core/log"
 	dateformatter "github.com/altipla-consulting/i18n-dateformatter"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -54,6 +59,7 @@ type view struct {
 type Query struct {
 	q           *mgo.Query
 	m           bson.M
+	stopLog     bool
 	limit       int
 	skip        int
 	sort        []string
@@ -93,6 +99,15 @@ func (self *Query) ById(val interface{}, x interface{}) error {
 		return err
 	}
 
+	if !serverSettings.WebConfig.Application.LogQueries && serverSettings.WebConfig.Application.LogQueryTimes {
+		defer golog.TimeTrackQuery(time.Now(), "q.ById("+objId.Hex()+")", self.collection, self.m, self.q)
+	} else if serverSettings.WebConfig.Application.LogQueries {
+		defer golog.TimeTrack(time.Now(), "q.ById("+objId.Hex()+")")
+	}
+
+	if !self.stopLog && serverSettings.WebConfig.Application.LogQueries {
+		self.LogQuery("q.ById(" + objId.Hex() + ")")
+	}
 	q := self.collection.FindId(objId)
 
 	err = q.One(x)
@@ -143,6 +158,11 @@ func (self *Query) LeftJoin(criteria string) *Query {
 
 	self.joins[criteria] = joinType{Type: "Left"}
 
+	return self
+}
+
+func (self *Query) ToggleLogFlag(toggle bool) *Query {
+	self.stopLog = toggle
 	return self
 }
 
@@ -292,12 +312,20 @@ func (self *Query) Skip(val int) *Query {
 }
 
 func (self *Query) All(x interface{}) error {
-
+	if !serverSettings.WebConfig.Application.LogQueries && serverSettings.WebConfig.Application.LogQueryTimes {
+		defer golog.TimeTrackQuery(time.Now(), "q.All()", self.collection, self.m, self.q)
+	} else if serverSettings.WebConfig.Application.LogQueries {
+		defer golog.TimeTrack(time.Now(), "q.All()")
+	}
 	if self.e != nil {
 		return self.e
 	}
 
 	q := self.generateQuery()
+
+	if !self.stopLog && serverSettings.WebConfig.Application.LogQueries {
+		self.LogQuery("q.All()")
+	}
 
 	err := q.All(x)
 
@@ -317,12 +345,20 @@ func (self *Query) All(x interface{}) error {
 }
 
 func (self *Query) One(x interface{}) error {
-
+	if !serverSettings.WebConfig.Application.LogQueries && serverSettings.WebConfig.Application.LogQueryTimes {
+		defer golog.TimeTrackQuery(time.Now(), "q.One()", self.collection, self.m, self.q)
+	} else if serverSettings.WebConfig.Application.LogQueries {
+		defer golog.TimeTrack(time.Now(), "q.One()")
+	}
 	if self.e != nil {
 		return self.e
 	}
 
 	q := self.generateQuery()
+
+	if !self.stopLog && serverSettings.WebConfig.Application.LogQueries {
+		self.LogQuery("q.One()")
+	}
 
 	err := q.One(x)
 
@@ -402,12 +438,20 @@ func (self *Query) GetOrCreate(x interface{}, t *Transaction) (err error) {
 }
 
 func (self *Query) Count() (int, error) {
-
+	if !serverSettings.WebConfig.Application.LogQueries && serverSettings.WebConfig.Application.LogQueryTimes {
+		defer golog.TimeTrackQuery(time.Now(), "q.Count()", self.collection, self.m, self.q)
+	} else if serverSettings.WebConfig.Application.LogQueries {
+		defer golog.TimeTrack(time.Now(), "q.Count()")
+	}
 	if self.e != nil {
 		return 0, self.e
 	}
 
 	q := self.generateQuery()
+
+	if !self.stopLog && serverSettings.WebConfig.Application.LogQueries {
+		self.LogQuery("q.Count()")
+	}
 
 	count, err := q.Count()
 
@@ -425,12 +469,21 @@ func (self *Query) Count() (int, error) {
 }
 
 func (self *Query) Distinct(key string, x interface{}) error {
+	if !serverSettings.WebConfig.Application.LogQueries && serverSettings.WebConfig.Application.LogQueryTimes {
+		defer golog.TimeTrackQuery(time.Now(), "q.Distinct()", self.collection, self.m, self.q)
+	} else if serverSettings.WebConfig.Application.LogQueries {
+		defer golog.TimeTrack(time.Now(), "q.Distinct()")
+	}
 
 	if self.e != nil {
 		return self.e
 	}
 
 	q := self.generateQuery()
+
+	if !self.stopLog && serverSettings.WebConfig.Application.LogQueries {
+		self.LogQuery("q.Distinct()")
+	}
 
 	err := q.Distinct(key, x)
 
@@ -464,6 +517,7 @@ func (self *Query) processJoinsAndViews(x interface{}) (err error) {
 			return
 		}
 	}
+
 	return
 }
 
@@ -888,6 +942,16 @@ func (self *Query) substituteDateFormat(dateFormat string) string {
 	return dateFormat
 }
 
+func (self *Query) LogQuery(functionName string) {
+
+	if serverSettings.WebConfig.Application.LogQueryStackTraces {
+		caller := stacktrace.Errorf("GoCore caller:")
+		core.Debug.Dump("Desc-> Called Function query.go#"+functionName, "Desc->Caller for Query:", caller.ErrorStack(), "Desc->Collection", self.collection, "Desc->Limit", self.limit, "Desc->Skip", self.skip, "Desc->Sort", self.sort, "Desc->mgo Query", self.q, "Desc->Queryset", self.m)
+	} else {
+		core.Debug.Dump("Desc-> Called Function query.go#"+functionName, "Desc->Collection", self.collection, "Desc->Limit", self.limit, "Desc->Skip", self.skip, "Desc->Sort", self.sort, "Desc->mgo Query", self.q, "Desc->Queryset", self.m)
+	}
+}
+
 func (self *Query) handleQueryError(err error, callback queryError) error {
 
 	if self.isDBConnectionError(err) {
@@ -904,6 +968,11 @@ func (self *Query) handleQueryError(err error, callback queryError) error {
 
 			time.Sleep(200 * time.Millisecond)
 		}
+	}
+
+	if serverSettings.WebConfig.Application.LogQueries {
+		core.Debug.Dump("Desc->You got a mongo error!!!! ", err.Error())
+		self.LogQuery("handleQueryError")
 	}
 
 	return err
