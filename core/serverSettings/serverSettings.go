@@ -56,6 +56,7 @@ type Application struct {
 	SessionSecureCookie   bool          `json:"sessionSecureCookie"`
 	CSRFSecret            string        `json:"csrfSecret"`
 	BootstrapData         bool          `json:"bootstrapData"`
+	LogQueries            bool          `json:"logQueries"`
 }
 
 type webConfigObj struct {
