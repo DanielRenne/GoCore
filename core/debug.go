@@ -88,6 +88,10 @@ func IsZeroOfUnderlyingType(x interface{}) bool {
 	return reflect.DeepEqual(x, reflect.Zero(reflect.TypeOf(x)).Interface())
 }
 
+func IsZeroOfUnderlyingType2(x interface{}) bool {
+	return x == reflect.Zero(reflect.TypeOf(x)).Interface()
+}
+
 func (self *core_debug) Dump(values ...interface{}) {
 	if serverSettings.WebConfig.Application.FlushCoreDebugToStandardOut {
 		//golog "github.com/DanielRenne/GoCore/core/log"
@@ -103,10 +107,10 @@ func (self *core_debug) Dump(values ...interface{}) {
 		if Logger != nil {
 			for _, value := range values {
 				isAllJSON := true
-				kind := reflections.ReflectKind(value)
-				if IsZeroOfUnderlyingType(value) {
-					isAllJSON = false
-				} else {
+				var kind string
+				kind = strings.TrimSpace(fmt.Sprintf("%T", value))
+				if kind == "struct" {
+					kind = reflections.ReflectKind(value)
 					structKeys, err = reflections.FieldsDeep(value)
 					if err == nil {
 						for _, field := range structKeys {
@@ -121,10 +125,11 @@ func (self *core_debug) Dump(values ...interface{}) {
 					} else {
 						isAllJSON = false
 					}
+				} else {
+					isAllJSON = false
 				}
 
-				//%T
-				if isAllJSON || strings.TrimSpace(kind) == "map" {
+				if isAllJSON || kind == "map" || kind == "bson.M" {
 					var rawBytes []byte
 					rawBytes, err = json.MarshalIndent(value, "", "\t")
 					if err == nil {
@@ -132,7 +137,6 @@ func (self *core_debug) Dump(values ...interface{}) {
 					}
 					Logger.Println(fmt.Sprintf("%s: %+v\n", kind, value))
 				} else {
-					//  (%#v) can be used later possibly to reuse whats in memory into golang
 					if strings.TrimSpace(kind) == "string" {
 						var stringVal = value.(string)
 						position := strings.Index(stringVal, "Desc->")
