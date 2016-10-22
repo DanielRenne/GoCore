@@ -3,15 +3,16 @@ package app
 import (
 	"encoding/json"
 	"fmt"
+	"log"
+	"net/http"
+	"strconv"
+
 	"github.com/DanielRenne/GoCore/core/dbServices"
 	"github.com/DanielRenne/GoCore/core/fileCache"
 	"github.com/DanielRenne/GoCore/core/ginServer"
 	"github.com/DanielRenne/GoCore/core/serverSettings"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	"log"
-	"net/http"
-	"strconv"
 )
 
 var upgrader = websocket.Upgrader{
@@ -59,9 +60,10 @@ func Run() {
 
 	go ginServer.Router.RunTLS(":"+strconv.Itoa(serverSettings.WebConfig.Application.HttpsPort), serverSettings.APP_LOCATION+"/keys/cert.pem", serverSettings.APP_LOCATION+"/keys/key.pem")
 
+	log.Println("GoCore Application Started")
+
 	ginServer.Router.Run(":" + strconv.Itoa(serverSettings.WebConfig.Application.HttpPort))
 
-	fmt.Printf("GoCore Application Started")
 	// go ginServer.Router.GET("/", func(c *gin.Context) {
 	// 	c.Redirect(http.StatusMovedPermanently, "https://"+serverSettings.WebConfig.Application.Domain+":"+strconv.Itoa(serverSettings.WebConfig.Application.HttpsPort))
 	// })
