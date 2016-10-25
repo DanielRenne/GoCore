@@ -393,7 +393,11 @@ func JoinEntity(collectionQ *Query, y interface{}, j join, id string, fieldToSet
 					myArray := reflect.ValueOf(y).Elem()
 					for i := 0; i < myArray.Len(); i++ {
 						s := myArray.Index(i)
-						err = CallMethod(s.Interface(), "JoinFields", in)
+						method := s.Addr().MethodByName("JoinFields")
+						values := method.Call(in)
+						if values[0].Interface() != nil {
+							err = values[0].Interface().(error)
+						}
 					}
 				} else {
 					err = CallMethod(y, "JoinFields", in)
