@@ -177,6 +177,10 @@ func (self *Query) Filter(criteria map[string]interface{}) *Query {
 			return self
 		}
 
+		if self.m == nil {
+			self.m = make(bson.M)
+		}
+
 		self.m["_id"] = objId
 		return self
 	} else {
