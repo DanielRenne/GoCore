@@ -178,7 +178,7 @@ func (self *Query) Filter(criteria map[string]interface{}) *Query {
 		//}
 
 		//self.q = self.collection.FindId(objId)
-		self.m["_id"] = CheckForObjectId(objId)
+		self.m["_id"] = self.CheckForObjectId(val)
 		return self
 	} else {
 
