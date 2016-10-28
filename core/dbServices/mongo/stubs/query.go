@@ -171,14 +171,14 @@ func (self *Query) Filter(criteria map[string]interface{}) *Query {
 	val, hasId := criteria["Id"]
 	if hasId {
 
-		objId, err := self.getIdHex(val)
-		if err != nil {
-			self.e = err
-			return self
-		}
+		//objId, err := self.getIdHex(val)
+		//if err != nil {
+		//	self.e = err
+		//	return self
+		//}
 
-		self.q = self.collection.FindId(objId)
-
+		//self.q = self.collection.FindId(objId)
+		self.m["_id"] = CheckForObjectId(objId)
 		return self
 	} else {
 
