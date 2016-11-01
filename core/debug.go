@@ -109,7 +109,8 @@ func (self *core_debug) Dump(values ...interface{}) {
 				isAllJSON := true
 				var kind string
 				kind = strings.TrimSpace(fmt.Sprintf("%T", value))
-				if kind == "struct" {
+				var pieces = strings.Split(kind, " ")
+				if pieces[0] == "struct" {
 					kind = reflections.ReflectKind(value)
 					structKeys, err = reflections.FieldsDeep(value)
 					if err == nil {

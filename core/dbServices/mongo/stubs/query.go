@@ -92,9 +92,9 @@ func Criteria(key string, value interface{}) map[string]interface{} {
 	return criteria
 }
 
-func (self *Query) ById(val interface{}, x interface{}) error {
+func (self *Query) ById(objectId interface{}, modelInstance interface{}) error {
 
-	objId, err := self.getIdHex(val)
+	objId, err := self.getIdHex(objectId)
 	if err != nil {
 		return err
 	}
@@ -110,22 +110,22 @@ func (self *Query) ById(val interface{}, x interface{}) error {
 	}
 	q := self.collection.FindId(objId)
 
-	err = q.One(x)
+	err = q.One(modelInstance)
 
 	if err != nil {
 		// This callback is used for if the Ethernet port is unplugged
 		callback := func() error {
-			err = q.One(x)
+			err = q.One(modelInstance)
 			if err != nil {
 				return err
 			}
-			return self.processJoinsAndViews(x)
+			return self.processJoinsAndViews(modelInstance)
 		}
 
 		return self.handleQueryError(err, callback)
 	}
 
-	return self.processJoinsAndViews(x)
+	return self.processJoinsAndViews(modelInstance)
 
 }
 
@@ -973,7 +973,7 @@ func (self *Query) handleQueryError(err error, callback queryError) error {
 		}
 	}
 
-	if serverSettings.WebConfig.Application.LogQueries {
+	if serverSettings.WebConfig.Application.LogQueries || serverSettings.WebConfig.Application.ReleaseMode != "release" {
 		core.Debug.Dump("Desc->You got a mongo error!!!! ", err.Error())
 		self.LogQuery("handleQueryError")
 	}
