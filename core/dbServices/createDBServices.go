@@ -1579,7 +1579,7 @@ func genNoSQLSchemaDelete(collection NOSQLCollection, schema NOSQLSchema, driver
 	case "boltDB":
 		val += "return dbServices.BoltDB.Remove(self)\n"
 	case "mongoDB":
-		val += "return mongo" + strings.Title(collection.Name) + "Collection.Remove(self)"
+		val += "return mongo" + strings.Title(collection.Name) + "Collection.RemoveId(self.Id)"
 	}
 	val += "}\n\n"
 	return val
