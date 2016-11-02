@@ -110,7 +110,7 @@ func (self *core_debug) Dump(values ...interface{}) {
 				var kind string
 				kind = strings.TrimSpace(fmt.Sprintf("%T", value))
 				var pieces = strings.Split(kind, " ")
-				if pieces[0] == "struct" {
+				if pieces[0] == "struct" || strings.Index(pieces[0], "model.") != -1 || strings.Index(pieces[0], "viewModel.") != -1 {
 					kind = reflections.ReflectKind(value)
 					structKeys, err = reflections.FieldsDeep(value)
 					if err == nil {
@@ -130,7 +130,7 @@ func (self *core_debug) Dump(values ...interface{}) {
 					isAllJSON = false
 				}
 
-				if isAllJSON || kind == "map" || kind == "bson.M" {
+				if isAllJSON || kind == "map" || kind == "bson.M" || kind == "slice" {
 					var rawBytes []byte
 					rawBytes, err = json.MarshalIndent(value, "", "\t")
 					if err == nil {

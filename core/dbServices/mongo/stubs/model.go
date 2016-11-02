@@ -95,6 +95,24 @@ func RangeQ(k string, min interface{}, max interface{}) map[string]Range {
 	return rge
 }
 
+func MinQ(k string, min interface{}) map[string]Min {
+	var rge map[string]Min
+	rge = make(map[string]Min)
+	rge[k] = Min{
+		Min: min,
+	}
+	return rge
+}
+
+func MaxQ(k string, max interface{}) map[string]Max {
+	var rge map[string]Max
+	rge = make(map[string]Max)
+	rge[k] = Max{
+		Max: max,
+	}
+	return rge
+}
+
 //Every 12 hours check the transactionQueue and remove any outstanding stale transactions > 48 hours old
 func clearTransactionQueue() {
 

@@ -35,6 +35,14 @@ type Range struct {
 	Max interface{}
 }
 
+type Min struct {
+	Min interface{}
+}
+
+type Max struct {
+	Max interface{}
+}
+
 type join struct {
 	collectionName       string
 	joinFieldRefName     string
@@ -293,6 +301,66 @@ func (self *Query) Range(criteria map[string]Range) *Query {
 	for key, val := range criteria {
 		if key != "" {
 			self.m[key] = bson.M{"$gte": val.Min, "$lte": val.Max}
+		}
+	}
+
+	return self
+}
+
+func (self *Query) LessThanEqualTo(criteria map[string]Min) *Query {
+
+	if self.m == nil {
+		self.m = make(bson.M)
+	}
+
+	for key, val := range criteria {
+		if key != "" {
+			self.m[key] = bson.M{"$lte": val.Min}
+		}
+	}
+
+	return self
+}
+
+func (self *Query) LessThan(criteria map[string]Min) *Query {
+
+	if self.m == nil {
+		self.m = make(bson.M)
+	}
+
+	for key, val := range criteria {
+		if key != "" {
+			self.m[key] = bson.M{"$lt": val.Min}
+		}
+	}
+
+	return self
+}
+
+func (self *Query) GreaterThanEqualTo(criteria map[string]Max) *Query {
+
+	if self.m == nil {
+		self.m = make(bson.M)
+	}
+
+	for key, val := range criteria {
+		if key != "" {
+			self.m[key] = bson.M{"$gte": val.Max}
+		}
+	}
+
+	return self
+}
+
+func (self *Query) GreaterThan(criteria map[string]Max) *Query {
+
+	if self.m == nil {
+		self.m = make(bson.M)
+	}
+
+	for key, val := range criteria {
+		if key != "" {
+			self.m[key] = bson.M{"$gt": val.Max}
 		}
 	}
 
