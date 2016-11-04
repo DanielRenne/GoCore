@@ -135,7 +135,12 @@ func ReadGzipJSFile(path string, c *gin.Context) {
 	c.Header("Content-Type", "application/javascript")
 	c.Header("Content-Encoding", "gzip")
 	c.File(path)
+}
 
+func RespondGzipJSFile(data []byte, c *gin.Context) {
+	c.Header("Content-Type", "application/javascript")
+	c.Header("Content-Encoding", "gzip")
+	c.Writer.Write(data)
 }
 
 func ReadGzipCSSFile(path string, c *gin.Context) {
@@ -144,6 +149,12 @@ func ReadGzipCSSFile(path string, c *gin.Context) {
 	c.Header("Content-Encoding", "gzip")
 	c.File(path)
 
+}
+
+func RespondGzipCSSFile(data []byte, c *gin.Context) {
+	c.Header("Content-Type", "text/css")
+	c.Header("Content-Encoding", "gzip")
+	c.Writer.Write(data)
 }
 
 func ReadPngFile(path string, c *gin.Context) {

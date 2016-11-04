@@ -3,11 +3,12 @@
 package fileCache
 
 import (
+	"log"
+	"sync"
+
 	"github.com/DanielRenne/GoCore/core/extensions"
 	"github.com/DanielRenne/GoCore/core/serverSettings"
 	"github.com/golang/groupcache"
-	"log"
-	"sync"
 )
 
 var peers *groupcache.HTTPPool
@@ -43,6 +44,18 @@ func GetHTMLFile(path string) (string, error) {
 	}
 
 	return string(data[:]), err
+}
+
+//Returns binary data by path(key) from group cache
+func GetFile(path string) ([]byte, error) {
+	var ctx groupcache.Context
+	var data []byte
+	err := htmlFileCache.Get(ctx, path, groupcache.AllocatingByteSliceSink(&data))
+	if err != nil {
+		return data, err
+	}
+
+	return data, err
 }
 
 // Gets a value by Key from group cache
