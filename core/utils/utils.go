@@ -34,3 +34,11 @@ func InArray(a string, list []string) bool {
 	}
 	return false
 }
+
+func Array(values ...string) []string {
+	var out []string
+	for _, value := range values {
+		out = append(out, value)
+	}
+	return out
+}
