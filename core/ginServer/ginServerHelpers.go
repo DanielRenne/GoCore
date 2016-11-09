@@ -5,10 +5,16 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
+
+const TimeFormat = "Mon, 02 Jan 2006 15:04:05 GMT"
+const StatusNotModified = 304 // RFC 7232, 4.1
+
+var unixEpochTime = time.Unix(0, 0)
 
 type ErrorResponse struct {
 	Message string `json:"message"`
@@ -137,9 +143,10 @@ func ReadGzipJSFile(path string, c *gin.Context) {
 	c.File(path)
 }
 
-func RespondGzipJSFile(data []byte, c *gin.Context) {
+func RespondGzipJSFile(data []byte, modTime time.Time, c *gin.Context) {
 	c.Header("Content-Type", "application/javascript")
 	c.Header("Content-Encoding", "gzip")
+	checkLastModified(c.Writer, c.Request, modTime)
 	c.Writer.Write(data)
 }
 
@@ -151,9 +158,10 @@ func ReadGzipCSSFile(path string, c *gin.Context) {
 
 }
 
-func RespondGzipCSSFile(data []byte, c *gin.Context) {
+func RespondGzipCSSFile(data []byte, modTime time.Time, c *gin.Context) {
 	c.Header("Content-Type", "text/css")
 	c.Header("Content-Encoding", "gzip")
+	checkLastModified(c.Writer, c.Request, modTime)
 	c.Writer.Write(data)
 }
 
@@ -162,4 +170,27 @@ func ReadPngFile(path string, c *gin.Context) {
 	c.Header("Content-Type", "image/png")
 	c.File(path)
 
+}
+
+// modtime is the modification time of the resource to be served, or IsZero().
+// return value is whether this request is now complete.
+func checkLastModified(w http.ResponseWriter, r *http.Request, modtime time.Time) bool {
+	if modtime.IsZero() || modtime.Equal(unixEpochTime) {
+		// If the file doesn't have a modtime (IsZero), or the modtime
+		// is obviously garbage (Unix time == 0), then ignore modtimes
+		// and don't process the If-Modified-Since header.
+		return false
+	}
+
+	// The Date-Modified header truncates sub-second precision, so
+	// use mtime < t+1s instead of mtime <= t to check for unmodified.
+	if t, err := time.Parse(TimeFormat, r.Header.Get("If-Modified-Since")); err == nil && modtime.Before(t.Add(1*time.Second)) {
+		h := w.Header()
+		delete(h, "Content-Type")
+		delete(h, "Content-Length")
+		w.WriteHeader(StatusNotModified)
+		return true
+	}
+	w.Header().Set("Last-Modified", modtime.UTC().Format(TimeFormat))
+	return false
 }
