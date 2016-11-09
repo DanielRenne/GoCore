@@ -150,6 +150,42 @@ func RespondGzipJSFile(data []byte, modTime time.Time, c *gin.Context) {
 	c.Writer.Write(data)
 }
 
+func RespondTtfFile(data []byte, modTime time.Time, c *gin.Context) {
+	c.Header("Content-Type", "application/x-font-ttf")
+	checkLastModified(c.Writer, c.Request, modTime)
+	c.Writer.Write(data)
+}
+
+func RespondOtfFile(data []byte, modTime time.Time, c *gin.Context) {
+	c.Header("Content-Type", "application/x-font-otf")
+	checkLastModified(c.Writer, c.Request, modTime)
+	c.Writer.Write(data)
+}
+
+func RespondWoffFile(data []byte, modTime time.Time, c *gin.Context) {
+	c.Header("Content-Type", "application/font-woff")
+	checkLastModified(c.Writer, c.Request, modTime)
+	c.Writer.Write(data)
+}
+
+func RespondWoff2File(data []byte, modTime time.Time, c *gin.Context) {
+	c.Header("Content-Type", "application/font-woff2")
+	checkLastModified(c.Writer, c.Request, modTime)
+	c.Writer.Write(data)
+}
+
+func RespondEotFile(data []byte, modTime time.Time, c *gin.Context) {
+	c.Header("Content-Type", "application/vnd.ms-fontobject")
+	checkLastModified(c.Writer, c.Request, modTime)
+	c.Writer.Write(data)
+}
+
+func RespondSvgFile(data []byte, modTime time.Time, c *gin.Context) {
+	c.Header("Content-Type", "image/svg+xml")
+	checkLastModified(c.Writer, c.Request, modTime)
+	c.Writer.Write(data)
+}
+
 func ReadGzipCSSFile(path string, c *gin.Context) {
 
 	c.Header("Content-Type", "text/css")
