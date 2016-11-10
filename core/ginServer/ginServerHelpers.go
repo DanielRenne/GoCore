@@ -150,6 +150,12 @@ func RespondGzipJSFile(data []byte, modTime time.Time, c *gin.Context) {
 	c.Writer.Write(data)
 }
 
+func RespondJSFile(data []byte, modTime time.Time, c *gin.Context) {
+	c.Header("Content-Type", "application/javascript")
+	checkLastModified(c.Writer, c.Request, modTime)
+	c.Writer.Write(data)
+}
+
 func RespondTtfFile(data []byte, modTime time.Time, c *gin.Context) {
 	c.Header("Content-Type", "application/x-font-ttf")
 	checkLastModified(c.Writer, c.Request, modTime)
