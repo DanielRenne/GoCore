@@ -1,12 +1,14 @@
 package ginServer
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"strings"
 	"time"
 
+	"github.com/DanielRenne/GoCore/core/extensions"
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
@@ -99,6 +101,19 @@ func ReadJSFile(path string, c *gin.Context) {
 
 	c.Header("Content-Type", "text/javascript")
 	c.String(http.StatusOK, pageHTML)
+}
+
+//Reads a file and responds with a base64 encoded string.  Primarily used for jquery ajax response binary data blob encoding.
+func ReadFileBase64(path string, c *gin.Context) {
+	page, err := ioutil.ReadFile(path)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	data := base64.StdEncoding.EncodeToString(page)
+	c.Writer.Header().Set("Content-Length", extensions.IntToString(len(data)))
+	c.String(http.StatusOK, data)
 }
 
 // Takes a string and returns to the client as text/html.
