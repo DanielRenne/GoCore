@@ -223,10 +223,13 @@ func RespondGzipCSSFile(data []byte, modTime time.Time, c *gin.Context) {
 }
 
 func ReadPngFile(path string, c *gin.Context) {
-
 	c.Header("Content-Type", "image/png")
 	c.File(path)
+}
 
+func ReadJpgFile(path string, c *gin.Context) {
+	c.Header("Content-Type", "image/jpeg")
+	c.File(path)
 }
 
 // modtime is the modification time of the resource to be served, or IsZero().
