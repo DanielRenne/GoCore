@@ -2,7 +2,6 @@
 package core
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/DanielRenne/GoCore/core/extensions"
@@ -92,18 +91,37 @@ func IsZeroOfUnderlyingType2(x interface{}) bool {
 	return x == reflect.Zero(reflect.TypeOf(x)).Interface()
 }
 
+func (self *core_debug) HandleError(err error) (s string) {
+	if err != nil {
+		// notice that we're using 1, so it will actually log the where
+		// the error happened, 0 = this function, we don't want that.
+		_, fn, line, _ := runtime.Caller(1)
+		fileNameParts := strings.Split(fn, "/")
+		return fmt.Sprintf("  Error Info: %s Line %d. ErrorType: %v", fileNameParts[len(fileNameParts)-1], line, err)
+	}
+	return ""
+}
+
 func (self *core_debug) Dump(values ...interface{}) {
+	self.DumpBase(values)
+}
+
+func (self *core_debug) GetDump(values ...interface{}) string {
+	return self.DumpBase(values)
+}
+
+func (self *core_debug) DumpBase(values ...interface{}) (output string) {
 	if serverSettings.WebConfig.Application.FlushCoreDebugToStandardOut {
 		//golog "github.com/DanielRenne/GoCore/core/log"
 		//defer golog.TimeTrack(time.Now(), "Dump")
 		t := time.Now()
-		Logger.Println("!!!!!!!!!!!!! DEBUG " + t.String() + "!!!!!!!!!!!!!")
-		Logger.Println("")
-		Logger.Println("")
+		output += "\n!!!!!!!!!!!!! DEBUG " + t.String() + "!!!!!!!!!!!!!"
+		output += "\n"
+		output += "\n"
 		var jsonString string
 		var err error
 		var structKeys []string
-		self.ThrowAndPrintError()
+		output += self.ThrowAndPrintError()
 		if Logger != nil {
 			for _, value := range values {
 				isAllJSON := true
@@ -136,36 +154,37 @@ func (self *core_debug) Dump(values ...interface{}) {
 					if err == nil {
 						value = string(rawBytes[:])
 					}
-					Logger.Println(fmt.Sprintf("%s: %+v\n", kind, value))
+					output += "\n" + fmt.Sprintf("%s: %+v\n", kind, value)
 				} else {
 					if strings.TrimSpace(kind) == "string" {
 						var stringVal = value.(string)
 						position := strings.Index(stringVal, "Desc->")
 						if position == -1 {
-							Logger.Println(fmt.Sprintf("%s:", kind))
+							output += "\n" + fmt.Sprintf("%s:", kind)
 							for _, tmp := range strings.Split(stringVal, "\\n") {
-								Logger.Println(tmp)
+								output += "\n" + tmp
 							}
-							Logger.Println()
-							Logger.Println()
+							output += "\n"
+							output += "\n"
 						} else {
-							Logger.Print(stringVal[6:] + " --> ")
+							output += stringVal[6:] + " --> "
 						}
 					} else {
-						Logger.Println(fmt.Sprintf("%s: %+v\n\n", kind, value))
+						output += "\n" + fmt.Sprintf("%s: %+v\n\n", kind, value)
 					}
 				}
 			}
 		}
-		Logger.Println("")
-		Logger.Println("")
-		Logger.Println("!!!!!!!!!!!!! ENDDEBUG " + t.String() + "!!!!!!!!!!!!!")
+		output += "\n"
+		output += "\n"
+		output += "\n!!!!!!!!!!!!! ENDDEBUG " + t.String() + "!!!!!!!!!!!!!"
 	}
+	return output
 }
 
-func (self *core_debug) ThrowAndPrintError() {
+func (self *core_debug) ThrowAndPrintError() (output string) {
 	if serverSettings.WebConfig.Application.CoreDebugStackTrace {
-		Logger.Println("")
+		output += "\n"
 		errorInfo := self.ThrowError()
 		stack := strings.Split(errorInfo.ErrorStack(), "\n")
 		filePathSplit := strings.Split(stack[7], ".go:")
@@ -177,26 +196,19 @@ func (self *core_debug) ThrowAndPrintError() {
 		finalLineOfCode := strings.TrimSpace(stack[8])
 
 		if strings.Index(finalLineOfCode, "Desc->Caller for Query") == -1 {
-			Logger.Println("Dump Caller (" + fileName + ":" + lineNumber + "):")
-			Logger.Println("---------------")
-			Logger.Println(" goline ==> " + strings.TrimSpace(stack[8]))
-			Logger.Println("---------------")
-			Logger.Println("")
-			Logger.Println("")
+			output += "\nDump Caller (" + fileName + ":" + lineNumber + "):"
+			output += "\n---------------"
+			output += "\n goline ==> " + strings.TrimSpace(stack[8])
+			output += "\n---------------"
+			output += "\n"
+			output += "\n"
 		}
 	}
+	return output
 }
 
 func (self *core_debug) ThrowError() *errors.Error {
 	return errors.Errorf("Debug Dump")
-}
-
-func (self *core_debug) GetDump(values ...interface{}) string {
-	var buffer bytes.Buffer
-	for _, value := range values {
-		buffer.WriteString("(" + reflect.TypeOf(value).Name() + ")" + fmt.Sprintf("%+v\n", value))
-	}
-	return buffer.String()
 }
 
 func (self *core_debug) Print(values ...interface{}) {
