@@ -103,7 +103,7 @@ func (self *core_debug) HandleError(err error) (s string) {
 }
 
 func (self *core_debug) Dump(values ...interface{}) {
-	self.DumpBase(values)
+	self.Print(self.DumpBase(values))
 }
 
 func (self *core_debug) GetDump(values ...interface{}) string {
