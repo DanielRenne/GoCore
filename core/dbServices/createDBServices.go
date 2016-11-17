@@ -278,7 +278,7 @@ func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir s
 
 	//Copy Stub Files
 	if driver == DATABASE_DRIVER_MONGODB {
-		copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/mongo/stubs/transaction.go", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/transaction.go")
+		// copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/mongo/stubs/transaction.go", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/transaction.go")
 		copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/mongo/stubs/query.go", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/query.go")
 		copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/mongo/stubs/timeZone.go", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/timeZone.go")
 		copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/mongo/stubs/timeZoneLocations.go", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/timeZoneLocations.go")
@@ -294,6 +294,20 @@ func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir s
 		return
 	}
 
+	transactionTemplate, err := extensions.ReadFile(serverSettings.GOCORE_PATH + "/core/dbServices/mongo/stubs/transaction.go")
+
+	if err != nil {
+		color.Red("Error reading transactionTemplate.go:  " + err.Error())
+		return
+	}
+	transactionModified := string(transactionTemplate[:])
+
+	if serverSettings.WebConfig.DbConnection.TransactionSizeMax > 0 {
+		transactionModified = strings.Replace(transactionModified, "ci := mgo.CollectionInfo{ForceIdIndex: true}", "ci := mgo.CollectionInfo{ForceIdIndex: true, Capped:true, MaxBytes:"+extensions.IntToString(serverSettings.WebConfig.DbConnection.TransactionSizeMax)+"}\n", -1)
+	}
+
+	writeNoSQLStub(transactionModified, serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/transaction.go")
+
 	//Create the Collection Models
 	for _, collection := range collections {
 		val := generateNoSQLModel(collection.Schema, collection, driver, scs)
@@ -306,6 +320,9 @@ func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir s
 		histModified := strings.Replace(string(histTemplate[:]), "HistCollection", strings.Title(collection.Name)+"History", -1)
 		histModified = strings.Replace(histModified, "HistEntity", strings.Title(collection.Schema.Name)+"HistoryRecord", -1)
 		histModified = strings.Replace(histModified, "OriginalEntity", strings.Title(collection.Schema.Name), -1)
+		if serverSettings.WebConfig.DbConnection.AuditHistorySizeMax > 0 {
+			histModified = strings.Replace(histModified, "ci := mgo.CollectionInfo{ForceIdIndex: true}", "ci := mgo.CollectionInfo{ForceIdIndex: true, Capped:true, MaxBytes:"+extensions.IntToString(serverSettings.WebConfig.DbConnection.AuditHistorySizeMax)+"}\n", -1)
+		}
 
 		writeNoSQLStub(histModified, serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/"+extensions.MakeFirstLowerCase(collection.Schema.Name)+"_Hist.go")
 

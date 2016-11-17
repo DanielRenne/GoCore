@@ -15,9 +15,11 @@ type htmlTemplates struct {
 }
 
 type dbConnection struct {
-	ConnectionString string `json:"connectionString"`
-	Driver           string `json:"driver"`
-	Database         string `json:"database"`
+	ConnectionString    string `json:"connectionString"`
+	Driver              string `json:"driver"`
+	Database            string `json:"database"`
+	TransactionSizeMax  int    `json:"transactionSizeMax"`
+	AuditHistorySizeMax int    `json:"auditHistorySizeMax"`
 }
 
 type license struct {
