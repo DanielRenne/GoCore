@@ -1017,9 +1017,9 @@ func (self *Query) LogQuery(functionName string) {
 
 	if serverSettings.WebConfig.Application.LogQueryStackTraces {
 		caller := stacktrace.Errorf("GoCore caller:")
-		core.Debug.Dump("Desc-> Called Function query.go#"+functionName, "Desc->Caller for Query:", caller.ErrorStack(), "Desc->Collection", self.collection, "Desc->Limit", self.limit, "Desc->Skip", self.skip, "Desc->Sort", self.sort, "Desc->mgo Query", self.q, "Desc->Queryset", self.m)
+		core.Debug.Dump("Desc-> Called Function query.go#"+functionName, "Desc->Caller for Query:", caller.ErrorStack(), core.Debug.GetDump("Desc->Collection", self.collection, "Desc->Limit", self.limit, "Desc->Skip", self.skip, "Desc->Sort", self.sort, "Desc->mgo Query", self.q, "Desc->Queryset", self.m))
 	} else {
-		core.Debug.Dump("Desc-> Called Function query.go#"+functionName, "Desc->Collection", self.collection, "Desc->Limit", self.limit, "Desc->Skip", self.skip, "Desc->Sort", self.sort, "Desc->mgo Query", self.q, "Desc->Queryset", self.m)
+		core.Debug.Dump("Desc-> Called Function query.go#"+functionName, core.Debug.GetDump("Desc->Collection", self.collection, "Desc->Limit", self.limit, "Desc->Skip", self.skip, "Desc->Sort", self.sort, "Desc->mgo Query", self.q, "Desc->Queryset", self.m))
 	}
 }
 
@@ -1041,7 +1041,7 @@ func (self *Query) handleQueryError(err error, callback queryError) error {
 		}
 	}
 
-	if serverSettings.WebConfig.Application.LogQueries || serverSettings.WebConfig.Application.ReleaseMode != "release" {
+	if serverSettings.WebConfig.Application.LogQueries {
 		core.Debug.Dump("Desc->You got a mongo error!!!! ", err.Error())
 		self.LogQuery("handleQueryError")
 	}

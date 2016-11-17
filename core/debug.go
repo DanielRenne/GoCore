@@ -102,22 +102,27 @@ func (self *core_debug) HandleError(err error) (s string) {
 	return ""
 }
 
-func (self *core_debug) Dump(values ...interface{}) {
-	self.Print(self.DumpBase(values))
+func (self *core_debug) Dump(valuesOriginal ...interface{}) {
+	t := time.Now()
+	Logger.Println("!!!!!!!!!!!!! DEBUG " + t.String() + "!!!!!!!!!!!!!")
+
+	for _, value := range valuesOriginal {
+		Logger.Print(self.DumpBase(value))
+	}
+	Logger.Println("!!!!!!!!!!!!! ENDDEBUG " + t.String() + "!!!!!!!!!!!!!")
 }
 
-func (self *core_debug) GetDump(values ...interface{}) string {
-	return self.DumpBase(values)
+func (self *core_debug) GetDump(valuesOriginal ...interface{}) (output string) {
+	for _, value := range valuesOriginal {
+		output += self.DumpBase(value)
+	}
+	return output
 }
 
 func (self *core_debug) DumpBase(values ...interface{}) (output string) {
 	if serverSettings.WebConfig.Application.FlushCoreDebugToStandardOut {
 		//golog "github.com/DanielRenne/GoCore/core/log"
 		//defer golog.TimeTrack(time.Now(), "Dump")
-		t := time.Now()
-		output += "\n!!!!!!!!!!!!! DEBUG " + t.String() + "!!!!!!!!!!!!!"
-		output += "\n"
-		output += "\n"
 		var jsonString string
 		var err error
 		var structKeys []string
@@ -147,7 +152,6 @@ func (self *core_debug) DumpBase(values ...interface{}) (output string) {
 				} else {
 					isAllJSON = false
 				}
-
 				if isAllJSON || kind == "map" || kind == "bson.M" || kind == "slice" {
 					var rawBytes []byte
 					rawBytes, err = json.MarshalIndent(value, "", "\t")
@@ -175,9 +179,6 @@ func (self *core_debug) DumpBase(values ...interface{}) (output string) {
 				}
 			}
 		}
-		output += "\n"
-		output += "\n"
-		output += "\n!!!!!!!!!!!!! ENDDEBUG " + t.String() + "!!!!!!!!!!!!!"
 	}
 	return output
 }
