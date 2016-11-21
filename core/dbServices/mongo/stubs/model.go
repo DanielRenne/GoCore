@@ -85,6 +85,10 @@ func Q(k string, v interface{}) map[string]interface{} {
 	return map[string]interface{}{k: v}
 }
 
+func QTs(k string, v time.Time) map[string]time.Time {
+	return map[string]time.Time{k: v}
+}
+
 func RangeQ(k string, min interface{}, max interface{}) map[string]Range {
 	var rge map[string]Range
 	rge = make(map[string]Range)
