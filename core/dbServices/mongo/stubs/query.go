@@ -902,7 +902,8 @@ func (self *Query) setViewValue(v view, source reflect.Value) {
 		i, _ := strconv.ParseInt(viewValue, 10, 64)
 		t := time.Unix(i, 0).In(location)
 		diff := time.Now().Sub(t)
-		self.processTimeFromNow(v.fieldName, source.FieldByName("Views"), diff)
+		diffAdd := t.Sub(time.Now())
+		self.processTimeFromNow(v.fieldName, source.FieldByName("Views"), diff, diffAdd)
 	case "":
 		dbServices.SetFieldValue(v.fieldName, source.FieldByName("Views"), viewValue)
 	}
@@ -919,49 +920,56 @@ func (self *Query) setViewValue(v view, source reflect.Value) {
 
 }
 
-func (self *Query) processTimeFromNow(key string, field reflect.Value, diff time.Duration) {
-	if diff.Minutes() < 1 { //Seconds
+func (self *Query) processTimeFromNow(key string, field reflect.Value, diff time.Duration, diffAdd time.Duration) {
+
+	diffToTake := diff
+
+	if diff.Seconds() < 0 {
+		diffToTake = diffAdd
+	}
+
+	if diffToTake.Minutes() < 1 { //Seconds
 		label := "Second"
-		if diff.Seconds() > 1 {
+		if diffToTake.Seconds() > 1 {
 			label = "Seconds"
 		}
-		dbServices.SetFieldValue(key, field, extensions.FloatToString(diff.Seconds(), 0)+" "+label) //Translate label
-	} else if diff.Hours() < 1 { //Minutes
+		dbServices.SetFieldValue(key, field, extensions.FloatToString(diffToTake.Seconds(), 0)+" "+label) //Translate label
+	} else if diffToTake.Hours() < 1 { //Minutes
 		label := "Minute"
-		if diff.Minutes() > 1 {
+		if diffToTake.Minutes() > 1 {
 			label = "Minutes"
 		}
-		dbServices.SetFieldValue(key, field, extensions.FloatToString(diff.Minutes(), 0)+" "+label) //Translate label
-	} else if diff.Hours() < 24 { //Hours
+		dbServices.SetFieldValue(key, field, extensions.FloatToString(diffToTake.Minutes(), 0)+" "+label) //Translate label
+	} else if diffToTake.Hours() < 24 { //Hours
 		label := "Hour"
-		if diff.Hours() > 1 {
+		if diffToTake.Hours() > 1 {
 			label = "Hours"
 		}
-		dbServices.SetFieldValue(key, field, extensions.FloatToString(diff.Hours(), 0)+" "+label) //Translate label
-	} else if diff.Hours() < 24*7 { //Days
+		dbServices.SetFieldValue(key, field, extensions.FloatToString(diffToTake.Hours(), 0)+" "+label) //Translate label
+	} else if diffToTake.Hours() < 24*7 { //Days
 		label := "Day"
-		if diff.Hours() > 24*2 {
+		if diffToTake.Hours() > 24*2 {
 			label = "Days"
 		}
-		dbServices.SetFieldValue(key, field, extensions.FloatToString(diff.Hours()/24, 0)+" "+label) //Translate label
-	} else if diff.Hours() < 24*30 { // Weeks
+		dbServices.SetFieldValue(key, field, extensions.FloatToString(diffToTake.Hours()/24, 0)+" "+label) //Translate label
+	} else if diffToTake.Hours() < 24*30 { // Weeks
 		label := "Week"
-		if diff.Hours() > 24*7+24*3.5 {
+		if diffToTake.Hours() > 24*7+24*3.5 {
 			label = "Weeks"
 		}
-		dbServices.SetFieldValue(key, field, extensions.FloatToString(diff.Hours()/(24*7), 0)+" "+label) //Translate label
-	} else if diff.Hours() < 24*365 { // Months
+		dbServices.SetFieldValue(key, field, extensions.FloatToString(diffToTake.Hours()/(24*7), 0)+" "+label) //Translate label
+	} else if diffToTake.Hours() < 24*365 { // Months
 		label := "Month"
-		if diff.Hours() > 24*30+24*15 {
+		if diffToTake.Hours() > 24*30+24*15 {
 			label = "Months"
 		}
-		dbServices.SetFieldValue(key, field, extensions.FloatToString(diff.Hours()/(24*30), 0)+" "+label) //Translate label
+		dbServices.SetFieldValue(key, field, extensions.FloatToString(diffToTake.Hours()/(24*30), 0)+" "+label) //Translate label
 	} else { // Years
 		label := "Year"
-		if diff.Hours() > 24*365+24*182.5 {
+		if diffToTake.Hours() > 24*365+24*182.5 {
 			label = "Years"
 		}
-		dbServices.SetFieldValue(key, field, extensions.FloatToString(diff.Hours()/(24*365), 0)+" "+label) //Translate label
+		dbServices.SetFieldValue(key, field, extensions.FloatToString(diffToTake.Hours()/(24*365), 0)+" "+label) //Translate label
 	}
 }
 
