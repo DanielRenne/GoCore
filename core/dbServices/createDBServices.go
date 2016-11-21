@@ -1518,11 +1518,17 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 		val += "var isError bool\n"
 		val += "for _, doc := range v{\n\n"
 
+		val += "var original " + strings.Title(schema.Name) + "\n"
+		val += "err = " + strings.Title(collection.Name) + ".Query().ById(doc.Id, &original)\n"
+
+		val += "if err != nil {\n"
+
 		val += "err = doc.Save()\n"
 		val += "	if err != nil {\n"
 		val += "		log.Println(\"Failed to bootstrap data for " + strings.Title(schema.Name) + ":  \" + doc.Id.Hex() + \"  \" + err.Error())\n"
 		val += "isError = true\n"
 		val += "	}\n"
+		val += "}\n"
 
 		// val += "	log.Printf(\"%+v\\n\", doc)\n\n"
 		val += "}\n"
