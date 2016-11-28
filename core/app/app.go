@@ -1,11 +1,15 @@
 package app
 
 import (
-	"encoding/json"
+	"crypto/rand"
 	"fmt"
+	"io"
 	"log"
+	randMath "math/rand"
 	"net/http"
 	"strconv"
+	"sync"
+	"time"
 
 	"github.com/DanielRenne/GoCore/core/dbServices"
 	"github.com/DanielRenne/GoCore/core/fileCache"
@@ -15,19 +19,31 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+type WebSocketConnection struct {
+	sync.Mutex
+	Id         string
+	Connection *websocket.Conn
+}
+
+type WebSocketConnectionCollection struct {
+	sync.RWMutex
+	Connections []*WebSocketConnection
+}
+
+type WebSocketCallbackSync struct {
+	sync.RWMutex
+	callbacks []WebSocketCallback
+}
+
+type WebSocketCallback func(conn *WebSocketConnection, messageType int, data []byte)
+
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 }
 
-type WebSocketAPIObj struct {
-	Data struct {
-		//ServerPropertyID int    `json:"ServerPropertyId"`
-		Controller string `json:"controller"`
-		Method     string `json:"method"`
-		CallBackID int    `json:"callBackId"`
-	} `json:"data"`
-}
+var WebSocketConnections WebSocketConnectionCollection
+var WebSocketCallbacks WebSocketCallbackSync
 
 func Initialize(path string) {
 	serverSettings.Initialize(path)
@@ -72,34 +88,59 @@ func Run() {
 
 func webSocketHandler(w http.ResponseWriter, r *http.Request) {
 
+	log.Println("Web Socket Connection")
 	conn, err := upgrader.Upgrade(w, r, nil)
+
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	for {
-		messageType, p, err := conn.ReadMessage()
+	//Start the Reader, listen for Close Message, and Add to the Connection Array.
 
-		var wsAPIObj WebSocketAPIObj
-		json.Unmarshal(p, &wsAPIObj)
-
-		// Loop over structs and display them.
-		// for l := range languages {
-		fmt.Printf("controller = %v, method = %v", wsAPIObj.Data.Controller, wsAPIObj.Data.Method)
-		fmt.Println()
-		// }
-
-		log.Println(string(p[:]))
-
-		if err != nil {
-			return
-		}
-		if err = conn.WriteMessage(messageType, p); err != nil {
-			return
-		}
+	wsConn := new(WebSocketConnection)
+	wsConn.Connection = conn
+	uuid, err := newUUID()
+	if err == nil {
+		wsConn.Id = uuid
+	} else {
+		uuid = randomString(20)
+		wsConn.Id = uuid
 	}
 
+	//Reader
+	go func() {
+		for {
+			messageType, p, err := conn.ReadMessage()
+			if err == nil {
+				go func() {
+					WebSocketCallbacks.RLock()
+					log.Println(string(p[:]))
+					for _, callback := range WebSocketCallbacks.callbacks {
+						callback(wsConn, messageType, p)
+					}
+					WebSocketCallbacks.RUnlock()
+				}()
+			} else {
+				return
+			}
+		}
+	}()
+
+	//Close Message
+	closeHandler := func(code int, text string) error {
+		// log.Println("Closing Socket")
+		// log.Printf("%+v\n", len(WebSocketConnections.Connections))
+		deleteWebSocket(wsConn)
+		// log.Printf("%+v\n", len(WebSocketConnections.Connections))
+		return nil
+	}
+
+	conn.SetCloseHandler(closeHandler)
+
+	WebSocketConnections.Lock()
+	WebSocketConnections.Connections = append(WebSocketConnections.Connections, wsConn)
+	WebSocketConnections.Unlock()
 }
 
 func loadHTMLTemplates() {
@@ -149,4 +190,112 @@ func initializeStaticRoutes() {
 
 		ginServer.ReadHTMLFile(serverSettings.APP_LOCATION+"/web/swagger/dist/index.html", c)
 	})
+}
+
+func RegisterWebSocketDataCallback(callback WebSocketCallback) {
+	WebSocketCallbacks.Lock()
+	WebSocketCallbacks.callbacks = append(WebSocketCallbacks.callbacks, callback)
+	WebSocketCallbacks.Unlock()
+}
+
+func ReplyToWebSocket(conn *WebSocketConnection, data []byte) {
+
+	WebSocketConnections.RLock()
+	for _, wsConn := range WebSocketConnections.Connections {
+		ws := wsConn
+		if ws.Id == conn.Id {
+			go func() {
+				ws.Lock()
+				ws.Connection.WriteMessage(websocket.BinaryMessage, data)
+				ws.Unlock()
+			}()
+			return
+		}
+	}
+	WebSocketConnections.RUnlock()
+}
+
+func ReplyToWebSocketJSON(conn *WebSocketConnection, v interface{}) {
+
+	WebSocketConnections.RLock()
+	for _, wsConn := range WebSocketConnections.Connections {
+		ws := wsConn
+		if ws.Id == conn.Id {
+			go func() {
+				ws.Lock()
+				ws.Connection.WriteJSON(v)
+				ws.Unlock()
+			}()
+			return
+		}
+	}
+	WebSocketConnections.RUnlock()
+}
+
+func BroadcastWebSocketData(data []byte) {
+
+	WebSocketConnections.RLock()
+	for _, wsConn := range WebSocketConnections.Connections {
+		ws := wsConn
+		go func() {
+			ws.Lock()
+			ws.Connection.WriteMessage(websocket.BinaryMessage, data)
+			ws.Unlock()
+		}()
+	}
+	WebSocketConnections.RUnlock()
+}
+
+func BroadcastWebSocketJSON(v interface{}) {
+	WebSocketConnections.RLock()
+	for _, wsConn := range WebSocketConnections.Connections {
+		ws := wsConn
+		go func() {
+			ws.Lock()
+			ws.Connection.WriteJSON(v)
+			ws.Unlock()
+		}()
+	}
+	WebSocketConnections.RUnlock()
+}
+
+func deleteWebSocket(c *WebSocketConnection) {
+	WebSocketConnections.Lock()
+	for i, wsConn := range WebSocketConnections.Connections {
+		if wsConn.Id == c.Id {
+			log.Println("Removing Socket")
+			WebSocketConnections.Connections = removeWebSocket(WebSocketConnections.Connections, i)
+		}
+	}
+
+	WebSocketConnections.Unlock()
+}
+
+func removeWebSocket(s []*WebSocketConnection, i int) []*WebSocketConnection {
+	s[len(s)-1], s[i] = s[i], s[len(s)-1]
+	return s[:len(s)-1]
+}
+
+// newUUID generates a random UUID according to RFC 4122
+func newUUID() (string, error) {
+	uuid := make([]byte, 16)
+	n, err := io.ReadFull(rand.Reader, uuid)
+	if n != len(uuid) || err != nil {
+		return "", err
+	}
+	// variant bits; see section 4.1.1
+	uuid[8] = uuid[8]&^0xc0 | 0x80
+	// version 4 (pseudo-random); see section 4.1.3
+	uuid[6] = uuid[6]&^0xf0 | 0x40
+	return fmt.Sprintf("%x-%x-%x-%x-%x", uuid[0:4], uuid[4:6], uuid[6:8], uuid[8:10], uuid[10:]), nil
+}
+
+func randomString(strlen int) string {
+	randMath.Seed(time.Now().UTC().UnixNano())
+	const chars = "abcdefghijklmnopqrstuvwxyz0123456789"
+	result := make([]byte, strlen)
+	for i := 0; i < strlen; i++ {
+		result[i] = chars[randMath.Intn(len(chars))]
+	}
+	return string(result)
 }
