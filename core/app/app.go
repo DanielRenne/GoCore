@@ -283,12 +283,22 @@ func PublishWebSocketJSON(key string, v interface{}) {
 
 func deleteWebSocket(c *WebSocketConnection) {
 	WebSocketConnections.Lock()
-	for i, wsConn := range WebSocketConnections.Connections {
+
+	for i := 0; i < len(WebSocketConnections.Connections); i++ {
+		wsConn := WebSocketConnections.Connections[i]
 		if wsConn.Id == c.Id {
 			log.Println("Removing Socket")
 			WebSocketConnections.Connections = removeWebSocket(WebSocketConnections.Connections, i)
+			i--
 		}
 	}
+
+	// for i, wsConn := range WebSocketConnections.Connections {
+	// 	if wsConn.Id == c.Id {
+	// 		log.Println("Removing Socket")
+	// 		WebSocketConnections.Connections = removeWebSocket(WebSocketConnections.Connections, i)
+	// 	}
+	// }
 
 	WebSocketConnections.Unlock()
 }
