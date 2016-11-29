@@ -35,6 +35,11 @@ type WebSocketCallbackSync struct {
 	callbacks []WebSocketCallback
 }
 
+type WebSocketPubSubPayload struct {
+	Key     string      `json:"Key"`
+	Content interface{} `json:"Content"`
+}
+
 type WebSocketCallback func(conn *WebSocketConnection, c *gin.Context, messageType int, data []byte)
 
 var upgrader = websocket.Upgrader{
@@ -253,6 +258,23 @@ func BroadcastWebSocketJSON(v interface{}) {
 		go func() {
 			ws.Lock()
 			ws.Connection.WriteJSON(v)
+			ws.Unlock()
+		}()
+	}
+	WebSocketConnections.RUnlock()
+}
+
+func PublishWebSocketJSON(key string, v interface{}) {
+	var payload WebSocketPubSubPayload
+	payload.Key = key
+	payload.Content = v
+
+	WebSocketConnections.RLock()
+	for _, wsConn := range WebSocketConnections.Connections {
+		ws := wsConn
+		go func() {
+			ws.Lock()
+			ws.Connection.WriteJSON(payload)
 			ws.Unlock()
 		}()
 	}
