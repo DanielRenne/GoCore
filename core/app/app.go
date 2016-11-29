@@ -35,7 +35,7 @@ type WebSocketCallbackSync struct {
 	callbacks []WebSocketCallback
 }
 
-type WebSocketCallback func(conn *WebSocketConnection, messageType int, data []byte)
+type WebSocketCallback func(conn *WebSocketConnection, c *gin.Context, messageType int, data []byte)
 
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
@@ -68,7 +68,7 @@ func Run() {
 		ginServer.Router.Static("/web", serverSettings.APP_LOCATION+"/web")
 
 		ginServer.Router.GET("/ws", func(c *gin.Context) {
-			webSocketHandler(c.Writer, c.Request)
+			webSocketHandler(c.Writer, c.Request, c)
 		})
 	}
 
@@ -86,7 +86,7 @@ func Run() {
 
 }
 
-func webSocketHandler(w http.ResponseWriter, r *http.Request) {
+func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context) {
 
 	log.Println("Web Socket Connection")
 	conn, err := upgrader.Upgrade(w, r, nil)
@@ -117,7 +117,7 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request) {
 					WebSocketCallbacks.RLock()
 					log.Println(string(p[:]))
 					for _, callback := range WebSocketCallbacks.callbacks {
-						callback(wsConn, messageType, p)
+						callback(wsConn, c, messageType, p)
 					}
 					WebSocketCallbacks.RUnlock()
 				}()
