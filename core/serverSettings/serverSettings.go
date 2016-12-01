@@ -44,6 +44,9 @@ type info struct {
 type Application struct {
 	Name                        string        `json:"name"`
 	Domain                      string        `json:"domain"`
+	VersionNumeric              int           `json:"versionNumeric"`
+	VersionDot                  string        `json:"versionDot"`
+	ProductName                 string        `json:"productName"`
 	HttpPort                    int           `json:"httpPort"`
 	HttpsPort                   int           `json:"httpsPort"`
 	ReleaseMode                 string        `json:"releaseMode"`

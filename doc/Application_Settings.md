@@ -94,6 +94,28 @@ Tells the application to debug and run GIN http routing into release mode.  "rel
 
 Tells the application only route web service paths.  NO static file routing will be enabled when set to true.
 
+####productName
+
+A short name (usually not human with spaces).  Can be used to control which bootstrap information to seed based on the webConfig.json
+
+####versionNumeric
+
+This is used primarily for bootstrapping data with the BootstrapMeta struct to tag your seeds with how you want them to run
+
+```
+type BootstrapMeta struct {
+	Version     int    `json:"Version" bson:"Version"`
+	Domain      string `json:"Domain" bson:"Domain"`
+	ReleaseMode string `json:"ReleaseMode" bson:"ReleaseMode"`
+	InfoTitle   string `json:"PostCode" bson:"PostCode"`
+	DeleteRow   bool   `json:"DeleteRow" bson:"DeleteRow"`
+}
+```
+
+####versionDot
+
+Useful to show the users a dot-based version
+
 ####info
 
 Tells the application details about the application for swagger.io information and schema.

@@ -109,6 +109,7 @@ func (self *core_debug) Dump(valuesOriginal ...interface{}) {
 	for _, value := range valuesOriginal {
 		Logger.Print(self.DumpBase(value))
 	}
+	Logger.Print(self.ThrowAndPrintError())
 	Logger.Println("!!!!!!!!!!!!! ENDDEBUG " + t.String() + "!!!!!!!!!!!!!")
 }
 
@@ -116,6 +117,7 @@ func (self *core_debug) GetDump(valuesOriginal ...interface{}) (output string) {
 	for _, value := range valuesOriginal {
 		output += self.DumpBase(value)
 	}
+	output += self.ThrowAndPrintError()
 	return output
 }
 
@@ -126,7 +128,6 @@ func (self *core_debug) DumpBase(values ...interface{}) (output string) {
 		var jsonString string
 		var err error
 		var structKeys []string
-		output += self.ThrowAndPrintError()
 		if Logger != nil {
 			for _, value := range values {
 				isAllJSON := true
@@ -199,7 +200,10 @@ func (self *core_debug) ThrowAndPrintError() (output string) {
 		if strings.Index(finalLineOfCode, "Desc->Caller for Query") == -1 {
 			output += "\nDump Caller (" + fileName + ":" + lineNumber + "):"
 			output += "\n---------------"
-			output += "\n goline ==> " + strings.TrimSpace(stack[8])
+			//output += strings.Join(stack, ",")
+			output += "\n golines ==> " + strings.TrimSpace(stack[6])
+			output += "\n         ==> " + strings.TrimSpace(stack[7])
+			output += "\n         ==> " + strings.TrimSpace(stack[8])
 			output += "\n---------------"
 			output += "\n"
 			output += "\n"

@@ -48,6 +48,15 @@ type collection interface {
 	Query() *Query
 }
 
+type BootstrapMeta struct {
+	Version      int    `json:"Version" bson:"Version"`
+	Domain       string `json:"Domain" bson:"Domain"`
+	ReleaseMode  string `json:"ReleaseMode" bson:"ReleaseMode"`
+	ProductName  string `json:"ProductName" bson:"ProductName"`
+	DeleteRow    bool   `json:"DeleteRow" bson:"DeleteRow"`
+	AlwaysUpdate bool   `json:"AlwaysUpdate" bson:"AlwaysUpdate"`
+}
+
 type tQueue struct {
 	sync.RWMutex
 	queue map[string]*transactionsToPersist

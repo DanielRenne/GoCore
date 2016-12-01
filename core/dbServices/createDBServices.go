@@ -8,6 +8,8 @@ import (
 	"github.com/DanielRenne/GoCore/core/serverSettings"
 	// "fmt"
 	"encoding/base64"
+	"github.com/davidrenne/heredoc"
+	"github.com/fatih/color"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -15,8 +17,6 @@ import (
 	"sort"
 	"strings"
 	"sync"
-
-	"github.com/fatih/color"
 )
 
 type FieldValidation struct {
@@ -682,6 +682,8 @@ func genNoSQLSchema(collectionName string, schema NOSQLSchema, driver string, sc
 
 	//Add Validation
 	if seed == 0 {
+		val += "\n"
+		val += "BootstrapMeta          *BootstrapMeta             `json:\"BootstrapMeta\" bson:\"-\"`\n\n"
 		val += "\n"
 		val += "Errors struct{\n"
 
@@ -1515,29 +1517,49 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 	case DATABASE_DRIVER_BOLTDB:
 		val += ""
 	case DATABASE_DRIVER_MONGODB:
-		val += "var isError bool\n"
-		val += "for _, doc := range v{\n\n"
+		val += heredoc.Docf(`
+		var isError bool
+		for _, doc := range v {
+			var original %s
+			err = %s.Query().ById(doc.Id, &original)
+			if err != nil || (err == nil && doc.BootstrapMeta != nil && doc.BootstrapMeta.AlwaysUpdate) {
+				if doc.BootstrapMeta != nil && doc.BootstrapMeta.DeleteRow {
+					err = doc.Delete()
+					if err != nil {
+						log.Println("Failed to delete data for %s:  " + doc.Id.Hex() + "  " + err.Error())
+						isError = true
+					}
+				} else {
+					valid := 0x01
+					if doc.BootstrapMeta != nil && doc.BootstrapMeta.Version > 0 && doc.BootstrapMeta.Version <= serverSettings.WebConfig.Application.VersionNumeric {
+						valid &= 0x00
+					}
+					if doc.BootstrapMeta != nil && doc.BootstrapMeta.Domain != "" && doc.BootstrapMeta.Domain != serverSettings.WebConfig.Application.Domain {
+						valid &= 0x00
+					}
+					if doc.BootstrapMeta != nil && doc.BootstrapMeta.ProductName != "" && doc.BootstrapMeta.ProductName != serverSettings.WebConfig.Application.ProductName {
+						valid &= 0x00
+					}
+					if doc.BootstrapMeta != nil && doc.BootstrapMeta.ReleaseMode != "" && doc.BootstrapMeta.ReleaseMode != serverSettings.WebConfig.Application.ReleaseMode {
+						valid &= 0x00
+					}
 
-		val += "var original " + strings.Title(schema.Name) + "\n"
-		val += "err = " + strings.Title(collection.Name) + ".Query().ById(doc.Id, &original)\n"
-
-		val += "if err != nil {\n"
-
-		val += "err = doc.Save()\n"
-		val += "	if err != nil {\n"
-		val += "		log.Println(\"Failed to bootstrap data for " + strings.Title(schema.Name) + ":  \" + doc.Id.Hex() + \"  \" + err.Error())\n"
-		val += "isError = true\n"
-		val += "	}\n"
-		val += "}\n"
-
-		// val += "	log.Printf(\"%+v\\n\", doc)\n\n"
-		val += "}\n"
-		val += "if isError{\n"
-		val += "	log.Println(\"FAILED to bootstrap " + strings.Title(collection.Name) + "\")\n"
-		val += "}else{\n"
-		val += "	log.Println(\"Successfully bootstraped " + strings.Title(collection.Name) + "\")\n"
-		val += "}\n\n"
-
+					if valid == 0x01 {
+						err = doc.Save()
+						if err != nil {
+							log.Println("Failed to bootstrap data for %s:  " + doc.Id.Hex() + "  " + err.Error())
+							isError = true
+						}
+					}
+				}
+			}
+		}
+		if isError {
+			log.Println("FAILED to bootstrap %s")
+		} else {
+			log.Println("Successfully bootstraped %s")
+		}
+`, strings.Title(schema.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name))
 	}
 	val += "return nil"
 	val += "}\n\n"
