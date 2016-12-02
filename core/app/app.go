@@ -93,7 +93,7 @@ func Run() {
 
 func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context) {
 
-	log.Println("Web Socket Connection")
+	//log.Println("Web Socket Connection")
 	conn, err := upgrader.Upgrade(w, r, nil)
 
 	if err != nil {
@@ -287,7 +287,7 @@ func deleteWebSocket(c *WebSocketConnection) {
 	for i := 0; i < len(WebSocketConnections.Connections); i++ {
 		wsConn := WebSocketConnections.Connections[i]
 		if wsConn.Id == c.Id {
-			log.Println("Removing Socket")
+			//log.Println("Removing Socket")
 			WebSocketConnections.Connections = removeWebSocket(WebSocketConnections.Connections, i)
 			i--
 		}

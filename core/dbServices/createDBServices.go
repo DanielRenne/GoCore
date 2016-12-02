@@ -448,7 +448,7 @@ func generateNoSQLModel(schema NOSQLSchema, collection NOSQLCollection, driver s
 	case DATABASE_DRIVER_BOLTDB:
 		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "encoding/json", "github.com/asdine/storm", timeImport})
 	case DATABASE_DRIVER_MONGODB:
-		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "github.com/DanielRenne/GoCore/core/serverSettings", "encoding/json", "gopkg.in/mgo.v2", "gopkg.in/mgo.v2/bson", "log", "time", "errors", "encoding/base64", "reflect"})
+		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "github.com/DanielRenne/GoCore/core/serverSettings", "encoding/json", "gopkg.in/mgo.v2", "gopkg.in/mgo.v2/bson", "log", "time", "errors", "encoding/base64", "reflect", "github.com/DanielRenne/GoCore/core/utils"})
 		// val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "encoding/json", "gopkg.in/mgo.v2/bson", "log", "time"})
 	}
 
@@ -1537,7 +1537,13 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 					if doc.BootstrapMeta != nil && doc.BootstrapMeta.Domain != "" && doc.BootstrapMeta.Domain != serverSettings.WebConfig.Application.Domain {
 						valid &= 0x00
 					}
+					if doc.BootstrapMeta != nil && len(doc.BootstrapMeta.Domains) > 0 && utils.InArray(serverSettings.WebConfig.Application.Domain, doc.BootstrapMeta.Domains) {
+						valid &= 0x00
+					}
 					if doc.BootstrapMeta != nil && doc.BootstrapMeta.ProductName != "" && doc.BootstrapMeta.ProductName != serverSettings.WebConfig.Application.ProductName {
+						valid &= 0x00
+					}
+					if doc.BootstrapMeta != nil && len(doc.BootstrapMeta.ProductNames) > 0 &&  utils.InArray(serverSettings.WebConfig.Application.ProductName, doc.BootstrapMeta.ProductNames) {
 						valid &= 0x00
 					}
 					if doc.BootstrapMeta != nil && doc.BootstrapMeta.ReleaseMode != "" && doc.BootstrapMeta.ReleaseMode != serverSettings.WebConfig.Application.ReleaseMode {
