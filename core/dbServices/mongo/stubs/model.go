@@ -3,18 +3,16 @@ package model
 import (
 	"encoding/base64"
 	"errors"
-	"reflect"
-	"strings"
-	"sync"
-	"time"
-
-	"fmt"
 	"github.com/DanielRenne/GoCore/core/dbServices"
 	"github.com/DanielRenne/GoCore/core/extensions"
 	"github.com/DanielRenne/GoCore/core/serverSettings"
 	"github.com/asaskevich/govalidator"
 	"github.com/fatih/camelcase"
 	"gopkg.in/mgo.v2/bson"
+	"reflect"
+	"strings"
+	"sync"
+	"time"
 )
 
 const (
