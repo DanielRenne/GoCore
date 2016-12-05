@@ -320,8 +320,7 @@ func Reflect(obj interface{}) []Field {
 
 	for i := 0; i < val.NumField(); i++ {
 		typeField := val.Type().Field(i)
-		if typeField.Name != "Errors" && typeField.Name != "Joins" && typeField.Name != "Id" {
-			fmt.Sprintf("%+v", typeField.Name)
+		if typeField.Name != "Errors" && typeField.Name != "Joins" && typeField.Name != "BootstrapMeta" && typeField.Name != "Id" {
 			if typeField.Name == "Views" {
 				for f := 0; f < val.FieldByName("Views").NumField(); f++ {
 					field := Field{}
