@@ -51,7 +51,7 @@ var WebSocketConnections WebSocketConnectionCollection
 var WebSocketCallbacks WebSocketCallbackSync
 
 func Initialize(path string) {
-	serverSettings.Initialize(path)
+	serverSettings.Initialize(path, "webConfig.json")
 	dbServices.Initialize()
 
 	if serverSettings.WebConfig.Application.ReleaseMode == "release" {

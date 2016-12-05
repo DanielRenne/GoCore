@@ -81,7 +81,7 @@ var APP_LOCATION string
 var GOCORE_PATH string
 var SWAGGER_UI_PATH string
 
-func Initialize(path string) {
+func Initialize(path string, configurationFile string) {
 
 	APP_LOCATION = path
 	SWAGGER_UI_PATH = APP_LOCATION + "/web/swagger/dist"
@@ -89,7 +89,7 @@ func Initialize(path string) {
 
 	fmt.Println("core serverSettings initialized.")
 
-	jsonData, err := ioutil.ReadFile(APP_LOCATION + "/webConfig.json")
+	jsonData, err := ioutil.ReadFile(APP_LOCATION + "/" + configurationFile)
 	if err != nil {
 		fmt.Println("Reading of webConfig.json failed:  " + err.Error())
 		return

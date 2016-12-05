@@ -6,9 +6,9 @@ import (
 	"github.com/DanielRenne/GoCore/core/serverSettings"
 )
 
-func Initialize(path string) {
+func Initialize(path string, fileName string) {
 
-	serverSettings.Initialize(path)
+	serverSettings.Initialize(path, fileName)
 	dbServices.Initialize()
 	appGen.GenerateApp()
 	dbServices.RunDBCreate()
