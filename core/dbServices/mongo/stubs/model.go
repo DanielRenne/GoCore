@@ -8,7 +8,9 @@ import (
 	"sync"
 	"time"
 
+	"fmt"
 	"github.com/DanielRenne/GoCore/core/dbServices"
+	"github.com/DanielRenne/GoCore/core/extensions"
 	"github.com/DanielRenne/GoCore/core/serverSettings"
 	"github.com/asaskevich/govalidator"
 	"github.com/fatih/camelcase"
@@ -319,6 +321,7 @@ func Reflect(obj interface{}) []Field {
 	for i := 0; i < val.NumField(); i++ {
 		typeField := val.Type().Field(i)
 		if typeField.Name != "Errors" && typeField.Name != "Joins" && typeField.Name != "Id" {
+			fmt.Sprintf("%+v", typeField.Name)
 			if typeField.Name == "Views" {
 				for f := 0; f < val.FieldByName("Views").NumField(); f++ {
 					field := Field{}
@@ -335,15 +338,15 @@ func Reflect(obj interface{}) []Field {
 					field.DataType = val.FieldByName("Views").Type().Field(f).Type.Name()
 					validate := val.FieldByName("Views").Type().Field(f).Tag.Get("validate")
 					if validate != "" {
-						//core.Debug.Dump(validate)
-						//parts := strings.Split(validate, ",")
-						//field.Validation.Required = true//extensions.StringToBool(parts[0])
-						//field.Validation.Type = parts[1]
-						//field.Validation.Min = parts[2]
-						//field.Validation.Max = parts[3]
-						//field.Validation.Length = parts[4]
-						//field.Validation.LengthMax = parts[4]
-						//field.Validation.LengthMin = parts[5]
+						field.Validation = &dbServices.FieldValidation{}
+						parts := strings.Split(validate, ",")
+						field.Validation.Required = extensions.StringToBool(parts[0])
+						field.Validation.Type = parts[1]
+						field.Validation.Min = parts[2]
+						field.Validation.Max = parts[3]
+						field.Validation.Length = parts[4]
+						field.Validation.LengthMax = parts[5]
+						field.Validation.LengthMin = parts[6]
 					}
 					ret = append(ret, field)
 				}
@@ -351,16 +354,15 @@ func Reflect(obj interface{}) []Field {
 				field := Field{}
 				validate := typeField.Tag.Get("validate")
 				if validate != "" {
-					//core.Debug.Dump(validate)
-					//parts := strings.Split(validate, ",")
-					//core.Debug.Dump(extensions.StringToBool(parts[0]))
-					//field.Validation.Required = extensions.StringToBool(parts[0])
-					//field.Validation.Type = parts[1]
-					//field.Validation.Min = parts[2]
-					//field.Validation.Max = parts[3]
-					//field.Validation.Length = parts[4]
-					//field.Validation.LengthMax = parts[4]
-					//field.Validation.LengthMin = parts[5]
+					field.Validation = &dbServices.FieldValidation{}
+					parts := strings.Split(validate, ",")
+					field.Validation.Required = extensions.StringToBool(parts[0])
+					field.Validation.Type = parts[1]
+					field.Validation.Min = parts[2]
+					field.Validation.Max = parts[3]
+					field.Validation.Length = parts[4]
+					field.Validation.LengthMax = parts[5]
+					field.Validation.LengthMin = parts[6]
 				}
 				name := typeField.Name
 				namePart := camelcase.Split(name)
