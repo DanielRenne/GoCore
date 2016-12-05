@@ -44,6 +44,7 @@ type info struct {
 type Application struct {
 	Name                        string        `json:"name"`
 	Domain                      string        `json:"domain"`
+	ServerFQDN                  string        `json:"serverFQDN"`
 	VersionNumeric              int           `json:"versionNumeric"`
 	VersionDot                  string        `json:"versionDot"`
 	ProductName                 string        `json:"productName"`

@@ -82,6 +82,10 @@ At the root of application there are the following fields:
 
 Tells the application which domain to redirect https traffic to.
 
+####serverFQDN
+
+Currently only used for bootstrap purposes to compare domainName where you want your data inserted
+
 ####httpPort, httpsPort
 
 Tells the application which ports to listen on for http and https.

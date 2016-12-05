@@ -1534,16 +1534,16 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 					if doc.BootstrapMeta != nil && doc.BootstrapMeta.Version > 0 && doc.BootstrapMeta.Version <= serverSettings.WebConfig.Application.VersionNumeric {
 						valid &= 0x00
 					}
-					if doc.BootstrapMeta != nil && doc.BootstrapMeta.Domain != "" && doc.BootstrapMeta.Domain != serverSettings.WebConfig.Application.Domain {
+					if doc.BootstrapMeta != nil && doc.BootstrapMeta.Domain != "" && doc.BootstrapMeta.Domain != serverSettings.WebConfig.Application.ServerFQDN {
 						valid &= 0x00
 					}
-					if doc.BootstrapMeta != nil && len(doc.BootstrapMeta.Domains) > 0 && utils.InArray(serverSettings.WebConfig.Application.Domain, doc.BootstrapMeta.Domains) {
+					if doc.BootstrapMeta != nil && len(doc.BootstrapMeta.Domains) > 0 && !utils.InArray(serverSettings.WebConfig.Application.ServerFQDN, doc.BootstrapMeta.Domains) {
 						valid &= 0x00
 					}
 					if doc.BootstrapMeta != nil && doc.BootstrapMeta.ProductName != "" && doc.BootstrapMeta.ProductName != serverSettings.WebConfig.Application.ProductName {
 						valid &= 0x00
 					}
-					if doc.BootstrapMeta != nil && len(doc.BootstrapMeta.ProductNames) > 0 &&  utils.InArray(serverSettings.WebConfig.Application.ProductName, doc.BootstrapMeta.ProductNames) {
+					if doc.BootstrapMeta != nil && len(doc.BootstrapMeta.ProductNames) > 0 &&  !utils.InArray(serverSettings.WebConfig.Application.ProductName, doc.BootstrapMeta.ProductNames) {
 						valid &= 0x00
 					}
 					if doc.BootstrapMeta != nil && doc.BootstrapMeta.ReleaseMode != "" && doc.BootstrapMeta.ReleaseMode != serverSettings.WebConfig.Application.ReleaseMode {
