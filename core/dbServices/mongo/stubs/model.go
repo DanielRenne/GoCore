@@ -3,16 +3,18 @@ package model
 import (
 	"encoding/base64"
 	"errors"
+	"fmt"
+	"reflect"
+	"strings"
+	"sync"
+	"time"
+
 	"github.com/DanielRenne/GoCore/core/dbServices"
 	"github.com/DanielRenne/GoCore/core/extensions"
 	"github.com/DanielRenne/GoCore/core/serverSettings"
 	"github.com/asaskevich/govalidator"
 	"github.com/fatih/camelcase"
 	"gopkg.in/mgo.v2/bson"
-	"reflect"
-	"strings"
-	"sync"
-	"time"
 )
 
 const (
@@ -379,6 +381,15 @@ func Reflect(obj interface{}) []Field {
 }
 
 func JoinEntity(collectionQ *Query, y interface{}, j join, id string, fieldToSet reflect.Value, remainingRecursions string, q *Query, endRecursion bool, recursionCount int) (err error) {
+
+	defer func() {
+		if r := recover(); r != nil {
+			msg := "Panic Recovered at model.JoinEntity:  Failed to join " + j.joinSchemaName + " with id:" + id + "  Error:" + fmt.Sprintf("%+v", r)
+			err = errors.New(msg)
+			return
+		}
+	}()
+
 	if IsZeroOfUnderlyingType(fieldToSet.Interface()) || j.isMany {
 
 		if j.isMany {
