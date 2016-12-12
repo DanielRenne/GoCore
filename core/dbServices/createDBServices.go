@@ -8,8 +8,6 @@ import (
 	"github.com/DanielRenne/GoCore/core/serverSettings"
 	// "fmt"
 	"encoding/base64"
-	"github.com/davidrenne/heredoc"
-	"github.com/fatih/color"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -17,6 +15,9 @@ import (
 	"sort"
 	"strings"
 	"sync"
+
+	"github.com/davidrenne/heredoc"
+	"github.com/fatih/color"
 )
 
 type FieldValidation struct {
@@ -110,7 +111,8 @@ type NOSQLSchemaDB struct {
 }
 
 type entityList struct {
-	Constants []string
+	Constants     []string
+	JoinConstants []string
 }
 
 type collectionsSet struct {
@@ -760,6 +762,13 @@ func genNoSQLSchema(collectionName string, schema NOSQLSchema, driver string, sc
 					extensions.BoolToString(field.Join.IsMany) + "," +
 					strings.Title(field.Join.ForeignFieldName) +
 					"\"`\n"
+
+				allCollections.Lock()
+				entityConsts := allCollections.Entities[strings.Title(schema.Name)]
+				entityConsts.JoinConstants = append(entityConsts.JoinConstants, strings.Title(field.Name))
+				allCollections.Entities[strings.Title(schema.Name)] = entityConsts
+				allCollections.Unlock()
+
 			}
 		}
 
@@ -780,15 +789,15 @@ func genNoSQLValidationRecusion(schema NOSQLSchema) string {
 	val := ""
 	for _, field := range schema.Fields {
 		if field.Type == "object" {
-			val += strings.Title(field.Name) + "struct{\n"
+			val += strings.Title(field.Name) + " struct{\n"
 			val += genNoSQLValidationRecusion(field.Schema)
-			val += "} `json:\"" + strings.Title(field.Name) + "\""
+			val += "} `json:\"" + strings.Title(field.Name) + "\"`\n"
 			continue
 		}
 		if field.Type == "objectArray" {
-			val += strings.Title(field.Name) + "[]struct{\n"
+			val += strings.Title(field.Name) + " []struct{\n"
 			val += genNoSQLValidationRecusion(field.Schema)
-			val += "} `json:\"" + strings.Title(field.Name) + "\""
+			val += "} `json:\"" + strings.Title(field.Name) + "\"`\n"
 			continue
 		}
 
