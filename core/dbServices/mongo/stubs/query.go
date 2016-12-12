@@ -508,6 +508,23 @@ func (self *Query) GetOrCreate(x interface{}, t *Transaction) (err error) {
 	return
 }
 
+func (self *Query) TotalRows() int {
+	if !serverSettings.WebConfig.Application.LogQueries && serverSettings.WebConfig.Application.LogQueryTimes {
+		defer golog.TimeTrackQuery(time.Now(), "q.TotalRows()", self.collection, self.m, self.q)
+	} else if serverSettings.WebConfig.Application.LogQueries {
+		defer golog.TimeTrack(time.Now(), "q.TotalRows()")
+	}
+
+	q := self.generateQuery()
+
+	if !self.stopLog && serverSettings.WebConfig.Application.LogQueries {
+		self.LogQuery("q.Length()")
+	}
+	count, _ := q.Count()
+
+	return count
+}
+
 func (self *Query) Count() (int, error) {
 	if !serverSettings.WebConfig.Application.LogQueries && serverSettings.WebConfig.Application.LogQueryTimes {
 		defer golog.TimeTrackQuery(time.Now(), "q.Count()", self.collection, self.m, self.q)
