@@ -122,61 +122,59 @@ func (self *core_debug) GetDump(valuesOriginal ...interface{}) (output string) {
 }
 
 func (self *core_debug) DumpBase(values ...interface{}) (output string) {
-	if serverSettings.WebConfig.Application.FlushCoreDebugToStandardOut {
-		//golog "github.com/DanielRenne/GoCore/core/log"
-		//defer golog.TimeTrack(time.Now(), "Dump")
-		var jsonString string
-		var err error
-		var structKeys []string
-		if Logger != nil {
-			for _, value := range values {
-				isAllJSON := true
-				var kind string
-				kind = strings.TrimSpace(fmt.Sprintf("%T", value))
-				var pieces = strings.Split(kind, " ")
-				if pieces[0] == "struct" || strings.Index(pieces[0], "model.") != -1 || strings.Index(pieces[0], "viewModel.") != -1 {
-					kind = reflections.ReflectKind(value)
-					structKeys, err = reflections.FieldsDeep(value)
-					if err == nil {
-						for _, field := range structKeys {
-							jsonString, err = reflections.GetFieldTag(value, field, "json")
-							if err != nil {
-								isAllJSON = false
-							}
-							if jsonString == "" {
-								isAllJSON = false
-							}
+	//golog "github.com/DanielRenne/GoCore/core/log"
+	//defer golog.TimeTrack(time.Now(), "Dump")
+	var jsonString string
+	var err error
+	var structKeys []string
+	if Logger != nil {
+		for _, value := range values {
+			isAllJSON := true
+			var kind string
+			kind = strings.TrimSpace(fmt.Sprintf("%T", value))
+			var pieces = strings.Split(kind, " ")
+			if pieces[0] == "struct" || strings.Index(pieces[0], "model.") != -1 || strings.Index(pieces[0], "viewModel.") != -1 {
+				kind = reflections.ReflectKind(value)
+				structKeys, err = reflections.FieldsDeep(value)
+				if err == nil {
+					for _, field := range structKeys {
+						jsonString, err = reflections.GetFieldTag(value, field, "json")
+						if err != nil {
+							isAllJSON = false
 						}
-					} else {
-						isAllJSON = false
+						if jsonString == "" {
+							isAllJSON = false
+						}
 					}
 				} else {
 					isAllJSON = false
 				}
-				if isAllJSON || kind == "map" || kind == "bson.M" || kind == "slice" {
-					var rawBytes []byte
-					rawBytes, err = json.MarshalIndent(value, "", "\t")
-					if err == nil {
-						value = string(rawBytes[:])
-					}
-					output += "\n" + fmt.Sprintf("%s: %+v\n", kind, value)
-				} else {
-					if strings.TrimSpace(kind) == "string" {
-						var stringVal = value.(string)
-						position := strings.Index(stringVal, "Desc->")
-						if position == -1 {
-							output += "\n" + fmt.Sprintf("%s:", kind)
-							for _, tmp := range strings.Split(stringVal, "\\n") {
-								output += "\n" + tmp
-							}
-							output += "\n"
-							output += "\n"
-						} else {
-							output += stringVal[6:] + " --> "
+			} else {
+				isAllJSON = false
+			}
+			if isAllJSON || kind == "map" || kind == "bson.M" || kind == "slice" {
+				var rawBytes []byte
+				rawBytes, err = json.MarshalIndent(value, "", "\t")
+				if err == nil {
+					value = string(rawBytes[:])
+				}
+				output += "\n" + fmt.Sprintf("%s: %+v\n", kind, value)
+			} else {
+				if strings.TrimSpace(kind) == "string" {
+					var stringVal = value.(string)
+					position := strings.Index(stringVal, "Desc->")
+					if position == -1 {
+						output += "\n" + fmt.Sprintf("%s:", kind)
+						for _, tmp := range strings.Split(stringVal, "\\n") {
+							output += "\n" + tmp
 						}
+						output += "\n"
+						output += "\n"
 					} else {
-						output += "\n" + fmt.Sprintf("%s: %+v\n\n", kind, value)
+						output += stringVal[6:] + " --> "
 					}
+				} else {
+					output += "\n" + fmt.Sprintf("%s: %+v\n\n", kind, value)
 				}
 			}
 		}

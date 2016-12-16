@@ -42,32 +42,31 @@ type info struct {
 }
 
 type Application struct {
-	Name                        string        `json:"name"`
-	Domain                      string        `json:"domain"`
-	ServerFQDN                  string        `json:"serverFQDN"`
-	VersionNumeric              int           `json:"versionNumeric"`
-	VersionDot                  string        `json:"versionDot"`
-	ProductName                 string        `json:"productName"`
-	HttpPort                    int           `json:"httpPort"`
-	HttpsPort                   int           `json:"httpsPort"`
-	ReleaseMode                 string        `json:"releaseMode"`
-	WebServiceOnly              bool          `json:"webServiceOnly"`
-	Info                        info          `json:"info"`
-	HtmlTemplates               htmlTemplates `json:"htmlTemplates"`
-	RootIndexPath               string        `json:"rootIndexPath"`
-	DisableRootIndex            bool          `json:"disableRootIndex"`
-	SessionKey                  string        `json:"sessionKey"`
-	SessionName                 string        `json:"sessionName"`
-	SessionExpirationDays       int           `json:"sessionExpirationDays"`
-	SessionSecureCookie         bool          `json:"sessionSecureCookie"`
-	CSRFSecret                  string        `json:"csrfSecret"`
-	BootstrapData               bool          `json:"bootstrapData"`
-	LogQueries                  bool          `json:"logQueries"`
-	LogQueryStackTraces         bool          `json:"logQueryStackTraces"`
-	LogJoinQueries              bool          `json:"logJoinQueries"`
-	LogQueryTimes               bool          `json:"logQueryTimes"`
-	FlushCoreDebugToStandardOut bool          `json:"flushCoreDebugToStandardOut"`
-	CoreDebugStackTrace         bool          `json:"coreDebugStackTrace"`
+	Name                  string        `json:"name"`
+	Domain                string        `json:"domain"`
+	ServerFQDN            string        `json:"serverFQDN"`
+	VersionNumeric        int           `json:"versionNumeric"`
+	VersionDot            string        `json:"versionDot"`
+	ProductName           string        `json:"productName"`
+	HttpPort              int           `json:"httpPort"`
+	HttpsPort             int           `json:"httpsPort"`
+	ReleaseMode           string        `json:"releaseMode"`
+	WebServiceOnly        bool          `json:"webServiceOnly"`
+	Info                  info          `json:"info"`
+	HtmlTemplates         htmlTemplates `json:"htmlTemplates"`
+	RootIndexPath         string        `json:"rootIndexPath"`
+	DisableRootIndex      bool          `json:"disableRootIndex"`
+	SessionKey            string        `json:"sessionKey"`
+	SessionName           string        `json:"sessionName"`
+	SessionExpirationDays int           `json:"sessionExpirationDays"`
+	SessionSecureCookie   bool          `json:"sessionSecureCookie"`
+	CSRFSecret            string        `json:"csrfSecret"`
+	BootstrapData         bool          `json:"bootstrapData"`
+	LogQueries            bool          `json:"logQueries"`
+	LogQueryStackTraces   bool          `json:"logQueryStackTraces"`
+	LogJoinQueries        bool          `json:"logJoinQueries"`
+	LogQueryTimes         bool          `json:"logQueryTimes"`
+	CoreDebugStackTrace   bool          `json:"coreDebugStackTrace"`
 }
 
 type webConfigObj struct {
