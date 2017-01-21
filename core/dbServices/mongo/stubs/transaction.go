@@ -26,7 +26,7 @@ func init() {
 				initTransactions()
 				return
 			}
-			<-dbServices.WaitForDatabase()
+			time.Sleep(time.Millisecond * 20)
 		}
 	}()
 }

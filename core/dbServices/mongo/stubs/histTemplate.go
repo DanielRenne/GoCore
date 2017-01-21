@@ -24,7 +24,7 @@ func init() {
 				initHistCollection()
 				return
 			}
-			<-dbServices.WaitForDatabase()
+			time.Sleep(time.Millisecond * 20)
 		}
 	}()
 }

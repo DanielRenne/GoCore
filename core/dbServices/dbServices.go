@@ -19,8 +19,6 @@ var DB *sql.DB
 var BoltDB *storm.DB
 var MongoSession *mgo.Session
 var MongoDB *mgo.Database
-var DatabaseInitialized chan int
-var dbInitializedCount int
 
 const (
 
@@ -30,10 +28,6 @@ const (
 	DATABASE_DRIVER_BOLTDB  = "boltDB"
 	DATABASE_DRIVER_MONGODB = "mongoDB"
 )
-
-func init() {
-	DatabaseInitialized = make(chan int, 1)
-}
 
 func Initialize() error {
 
@@ -52,15 +46,10 @@ func Initialize() error {
 	return nil
 }
 
-func WaitForDatabase() chan int {
-	dbInitializedCount++
-	return DatabaseInitialized
-}
-
 func openSQLDriver() error {
 	var err error
 	DB, err = sql.Open(serverSettings.WebConfig.DbConnection.Driver, serverSettings.WebConfig.DbConnection.ConnectionString)
-	notifyDBWaits()
+
 	if err != nil {
 		color.Red("Open connection failed:" + err.Error())
 		return err
@@ -84,7 +73,6 @@ func openBolt() error {
 		color.Red("Failed to create or open boltDB Database at " + myDBDir + ":\n\t" + err.Error())
 		return err
 	}
-	notifyDBWaits()
 
 	color.Cyan("Successfully opened new bolt DB at " + myDBDir)
 	return nil
@@ -103,16 +91,8 @@ func openMongo() error {
 	MongoSession.SetSyncTimeout(2000 * time.Millisecond)
 
 	MongoDB = MongoSession.DB(serverSettings.WebConfig.DbConnection.Database)
-	notifyDBWaits()
 
 	color.Green("Mongo Database Connected Successfully.")
 
 	return nil
-}
-
-func notifyDBWaits() {
-	for i := 0; i < dbInitializedCount; i++ {
-		DatabaseInitialized <- 1
-	}
-	dbInitializedCount = 0
 }
