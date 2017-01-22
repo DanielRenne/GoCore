@@ -1505,22 +1505,36 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 
 	//Now parse the data into an array of the collection
 
-	val += "if dataString == \"\"{\n"
-	val += "	return nil\n"
+	val += "var files [][]byte\n"
+	val += "var err error\n\n"
+
+	val += "files, err = BootstrapDirectory(\"" + extensions.MakeFirstLowerCase(collection.Name) + "\")\n\n"
+	val += "if err != nil {\n"
+	val += "	log.Println(\"Failed to bootstrap data for " + strings.Title(collection.Name) + ":  \" + err.Error())\n"
 	val += "}\n\n"
 
+	val += "if dataString != \"\"{\n"
 	val += "data, err := base64.StdEncoding.DecodeString(dataString)\n"
 	val += "if err != nil{\n"
 	val += "	log.Println(\"Failed to bootstrap data for " + collection.Name + ":  \" + err.Error())\n"
 	val += "	return err\n"
+	val += "}\n"
+	val += "files = append(files, data)"
 	val += "}\n\n"
 
 	val += "var v []" + strings.Title(schema.Name) + "\n"
-	val += "err = json.Unmarshal(data, &v)\n"
+	val += "for _, file := range files{\n"
+	val += "var fileBootstrap []" + strings.Title(schema.Name) + "\n"
+	val += "err = json.Unmarshal(file, &fileBootstrap)\n"
 
 	val += "if err != nil {\n"
 	val += "	log.Println(\"Failed to bootstrap data for " + strings.Title(collection.Name) + ":  \" + err.Error())\n"
 	val += "	return err\n"
+	val += "}\n\n"
+	val += "for i, _ := range fileBootstrap {\n"
+	val += "fb := fileBootstrap[i]\n"
+	val += "v = append(v, fb)\n"
+	val += "}\n"
 	val += "}\n\n"
 
 	switch driver {
