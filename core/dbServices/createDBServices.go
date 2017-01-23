@@ -565,7 +565,8 @@ func genNoSQLCollection(collection NOSQLCollection, schema NOSQLSchema, driver s
 
 	if driver == DATABASE_DRIVER_MONGODB {
 
-		val += "var mongo" + strings.Title(collection.Name) + "Collection *mgo.Collection\n\n"
+		val += "var mongo" + strings.Title(collection.Name) + "Collection *mgo.Collection\n"
+		val += "var mongo" + strings.Title(collection.Name) + "HasBootStrapped bool\n\n"
 
 		val += "func init(){\n"
 		val += "go func() {\n\n"
@@ -574,8 +575,7 @@ func genNoSQLCollection(collection NOSQLCollection, schema NOSQLSchema, driver s
 		val += "init" + strings.Title(collection.Name) + "()\n"
 		val += "return\n"
 		val += "}\n"
-		val += "time.Sleep(time.Millisecond * 20)\n"
-		// val += "<- dbServices.WaitForDatabase()\n"
+		val += "time.Sleep(time.Millisecond * 5)\n"
 		val += "}\n"
 		val += "}()\n"
 		val += "}\n\n"
@@ -924,13 +924,19 @@ func genNoSQLRuntime(collection NOSQLCollection, schema NOSQLSchema, driver stri
 }
 
 func genNOSQLQuery(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
-
-	val := ""
-	val += "func (obj model" + strings.Title(collection.Name) + ") Query() *Query {\n"
-	val += "	var query Query\n"
-	val += "	query.collection = mongo" + strings.Title(collection.Name) + "Collection\n"
-	val += "	return &query\n"
-	val += "}\n"
+	val := heredoc.Docf(`
+	func (obj model%s) Query() *Query {
+		var query Query
+		for {
+			if mongo%sCollection != nil && mongo%sHasBootStrapped {
+				break
+			}
+			time.Sleep(time.Millisecond * 2)
+		}
+		query.collection = mongo%sCollection
+		return &query
+	}
+`,  strings.Title(collection.Name),  strings.Title(collection.Name),  strings.Title(collection.Name),  strings.Title(collection.Name))
 	return val
 }
 
@@ -955,7 +961,7 @@ func genNoSQLSchemaSave(collection NOSQLCollection, schema NOSQLSchema, driver s
 	case DATABASE_DRIVER_BOLTDB:
 		val += "return dbServices.BoltDB.Save(self)\n"
 	case DATABASE_DRIVER_MONGODB:
-		val += "if mongo" + strings.Title(collection.Name) + "Collection == nil{\n"
+		val += "if mongo" + strings.Title(collection.Name) + "Collection == nil {\n"
 		val += "init" + strings.Title(collection.Name) + "()\n"
 		val += "}\n"
 		val += "objectId := bson.NewObjectId()\n"
@@ -983,7 +989,9 @@ func genNoSQLSchemaSaveByTran(collection NOSQLCollection, schema NOSQLSchema, dr
 	case DATABASE_DRIVER_BOLTDB:
 		val += "return dbServices.BoltDB.Save(self)\n"
 	case DATABASE_DRIVER_MONGODB:
-
+		val += "if mongo" + strings.Title(collection.Name) + "Collection == nil {\n"
+		val += "init" + strings.Title(collection.Name) + "()\n"
+		val += "}\n"
 		val += "//Validate the Model first.  If it fails then clean up the transaction in memory\n"
 		val += "err := self.ValidateAndClean()\n"
 		val += "if err != nil {\n"
@@ -1541,11 +1549,16 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 	case DATABASE_DRIVER_BOLTDB:
 		val += ""
 	case DATABASE_DRIVER_MONGODB:
+
+
 		val += heredoc.Docf(`
 		var isError bool
+		var query Query
+		query.collection = mongo%sCollection
+
 		for _, doc := range v {
 			var original %s
-			err = %s.Query().ById(doc.Id, &original)
+			err = query.ById(doc.Id, &original)
 			if err != nil || (err == nil && doc.BootstrapMeta != nil && doc.BootstrapMeta.AlwaysUpdate) {
 				if doc.BootstrapMeta != nil && doc.BootstrapMeta.DeleteRow {
 					err = doc.Delete()
@@ -1589,9 +1602,10 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 		} else {
 			log.Println("Successfully bootstraped %s")
 		}
-`, strings.Title(schema.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name))
+`, strings.Title(collection.Name), strings.Title(schema.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name))
 	}
-	val += "return nil"
+	val += "mongo" + strings.Title(collection.Name) + "HasBootStrapped = true\n"
+	val += "return nil\n"
 	val += "}\n\n"
 	return val
 }

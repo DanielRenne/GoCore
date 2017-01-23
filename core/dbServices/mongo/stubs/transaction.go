@@ -26,7 +26,7 @@ func init() {
 				initTransactions()
 				return
 			}
-			time.Sleep(time.Millisecond * 20)
+			time.Sleep(time.Millisecond * 5)
 		}
 	}()
 }
@@ -72,6 +72,14 @@ type Transaction struct {
 
 func (obj modelTransactions) Query() *Query {
 	var query Query
+
+	for {
+		if mongoTransactionsCollection != nil {
+			break
+		}
+		time.Sleep(time.Millisecond * 2)
+	}
+
 	query.collection = mongoTransactionsCollection
 	return &query
 }
