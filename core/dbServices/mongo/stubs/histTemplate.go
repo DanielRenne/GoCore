@@ -24,7 +24,7 @@ func init() {
 				initHistCollection()
 				return
 			}
-			time.Sleep(time.Millisecond * 20)
+			time.Sleep(time.Millisecond * 5)
 		}
 	}()
 }
@@ -48,6 +48,12 @@ type HistEntity struct {
 
 func (obj modelHistCollection) Query() *Query {
 	var query Query
+	for {
+		if mongoHistCollectionCollection != nil {
+			break
+		}
+		time.Sleep(time.Millisecond * 2)
+	}
 	query.collection = mongoHistCollectionCollection
 	return &query
 }
