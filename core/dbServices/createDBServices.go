@@ -1518,14 +1518,14 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 
 	val += "files, err = BootstrapDirectory(\"" + extensions.MakeFirstLowerCase(collection.Name) + "\")\n\n"
 	val += "if err != nil {\n"
-	val += "	mongoAccountsHasBootStrapped = true"
+	val += "	mongoAccountsHasBootStrapped = true\n"
 	val += "	log.Println(\"Failed to bootstrap data for " + strings.Title(collection.Name) + ":  \" + err.Error())\n"
 	val += "}\n\n"
 
 	val += "if dataString != \"\"{\n"
 	val += "data, err := base64.StdEncoding.DecodeString(dataString)\n"
 	val += "if err != nil{\n"
-	val += "	mongoAccountsHasBootStrapped = true"
+	val += "	mongoAccountsHasBootStrapped = true\n"
 	val += "	log.Println(\"Failed to bootstrap data for " + collection.Name + ":  \" + err.Error())\n"
 	val += "	return err\n"
 	val += "}\n"
@@ -1538,7 +1538,7 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 	val += "err = json.Unmarshal(file, &fileBootstrap)\n"
 
 	val += "if err != nil {\n"
-	val += "	mongoAccountsHasBootStrapped = true"
+	val += "	mongoAccountsHasBootStrapped = true\n"
 	val += "	log.Println(\"Failed to bootstrap data for " + strings.Title(collection.Name) + ":  \" + err.Error())\n"
 	val += "	return err\n"
 	val += "}\n\n"
