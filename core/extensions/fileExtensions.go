@@ -148,6 +148,14 @@ func DoesFileExist(path string) bool {
 	return true
 }
 
+func DoesFileNotExist(path string) bool {
+	if _, err := os.Stat(path); err == nil {
+		// path/to/whatever exists
+		return false
+	}
+	return true
+}
+
 func MD5(path string) (string, error) {
 	hasher := md5.New()
 
@@ -184,6 +192,19 @@ func UnGzipfunc(source, target string) error {
 
 	_, err = io.Copy(writer, archive)
 	return err
+}
+
+func GetFileSize(path string) (size int64, err error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return
+	}
+	fi, err := file.Stat()
+	if err != nil {
+		return
+	}
+	size = fi.Size()
+	return
 }
 
 func UnTar(tarball, target string) error {

@@ -44,6 +44,15 @@ func PrintMegaBytes(bytes int64) string {
 	return fmt.Sprint(FloatToString(megabytes, 2), " MB")
 }
 
+func IsPrintable(s string) bool {
+	for _, c := range s {
+		if c < 32 || c > 126 {
+			return false
+		}
+	}
+	return true
+}
+
 func PrintZettaBytes(bytes int64) string {
 
 	var kilobytes float64
