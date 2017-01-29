@@ -46,7 +46,7 @@ func PrintMegaBytes(bytes int64) string {
 
 func IsPrintable(s string) bool {
 	for _, c := range s {
-		if c < 32 || c > 126 {
+		if (c < 32 || c > 126) && c != 10 && c != 13 {
 			return false
 		}
 	}
