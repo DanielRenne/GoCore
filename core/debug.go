@@ -164,17 +164,15 @@ func (self *core_debug) DumpBase(values ...interface{}) (output string) {
 					var stringVal = value.(string)
 					position := strings.Index(stringVal, "Desc->")
 					if position == -1 {
-						output += "\n" + fmt.Sprintf("%s:", kind)
-						for _, tmp := range strings.Split(stringVal, "\\n") {
-							output += "\n" + tmp
-						}
-						output += "\n"
-						output += "\n"
+						output += fmt.Sprintf("%s [len:%s]: '%s'", kind, extensions.IntToString(len(stringVal)), stringVal)
+						// for _, tmp := range strings.Split(stringVal, "\\n") {
+						// 	output += "\n" + tmp
+						// }
 					} else {
 						output += stringVal[6:] + " --> "
 					}
 				} else {
-					output += "\n" + fmt.Sprintf("%s: %+v\n\n", kind, value)
+					output += fmt.Sprintf("%s: %+v", kind, value)
 				}
 			}
 		}
