@@ -1491,6 +1491,7 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 	val += "func (obj model" + strings.Title(collection.Name) + ") Bootstrap() error {\n"
 
 	val += "if serverSettings.WebConfig.Application.BootstrapData == false {\n"
+	val += "	mongo" + strings.Title(collection.Name) + "HasBootStrapped = true\n"
 	val += "	return nil\n"
 	val += "}\n"
 
