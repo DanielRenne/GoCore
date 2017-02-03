@@ -20,6 +20,12 @@ type dbConnection struct {
 	Database            string `json:"database"`
 	TransactionSizeMax  int    `json:"transactionSizeMax"`
 	AuditHistorySizeMax int    `json:"auditHistorySizeMax"`
+	Replication         struct {
+		Enabled    bool     `json:"enabled"`
+		ReplicaSet string   `json:"replicaSet"`
+		Master     string   `json:"master"`
+		Slaves     []string `json:"slaves"`
+	} `json:"replication"`
 }
 
 type license struct {

@@ -1080,7 +1080,10 @@ func (self *Query) isDBConnectionError(err error) bool {
 		return false
 	}
 
-	if strings.Contains(err.Error(), "Closed explicitly") || strings.Contains(err.Error(), "read: operation timed out") || strings.Contains(err.Error(), "read: connection reset by peer") {
+	if strings.Contains(err.Error(), "Closed explicitly") ||
+		strings.Contains(err.Error(), "read: operation timed out") ||
+		strings.Contains(err.Error(), "read: connection reset by peer") ||
+		strings.Contains(err.Error(), "EOF") {
 		return true
 	}
 	return false

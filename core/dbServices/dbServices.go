@@ -3,6 +3,7 @@ package dbServices
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"os"
 	"path"
 	"time"
@@ -13,6 +14,7 @@ import (
 	"github.com/fatih/color"
 	_ "github.com/go-sql-driver/mysql"
 	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 )
 
 var DB *sql.DB
@@ -80,13 +82,74 @@ func openBolt() error {
 
 func openMongo() error {
 
+	if serverSettings.WebConfig.DbConnection.Replication.Enabled {
+		info := new(mgo.DialInfo)
+		info.Direct = true
+		info.Timeout = time.Millisecond * 3000
+
+		var addresses []string
+		addresses = append(addresses, serverSettings.WebConfig.DbConnection.Replication.Master)
+		// for i, _ := range serverSettings.WebConfig.DbConnection.Replication.Slaves {
+		// 	slave := serverSettings.WebConfig.DbConnection.Replication.Slaves[i]
+		// 	addresses = append(addresses, slave)
+		// }
+		info.Addrs = addresses
+
+		session, err := mgo.DialWithInfo(info)
+		// session, err := mgo.Dial(serverSettings.WebConfig.DbConnection.Replication.SessionConnection)
+		if err != nil { //  if you have a
+			color.Red("Failed to create or open mongo Database to initialize replicaSet at " + serverSettings.WebConfig.DbConnection.Replication.Master + "\n\t" + err.Error())
+		} else {
+			time.Sleep(time.Millisecond * 500)
+			result := Mongo_Result_Repl_Conf{}
+			err = session.DB("admin").Run("replSetGetConfig", &result)
+			if err != nil {
+				color.Red("Failed to get buildInfo:  " + err.Error())
+			} else {
+
+				result.Config.Version = result.Config.Version + 1
+				result.Config.Members[0].Host = serverSettings.WebConfig.DbConnection.Replication.Master
+				result.Config.Members[0].Priority = 1
+				result.Config.Members[0].Votes = 1
+
+				for i, _ := range serverSettings.WebConfig.DbConnection.Replication.Slaves {
+					slaveAddress := serverSettings.WebConfig.DbConnection.Replication.Slaves[i]
+					if len(result.Config.Members) < i+2 {
+						var slave Mongo_Replica_Member
+						slave.Id = i + 1
+						slave.Priority = i + 1
+						slave.Votes = 1
+						slave.Host = slaveAddress
+						result.Config.Members = append(result.Config.Members, slave)
+					} else {
+						result.Config.Members[i+1].Host = slaveAddress
+						result.Config.Members[i+1].Priority = i + 1
+						result.Config.Members[i+1].Votes = 1
+					}
+				}
+
+				result.Config.Settings.HeartbeatTimeoutSecs = 5
+
+				err = session.DB("admin").Run(bson.D{{"replSetReconfig", result.Config}, {"force", true}}, nil)
+				if err != nil {
+					color.Red("Failed to replSetReconfig:  " + err.Error())
+				}
+				log.Println("Successfully initialized replica sets.")
+			}
+		}
+	}
+
 	var err error
 	MongoSession, err = mgo.Dial(serverSettings.WebConfig.DbConnection.ConnectionString) // open an connection -> Dial function
 	if err != nil {                                                                      //  if you have a
-		color.Red("Failed to create or open mongo Database at " + serverSettings.WebConfig.DbConnection.ConnectionString + ":\n\t" + err.Error())
+		color.Red("Failed to create or open mongo Database at " + serverSettings.WebConfig.DbConnection.ConnectionString + "\n\t" + err.Error())
 		return err
 	}
 
+	return connectMongoDB()
+}
+
+func connectMongoDB() error {
 	MongoSession.SetMode(mgo.Monotonic, true) // Optional. Switch the session to a monotonic behavior.
 	MongoSession.SetSyncTimeout(2000 * time.Millisecond)
 
