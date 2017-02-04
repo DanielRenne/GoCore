@@ -43,6 +43,7 @@ type WebSocketPubSubPayload struct {
 type WebSocketCallback func(conn *WebSocketConnection, c *gin.Context, messageType int, data []byte)
 
 var upgrader = websocket.Upgrader{
+	CheckOrigin:     func(r *http.Request) bool { return true },
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 }
