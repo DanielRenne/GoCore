@@ -15,15 +15,17 @@ var Locales = []Locale{
 	{"German", "de"},
 	{"Italian", "it"},
 	{"Swedish", "sv"},
-	{"Romanian", "ro"},
 	{"Portuguese", "pt"},
 	{"Hungarian", "hu"},
 	{"Dutch", "nl"},
-	{"Arabic", "ar"},
-	{"Korean", "ko"},
-	{"Japanese", "ja"},
-	{"Chinese", "zh"},
 }
+
+//
+//{"Romanian", "ro"},
+//{"Arabic", "ar"},
+//{"Korean", "ko"},
+//{"Japanese", "ja"},
+//{"Chinese", "zh"},
 
 func GetDefaultLocale(language string) string {
 	if strings.Contains(language, "en") {
