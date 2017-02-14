@@ -4,10 +4,6 @@ package core
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/DanielRenne/GoCore/core/extensions"
-	"github.com/DanielRenne/GoCore/core/serverSettings"
-	"github.com/davidrenne/reflections"
-	"github.com/go-errors/errors"
 	"log"
 	"os"
 	"reflect"
@@ -15,6 +11,11 @@ import (
 	"runtime/debug"
 	"strings"
 	"time"
+
+	"github.com/DanielRenne/GoCore/core/extensions"
+	"github.com/DanielRenne/GoCore/core/serverSettings"
+	"github.com/davidrenne/reflections"
+	"github.com/go-errors/errors"
 )
 
 type core_debug struct{}
@@ -158,13 +159,13 @@ func (self *core_debug) DumpBase(values ...interface{}) (output string) {
 				if err == nil {
 					value = string(rawBytes[:])
 				}
-				output += "\n" + fmt.Sprintf("%s: %+v\n", kind, value)
+				output += fmt.Sprintf("#### %-39s ####\n%+v", kind, value)
 			} else {
 				if strings.TrimSpace(kind) == "string" {
 					var stringVal = value.(string)
 					position := strings.Index(stringVal, "Desc->")
 					if position == -1 {
-						output += fmt.Sprintf("%s [len:%s]: '%s'", kind, extensions.IntToString(len(stringVal)), stringVal)
+						output += fmt.Sprintf("#### %-20s %-19s####\n\"%s\"", kind, "[len:"+extensions.IntToString(len(stringVal))+"]", stringVal)
 						// for _, tmp := range strings.Split(stringVal, "\\n") {
 						// 	output += "\n" + tmp
 						// }
@@ -172,7 +173,7 @@ func (self *core_debug) DumpBase(values ...interface{}) (output string) {
 						output += stringVal[6:] + " --> "
 					}
 				} else {
-					output += fmt.Sprintf("%s: %+v", kind, value)
+					output += fmt.Sprintf("#### %-39s ####\n%+v", kind, value)
 				}
 			}
 		}
