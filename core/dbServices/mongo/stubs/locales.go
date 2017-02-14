@@ -11,19 +11,23 @@ var Locales = []Locale{
 	{"English", "en"},
 	{"Spanish", "es"},
 	{"French", "fr"},
-	{"Russian", "ru"},
 	{"German", "de"},
 	{"Italian", "it"},
 	{"Swedish", "sv"},
-	{"Romanian", "ro"},
 	{"Portuguese", "pt"},
 	{"Hungarian", "hu"},
 	{"Dutch", "nl"},
-	{"Arabic", "ar"},
-	{"Korean", "ko"},
-	{"Japanese", "ja"},
-	{"Chinese", "zh"},
 }
+
+//
+//{"Romanian", "ro"},
+//{"Arabic", "ar"},
+//{"Korean", "ko"},
+//{"Japanese", "ja"},
+//{"Chinese", "zh"},
+
+// we have this translated but have some latin1 conversion work to do before it would be ready
+//	{"Russian", "ru"},
 
 func GetDefaultLocale(language string) string {
 	if strings.Contains(language, "en") {
