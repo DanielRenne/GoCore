@@ -1513,7 +1513,6 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 	}
 
 	//Now parse the data into an array of the collection
-
 	val += "var files [][]byte\n"
 	val += "var err error\n\n"
 
@@ -1558,6 +1557,19 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 		var isError bool
 		var query Query
 		query.collection = mongo%sCollection
+		`, strings.Title(collection.Name))
+
+		if strings.Title(collection.Name) == "EquipmentCatalog" {
+			val += "var toDelete []Equipment\n"
+			val += "err = query.Filter(Q(\"AccountId\", \"57bfae2bdcba0f7a0be2e763\")).All(&toDelete)\n"
+			val += "if err == nil {\n"
+			val += "	for _, item := range toDelete {\n"
+			val += "		item.Delete()\n"
+			val += "	}\n"
+			val += "}\n"
+		}
+
+		val += heredoc.Docf(`
 
 		for _, doc := range v {
 			var original %s
@@ -1605,7 +1617,7 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 		} else {
 			log.Println("Successfully bootstraped %s")
 		}
-`, strings.Title(collection.Name), strings.Title(schema.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name))
+`, strings.Title(schema.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name))
 	}
 	val += "mongo" + strings.Title(collection.Name) + "HasBootStrapped = true\n"
 	val += "return nil\n"
