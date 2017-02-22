@@ -67,6 +67,7 @@ type view struct {
 type Query struct {
 	q           *mgo.Query
 	m           bson.M
+	o           []bson.M
 	stopLog     bool
 	limit       int
 	skip        int
@@ -172,6 +173,40 @@ func (self *Query) LeftJoin(criteria string) *Query {
 func (self *Query) ToggleLogFlag(toggle bool) *Query {
 	self.stopLog = toggle
 	return self
+}
+
+func (self *Query) Or(criteria map[string]interface{}) *Query {
+
+	val, hasId := criteria["Id"]
+	if hasId {
+
+		objId, err := self.getIdHex(val)
+		if err != nil {
+			self.e = err
+			return self
+		}
+
+		if self.o == nil {
+			self.o = make([]bson.M, 0)
+		}
+
+		self.o[0]["_id"] = objId
+		return self
+	} else {
+
+		if self.o == nil {
+			self.o = make([]bson.M, 0)
+		}
+
+		for key, val := range criteria {
+			if key != "" {
+				self.o = append(self.o, Q(key, self.CheckForObjectId(val)))
+			}
+		}
+
+	}
+	return self
+	//[]bson.M{ bson.M{"uuid":"UUID0"}, bson.M{"name": "Joe"} }
 }
 
 func (self *Query) Filter(criteria map[string]interface{}) *Query {
@@ -1099,6 +1134,8 @@ func (self *Query) generateQuery() *mgo.Query {
 
 	if self.m != nil {
 		q = self.collection.Find(self.m)
+	} else if self.o != nil {
+		q = self.collection.Find(bson.M{"$or": self.o})
 	}
 
 	if self.limit > 0 {

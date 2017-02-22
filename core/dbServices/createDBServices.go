@@ -1552,7 +1552,6 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 	case DATABASE_DRIVER_BOLTDB:
 		val += ""
 	case DATABASE_DRIVER_MONGODB:
-
 		val += heredoc.Docf(`
 		var isError bool
 		var query Query
