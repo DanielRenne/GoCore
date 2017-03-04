@@ -1572,6 +1572,9 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 
 		for _, doc := range v {
 			var original %s
+			if doc.Id.Hex() == "" {
+				doc.Id = bson.NewObjectId()
+			}
 			err = query.ById(doc.Id, &original)
 			if err != nil || (err == nil && doc.BootstrapMeta != nil && doc.BootstrapMeta.AlwaysUpdate) {
 				if doc.BootstrapMeta != nil && doc.BootstrapMeta.DeleteRow {
