@@ -68,6 +68,7 @@ type Query struct {
 	q           *mgo.Query
 	m           bson.M
 	o           []bson.M
+	ao          map[string][]map[string][]bson.M
 	stopLog     bool
 	limit       int
 	skip        int
@@ -206,7 +207,159 @@ func (self *Query) Or(criteria map[string]interface{}) *Query {
 
 	}
 	return self
-	//[]bson.M{ bson.M{"uuid":"UUID0"}, bson.M{"name": "Joe"} }
+}
+
+func (self *Query) GetAndOr() map[string][]map[string][]bson.M {
+	return self.ao
+}
+
+func (self *Query) InitAndOr() *Query {
+	self.ao = nil
+	self.ao = map[string][]map[string][]bson.M{}
+	self.AddAndOr()
+	return self
+}
+
+func (self *Query) AddAndOr() *Query {
+	self.ao["$and"] = append(self.ao["$and"], map[string][]bson.M{
+		"$or": make([]bson.M, 0),
+	})
+	if len(self.ao["$and"]) > 1 {
+		// first index is reserved for search criteria so we always will fill in a stub conditionally when no search is passed.
+		// Other results we should put in something just in case a filter is not passed so we dont have to litter the _id exists hack across all the code
+		self.AndOrFilter(len(self.ao["$and"])-1, Q("_id", Q("$exists", true)))
+	}
+
+	return self
+}
+
+func (self *Query) AddBlankAndOr() *Query {
+	self.ao["$and"] = append(self.ao["$and"], map[string][]bson.M{
+		"$or": make([]bson.M, 0),
+	})
+	return self
+}
+
+func (self *Query) AndOrFilter(index int, criteria map[string]interface{}) *Query {
+	for key, val := range criteria {
+		if key == "Id" {
+			key = "_id"
+		}
+		self.ao["$and"][index]["$or"] = append(self.ao["$and"][index]["$or"], Q(key, val))
+	}
+	return self
+}
+
+func (self *Query) AndOrRange(index int, criteria map[string]Range) *Query {
+	for key, val := range criteria {
+		if key == "Id" {
+			key = "_id"
+		}
+		self.ao["$and"][index]["$or"] = append(self.ao["$and"][index]["$or"], bson.M{"$gte": val.Min, "$lte": val.Max})
+	}
+
+	return self
+}
+
+func (self *Query) AndOrLessThanEqualTo(index int, criteria map[string]Min) *Query {
+	for key, val := range criteria {
+		if key == "Id" {
+			key = "_id"
+		}
+		self.ao["$and"][index]["$or"] = append(self.ao["$and"][index]["$or"], bson.M{"$lte": val.Min})
+	}
+	return self
+}
+
+func (self *Query) AndOrLessThan(index int, criteria map[string]Min) *Query {
+	for key, val := range criteria {
+		if key == "Id" {
+			key = "_id"
+		}
+		self.ao["$and"][index]["$or"] = append(self.ao["$and"][index]["$or"], bson.M{"$lt": val.Min})
+	}
+	return self
+}
+
+func (self *Query) AndOrGreaterThanEqualTo(index int, criteria map[string]Max) *Query {
+	for key, val := range criteria {
+		if key == "Id" {
+			key = "_id"
+		}
+		self.ao["$and"][index]["$or"] = append(self.ao["$and"][index]["$or"], bson.M{"$gte": val.Max})
+	}
+	return self
+}
+
+func (self *Query) AndOrGreaterThan(index int, criteria map[string]Max) *Query {
+	for key, val := range criteria {
+		if key == "Id" {
+			key = "_id"
+		}
+		self.ao["$and"][index]["$or"] = append(self.ao["$and"][index]["$or"], bson.M{"$gt": val.Max})
+	}
+	return self
+}
+
+func (self *Query) AndOrExclude(index int, criteria map[string]interface{}) *Query {
+	self.andOrinNot(index, criteria, "$nin")
+
+	return self
+
+}
+
+func (self *Query) AndOrIn(index int, criteria map[string]interface{}) *Query {
+	self.andOrinNot(index, criteria, "$in")
+	return self
+
+}
+
+func (self *Query) andOrinNot(index int, criteria map[string]interface{}, queryType string) {
+	for key, value := range criteria {
+
+		if key == "Id" {
+			var ids []bson.ObjectId
+
+			k := reflect.TypeOf(value).Kind()
+			if k == reflect.Slice || k == reflect.Array {
+				values := reflect.ValueOf(value)
+
+				for i := 0; i < values.Len(); i++ {
+					val := values.Index(i).Interface()
+					objId, err := self.getIdHex(val)
+					if err != nil {
+						self.e = err
+						continue
+					}
+
+					ids = append(ids, objId)
+				}
+			} else {
+				objId, err := self.getIdHex(value)
+				if err != nil {
+					self.e = err
+					continue
+				}
+
+				ids = append(ids, objId)
+			}
+			self.ao["$and"][index]["$or"] = append(self.ao["$and"][index]["$or"], Q("_id", bson.M{queryType: ids}))
+		} else {
+			var valuesToQuery []interface{}
+
+			k := reflect.TypeOf(value).Kind()
+			if k == reflect.Slice || k == reflect.Array {
+				values := reflect.ValueOf(value)
+				for i := 0; i < values.Len(); i++ {
+					val := values.Index(i).Interface()
+					valuesToQuery = append(valuesToQuery, self.CheckForObjectId(val))
+				}
+			} else {
+				valuesToQuery = append(valuesToQuery, self.CheckForObjectId(value))
+			}
+			self.ao["$and"][index]["$or"] = append(self.ao["$and"][index]["$or"], Q(key, bson.M{queryType: valuesToQuery}))
+		}
+	}
 }
 
 func (self *Query) Filter(criteria map[string]interface{}) *Query {
@@ -323,7 +476,6 @@ func (self *Query) inNot(criteria map[string]interface{}, queryType string) {
 
 			self.m[key] = bson.M{queryType: valuesToQuery}
 		}
-
 	}
 }
 
@@ -1132,7 +1284,10 @@ func (self *Query) generateQuery() *mgo.Query {
 		q = self.q
 	}
 
-	if self.m != nil {
+	if self.ao != nil {
+		core.Debug.Dump(self.ao)
+		q = self.collection.Find(self.ao)
+	} else if self.m != nil {
 		q = self.collection.Find(self.m)
 	} else if self.o != nil {
 		q = self.collection.Find(bson.M{"$or": self.o})
