@@ -98,7 +98,7 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 
 	if err != nil {
-		log.Println(err)
+		log.Println("Failed to upgrade http connection to websocket:  " + err.Error())
 		return
 	}
 
@@ -121,7 +121,6 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context) {
 			if err == nil {
 				go func() {
 					WebSocketCallbacks.RLock()
-					log.Println(string(p[:]))
 					for _, callback := range WebSocketCallbacks.callbacks {
 						callback(wsConn, c, messageType, p)
 					}

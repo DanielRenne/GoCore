@@ -227,7 +227,8 @@ func (self *Query) AddAndOr() *Query {
 	if len(self.ao["$and"]) > 1 {
 		// first index is reserved for search criteria so we always will fill in a stub conditionally when no search is passed.
 		// Other results we should put in something just in case a filter is not passed so we dont have to litter the _id exists hack across all the code
-		self.AndOrFilter(len(self.ao["$and"])-1, Q("_id", Q("$exists", true)))
+
+		self.OrFilter(len(self.ao["$and"])-1, Q("_id", Q("$exists", true)))
 	}
 
 	return self
@@ -240,7 +241,17 @@ func (self *Query) AddBlankAndOr() *Query {
 	return self
 }
 
-func (self *Query) AndOrFilter(index int, criteria map[string]interface{}) *Query {
+func (self *Query) AndFilter(index int, criteria map[string]interface{}) *Query {
+	for key, val := range criteria {
+		if key == "Id" {
+			key = "_id"
+		}
+		self.ao["$and"][index]["$or"] = append(self.ao["$and"][index]["$and"], Q(key, val))
+	}
+	return self
+}
+
+func (self *Query) OrFilter(index int, criteria map[string]interface{}) *Query {
 	for key, val := range criteria {
 		if key == "Id" {
 			key = "_id"
@@ -250,7 +261,18 @@ func (self *Query) AndOrFilter(index int, criteria map[string]interface{}) *Quer
 	return self
 }
 
-func (self *Query) AndOrRange(index int, criteria map[string]Range) *Query {
+func (self *Query) AndRange(index int, criteria map[string]Range) *Query {
+	for key, val := range criteria {
+		if key == "Id" {
+			key = "_id"
+		}
+		self.ao["$and"][index]["$or"] = append(self.ao["$and"][index]["$and"], bson.M{"$gte": val.Min, "$lte": val.Max})
+	}
+
+	return self
+}
+
+func (self *Query) OrRange(index int, criteria map[string]Range) *Query {
 	for key, val := range criteria {
 		if key == "Id" {
 			key = "_id"
@@ -261,7 +283,17 @@ func (self *Query) AndOrRange(index int, criteria map[string]Range) *Query {
 	return self
 }
 
-func (self *Query) AndOrLessThanEqualTo(index int, criteria map[string]Min) *Query {
+func (self *Query) AndLessThanEqualTo(index int, criteria map[string]Min) *Query {
+	for key, val := range criteria {
+		if key == "Id" {
+			key = "_id"
+		}
+		self.ao["$and"][index]["$or"] = append(self.ao["$and"][index]["$and"], bson.M{"$lte": val.Min})
+	}
+	return self
+}
+
+func (self *Query) OrLessThanEqualTo(index int, criteria map[string]Min) *Query {
 	for key, val := range criteria {
 		if key == "Id" {
 			key = "_id"
@@ -271,7 +303,17 @@ func (self *Query) AndOrLessThanEqualTo(index int, criteria map[string]Min) *Que
 	return self
 }
 
-func (self *Query) AndOrLessThan(index int, criteria map[string]Min) *Query {
+func (self *Query) AndLessThan(index int, criteria map[string]Min) *Query {
+	for key, val := range criteria {
+		if key == "Id" {
+			key = "_id"
+		}
+		self.ao["$and"][index]["$or"] = append(self.ao["$and"][index]["$and"], bson.M{"$lt": val.Min})
+	}
+	return self
+}
+
+func (self *Query) OrLessThan(index int, criteria map[string]Min) *Query {
 	for key, val := range criteria {
 		if key == "Id" {
 			key = "_id"
@@ -281,7 +323,17 @@ func (self *Query) AndOrLessThan(index int, criteria map[string]Min) *Query {
 	return self
 }
 
-func (self *Query) AndOrGreaterThanEqualTo(index int, criteria map[string]Max) *Query {
+func (self *Query) AndGreaterThanEqualTo(index int, criteria map[string]Max) *Query {
+	for key, val := range criteria {
+		if key == "Id" {
+			key = "_id"
+		}
+		self.ao["$and"][index]["$or"] = append(self.ao["$and"][index]["$and"], bson.M{"$gte": val.Max})
+	}
+	return self
+}
+
+func (self *Query) OrGreaterThanEqualTo(index int, criteria map[string]Max) *Query {
 	for key, val := range criteria {
 		if key == "Id" {
 			key = "_id"
@@ -291,7 +343,7 @@ func (self *Query) AndOrGreaterThanEqualTo(index int, criteria map[string]Max) *
 	return self
 }
 
-func (self *Query) AndOrGreaterThan(index int, criteria map[string]Max) *Query {
+func (self *Query) OrGreaterThan(index int, criteria map[string]Max) *Query {
 	for key, val := range criteria {
 		if key == "Id" {
 			key = "_id"
@@ -301,20 +353,39 @@ func (self *Query) AndOrGreaterThan(index int, criteria map[string]Max) *Query {
 	return self
 }
 
-func (self *Query) AndOrExclude(index int, criteria map[string]interface{}) *Query {
-	self.andOrinNot(index, criteria, "$nin")
+func (self *Query) AndGreaterThan(index int, criteria map[string]Max) *Query {
+	for key, val := range criteria {
+		if key == "Id" {
+			key = "_id"
+		}
+		self.ao["$and"][index]["$or"] = append(self.ao["$and"][index]["$and"], bson.M{"$gt": val.Max})
+	}
+	return self
+}
 
+func (self *Query) AndExclude(index int, criteria map[string]interface{}) *Query {
+	self.andOrInNot(index, criteria, "$nin", "$and")
+	return self
+}
+
+func (self *Query) OrExclude(index int, criteria map[string]interface{}) *Query {
+	self.andOrInNot(index, criteria, "$nin", "$or")
+	return self
+}
+
+func (self *Query) AndIn(index int, criteria map[string]interface{}) *Query {
+	self.andOrInNot(index, criteria, "$in", "$and")
 	return self
 
 }
 
-func (self *Query) AndOrIn(index int, criteria map[string]interface{}) *Query {
-	self.andOrinNot(index, criteria, "$in")
+func (self *Query) OrIn(index int, criteria map[string]interface{}) *Query {
+	self.andOrInNot(index, criteria, "$in", "$or")
 	return self
 
 }
 
-func (self *Query) andOrinNot(index int, criteria map[string]interface{}, queryType string) {
+func (self *Query) andOrInNot(index int, criteria map[string]interface{}, queryType string, andorType string) {
 	for key, value := range criteria {
 
 		if key == "Id" {
@@ -343,7 +414,7 @@ func (self *Query) andOrinNot(index int, criteria map[string]interface{}, queryT
 
 				ids = append(ids, objId)
 			}
-			self.ao["$and"][index]["$or"] = append(self.ao["$and"][index]["$or"], Q("_id", bson.M{queryType: ids}))
+			self.ao["$and"][index]["$or"] = append(self.ao["$and"][index][andorType], Q("_id", bson.M{queryType: ids}))
 		} else {
 			var valuesToQuery []interface{}
 
@@ -357,7 +428,7 @@ func (self *Query) andOrinNot(index int, criteria map[string]interface{}, queryT
 			} else {
 				valuesToQuery = append(valuesToQuery, self.CheckForObjectId(value))
 			}
-			self.ao["$and"][index]["$or"] = append(self.ao["$and"][index]["$or"], Q(key, bson.M{queryType: valuesToQuery}))
+			self.ao["$and"][index]["$or"] = append(self.ao["$and"][index][andorType], Q(key, bson.M{queryType: valuesToQuery}))
 		}
 	}
 }
