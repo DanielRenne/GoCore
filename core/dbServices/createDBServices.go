@@ -450,7 +450,7 @@ func generateNoSQLModel(schema NOSQLSchema, collection NOSQLCollection, driver s
 	case DATABASE_DRIVER_BOLTDB:
 		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "encoding/json", "github.com/asdine/storm", timeImport})
 	case DATABASE_DRIVER_MONGODB:
-		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "github.com/DanielRenne/GoCore/core/serverSettings", "encoding/json", "gopkg.in/mgo.v2", "gopkg.in/mgo.v2/bson", "log", "time", "errors", "encoding/base64", "reflect", "github.com/DanielRenne/GoCore/core/utils", "github.com/DanielRenne/GoCore/core/extensions"})
+		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "github.com/DanielRenne/GoCore/core/serverSettings", "encoding/json", "gopkg.in/mgo.v2", "gopkg.in/mgo.v2/bson", "log", "time", "errors", "encoding/base64", "reflect", "github.com/DanielRenne/GoCore/core/utils"})
 		// val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "encoding/json", "gopkg.in/mgo.v2/bson", "log", "time"})
 	}
 
@@ -1516,17 +1516,10 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 	val += "var files [][]byte\n"
 	val += "var err error\n\n"
 
-	val += "if dataString == \"\" {\n"
-	val += "	mongo" + strings.Title(collection.Name) + "HasBootStrapped = true\n"
-	val += "	log.Println(\"no bootstrap for " + strings.Title(collection.Name) + "\")\n"
-	val += "  return err\n"
-	val += "}\n\n"
-
 	val += "files, err = BootstrapDirectory(\"" + extensions.MakeFirstLowerCase(collection.Name) + "\")\n\n"
 	val += "if err != nil {\n"
 	val += "	mongo" + strings.Title(collection.Name) + "HasBootStrapped = true\n"
 	val += "	log.Println(\"Failed to bootstrap data for " + strings.Title(collection.Name) + ":  \" + err.Error())\n"
-	val += "  return err\n"
 	val += "}\n\n"
 
 	val += "if dataString != \"\"{\n"
@@ -1560,24 +1553,10 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 		val += ""
 	case DATABASE_DRIVER_MONGODB:
 		val += heredoc.Docf(`
-
-		path := serverSettings.APP_LOCATION + "/db/bootstrap/%s/%s.json"
-		if !extensions.DoesFileExist(path) {
-			mongo%sHasBootStrapped = true
-			log.Println("Skipping %s due to file missing")
-			return err
-		}
 		var isError bool
 		var query Query
 		query.collection = mongo%sCollection
-
-		`, extensions.MakeFirstLowerCase(collection.Name), extensions.MakeFirstLowerCase(collection.Name), strings.Title(collection.Name), extensions.MakeFirstLowerCase(collection.Name), strings.Title(collection.Name))
-
-		//val += heredoc.Docf(`
-		//var isError bool
-		//var query Query
-		//query.collection = mongo%sCollection
-		//`, strings.Title(collection.Name))
+		`, strings.Title(collection.Name))
 
 		if strings.Title(collection.Name) == "EquipmentCatalog" {
 			val += "var toDelete []Equipment\n"

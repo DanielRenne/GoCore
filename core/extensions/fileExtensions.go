@@ -199,13 +199,11 @@ func GetFileSize(path string) (size int64, err error) {
 	if err != nil {
 		return
 	}
-	defer file.Close()
 	fi, err := file.Stat()
 	if err != nil {
 		return
 	}
 	size = fi.Size()
-
 	return
 }
 
