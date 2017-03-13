@@ -20,7 +20,9 @@ import (
 var DB *sql.DB
 var BoltDB *storm.DB
 var MongoSession *mgo.Session
+var MongoSessionAuth *mgo.Session
 var MongoDB *mgo.Database
+var MongoDBAuth *mgo.Database
 
 const (
 
@@ -146,6 +148,14 @@ func openMongo() error {
 		return err
 	}
 
+	if serverSettings.WebConfig.HasDbAuth && serverSettings.WebConfig.DbAuthConnection.AuthServer {
+		MongoSessionAuth, err = mgo.Dial(serverSettings.WebConfig.DbAuthConnection.ConnectionString) // open an connection -> Dial function
+		if err != nil {                                                                              //  if you have a
+			color.Red("Failed to create or open mongo Database at " + serverSettings.WebConfig.DbAuthConnection.ConnectionString + "\n\t" + err.Error())
+			return err
+		}
+	}
+
 	return connectMongoDB()
 }
 
@@ -156,6 +166,11 @@ func connectMongoDB() error {
 	MongoDB = MongoSession.DB(serverSettings.WebConfig.DbConnection.Database)
 
 	color.Green("Mongo Database Connected Successfully.")
-
+	if serverSettings.WebConfig.HasDbAuth {
+		MongoSessionAuth.SetMode(mgo.Monotonic, true) // Optional. Switch the session to a monotonic behavior.
+		MongoSessionAuth.SetSyncTimeout(2000 * time.Millisecond)
+		MongoDBAuth = MongoSession.DB(serverSettings.WebConfig.DbAuthConnection.Database)
+		color.Green("Mongo Authentication Database Connected Successfully.")
+	}
 	return nil
 }

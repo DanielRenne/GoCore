@@ -2,10 +2,12 @@ package model
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"time"
 
 	"github.com/DanielRenne/GoCore/core/dbServices"
+	"github.com/DanielRenne/GoCore/core/serverSettings"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -20,7 +22,7 @@ func init() {
 	go func() {
 
 		for {
-			if dbServices.MongoDB != nil {
+			if (dbServices.MongoDB != nil && !serverSettings.WebConfig.HasDbAuth) || (serverSettings.WebConfig.HasDbAuth && dbServices.MongoDBAuth != nil) {
 				initHistCollection()
 				return
 			}
@@ -31,7 +33,8 @@ func init() {
 
 func initHistCollection() {
 	log.Println("Building Indexes for MongoDB collection HistCollection:")
-	mongoHistCollectionCollection = dbServices.MongoDB.C("HistCollection")
+	fmt.Sprint(serverSettings.WebConfig.HasDbAuth)
+	//CollectionVariable
 	ci := mgo.CollectionInfo{ForceIdIndex: true}
 	mongoHistCollectionCollection.Create(&ci)
 	HistCollection.Index()

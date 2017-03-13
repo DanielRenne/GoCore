@@ -18,6 +18,7 @@ type dbConnection struct {
 	ConnectionString    string `json:"connectionString"`
 	Driver              string `json:"driver"`
 	Database            string `json:"database"`
+	AuthServer          bool   `json:"authServer"`
 	TransactionSizeMax  int    `json:"transactionSizeMax"`
 	AuditHistorySizeMax int    `json:"auditHistorySizeMax"`
 	Replication         struct {
@@ -76,9 +77,11 @@ type Application struct {
 }
 
 type webConfigObj struct {
-	DbConnections []dbConnection `json:"dbConnections"`
-	Application   Application    `json:"application"`
-	DbConnection  dbConnection
+	DbConnections    []dbConnection `json:"dbConnections"`
+	Application      Application    `json:"application"`
+	DbConnection     dbConnection
+	DbAuthConnection dbConnection
+	HasDbAuth        bool
 }
 
 var WebConfig webConfigObj
@@ -107,8 +110,12 @@ func Initialize(path string, configurationFile string) {
 	}
 
 	for _, dbConnection := range WebConfig.DbConnections {
-		WebConfig.DbConnection = dbConnection
-		return
+		if dbConnection.AuthServer {
+			WebConfig.HasDbAuth = true
+			WebConfig.DbAuthConnection = dbConnection
+		} else {
+			WebConfig.DbConnection = dbConnection
+		}
 	}
 }
 

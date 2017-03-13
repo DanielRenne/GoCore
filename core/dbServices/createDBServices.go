@@ -102,8 +102,9 @@ type NOSQLSchema struct {
 }
 
 type NOSQLCollection struct {
-	Name   string      `json:"name"`
-	Schema NOSQLSchema `json:"schema"`
+	Name       string      `json:"name"`
+	IsSharable bool        `json:"isSharable"`
+	Schema     NOSQLSchema `json:"schema"`
 }
 
 type NOSQLSchemaDB struct {
@@ -319,7 +320,13 @@ func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir s
 		writeNoSQLModelCollection(val, serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/"+extensions.MakeFirstLowerCase(collection.Schema.Name)+".go", collection)
 
 		//Create the Transaction History Table for the Collection
-		histModified := strings.Replace(string(histTemplate[:]), "HistCollection", strings.Title(collection.Name)+"History", -1)
+		histName := strings.Title(collection.Name) + "History"
+		histModified := strings.Replace(string(histTemplate[:]), "HistCollection", histName, -1)
+		if collection.IsSharable {
+			histModified = strings.Replace(histModified, "//CollectionVariable", "if serverSettings.WebConfig.HasDbAuth {\nmongo"+histName+"Collection = dbServices.MongoDBAuth.C(\""+histName+"\")\n} else {\nmongo"+histName+"Collection = dbServices.MongoDB.C(\""+histName+"\")\n}", -1)
+		} else {
+			histModified = strings.Replace(histModified, "//CollectionVariable", "mongo"+histName+"Collection = dbServices.MongoDB.C(\""+histName+"\")", -1)
+		}
 		histModified = strings.Replace(histModified, "HistEntity", strings.Title(collection.Schema.Name)+"HistoryRecord", -1)
 		histModified = strings.Replace(histModified, "OriginalEntity", strings.Title(collection.Schema.Name), -1)
 		if serverSettings.WebConfig.DbConnection.AuditHistorySizeMax > 0 {
@@ -571,7 +578,7 @@ func genNoSQLCollection(collection NOSQLCollection, schema NOSQLSchema, driver s
 		val += "func init(){\n"
 		val += "go func() {\n\n"
 		val += "for{\n"
-		val += "if dbServices.MongoDB != nil {\n"
+		val += "if (dbServices.MongoDB != nil && !serverSettings.WebConfig.HasDbAuth) || (serverSettings.WebConfig.HasDbAuth && dbServices.MongoDBAuth != nil) {\n"
 		val += "init" + strings.Title(collection.Name) + "()\n"
 		val += "return\n"
 		val += "}\n"
@@ -582,7 +589,16 @@ func genNoSQLCollection(collection NOSQLCollection, schema NOSQLSchema, driver s
 
 		val += "func init" + strings.Title(collection.Name) + "(){\n"
 		val += "log.Println(\"Building Indexes for MongoDB collection " + collection.Name + ":\")\n"
-		val += "mongo" + strings.Title(collection.Name) + "Collection = dbServices.MongoDB.C(\"" + collection.Name + "\")\n"
+		if collection.IsSharable {
+			val += "if serverSettings.WebConfig.HasDbAuth {\n"
+			val += "mongo" + strings.Title(collection.Name) + "Collection = dbServices.MongoDBAuth.C(\"" + collection.Name + "\")\n"
+			val += "} else {\n"
+			val += "mongo" + strings.Title(collection.Name) + "Collection = dbServices.MongoDB.C(\"" + collection.Name + "\")\n"
+			val += "}\n"
+		} else {
+			val += "mongo" + strings.Title(collection.Name) + "Collection = dbServices.MongoDB.C(\"" + collection.Name + "\")\n"
+		}
+
 		val += "ci := mgo.CollectionInfo{ForceIdIndex: true}\n"
 		val += "mongo" + strings.Title(collection.Name) + "Collection.Create(&ci)\n"
 		val += strings.Title(collection.Name) + ".Index()\n"
