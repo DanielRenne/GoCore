@@ -12,7 +12,7 @@ GoCore uses standard semantic versioning of Major, Minor, and Revision numbers t
 
 Any file with a .json extension will be processed to create a NOSQL model.  NOTE:  Additional sub directories are recursively walked and processed to support larger application organization.
 
-Each schema json file starts with and array of collections.  Each collection must have a name and schema.  The schema for the collection is the document you want to store to the NOSQL DB.  Each schema contains a name and fields array.
+Each schema json file starts with and array of collections.  Each collection must have a name and schema.  The schema for the collection is the document you want to store to the NOSQL DB.  Each schema contains a name and fields array.  Each schema can support a secondary database connection for mongo in which you can share important collections like users/accounts.  You can use this by setting `isSharable` to true on the collections you want to support and then configure a second database connection on your slave and set `authServer` to `true` to read and write to that database for those collections.
 
 Each Field requires a name and type.  Each field can optionally contain an index, omitEmpty, and schema.  A schema definition is required for type object or objectArray.  GoCore will recursively process object and objectArrays to build type structs.
 
