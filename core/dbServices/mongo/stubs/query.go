@@ -14,6 +14,7 @@ import (
 	"github.com/DanielRenne/GoCore/core/serverSettings"
 	stacktrace "github.com/go-errors/errors"
 
+	"fmt"
 	"github.com/DanielRenne/GoCore/core"
 	"github.com/DanielRenne/GoCore/core/dbServices"
 	"github.com/DanielRenne/GoCore/core/extensions"
@@ -809,10 +810,6 @@ func (self *Query) Count() (int, error) {
 
 	q := self.generateQuery()
 
-	if !self.stopLog && serverSettings.WebConfig.Application.LogQueries {
-		self.LogQuery("q.Count()")
-	}
-
 	count, err := q.Count()
 
 	if err != nil {
@@ -893,7 +890,7 @@ func (self *Query) processJoins(x interface{}) (err error) {
 
 			var joins []join
 			if source.Len() > 0 {
-				joins = self.getJoins(source.Index(0))
+				joins, err = self.getJoins(source.Index(0))
 			}
 
 			if len(joins) == 0 {
@@ -924,7 +921,7 @@ func (self *Query) processJoins(x interface{}) (err error) {
 			source := reflect.ValueOf(x).Elem()
 
 			var joins []join
-			joins = self.getJoins(source)
+			joins, err = self.getJoins(source)
 
 			if len(joins) == 0 {
 				return
@@ -951,21 +948,25 @@ func (self *Query) processJoins(x interface{}) (err error) {
 	return nil
 }
 
-func (self *Query) getJoins(x reflect.Value) (joins []join) {
+func (self *Query) getJoins(x reflect.Value) (joins []join, err error) {
 
 	joinsField := x.FieldByName("Joins")
 
 	if joinsField.Kind() != reflect.Struct {
+		err = errors.New("Could not resolve a field due to it not being a struct: " + fmt.Sprintf("%+v", x))
 		return
 	}
 
 	allJoin, ok := self.joins[JOIN_ALL]
-
+	var hasJoins bool
 	if ok {
 		for i := 0; i < joinsField.NumField(); i++ {
 
 			typeField := joinsField.Type().Field(i)
 			name := typeField.Name
+
+			fmt.Println("getJoins Name")
+			fmt.Println(name)
 			tagValue := typeField.Tag.Get("join")
 			splitValue := strings.Split(tagValue, ",")
 			var j join
@@ -986,10 +987,14 @@ func (self *Query) getJoins(x reflect.Value) (joins []join) {
 			fieldName := fields[0]
 
 			typeField, ok := joinsField.Type().FieldByName(fieldName)
+			if serverSettings.WebConfig.Application.LogJoinQueries {
+				fmt.Println("getJoins fieldName")
+				fmt.Println(fieldName)
+			}
 			if ok == false {
 				continue
 			}
-
+			hasJoins = true
 			tagValue := typeField.Tag.Get("join")
 			splitValue := strings.Split(tagValue, ",")
 			var j join
@@ -1003,6 +1008,12 @@ func (self *Query) getJoins(x reflect.Value) (joins []join) {
 			j.joinType = val.Type
 			joins = append(joins, j)
 		}
+	}
+	if !hasJoins {
+		if serverSettings.WebConfig.Application.LogJoinQueries {
+			fmt.Println("Could not resolve a field  (getJoins query): " + " on " + x.Type().String() + " object")
+		}
+		//err = errors.New("Could not resolve a field  (getJoins query): " +  " on " + x.Type().String() + " object")
 	}
 
 	return
@@ -1311,12 +1322,12 @@ func (self *Query) substituteDateFormat(dateFormat string) string {
 }
 
 func (self *Query) LogQuery(functionName string) {
-
+	cnt, _ := self.Count()
 	if serverSettings.WebConfig.Application.LogQueryStackTraces {
 		caller := stacktrace.Errorf("GoCore caller:")
-		core.Debug.Dump("Desc-> Called Function query.go#"+functionName, "Desc->Caller for Query:", caller.ErrorStack(), core.Debug.GetDump("Desc->Collection", self.collection, "Desc->Limit", self.limit, "Desc->Skip", self.skip, "Desc->Sort", self.sort, "Desc->mgo Query", self.q, "Desc->Queryset", self.m))
+		core.Debug.Dump("Desc-> Called Function query.go#"+functionName, "Desc->Caller for Query:", caller.ErrorStack(), core.Debug.GetDump("Desc->Collection", self.collection, "Desc->Limit", self.limit, "Desc->Skip", self.skip, "Desc->Sort", self.sort, "Desc->mgo Query", self.q, "Desc->Queryset", self.m, "Desc->Count", cnt, "Desc->Joins", self.joins))
 	} else {
-		core.Debug.Dump("Desc-> Called Function query.go#"+functionName, core.Debug.GetDump("Desc->Collection", self.collection, "Desc->Limit", self.limit, "Desc->Skip", self.skip, "Desc->Sort", self.sort, "Desc->mgo Query", self.q, "Desc->Queryset", self.m))
+		core.Debug.Dump("Desc-> Called Function query.go#"+functionName, core.Debug.GetDump("Desc->Collection", self.collection, "Desc->Limit", self.limit, "Desc->Skip", self.skip, "Desc->Sort", self.sort, "Desc->mgo Query", self.q, "Desc->Queryset", self.m, "Desc->Count", cnt, "Desc->Joins", self.joins))
 	}
 }
 

@@ -267,7 +267,7 @@ func validateEmail(value string) error {
 	return nil
 }
 
-func getJoins(x reflect.Value, remainingRecursions string) (joins []join) {
+func getJoins(x reflect.Value, remainingRecursions string) (joins []join, err error) {
 	if remainingRecursions == "" {
 		return
 	}
@@ -276,7 +276,6 @@ func getJoins(x reflect.Value, remainingRecursions string) (joins []join) {
 	fieldName := fields[0]
 
 	joinsField := x.FieldByName("Joins")
-
 	if joinsField.Kind() != reflect.Struct {
 		return
 	}
@@ -292,13 +291,25 @@ func getJoins(x reflect.Value, remainingRecursions string) (joins []join) {
 			j.collectionName = splitValue[0]
 			j.joinSchemaName = splitValue[1]
 			j.joinFieldRefName = splitValue[2]
+			j.isMany = extensions.StringToBool(splitValue[3])
+			j.joinForeignFieldName = splitValue[4]
 			j.joinFieldName = name
 			j.joinSpecified = JOIN_ALL
 			joins = append(joins, j)
 		}
 	} else {
 		typeField, ok := joinsField.Type().FieldByName(fieldName)
+		if serverSettings.WebConfig.Application.LogJoinQueries {
+			fmt.Println(fmt.Sprintf("%+v", fields), joinsField.Kind(), ok)
+		}
+
 		if ok == false {
+			msg := "Could not resolve a field (getJoins model): " + fmt.Sprintf("%+v", remainingRecursions) + " on " + x.Type().String() + " object"
+			if serverSettings.WebConfig.Application.LogJoinQueries {
+				fmt.Println(msg)
+			}
+			//new := errors.New(msg)
+			//err = new
 			return
 		}
 		name := typeField.Name
@@ -308,6 +319,8 @@ func getJoins(x reflect.Value, remainingRecursions string) (joins []join) {
 		j.collectionName = splitValue[0]
 		j.joinSchemaName = splitValue[1]
 		j.joinFieldRefName = splitValue[2]
+		j.isMany = extensions.StringToBool(splitValue[3])
+		j.joinForeignFieldName = splitValue[4]
 		j.joinFieldName = name
 		j.joinSpecified = strings.Replace(remainingRecursions, fieldName+".", "", 1)
 		if strings.Contains(j.joinSpecified, "Count") && j.joinSpecified[:5] == "Count" {
@@ -394,17 +407,29 @@ func JoinEntity(collectionQ *Query, y interface{}, j join, id string, fieldToSet
 		if r := recover(); r != nil {
 			msg := "Panic Recovered at model.JoinEntity:  Failed to join " + j.joinSchemaName + " with id:" + id + "  Error:" + fmt.Sprintf("%+v", r)
 			err = errors.New(msg)
+			if serverSettings.WebConfig.Application.LogJoinQueries && err != nil {
+				fmt.Println("err Recursion Line 399->" + fmt.Sprintf("%+v", err))
+			}
 			return
 		}
 	}()
 
-	if IsZeroOfUnderlyingType(fieldToSet.Interface()) || j.isMany {
+	if serverSettings.WebConfig.Application.LogJoinQueries {
+		fmt.Println("!!!!!!!!!!!!ddd!!!!!!!!")
+		fmt.Printf("%+v", fieldToSet)
+		fmt.Println("!!!!!!!!!!!!id!!!!!!!!")
+		fmt.Printf("%+v", id)
+	}
 
-		if j.isMany {
+	if IsZeroOfUnderlyingType(fieldToSet.Interface()) || j.isMany {
+		if j.isMany && id != "" {
 			if remainingRecursions == "Count" {
 				cnt, err := collectionQ.ToggleLogFlag(true).Filter(Q(j.joinForeignFieldName, id)).Count()
 				if serverSettings.WebConfig.Application.LogJoinQueries {
-					collectionQ.LogQuery("JoinEntity() Recursion Count Only")
+					collectionQ.LogQuery("JoinEntity() Recursion Count Only err?->" + fmt.Sprintf("%+v", err) + " j->" + fmt.Sprintf("%+v", j))
+				}
+				if serverSettings.WebConfig.Application.LogJoinQueries && err != nil {
+					fmt.Println("err Recursion Line 413->" + fmt.Sprintf("%+v", err))
 				}
 				if err != nil {
 					// err = errCnt
@@ -416,23 +441,23 @@ func JoinEntity(collectionQ *Query, y interface{}, j join, id string, fieldToSet
 			}
 			err = collectionQ.ToggleLogFlag(true).Filter(Q(j.joinForeignFieldName, id)).All(y)
 			if serverSettings.WebConfig.Application.LogJoinQueries {
-				collectionQ.LogQuery("JoinEntity({" + j.joinForeignFieldName + ": " + id + "}) Recursion Many")
+				collectionQ.LogQuery("JoinEntity({" + j.joinForeignFieldName + ": " + id + "}) Recursion Many err?->" + fmt.Sprintf("%+v", err) + " j->" + fmt.Sprintf("%+v", j))
 			}
-		} else {
+		} else if id != "" {
 			if j.joinForeignFieldName == "" {
 				err = collectionQ.ToggleLogFlag(true).ById(id, y)
 				if serverSettings.WebConfig.Application.LogJoinQueries {
-					collectionQ.LogQuery("JoinEntity() Recursion Single By Id (" + id + ")")
+					collectionQ.LogQuery("JoinEntity() Recursion Single By Id (" + id + ") err?->" + fmt.Sprintf("%+v", err) + " j->" + fmt.Sprintf("%+v", j))
 				}
 			} else {
 				err = collectionQ.ToggleLogFlag(true).Filter(Q(j.joinForeignFieldName, id)).One(y)
 				if serverSettings.WebConfig.Application.LogJoinQueries {
-					collectionQ.LogQuery("JoinEntity({" + j.joinForeignFieldName + ": " + id + "}) Recursion Single")
+					collectionQ.LogQuery("JoinEntity({" + j.joinForeignFieldName + ": " + id + "}) Recursion Single err?->" + fmt.Sprintf("%+v", err) + " j->" + fmt.Sprintf("%+v", j))
 				}
 			}
 		}
 
-		if err == nil {
+		if err == nil && id != "" {
 			if endRecursion == false && recursionCount > 0 {
 				recursionCount--
 
@@ -455,7 +480,9 @@ func JoinEntity(collectionQ *Query, y interface{}, j join, id string, fieldToSet
 				} else {
 					err = CallMethod(y, "JoinFields", in)
 				}
-
+			}
+			if err != nil && serverSettings.WebConfig.Application.LogJoinQueries {
+				fmt.Println("err Recursion Line 465->" + fmt.Sprintf("%+v", err))
 			}
 			if err == nil {
 				if j.isMany {
@@ -464,17 +491,42 @@ func JoinEntity(collectionQ *Query, y interface{}, j join, id string, fieldToSet
 					countField := fieldToSet.Elem().FieldByName("Count")
 					itemsField.Set(reflect.ValueOf(y))
 					countField.Set(reflect.ValueOf(reflect.ValueOf(y).Elem().Len()))
+					if serverSettings.WebConfig.Application.LogJoinQueries {
+						fmt.Println("!!!!!!!!!!!!reflected pointer for many!!!!!!!!")
+						fmt.Printf("%+v", itemsField)
+						fmt.Println("!!!!!!!!!!!!test interface!!!!!!!!")
+						fmt.Printf("%+v", itemsField.Interface())
+					}
 				} else {
 					fieldToSet.Set(reflect.ValueOf(y))
+					if serverSettings.WebConfig.Application.LogJoinQueries {
+						fmt.Println("!!!!!!!!!!!!reflected pointer for single row!!!!!!!!")
+						fmt.Printf("%+v", fieldToSet)
+						fmt.Println("!!!!!!!!!!!!test interface!!!!!!!!")
+						fmt.Printf("%+v", fieldToSet.Interface())
+					}
+
+				}
+
+				if serverSettings.WebConfig.Application.LogJoinQueries {
+					fmt.Println("!!!!!!!!!!!!reflected and set value to!!!!!!!!")
+					fmt.Printf("%+v", reflect.ValueOf(y))
 				}
 
 				if q.renderViews {
 					err = q.processViews(y)
+					if err != nil && serverSettings.WebConfig.Application.LogJoinQueries {
+						collectionQ.LogQuery("err Recursion Line 479->" + fmt.Sprintf("%+v", err))
+					}
 					if err != nil {
 						return
 					}
 				}
 
+			}
+		} else {
+			if serverSettings.WebConfig.Application.LogJoinQueries && err != nil {
+				fmt.Println("err Recursion Line 495->" + fmt.Sprintf("%+v", err))
 			}
 		}
 	} else {
@@ -487,10 +539,17 @@ func JoinEntity(collectionQ *Query, y interface{}, j join, id string, fieldToSet
 			in = append(in, reflect.ValueOf(recursionCount))
 			values := method.Call(in)
 			if values[0].Interface() == nil {
+
+				if serverSettings.WebConfig.Application.LogJoinQueries {
+					collectionQ.LogQuery("Recursion returning due to nil values[0] interface")
+				}
 				err = nil
 				return
 			}
 			err = values[0].Interface().(error)
+			if err != nil && serverSettings.WebConfig.Application.LogJoinQueries {
+				fmt.Println("err Recursion Line 503->" + fmt.Sprintf("%+v", err))
+			}
 		}
 	}
 	return
