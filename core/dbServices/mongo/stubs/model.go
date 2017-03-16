@@ -105,7 +105,7 @@ func init() {
 
 func (self *transactionsToPersist) UpdateEntity(e modelEntity) (updated bool) {
 	for i, _ := range self.newItems {
-		item := self.newItems[i]
+		item := &self.newItems[i]
 		if item.entity.GetId() == e.GetId() {
 			item.entity = e
 			updated = true

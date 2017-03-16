@@ -107,7 +107,7 @@ func (self *core_debug) HandleError(err error) (s string) {
 
 func (self *core_debug) Dump(valuesOriginal ...interface{}) {
 	t := time.Now()
-	l := "!!!!!!!!!!!!! DEBUG " + t.String() + "!!!!!!!!!!!!!"
+	l := "!!!!!!!!!!!!! DEBUG " + t.String() + "!!!!!!!!!!!!!\n\n"
 	Logger.Println(l)
 	if serverSettings.WebConfig.Application.ReleaseMode == "development" {
 		TransactionLog += l
