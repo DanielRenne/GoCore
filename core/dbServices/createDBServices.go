@@ -622,6 +622,10 @@ func genNoSQLCollection(collection NOSQLCollection, schema NOSQLSchema, driver s
 		val += strings.Title(collection.Name) + ".Bootstrap()\n"
 		val += "}\n\n"
 
+		val += "func (self *" + strings.Title(schema.Name) + ") GetId() string { \n"
+		val += "return self.Id.Hex()\n"
+		val += "}\n\n"
+
 	}
 
 	return val
@@ -1072,6 +1076,10 @@ func genNoSQLSchemaSaveByTran(collection NOSQLCollection, schema NOSQLSchema, dr
 
 		val += "//Get the Original Record if it is a Update\n"
 		val += "if isUpdate {\n\n"
+
+		val += "if tPersist.UpdateEntity(self) == true {\n"
+		val += "return nil\n"
+		val += "}\n\n"
 
 		val += "	histRecord.Type = TRANSACTION_CHANGETYPE_UPDATE\n"
 

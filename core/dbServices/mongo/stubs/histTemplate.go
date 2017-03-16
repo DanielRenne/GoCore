@@ -182,3 +182,7 @@ func (obj *HistEntity) JSONString() (string, error) {
 func (obj *HistEntity) JSONBytes() ([]byte, error) {
 	return json.Marshal(obj)
 }
+
+func (self *HistEntity) GetId() string {
+	return self.Id.Hex()
+}
