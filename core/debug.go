@@ -18,6 +18,8 @@ import (
 	"github.com/go-errors/errors"
 )
 
+var TransactionLog string
+
 type core_debug struct{}
 
 var core_logger = log.New(os.Stdout, "", 0)
@@ -105,13 +107,29 @@ func (self *core_debug) HandleError(err error) (s string) {
 
 func (self *core_debug) Dump(valuesOriginal ...interface{}) {
 	t := time.Now()
-	Logger.Println("!!!!!!!!!!!!! DEBUG " + t.String() + "!!!!!!!!!!!!!")
-
-	for _, value := range valuesOriginal {
-		Logger.Print(self.DumpBase(value))
+	l := "!!!!!!!!!!!!! DEBUG " + t.String() + "!!!!!!!!!!!!!"
+	Logger.Println(l)
+	if serverSettings.WebConfig.Application.ReleaseMode == "development" {
+		TransactionLog += l
 	}
-	Logger.Print(self.ThrowAndPrintError())
-	Logger.Println("!!!!!!!!!!!!! ENDDEBUG " + t.String() + "!!!!!!!!!!!!!")
+	for _, value := range valuesOriginal {
+		l := self.DumpBase(value)
+		Logger.Print(l)
+		if serverSettings.WebConfig.Application.ReleaseMode == "development" {
+			TransactionLog += l
+		}
+	}
+	l = self.ThrowAndPrintError()
+	Logger.Print(l)
+
+	if serverSettings.WebConfig.Application.ReleaseMode == "development" {
+		TransactionLog += l
+	}
+	l = "!!!!!!!!!!!!! ENDDEBUG " + t.String() + "!!!!!!!!!!!!!"
+	Logger.Println(l)
+	if serverSettings.WebConfig.Application.ReleaseMode == "development" {
+		TransactionLog += l
+	}
 }
 
 func (self *core_debug) GetDump(valuesOriginal ...interface{}) (output string) {
