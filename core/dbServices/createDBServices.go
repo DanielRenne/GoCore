@@ -431,7 +431,17 @@ func finalizeModelFile(versionDir string) {
 	for _, collection := range allCollections.Collections {
 		modelToWrite += "case \"" + strings.Title(collection.Schema.Name) + "\":\n"
 		modelToWrite += "var y " + strings.Title(collection.Schema.Name) + "\n"
-		modelToWrite += "if j.isMany {\n"
+		modelToWrite += "if j.isMany {\n\n"
+
+		modelToWrite += "obj := fieldToSet.Interface().(*" + strings.Title(collection.Schema.Name) + "JoinItems)\n"
+		modelToWrite += "if obj != nil {\n"
+		modelToWrite += "for i, _ := range *obj.Items {\n"
+		modelToWrite += "item := &(*obj.Items)[i]\n"
+		modelToWrite += "item.JoinFields(remainingRecursions, q, recursionCount)\n"
+		modelToWrite += "}\n"
+		modelToWrite += "return\n"
+		modelToWrite += "}\n\n"
+
 		modelToWrite += "var z []" + strings.Title(collection.Schema.Name) + "\n"
 		modelToWrite += "var ji " + strings.Title(collection.Schema.Name) + "JoinItems\n"
 		modelToWrite += "fieldToSet.Set(reflect.ValueOf(&ji))\n"
