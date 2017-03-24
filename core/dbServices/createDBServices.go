@@ -94,6 +94,7 @@ type NOSQLSchemaField struct {
 	Schema       NOSQLSchema      `json:"schema"`
 	Validation   *FieldValidation `json:"validate, omitempty"`
 	Join         join             `json:"join"`
+	NoPersist    bool             `json:"noPersist"`
 }
 
 type NOSQLSchema struct {
@@ -191,12 +192,27 @@ func walkNoSQLSchema() {
 
 	versionNumber := ""
 	for _, file := range fileNames {
+
 		if file.IsDir() == true {
+
 			version := extensions.Version{}
 			version.Init(file.Name())
 			versionDir := "v" + version.MajorString
 			versionNumber = version.Value
 			walkNoSQLVersion(basePath+"/"+file.Name(), versionDir)
+
+			goFileNames, errGoReadDir := ioutil.ReadDir(serverSettings.APP_LOCATION + "/db/goFiles/v" + version.MajorString)
+
+			if errGoReadDir == nil {
+				for _, file := range goFileNames {
+					err := extensions.CopyFile(serverSettings.APP_LOCATION+"/db/goFiles/v"+version.MajorString+"/"+file.Name(), serverSettings.APP_LOCATION+"/models/v"+version.MajorString+"/model/"+file.Name())
+					if err != nil {
+						color.Red(err.Error())
+					}
+				}
+			} else {
+				color.Red(errGoReadDir.Error())
+			}
 
 			//Create Swagger Definition With the latest Version being equal to swagger.json, all others swagger_1.0.0.json etc...
 			writeSwaggerConfiguration("/api/"+versionDir, version.Value)
@@ -885,6 +901,9 @@ func genNoSQLAdditionalTags(field NOSQLSchemaField, driver string) string {
 	case DATABASE_DRIVER_MONGODB:
 
 		tags := " bson:\"" + strings.Title(field.Name) + "\"" + validationTagsGap + validationTags
+		if field.NoPersist == true {
+			tags = " bson:\"-\"" + validationTagsGap + validationTags
+		}
 		switch field.Index {
 		case "":
 			return tags
