@@ -42,3 +42,13 @@ func Array(values ...string) []string {
 	}
 	return out
 }
+
+func Dict() (ret map[string]string) {
+	ret = make(map[string]string, 0)
+	return ret
+}
+
+func InterfaceMap() (ret map[string]interface{}) {
+	ret = make(map[string]interface{}, 1)
+	return ret
+}

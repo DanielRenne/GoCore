@@ -41,6 +41,8 @@ type join struct {
 type fieldDef struct {
 	Name      string `json:"name"`
 	Primary   bool   `json:"primary"`
+	Setter    string `json:"setter"`
+	Getter    string `json:"getter"`
 	AllowNull bool   `json:"allowNull"`
 	FieldType string `json:"fieldType"`
 	IsUnique  bool   `json:"isUnique"`
@@ -104,6 +106,7 @@ type NOSQLSchema struct {
 
 type NOSQLCollection struct {
 	Name       string      `json:"name"`
+	Imports    []string    `json:"imports"`
 	IsSharable bool        `json:"isSharable"`
 	Schema     NOSQLSchema `json:"schema"`
 }
