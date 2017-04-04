@@ -505,27 +505,27 @@ func JoinEntity(collectionQ *Query, y interface{}, j join, id string, fieldToSet
 					countField := fieldToSet.Elem().FieldByName("Count")
 					itemsField.Set(reflect.ValueOf(y))
 					countField.Set(reflect.ValueOf(reflect.ValueOf(y).Elem().Len()))
-					if serverSettings.WebConfig.Application.LogJoinQueries {
-						fmt.Println("!!!!!!!!!!!!reflected pointer for many!!!!!!!!")
-						fmt.Printf("%+v", itemsField)
-						fmt.Println("!!!!!!!!!!!!test interface!!!!!!!!")
-						fmt.Printf("%+v", itemsField.Interface())
-					}
+					//if serverSettings.WebConfig.Application.LogJoinQueries {
+					//fmt.Println("!!!!!!!!!!!!reflected pointer for many!!!!!!!!")
+					//fmt.Printf("%+v", itemsField)
+					//fmt.Println("!!!!!!!!!!!!test interface!!!!!!!!")
+					//fmt.Printf("%+v", itemsField.Interface())
+					//}
 				} else {
 					fieldToSet.Set(reflect.ValueOf(y))
-					if serverSettings.WebConfig.Application.LogJoinQueries {
-						fmt.Println("!!!!!!!!!!!!reflected pointer for single row!!!!!!!!")
-						fmt.Printf("%+v", fieldToSet)
-						fmt.Println("!!!!!!!!!!!!test interface!!!!!!!!")
-						fmt.Printf("%+v", fieldToSet.Interface())
-					}
+					//if serverSettings.WebConfig.Application.LogJoinQueries {
+					//fmt.Println("!!!!!!!!!!!!reflected pointer for single row!!!!!!!!")
+					//fmt.Printf("%+v", fieldToSet)
+					//fmt.Println("!!!!!!!!!!!!test interface!!!!!!!!")
+					//fmt.Printf("%+v", fieldToSet.Interface())
+					//}
 
 				}
 
-				if serverSettings.WebConfig.Application.LogJoinQueries {
-					fmt.Println("!!!!!!!!!!!!reflected and set value to!!!!!!!!")
-					fmt.Printf("%+v", reflect.ValueOf(y))
-				}
+				//if serverSettings.WebConfig.Application.LogJoinQueries {
+				//	fmt.Println("!!!!!!!!!!!!reflected and set value to!!!!!!!!")
+				//	fmt.Printf("%+v", reflect.ValueOf(y))
+				//}
 
 				if q.renderViews {
 					err = q.processViews(y)
