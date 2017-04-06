@@ -18,7 +18,7 @@ import (
 	"github.com/DanielRenne/GoCore/core"
 	"github.com/DanielRenne/GoCore/core/dbServices"
 	"github.com/DanielRenne/GoCore/core/extensions"
-	golog "github.com/DanielRenne/GoCore/core/log"
+	"github.com/DanielRenne/GoCore/core/logger"
 	dateformatter "github.com/altipla-consulting/i18n-dateformatter"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -111,9 +111,9 @@ func (self *Query) ById(objectId interface{}, modelInstance interface{}) error {
 	}
 
 	if !serverSettings.WebConfig.Application.LogQueries && serverSettings.WebConfig.Application.LogQueryTimes {
-		defer golog.TimeTrackQuery(time.Now(), "q.ById("+objId.Hex()+")", self.collection, self.m, self.q)
+		defer logger.TimeTrackQuery(time.Now(), "q.ById("+objId.Hex()+")", self.collection, self.m, self.q)
 	} else if serverSettings.WebConfig.Application.LogQueries {
-		defer golog.TimeTrack(time.Now(), "q.ById("+objId.Hex()+")")
+		defer logger.TimeTrack(time.Now(), "q.ById("+objId.Hex()+")")
 	}
 
 	if !self.stopLog && serverSettings.WebConfig.Application.LogQueries {
@@ -657,9 +657,9 @@ func (self *Query) Skip(val int) *Query {
 
 func (self *Query) All(x interface{}) error {
 	if !serverSettings.WebConfig.Application.LogQueries && serverSettings.WebConfig.Application.LogQueryTimes {
-		defer golog.TimeTrackQuery(time.Now(), "q.All()", self.collection, self.m, self.q)
+		defer logger.TimeTrackQuery(time.Now(), "q.All()", self.collection, self.m, self.q)
 	} else if serverSettings.WebConfig.Application.LogQueries {
-		defer golog.TimeTrack(time.Now(), "q.All()")
+		defer logger.TimeTrack(time.Now(), "q.All()")
 	}
 	if self.e != nil {
 		return self.e
@@ -690,9 +690,9 @@ func (self *Query) All(x interface{}) error {
 
 func (self *Query) One(x interface{}) error {
 	if !serverSettings.WebConfig.Application.LogQueries && serverSettings.WebConfig.Application.LogQueryTimes {
-		defer golog.TimeTrackQuery(time.Now(), "q.One()", self.collection, self.m, self.q)
+		defer logger.TimeTrackQuery(time.Now(), "q.One()", self.collection, self.m, self.q)
 	} else if serverSettings.WebConfig.Application.LogQueries {
-		defer golog.TimeTrack(time.Now(), "q.One()")
+		defer logger.TimeTrack(time.Now(), "q.One()")
 	}
 	if self.e != nil {
 		return self.e
@@ -783,9 +783,9 @@ func (self *Query) GetOrCreate(x interface{}, t *Transaction) (err error) {
 
 func (self *Query) TotalRows() int {
 	if !serverSettings.WebConfig.Application.LogQueries && serverSettings.WebConfig.Application.LogQueryTimes {
-		defer golog.TimeTrackQuery(time.Now(), "q.TotalRows()", self.collection, self.m, self.q)
+		defer logger.TimeTrackQuery(time.Now(), "q.TotalRows()", self.collection, self.m, self.q)
 	} else if serverSettings.WebConfig.Application.LogQueries {
-		defer golog.TimeTrack(time.Now(), "q.TotalRows()")
+		defer logger.TimeTrack(time.Now(), "q.TotalRows()")
 	}
 
 	q := self.generateQuery()
@@ -800,9 +800,9 @@ func (self *Query) TotalRows() int {
 
 func (self *Query) Count() (int, error) {
 	if !serverSettings.WebConfig.Application.LogQueries && serverSettings.WebConfig.Application.LogQueryTimes {
-		defer golog.TimeTrackQuery(time.Now(), "q.Count()", self.collection, self.m, self.q)
+		defer logger.TimeTrackQuery(time.Now(), "q.Count()", self.collection, self.m, self.q)
 	} else if serverSettings.WebConfig.Application.LogQueries {
-		defer golog.TimeTrack(time.Now(), "q.Count()")
+		defer logger.TimeTrack(time.Now(), "q.Count()")
 	}
 	if self.e != nil {
 		return 0, self.e
@@ -827,9 +827,9 @@ func (self *Query) Count() (int, error) {
 
 func (self *Query) Distinct(key string, x interface{}) error {
 	if !serverSettings.WebConfig.Application.LogQueries && serverSettings.WebConfig.Application.LogQueryTimes {
-		defer golog.TimeTrackQuery(time.Now(), "q.Distinct()", self.collection, self.m, self.q)
+		defer logger.TimeTrackQuery(time.Now(), "q.Distinct()", self.collection, self.m, self.q)
 	} else if serverSettings.WebConfig.Application.LogQueries {
-		defer golog.TimeTrack(time.Now(), "q.Distinct()")
+		defer logger.TimeTrack(time.Now(), "q.Distinct()")
 	}
 
 	if self.e != nil {
