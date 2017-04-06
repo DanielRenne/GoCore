@@ -500,7 +500,7 @@ func generateNoSQLModel(schema NOSQLSchema, collection NOSQLCollection, driver s
 	case DATABASE_DRIVER_BOLTDB:
 		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "encoding/json", "github.com/asdine/storm", timeImport})
 	case DATABASE_DRIVER_MONGODB:
-		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "github.com/DanielRenne/GoCore/core/serverSettings", "encoding/json", "gopkg.in/mgo.v2", "gopkg.in/mgo.v2/bson", "log", "time", "errors", "encoding/base64", "reflect", "github.com/DanielRenne/GoCore/core/utils", "fmt"})
+		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "github.com/DanielRenne/GoCore/core/serverSettings", "encoding/json", "gopkg.in/mgo.v2", "gopkg.in/mgo.v2/bson", "log", "time", "errors", "encoding/base64", "reflect", "github.com/DanielRenne/GoCore/core/utils", "fmt", "github.com/DanielRenne/GoCore/core/logger"})
 		// val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "encoding/json", "gopkg.in/mgo.v2/bson", "log", "time"})
 	}
 
@@ -1558,6 +1558,7 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 
 	val += "func (obj model" + strings.Title(collection.Name) + ") Bootstrap() error {\n"
 
+	val += "defer logger.TimeTrack(time.Now(), \"Bootstraping of " + strings.Title(collection.Name) + " Took\")\n"
 	val += "if serverSettings.WebConfig.Application.BootstrapData == false {\n"
 	val += "	mongo" + strings.Title(collection.Name) + "HasBootStrapped = true\n"
 	val += "	return nil\n"
