@@ -435,6 +435,13 @@ func JoinEntity(collectionQ *Query, y interface{}, j join, id string, fieldToSet
 		fmt.Printf("%+v", id)
 	}
 
+	//Add any whitelisting or blacklisting of fields
+	if len(j.whiteListedFields) > 0 {
+		collectionQ = collectionQ.Whitelist(collectionQ.entityName, j.whiteListedFields)
+	} else if len(j.blackListedFields) > 0 {
+		collectionQ = collectionQ.Blacklist(collectionQ.entityName, j.blackListedFields)
+	}
+
 	if IsZeroOfUnderlyingType(fieldToSet.Interface()) || j.isMany {
 		if j.isMany && id != "" {
 			if remainingRecursions == "Count" {

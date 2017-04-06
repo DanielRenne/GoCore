@@ -997,9 +997,10 @@ func genNOSQLQuery(collection NOSQLCollection, schema NOSQLSchema, driver string
 			time.Sleep(time.Millisecond * 2)
 		}
 		query.collection = mongo%sCollection
+		query.entityName = "%s"
 		return &query
 	}
-`, strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name))
+`, strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(schema.Name))
 	return val
 }
 

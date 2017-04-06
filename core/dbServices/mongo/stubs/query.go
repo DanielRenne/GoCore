@@ -15,6 +15,7 @@ import (
 	stacktrace "github.com/go-errors/errors"
 
 	"fmt"
+
 	"github.com/DanielRenne/GoCore/core"
 	"github.com/DanielRenne/GoCore/core/dbServices"
 	"github.com/DanielRenne/GoCore/core/extensions"
@@ -53,6 +54,8 @@ type join struct {
 	joinType             string
 	isMany               bool
 	joinForeignFieldName string
+	whiteListedFields    []string
+	blackListedFields    []string
 }
 
 type joinType struct {
@@ -75,10 +78,23 @@ type Query struct {
 	skip        int
 	sort        []string
 	collection  *mgo.Collection
+	entityName  string
 	e           error
 	joins       map[string]joinType
 	format      DataFormat
 	renderViews bool
+	whiteListed []QueryFieldFilter
+	blackListed []QueryFieldFilter
+}
+
+type QueryIterator struct {
+	q    *Query
+	iter *mgo.Iter
+}
+
+type QueryFieldFilter struct {
+	CollectionName string
+	Fields         []string
 }
 
 type DataFormat struct {
@@ -101,6 +117,35 @@ func Criteria(key string, value interface{}) map[string]interface{} {
 	criteria := make(map[string]interface{}, 1)
 	criteria[key] = value
 	return criteria
+}
+
+func (self *QueryIterator) Next(x interface{}) (gotRecord bool, err error) {
+
+	// This callback is used for if the Ethernet port is unplugged
+	callback := func() (err error) {
+		gotRecord = self.iter.Next(x)
+		if gotRecord == false {
+			err = self.iter.Close()
+			return
+		}
+		err = self.q.processJoinsAndViews(x)
+		return
+	}
+
+	gotRecord = self.iter.Next(x)
+	if gotRecord == true {
+		err = self.q.processJoinsAndViews(x)
+		return
+	} else {
+		err = self.iter.Close()
+		if err != nil {
+			err = self.q.handleQueryError(err, callback)
+		} else {
+			return
+		}
+
+	}
+	return
 }
 
 func (self *Query) ById(objectId interface{}, modelInstance interface{}) error {
@@ -446,6 +491,35 @@ func (self *Query) andOrInNot(index int, criteria map[string]interface{}, queryT
 			self.ao["$and"][index][andorType] = append(self.ao["$and"][index][andorType], Q(key, bson.M{queryType: valuesToQuery}))
 		}
 	}
+}
+
+func (self *Query) Whitelist(collection string, fields []string) *Query {
+	var qff QueryFieldFilter
+	qff.CollectionName = collection
+	qff.Fields = fields
+
+	idFound := false
+	for _, val := range fields {
+		if val == "_id" {
+			idFound = true
+		}
+	}
+
+	if idFound == false {
+		qff.Fields = append(qff.Fields, "_id")
+	}
+
+	self.whiteListed = append(self.whiteListed, qff)
+	return self
+}
+
+func (self *Query) Blacklist(collection string, fields []string) *Query {
+	var qff QueryFieldFilter
+	qff.CollectionName = collection
+	qff.Fields = fields
+
+	self.blackListed = append(self.blackListed, qff)
+	return self
 }
 
 func (self *Query) Filter(criteria map[string]interface{}) *Query {
@@ -978,6 +1052,23 @@ func (self *Query) getJoins(x reflect.Value) (joins []join, err error) {
 			j.joinFieldName = name
 			j.joinSpecified = JOIN_ALL
 			j.joinType = allJoin.Type
+
+			//Add WhiteList Fields
+			for i := range self.whiteListed {
+				wl := &self.whiteListed[i]
+				if wl.CollectionName == j.collectionName {
+					j.whiteListedFields = wl.Fields
+				}
+			}
+
+			//Add Blacklist Fields
+			for i := range self.blackListed {
+				bl := &self.blackListed[i]
+				if bl.CollectionName == j.collectionName {
+					j.blackListedFields = bl.Fields
+				}
+			}
+
 			joins = append(joins, j)
 		}
 	} else {
@@ -1006,6 +1097,23 @@ func (self *Query) getJoins(x reflect.Value) (joins []join, err error) {
 			j.joinFieldName = fieldName
 			j.joinSpecified = strings.Replace(key, fieldName+".", "", 1)
 			j.joinType = val.Type
+
+			//Add WhiteList Fields
+			for i := range self.whiteListed {
+				wl := &self.whiteListed[i]
+				if wl.CollectionName == j.collectionName {
+					j.whiteListedFields = wl.Fields
+				}
+			}
+
+			//Add Blacklist Fields
+			for i := range self.blackListed {
+				bl := &self.blackListed[i]
+				if bl.CollectionName == j.collectionName {
+					j.blackListedFields = bl.Fields
+				}
+			}
+
 			joins = append(joins, j)
 		}
 	}
@@ -1372,6 +1480,13 @@ func (self *Query) isDBConnectionError(err error) bool {
 	return false
 }
 
+func (self *Query) Iter() (qi *QueryIterator) {
+	qi = new(QueryIterator)
+	qi.q = self
+	qi.iter = self.generateQuery().Iter()
+	return
+}
+
 func (self *Query) generateQuery() *mgo.Query {
 
 	q := self.collection.Find(bson.M{})
@@ -1401,7 +1516,54 @@ func (self *Query) generateQuery() *mgo.Query {
 		q = q.Sort(self.sort...)
 	}
 
+	//Add WhiteList Fields
+	for i := range self.whiteListed {
+		wl := &self.whiteListed[i]
+		if wl.CollectionName == self.entityName {
+			q = q.Select(whiteList(wl.Fields))
+		}
+	}
+
+	//Add Blacklist Fields
+	for i := range self.blackListed {
+		bl := &self.blackListed[i]
+		if bl.CollectionName == self.entityName {
+
+			var whiteListFields []string
+
+			obj := ResolveEntity(self.entityName)
+			reflectedFields := obj.Reflect()
+
+			for i := 0; i < len(reflectedFields); i++ {
+				if !reflectedFields[i].IsView {
+
+					addField := true
+					for j := range bl.Fields {
+						blField := bl.Fields[j]
+						if blField == reflectedFields[i].Name {
+							addField = false
+							break
+						}
+					}
+					if addField {
+						whiteListFields = append(whiteListFields, reflectedFields[i].Name)
+					}
+				}
+			}
+
+			q = q.Select(whiteList(whiteListFields))
+		}
+	}
+
 	return q
+}
+
+func whiteList(q []string) (r bson.M) {
+	r = make(bson.M, len(q))
+	for _, s := range q {
+		r[s] = 1
+	}
+	return
 }
 
 func (self *Query) getIdHex(val interface{}) (bson.ObjectId, error) {
