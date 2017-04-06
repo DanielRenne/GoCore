@@ -23,6 +23,7 @@ type WebSocketConnection struct {
 	sync.Mutex
 	Id         string
 	Connection *websocket.Conn
+	Req        *http.Request
 }
 
 type WebSocketConnectionCollection struct {
@@ -106,6 +107,7 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context) {
 
 	wsConn := new(WebSocketConnection)
 	wsConn.Connection = conn
+	wsConn.Req = r
 	uuid, err := newUUID()
 	if err == nil {
 		wsConn.Id = uuid
@@ -127,6 +129,7 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context) {
 					WebSocketCallbacks.RUnlock()
 				}()
 			} else {
+				deleteWebSocket(wsConn)
 				return
 			}
 		}
@@ -134,10 +137,7 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context) {
 
 	//Close Message
 	closeHandler := func(code int, text string) error {
-		// log.Println("Closing Socket")
-		// log.Printf("%+v\n", len(WebSocketConnections.Connections))
 		deleteWebSocket(wsConn)
-		// log.Printf("%+v\n", len(WebSocketConnections.Connections))
 		return nil
 	}
 
@@ -287,18 +287,10 @@ func deleteWebSocket(c *WebSocketConnection) {
 	for i := 0; i < len(WebSocketConnections.Connections); i++ {
 		wsConn := WebSocketConnections.Connections[i]
 		if wsConn.Id == c.Id {
-			//log.Println("Removing Socket")
 			WebSocketConnections.Connections = removeWebSocket(WebSocketConnections.Connections, i)
 			i--
 		}
 	}
-
-	// for i, wsConn := range WebSocketConnections.Connections {
-	// 	if wsConn.Id == c.Id {
-	// 		log.Println("Removing Socket")
-	// 		WebSocketConnections.Connections = removeWebSocket(WebSocketConnections.Connections, i)
-	// 	}
-	// }
 
 	WebSocketConnections.Unlock()
 }
