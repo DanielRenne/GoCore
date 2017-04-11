@@ -287,6 +287,7 @@ func deleteWebSocket(c *WebSocketConnection) {
 	for i := 0; i < len(WebSocketConnections.Connections); i++ {
 		wsConn := WebSocketConnections.Connections[i]
 		if wsConn.Id == c.Id {
+			log.Println("Deleting Web Socket from client:  " + wsConn.Connection.RemoteAddr().String())
 			WebSocketConnections.Connections = removeWebSocket(WebSocketConnections.Connections, i)
 			i--
 		}
