@@ -500,7 +500,7 @@ func generateNoSQLModel(schema NOSQLSchema, collection NOSQLCollection, driver s
 	case DATABASE_DRIVER_BOLTDB:
 		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "encoding/json", "github.com/asdine/storm", timeImport})
 	case DATABASE_DRIVER_MONGODB:
-		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "github.com/DanielRenne/GoCore/core/serverSettings", "encoding/json", "gopkg.in/mgo.v2", "gopkg.in/mgo.v2/bson", "log", "time", "errors", "encoding/base64", "reflect", "github.com/DanielRenne/GoCore/core/utils", "fmt", "github.com/DanielRenne/GoCore/core/logger"})
+		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "github.com/DanielRenne/GoCore/core/serverSettings", "encoding/json", "gopkg.in/mgo.v2", "gopkg.in/mgo.v2/bson", "log", "time", "errors", "encoding/base64", "reflect", "github.com/DanielRenne/GoCore/core/utils", "fmt", "github.com/DanielRenne/GoCore/core/logger", "github.com/DanielRenne/GoCore/core", "github.com/DanielRenne/GoCore/core/serverSettings"})
 		// val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "encoding/json", "gopkg.in/mgo.v2/bson", "log", "time"})
 	}
 
@@ -1638,6 +1638,9 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 		}
 
 		val += heredoc.Docf(`
+		var actualCount int
+		originalCount := len(v)
+		log.Println("Total count of records attempting %s", len(v))
 
 		for _, doc := range v {
 			var original %s
@@ -1654,41 +1657,58 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 					}
 				} else {
 					valid := 0x01
+					var reason map[string]bool
+					reason = make(map[string]bool, 0)
+
 					if doc.BootstrapMeta != nil && doc.BootstrapMeta.Version > 0 && doc.BootstrapMeta.Version <= serverSettings.WebConfig.Application.VersionNumeric {
 						valid &= 0x00
+						reason["Version Mismatch"] = true
 					}
 					if doc.BootstrapMeta != nil && doc.BootstrapMeta.Domain != "" && doc.BootstrapMeta.Domain != serverSettings.WebConfig.Application.ServerFQDN {
 						valid &= 0x00
+						reason["FQDN Mismatch With Domain"] = true
 					}
 					if doc.BootstrapMeta != nil && len(doc.BootstrapMeta.Domains) > 0 && !utils.InArray(serverSettings.WebConfig.Application.ServerFQDN, doc.BootstrapMeta.Domains) {
 						valid &= 0x00
+						reason["FQDN Mismatch With Domains"] = true
 					}
 					if doc.BootstrapMeta != nil && doc.BootstrapMeta.ProductName != "" && doc.BootstrapMeta.ProductName != serverSettings.WebConfig.Application.ProductName {
 						valid &= 0x00
+						reason["ProductName does not Match"] = true
 					}
 					if doc.BootstrapMeta != nil && len(doc.BootstrapMeta.ProductNames) > 0 &&  !utils.InArray(serverSettings.WebConfig.Application.ProductName, doc.BootstrapMeta.ProductNames) {
 						valid &= 0x00
+						reason["ProductNames does not Match Product"] = true
 					}
 					if doc.BootstrapMeta != nil && doc.BootstrapMeta.ReleaseMode != "" && doc.BootstrapMeta.ReleaseMode != serverSettings.WebConfig.Application.ReleaseMode {
 						valid &= 0x00
+						reason["ReleaseMode does not match"] = true
 					}
 
 					if valid == 0x01 {
+						actualCount += 1
 						err = doc.Save()
 						if err != nil {
 							log.Println("Failed to bootstrap data for %s:  " + doc.Id.Hex() + "  " + err.Error())
 							isError = true
 						}
+					} else if serverSettings.WebConfig.Application.ReleaseMode == "development" {
+						log.Println("%s skipped a row for some reason on " + doc.Id.Hex() + " because of " +  core.Debug.GetDump(reason))
 					}
 				}
+			} else {
+				actualCount += 1
 			}
 		}
 		if isError {
 			log.Println("FAILED to bootstrap %s")
 		} else {
-			log.Println("Successfully bootstraped %s")
+			log.Println("Successfully bootstrapped %s")
+			if actualCount != originalCount {
+				logger.Message("%s counts are different than original bootstrap and actual inserts, please inpect data." + core.Debug.GetDump("Actual", actualCount, "OriginalCount", originalCount), logger.RED)
+			}
 		}
-`, strings.Title(schema.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name))
+`, strings.Title(collection.Name), strings.Title(schema.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name))
 	}
 	val += "mongo" + strings.Title(collection.Name) + "HasBootStrapped = true\n"
 	val += "return nil\n"

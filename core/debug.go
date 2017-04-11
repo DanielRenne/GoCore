@@ -136,7 +136,7 @@ func (self *core_debug) GetDump(valuesOriginal ...interface{}) (output string) {
 	for _, value := range valuesOriginal {
 		output += self.DumpBase(value)
 	}
-	output += self.ThrowAndPrintError()
+	//output += self.ThrowAndPrintError()
 	return output
 }
 
