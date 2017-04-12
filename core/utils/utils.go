@@ -1,8 +1,10 @@
 package utils
 
 import (
+	"github.com/atlonaeng/studio/settings"
 	"io/ioutil"
 	"log"
+	"os/exec"
 	"strings"
 )
 
@@ -26,6 +28,12 @@ func ReplaceTokenInFile(file string, find string, replaceWith string) {
 	}
 }
 
+func TalkDirtyToMe(sayWhat string) {
+	if settings.ServerSettings.ReleaseMode == "development" {
+		exec.Command("say", sayWhat).Output()
+	}
+}
+
 func InArray(a string, list []string) bool {
 	for _, b := range list {
 		if b == a {
@@ -43,8 +51,11 @@ func Array(values ...string) []string {
 	return out
 }
 
-func Dict() (ret map[string]string) {
+func Dict(k string, v string) (ret map[string]string) {
 	ret = make(map[string]string, 0)
+	if k != "" && v != "" {
+		ret[k] = v
+	}
 	return ret
 }
 
