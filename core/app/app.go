@@ -68,6 +68,15 @@ func Initialize(path string) {
 
 func Run() {
 
+	defer func() {
+		if r := recover(); r != nil {
+			log.Println("Panic Recovered at Run():  ", r)
+			time.Sleep(time.Millisecond * 3000)
+			Run()
+			return
+		}
+	}()
+
 	if serverSettings.WebConfig.Application.WebServiceOnly == false {
 
 		loadHTMLTemplates()
@@ -95,6 +104,14 @@ func Run() {
 
 func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context) {
 
+	defer func() {
+		if recover := recover(); recover != nil {
+			log.Println("Panic Recovered at webSocketHandler():  ", recover)
+			time.Sleep(time.Millisecond * 3000)
+			webSocketHandler(w, r, c)
+			return
+		}
+	}()
 	//log.Println("Web Socket Connection")
 	conn, err := upgrader.Upgrade(w, r, nil)
 
@@ -204,7 +221,14 @@ func RegisterWebSocketDataCallback(callback WebSocketCallback) {
 }
 
 func ReplyToWebSocket(conn *WebSocketConnection, data []byte) {
-
+	defer func() {
+		if recover := recover(); recover != nil {
+			log.Println("Panic Recovered at ReplyToWebSocket():  ", recover)
+			time.Sleep(time.Millisecond * 3000)
+			ReplyToWebSocket(conn, data)
+			return
+		}
+	}()
 	WebSocketConnections.RLock()
 	for _, wsConn := range WebSocketConnections.Connections {
 		ws := wsConn
@@ -222,6 +246,14 @@ func ReplyToWebSocket(conn *WebSocketConnection, data []byte) {
 
 func ReplyToWebSocketJSON(conn *WebSocketConnection, v interface{}) {
 
+	defer func() {
+		if recover := recover(); recover != nil {
+			log.Println("Panic Recovered at ReplyToWebSocketJSON():  ", recover)
+			time.Sleep(time.Millisecond * 3000)
+			ReplyToWebSocketJSON(conn, v)
+			return
+		}
+	}()
 	WebSocketConnections.RLock()
 	for _, wsConn := range WebSocketConnections.Connections {
 		ws := wsConn
@@ -239,6 +271,15 @@ func ReplyToWebSocketJSON(conn *WebSocketConnection, v interface{}) {
 
 func BroadcastWebSocketData(data []byte) {
 
+	defer func() {
+		if recover := recover(); recover != nil {
+			log.Println("Panic Recovered at WebSocketConnections():  ", recover)
+			time.Sleep(time.Millisecond * 3000)
+			BroadcastWebSocketData(data)
+			return
+		}
+	}()
+
 	WebSocketConnections.RLock()
 	for _, wsConn := range WebSocketConnections.Connections {
 		ws := wsConn
@@ -252,6 +293,14 @@ func BroadcastWebSocketData(data []byte) {
 }
 
 func BroadcastWebSocketJSON(v interface{}) {
+	defer func() {
+		if recover := recover(); recover != nil {
+			log.Println("Panic Recovered at BroadcastWebSocketJSON():  ", recover)
+			time.Sleep(time.Millisecond * 3000)
+			BroadcastWebSocketJSON(v)
+			return
+		}
+	}()
 	WebSocketConnections.RLock()
 	for _, wsConn := range WebSocketConnections.Connections {
 		ws := wsConn
@@ -265,6 +314,14 @@ func BroadcastWebSocketJSON(v interface{}) {
 }
 
 func PublishWebSocketJSON(key string, v interface{}) {
+	defer func() {
+		if recover := recover(); recover != nil {
+			log.Println("Panic Recovered at PublishWebSocketJSON():  ", recover)
+			time.Sleep(time.Millisecond * 3000)
+			PublishWebSocketJSON(key, v)
+			return
+		}
+	}()
 	var payload WebSocketPubSubPayload
 	payload.Key = key
 	payload.Content = v
