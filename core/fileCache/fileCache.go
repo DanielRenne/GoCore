@@ -8,12 +8,13 @@ import (
 	"sync"
 
 	"encoding/json"
+	"io/ioutil"
+
 	"github.com/DanielRenne/GoCore/core"
 	"github.com/DanielRenne/GoCore/core/extensions"
 	"github.com/DanielRenne/GoCore/core/serverSettings"
 	"github.com/DanielRenne/GoCore/core/utils"
 	"github.com/golang/groupcache"
-	"io/ioutil"
 )
 
 const (
@@ -203,7 +204,9 @@ func DeleteManifestFileCache(key string) (err error) {
 
 func LoadCachedManifestFromKeyIntoMemory(key string) (err error) {
 	fname := CACHE_MANIFEST_STORAGE_PATH + "/" + key + ".json"
+	ByteManifest.RLock()
 	_, ok := ByteManifest.Cache[key]
+	ByteManifest.RUnlock()
 	if extensions.DoesFileExist(fname) && !ok {
 		var data map[string]int
 		jsonData, err := extensions.ReadFile(fname)
@@ -216,9 +219,9 @@ func LoadCachedManifestFromKeyIntoMemory(key string) (err error) {
 		if err != nil {
 			return err
 		}
-		ByteManifest.RLock()
+		ByteManifest.Lock()
 		ByteManifest.Cache[key] = data
-		ByteManifest.RUnlock()
+		ByteManifest.Unlock()
 	} else if !extensions.DoesFileExist(fname) {
 		UpdateManifestMemoryCache(key, "", 0)
 	}
@@ -226,11 +229,15 @@ func LoadCachedManifestFromKeyIntoMemory(key string) (err error) {
 }
 
 func DoesHashExistInManifestCache(key string, value string) (exists bool) {
+	ByteManifest.RLock()
 	_, ok := ByteManifest.Cache[key]
+	ByteManifest.RUnlock()
 	if !ok {
 		return exists
 	} else {
+		ByteManifest.RLock()
 		_, ok = ByteManifest.Cache[key][value]
+		ByteManifest.RUnlock()
 		if !ok {
 			return exists
 		}

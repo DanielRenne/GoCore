@@ -13,6 +13,8 @@ import (
 	"sync"
 	"time"
 
+	"log"
+
 	"github.com/DanielRenne/GoCore/core/dbServices"
 	"github.com/DanielRenne/GoCore/core/extensions"
 	"github.com/DanielRenne/GoCore/core/fileCache"
@@ -20,7 +22,6 @@ import (
 	"github.com/asaskevich/govalidator"
 	"github.com/fatih/camelcase"
 	"gopkg.in/mgo.v2/bson"
-	"log"
 )
 
 const (
@@ -626,6 +627,13 @@ func NewObjectId() string {
 }
 
 func BootstrapDirectory(directoryName string) (files [][]byte, err error) {
+
+	defer func() {
+		if r := recover(); r != nil {
+			log.Println("Panic Recovered at model.BootstrapDirectory(): " + fmt.Sprintf("%+v", r))
+			return
+		}
+	}()
 
 	var syncedItems BootstrapSync
 	var wg sync.WaitGroup
