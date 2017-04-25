@@ -24,6 +24,7 @@ type WebSocketConnection struct {
 	Id         string
 	Connection *websocket.Conn
 	Req        *http.Request
+	Context    interface{}
 }
 
 type WebSocketConnectionCollection struct {
@@ -229,6 +230,27 @@ func ReplyToWebSocketJSON(conn *WebSocketConnection, v interface{}) {
 			go func() {
 				ws.Lock()
 				ws.Connection.WriteJSON(v)
+				ws.Unlock()
+			}()
+			return
+		}
+	}
+	WebSocketConnections.RUnlock()
+}
+
+func ReplyToWebSocketPubSub(conn *WebSocketConnection, key string, v interface{}) {
+
+	var payload WebSocketPubSubPayload
+	payload.Key = key
+	payload.Content = v
+
+	WebSocketConnections.RLock()
+	for _, wsConn := range WebSocketConnections.Connections {
+		ws := wsConn
+		if ws.Id == conn.Id {
+			go func() {
+				ws.Lock()
+				ws.Connection.WriteJSON(payload)
 				ws.Unlock()
 			}()
 			return
