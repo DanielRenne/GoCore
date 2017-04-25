@@ -1642,16 +1642,6 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 		query.collection = mongo%sCollection
 		`, strings.Title(collection.Name))
 
-		if strings.Title(collection.Name) == "EquipmentCatalog" {
-			val += "var toDelete []Equipment\n"
-			val += "err = query.Filter(Q(\"AccountId\", \"57bfae2bdcba0f7a0be2e763\")).All(&toDelete)\n"
-			val += "if err == nil {\n"
-			val += "	for _, item := range toDelete {\n"
-			val += "		item.Delete()\n"
-			val += "	}\n"
-			val += "}\n"
-		}
-
 		val += heredoc.Docf(`
 		var actualCount int
 		originalCount := len(v)
@@ -1663,7 +1653,7 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 				doc.Id = bson.NewObjectId()
 			}
 			err = query.ById(doc.Id, &original)
-			if err != nil || (err == nil && doc.BootstrapMeta != nil && doc.BootstrapMeta.AlwaysUpdate) {
+			if err != nil || (err == nil && doc.BootstrapMeta != nil && doc.BootstrapMeta.AlwaysUpdate) || "EquipmentCatalog" == "%s" {
 				if doc.BootstrapMeta != nil && doc.BootstrapMeta.DeleteRow {
 					err = doc.Delete()
 					if err != nil {
@@ -1723,7 +1713,7 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 				logger.Message("%s counts are different than original bootstrap and actual inserts, please inpect data." + core.Debug.GetDump("Actual", actualCount, "OriginalCount", originalCount), logger.RED)
 			}
 		}
-`, strings.Title(collection.Name), strings.Title(schema.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name))
+`, strings.Title(collection.Name), strings.Title(schema.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name))
 	}
 	val += "mongo" + strings.Title(collection.Name) + "HasBootStrapped = true\n"
 	val += "return nil\n"
