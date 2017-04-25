@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"encoding/json"
+	"github.com/DanielRenne/GoCore/core"
 	"github.com/DanielRenne/GoCore/core/extensions"
 	"github.com/DanielRenne/GoCore/core/serverSettings"
 	"github.com/DanielRenne/GoCore/core/utils"
@@ -25,12 +26,12 @@ const (
 )
 
 type model struct {
-	sync.Mutex
+	sync.RWMutex
 	BootstrapCache map[string][]string
 }
 
 type byteManifest struct {
-	sync.Mutex
+	sync.RWMutex
 	Cache map[string]map[string]int
 }
 
@@ -65,9 +66,9 @@ func Initialize() {
 }
 
 func WriteBootStrapCacheFile(key string) (err error) {
-	Model.Lock()
+	Model.RLock()
 	caches, ok := Model.BootstrapCache[key]
-	Model.Unlock()
+	Model.RUnlock()
 	if ok {
 		strjson, err := json.Marshal(caches)
 		if err != nil {
@@ -107,10 +108,10 @@ func DeleteBootStrapFileCache(key string) (err error) {
 }
 
 func DeleteAllBootStrapFileCache() (err error) {
-	fname := CACHE_BOOTSTRAP_STORAGE_PATH
-	if extensions.DoesFileExist(fname) {
-		err = os.Remove(fname)
+	if extensions.DoesFileExist(CACHE_BOOTSTRAP_STORAGE_PATH) {
+		err = extensions.RemoveDirectory(CACHE_BOOTSTRAP_STORAGE_PATH)
 		if err != nil {
+			core.Debug.Dump(err)
 			return err
 		}
 		os.MkdirAll(CACHE_BOOTSTRAP_STORAGE_PATH, 0777)
@@ -141,9 +142,9 @@ func LoadCachedBootStrapFromKeyIntoMemory(key string) (err error) {
 			}
 			_, ok := Model.BootstrapCache[key]
 			if ok {
-				Model.Lock()
+				Model.RLock()
 				Model.BootstrapCache[key] = data
-				Model.Unlock()
+				Model.RUnlock()
 			}
 		}
 	}
@@ -160,9 +161,9 @@ func DoesHashExistInCache(key string, value string) (exists bool) {
 }
 
 func WriteManifestCacheFile(key string) (err error) {
-	ByteManifest.Lock()
+	ByteManifest.RLock()
 	caches, ok := ByteManifest.Cache[key]
-	ByteManifest.Unlock()
+	ByteManifest.RUnlock()
 	if ok {
 		strjson, err := json.Marshal(caches)
 		if err != nil {
@@ -215,9 +216,9 @@ func LoadCachedManifestFromKeyIntoMemory(key string) (err error) {
 		if err != nil {
 			return err
 		}
-		ByteManifest.Lock()
+		ByteManifest.RLock()
 		ByteManifest.Cache[key] = data
-		ByteManifest.Unlock()
+		ByteManifest.RUnlock()
 	} else if !extensions.DoesFileExist(fname) {
 		UpdateManifestMemoryCache(key, "", 0)
 	}
@@ -238,10 +239,10 @@ func DoesHashExistInManifestCache(key string, value string) (exists bool) {
 }
 
 func DeleteAllManifestFileCache() (err error) {
-	fname := CACHE_MANIFEST_STORAGE_PATH
-	if extensions.DoesFileExist(fname) {
-		err = os.Remove(fname)
+	if extensions.DoesFileExist(CACHE_MANIFEST_STORAGE_PATH) {
+		err = extensions.RemoveDirectory(CACHE_MANIFEST_STORAGE_PATH)
 		if err != nil {
+			core.Debug.Dump(err)
 			return err
 		}
 		os.MkdirAll(CACHE_MANIFEST_STORAGE_PATH, 0777)
