@@ -500,7 +500,7 @@ func generateNoSQLModel(schema NOSQLSchema, collection NOSQLCollection, driver s
 	case DATABASE_DRIVER_BOLTDB:
 		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "encoding/json", "github.com/asdine/storm", timeImport})
 	case DATABASE_DRIVER_MONGODB:
-		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "github.com/DanielRenne/GoCore/core/serverSettings", "encoding/json", "gopkg.in/mgo.v2", "gopkg.in/mgo.v2/bson", "log", "time", "errors", "encoding/base64", "reflect", "github.com/DanielRenne/GoCore/core/utils", "fmt", "github.com/DanielRenne/GoCore/core/logger", "github.com/DanielRenne/GoCore/core", "github.com/DanielRenne/GoCore/core/serverSettings"})
+		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "github.com/DanielRenne/GoCore/core/serverSettings", "encoding/json", "gopkg.in/mgo.v2", "gopkg.in/mgo.v2/bson", "log", "time", "errors", "encoding/base64", "reflect", "github.com/DanielRenne/GoCore/core/utils", "fmt", "github.com/DanielRenne/GoCore/core/logger", "github.com/DanielRenne/GoCore/core", "github.com/DanielRenne/GoCore/core/serverSettings", "github.com/DanielRenne/GoCore/core/fileCache", "crypto/md5", "encoding/hex", "github.com/DanielRenne/GoCore/core/utils"})
 		// val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "encoding/json", "gopkg.in/mgo.v2/bson", "log", "time"})
 	}
 
@@ -1581,41 +1581,56 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 		val += "dataString := \"\"\n\n"
 	}
 
-	//Now parse the data into an array of the collection
-	val += "var files [][]byte\n"
-	val += "var err error\n\n"
+	val += heredoc.Docf(`
+			var files [][]byte
+			var err error
+			err = fileCache.LoadCachedBootStrapFromKeyIntoMemory("%s")
+			if err != nil {
+				mongo%sHasBootStrapped = true
+				log.Println("Failed to bootstrap data for %s due to caching issue: " + err.Error())
+				return err
+			}
 
-	val += "files, err = BootstrapDirectory(\"" + extensions.MakeFirstLowerCase(collection.Name) + "\")\n\n"
-	val += "if err != nil {\n"
-	val += "	mongo" + strings.Title(collection.Name) + "HasBootStrapped = true\n"
-	val += "	log.Println(\"Failed to bootstrap data for " + strings.Title(collection.Name) + ":  \" + err.Error())\n"
-	val += "}\n\n"
+			files, err = BootstrapDirectory("%s")
+			if err != nil {
+				mongo%sHasBootStrapped = true
+				log.Println("Failed to bootstrap data for %s: " + err.Error())
+				return err
+			}
 
-	val += "if dataString != \"\"{\n"
-	val += "data, err := base64.StdEncoding.DecodeString(dataString)\n"
-	val += "if err != nil{\n"
-	val += "	mongo" + strings.Title(collection.Name) + "HasBootStrapped = true\n"
-	val += "	log.Println(\"Failed to bootstrap data for " + collection.Name + ":  \" + err.Error())\n"
-	val += "	return err\n"
-	val += "}\n"
-	val += "files = append(files, data)"
-	val += "}\n\n"
+			if dataString != "" {
+				data, err := base64.StdEncoding.DecodeString(dataString)
+				if err != nil {
+					mongo%sHasBootStrapped = true
+					log.Println("Failed to bootstrap data for %s: " + err.Error())
+					return err
+				}
+				files = append(files, data)
+			}
 
-	val += "var v []" + strings.Title(schema.Name) + "\n"
-	val += "for _, file := range files{\n"
-	val += "var fileBootstrap []" + strings.Title(schema.Name) + "\n"
-	val += "err = json.Unmarshal(file, &fileBootstrap)\n"
+			var v []%s
+			for _, file := range files{
+				var fileBootstrap []%s
+				hash := md5.Sum(file)
+				hexString := hex.EncodeToString(hash[:])
+				err = json.Unmarshal(file, &fileBootstrap)
+				if !fileCache.DoesHashExistInCache("%s", hexString) {
+					fileCache.UpdateBootStrapMemoryCache("%s", hexString)
+					if err != nil {
+						mongo%sHasBootStrapped = true
+						log.Println("Failed to bootstrap data for %s: " + err.Error())
+						return err
+					}
 
-	val += "if err != nil {\n"
-	val += "	mongo" + strings.Title(collection.Name) + "HasBootStrapped = true\n"
-	val += "	log.Println(\"Failed to bootstrap data for " + strings.Title(collection.Name) + ":  \" + err.Error())\n"
-	val += "	return err\n"
-	val += "}\n\n"
-	val += "for i, _ := range fileBootstrap {\n"
-	val += "fb := fileBootstrap[i]\n"
-	val += "v = append(v, fb)\n"
-	val += "}\n"
-	val += "}\n\n"
+					for i, _ := range fileBootstrap {
+						fb := fileBootstrap[i]
+						v = append(v, fb)
+					}
+				}
+			}
+			fileCache.WriteBootStrapCacheFile("%s")
+
+	`, strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), extensions.MakeFirstLowerCase(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(schema.Name), strings.Title(schema.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name))
 
 	switch driver {
 	case DATABASE_DRIVER_BOLTDB:

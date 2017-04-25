@@ -4,13 +4,38 @@ package fileCache
 
 import (
 	"log"
+	"os"
 	"sync"
 
+	"encoding/json"
 	"github.com/DanielRenne/GoCore/core/extensions"
 	"github.com/DanielRenne/GoCore/core/serverSettings"
+	"github.com/DanielRenne/GoCore/core/utils"
 	"github.com/golang/groupcache"
+	"io/ioutil"
 )
 
+const (
+	CACHE_STORAGE_PATH = "/usr/local/goCore/caches"
+)
+
+const (
+	CACHE_BOOTSTRAP_STORAGE_PATH = CACHE_STORAGE_PATH + "/bootstrap"
+	CACHE_MANIFEST_STORAGE_PATH  = CACHE_STORAGE_PATH + "/manifests"
+)
+
+type model struct {
+	sync.Mutex
+	BootstrapCache map[string][]string
+}
+
+type byteManifest struct {
+	sync.Mutex
+	Cache map[string]map[string]int
+}
+
+var Model model
+var ByteManifest byteManifest
 var peers *groupcache.HTTPPool
 var htmlFileCache *groupcache.Group
 var stringCache *groupcache.Group
@@ -21,17 +46,207 @@ var tempStringCacheSynced = struct {
 	cache map[string]string
 }{cache: make(map[string]string)}
 
-// func init() {
-// 	if serverSettings.WebConfig.Application.Domain != "" {
-// 		initializeGroupCache(serverSettings.WebConfig.Application.Domain)
-// 	}
-// }
+func init() {
+	os.MkdirAll(CACHE_BOOTSTRAP_STORAGE_PATH, 0777)
+	os.MkdirAll(CACHE_MANIFEST_STORAGE_PATH, 0777)
+	Model = model{
+		BootstrapCache: make(map[string][]string, 0),
+	}
+	ByteManifest = byteManifest{
+		Cache: make(map[string]map[string]int, 0),
+	}
+}
 
 //Call Initialize in main before any calls to this package are performed.  serverSettings package must be initialized before fileCache.
 func Initialize() {
 	if serverSettings.WebConfig.Application.Domain != "" {
 		initializeGroupCache(serverSettings.WebConfig.Application.Domain)
 	}
+}
+
+func WriteBootStrapCacheFile(key string) (err error) {
+	Model.Lock()
+	caches, ok := Model.BootstrapCache[key]
+	Model.Unlock()
+	if ok {
+		strjson, err := json.Marshal(caches)
+		if err != nil {
+			return err
+		}
+		err = ioutil.WriteFile(CACHE_BOOTSTRAP_STORAGE_PATH+"/"+key+".json", []byte(strjson), 0777)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func UpdateBootStrapMemoryCache(key string, value string) {
+	Model.Lock()
+	_, ok := Model.BootstrapCache[key]
+	if !ok {
+		Model.BootstrapCache[key] = utils.Array(value)
+	} else {
+		if !DoesHashExistInCache(key, value) {
+			Model.BootstrapCache[key] = append(Model.BootstrapCache[key], value)
+		}
+	}
+	Model.Unlock()
+	return
+}
+
+func DeleteBootStrapFileCache(key string) (err error) {
+	fname := CACHE_BOOTSTRAP_STORAGE_PATH + "/" + key + ".json"
+	if extensions.DoesFileExist(fname) {
+		err = os.Remove(fname)
+		if err != nil {
+			return err
+		}
+	}
+	return
+}
+
+func DeleteAllBootStrapFileCache() (err error) {
+	fname := CACHE_BOOTSTRAP_STORAGE_PATH
+	if extensions.DoesFileExist(fname) {
+		err = os.Remove(fname)
+		if err != nil {
+			return err
+		}
+		os.MkdirAll(CACHE_BOOTSTRAP_STORAGE_PATH, 0777)
+	}
+	return
+}
+
+func LoadCachedBootStrapFromKeyIntoMemory(key string) (err error) {
+	fname := CACHE_BOOTSTRAP_STORAGE_PATH + "/" + key + ".json"
+	if extensions.DoesFileExist(fname) {
+		var size int64
+		size, err = extensions.GetFileSize(fname)
+		if err != nil {
+			return
+		}
+		if size > 0 {
+			UpdateBootStrapMemoryCache(key, "")
+			var data []string
+			jsonData, err := extensions.ReadFile(fname)
+			if err != nil {
+				log.Println("Cache failed to read for " + fname + " deleting file and starting fresh.")
+				DeleteBootStrapFileCache(key)
+				return err
+			}
+			err = json.Unmarshal(jsonData, &data)
+			if err != nil {
+				return err
+			}
+			_, ok := Model.BootstrapCache[key]
+			if ok {
+				Model.Lock()
+				Model.BootstrapCache[key] = data
+				Model.Unlock()
+			}
+		}
+	}
+	return
+}
+
+func DoesHashExistInCache(key string, value string) (exists bool) {
+	caches, ok := Model.BootstrapCache[key]
+	if !ok {
+		return exists
+	} else {
+		return utils.InArray(value, caches)
+	}
+}
+
+func WriteManifestCacheFile(key string) (err error) {
+	ByteManifest.Lock()
+	caches, ok := ByteManifest.Cache[key]
+	ByteManifest.Unlock()
+	if ok {
+		strjson, err := json.Marshal(caches)
+		if err != nil {
+			return err
+		}
+		err = ioutil.WriteFile(CACHE_MANIFEST_STORAGE_PATH+"/"+key+".json", []byte(strjson), 0777)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func UpdateManifestMemoryCache(key string, value string, byteSize int) {
+	ByteManifest.Lock()
+	_, ok := ByteManifest.Cache[key]
+	if !ok {
+		ByteManifest.Cache[key] = make(map[string]int, 0)
+		ByteManifest.Cache[key][value] = byteSize
+	} else {
+		ByteManifest.Cache[key][value] = byteSize
+	}
+	ByteManifest.Unlock()
+	return
+}
+
+func DeleteManifestFileCache(key string) (err error) {
+	fname := CACHE_MANIFEST_STORAGE_PATH + "/" + key + ".json"
+	if extensions.DoesFileExist(fname) {
+		err = os.Remove(fname)
+		if err != nil {
+			return err
+		}
+	}
+	return
+}
+
+func LoadCachedManifestFromKeyIntoMemory(key string) (err error) {
+	fname := CACHE_MANIFEST_STORAGE_PATH + "/" + key + ".json"
+	_, ok := ByteManifest.Cache[key]
+	if extensions.DoesFileExist(fname) && !ok {
+		var data map[string]int
+		jsonData, err := extensions.ReadFile(fname)
+		if err != nil {
+			log.Println("Cache failed to read for " + fname + " deleting file and starting fresh.")
+			DeleteManifestFileCache(key)
+			return err
+		}
+		err = json.Unmarshal(jsonData, &data)
+		if err != nil {
+			return err
+		}
+		ByteManifest.Lock()
+		ByteManifest.Cache[key] = data
+		ByteManifest.Unlock()
+	} else if !extensions.DoesFileExist(fname) {
+		UpdateManifestMemoryCache(key, "", 0)
+	}
+	return
+}
+
+func DoesHashExistInManifestCache(key string, value string) (exists bool) {
+	_, ok := ByteManifest.Cache[key]
+	if !ok {
+		return exists
+	} else {
+		_, ok = ByteManifest.Cache[key][value]
+		if !ok {
+			return exists
+		}
+		return true
+	}
+}
+
+func DeleteAllManifestFileCache() (err error) {
+	fname := CACHE_MANIFEST_STORAGE_PATH
+	if extensions.DoesFileExist(fname) {
+		err = os.Remove(fname)
+		if err != nil {
+			return err
+		}
+		os.MkdirAll(CACHE_MANIFEST_STORAGE_PATH, 0777)
+	}
+	return
 }
 
 // Returns the html by path (key) from group cache

@@ -109,6 +109,12 @@ func Int64ToString(val int64) string {
 	return strconv.FormatInt(val, 10)
 }
 
+func Int64ToInt32(val int64) (ret int) {
+	tempLong := ((val >> 32) << 32) //shift it right then left 32 bits, which zeroes the lower half of the long
+	ret = (int)(val - tempLong)
+	return ret
+}
+
 func BoolToString(val bool) string {
 	return strconv.FormatBool(val)
 }

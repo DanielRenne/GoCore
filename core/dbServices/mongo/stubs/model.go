@@ -15,10 +15,12 @@ import (
 
 	"github.com/DanielRenne/GoCore/core/dbServices"
 	"github.com/DanielRenne/GoCore/core/extensions"
+	"github.com/DanielRenne/GoCore/core/fileCache"
 	"github.com/DanielRenne/GoCore/core/serverSettings"
 	"github.com/asaskevich/govalidator"
 	"github.com/fatih/camelcase"
 	"gopkg.in/mgo.v2/bson"
+	"log"
 )
 
 const (
@@ -633,6 +635,11 @@ func BootstrapDirectory(directoryName string) (files [][]byte, err error) {
 		return
 	}
 
+	err = fileCache.LoadCachedManifestFromKeyIntoMemory(directoryName)
+	if err != nil {
+		return
+	}
+
 	err = filepath.Walk(path, func(path string, f os.FileInfo, errWalk error) (err error) {
 
 		if errWalk != nil {
@@ -640,7 +647,30 @@ func BootstrapDirectory(directoryName string) (files [][]byte, err error) {
 			return
 		}
 
-		if filepath.Ext(f.Name()) == ".json" {
+		var readFile bool
+		if !f.IsDir() && !fileCache.DoesHashExistInManifestCache(directoryName, f.Name()) {
+			fileCache.UpdateManifestMemoryCache(directoryName, f.Name(), extensions.Int64ToInt32(f.Size()))
+			readFile = true
+		}
+
+		if !f.IsDir() && fileCache.DoesHashExistInManifestCache(directoryName, f.Name()) {
+			var cachedSize int
+			fileCache.ByteManifest.Lock()
+			cachedSize = fileCache.ByteManifest.Cache[directoryName][f.Name()]
+			fileCache.ByteManifest.Unlock()
+			actualRetailPrice := extensions.Int64ToInt32(f.Size())
+			if cachedSize != actualRetailPrice {
+				fileCache.UpdateManifestMemoryCache(directoryName, f.Name(), extensions.Int64ToInt32(f.Size()))
+				readFile = true
+				log.Println(f.Name() + " is being read because of a difference in size (cached:" + extensions.IntToString(cachedSize) + " new bytes: " + extensions.IntToString(actualRetailPrice) + ")")
+			}
+		}
+
+		if f.IsDir() {
+			readFile = true
+		}
+
+		if readFile && filepath.Ext(f.Name()) == ".json" {
 			wg.Add(1)
 
 			go func() {
@@ -658,6 +688,9 @@ func BootstrapDirectory(directoryName string) (files [][]byte, err error) {
 		return
 	})
 
+	if err == nil {
+		fileCache.WriteManifestCacheFile(directoryName)
+	}
 	wg.Wait()
 	files = syncedItems.Items
 
