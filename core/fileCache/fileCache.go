@@ -84,16 +84,20 @@ func WriteBootStrapCacheFile(key string) (err error) {
 }
 
 func UpdateBootStrapMemoryCache(key string, value string) {
-	Model.Lock()
+	Model.RLock()
 	_, ok := Model.BootstrapCache[key]
+	Model.RUnlock()
 	if !ok {
+		Model.Lock()
 		Model.BootstrapCache[key] = utils.Array(value)
+		Model.Unlock()
 	} else {
 		if !DoesHashExistInCache(key, value) {
+			Model.Lock()
 			Model.BootstrapCache[key] = append(Model.BootstrapCache[key], value)
+			Model.Unlock()
 		}
 	}
-	Model.Unlock()
 	return
 }
 
@@ -141,11 +145,14 @@ func LoadCachedBootStrapFromKeyIntoMemory(key string) (err error) {
 			if err != nil {
 				return err
 			}
+
+			Model.RLock()
 			_, ok := Model.BootstrapCache[key]
+			Model.RUnlock()
 			if ok {
-				Model.RLock()
+				Model.Lock()
 				Model.BootstrapCache[key] = data
-				Model.RUnlock()
+				Model.Unlock()
 			}
 		}
 	}
@@ -153,7 +160,9 @@ func LoadCachedBootStrapFromKeyIntoMemory(key string) (err error) {
 }
 
 func DoesHashExistInCache(key string, value string) (exists bool) {
+	Model.RLock()
 	caches, ok := Model.BootstrapCache[key]
+	Model.RUnlock()
 	if !ok {
 		return exists
 	} else {
