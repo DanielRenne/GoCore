@@ -5,6 +5,7 @@ import (
 	"compress/gzip"
 	"crypto/md5"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -130,6 +131,26 @@ func WriteAndGoFormat(value string, path string) error {
 
 func ReadFile(path string) ([]byte, error) {
 	return ioutil.ReadFile(path)
+}
+
+func ReadFileAndParse(path string, v interface{}) (err error) {
+	data, err := ioutil.ReadFile(path)
+	if err != nil {
+		return
+	}
+
+	err = json.Unmarshal(data, &v)
+	return
+}
+
+func ParseAndWriteFile(path string, v interface{}, perm os.FileMode) (err error) {
+	data, err := json.Marshal(v)
+	if err != nil {
+		return
+	}
+
+	err = WriteToFile(string(data), path, perm)
+	return
 }
 
 func WriteToFile(value string, path string, perm os.FileMode) error {
