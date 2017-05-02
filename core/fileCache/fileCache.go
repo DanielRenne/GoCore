@@ -36,6 +36,7 @@ type byteManifest struct {
 	Cache map[string]map[string]int
 }
 
+var allGroupCacheDomains []string
 var Model model
 var ByteManifest byteManifest
 var peers *groupcache.HTTPPool
@@ -320,12 +321,15 @@ func SetGroupCache(servers []string) {
 func initializeGroupCache(domain string) {
 
 	//For now use the app domain, later we will read from a list of domains.
-	peers = groupcache.NewHTTPPool(domain)
-	htmlFileCache = groupcache.NewGroup("htmlFileCache", 64<<20, groupcache.GetterFunc(handleHtmlFileCache))
-	stringCache = groupcache.NewGroup("stringCache", 64<<20, groupcache.GetterFunc(handleStringCache))
+	if !utils.InArray(domain, allGroupCacheDomains) {
+		// just in case recover happens on main app, we cannot initialize the same cache twice.
+		peers = groupcache.NewHTTPPool(domain)
+		allGroupCacheDomains = append(allGroupCacheDomains, domain)
+		htmlFileCache = groupcache.NewGroup("htmlFileCache", 64<<20, groupcache.GetterFunc(handleHtmlFileCache))
+		stringCache = groupcache.NewGroup("stringCache", 64<<20, groupcache.GetterFunc(handleStringCache))
 
-	log.Println("Initialized Group Cache Succesfully.")
-
+		log.Println("Initialized Group Cache Succesfully.")
+	}
 }
 
 // Handles group cache callback on getting http file cache requests.

@@ -53,18 +53,24 @@ var upgrader = websocket.Upgrader{
 var WebSocketConnections WebSocketConnectionCollection
 var WebSocketCallbacks WebSocketCallbackSync
 
-func Initialize(path string) {
-	serverSettings.Initialize(path, "webConfig.json")
-	dbServices.Initialize()
+func Initialize(path string) (err error) {
+	err = serverSettings.Initialize(path, "webConfig.json")
+	if err != nil {
+		return
+	}
 
 	if serverSettings.WebConfig.Application.ReleaseMode == "release" {
 		ginServer.Initialize(gin.ReleaseMode)
 	} else {
 		ginServer.Initialize(gin.DebugMode)
 	}
-
 	fileCache.Initialize()
 
+	err = dbServices.Initialize()
+	if err != nil {
+		return
+	}
+	return
 }
 
 func Run() {

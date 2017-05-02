@@ -180,8 +180,9 @@ func RunDBCreate() {
 }
 
 func walkNoSQLSchema() {
-
+	allCollections.Lock()
 	allCollections.Entities = make(map[string]entityList)
+	allCollections.Unlock()
 	basePath := serverSettings.APP_LOCATION + "/db/schemas"
 
 	fileNames, errReadDir := ioutil.ReadDir(basePath)
@@ -376,8 +377,9 @@ func initializeModelFile() {
 }
 
 func finalizeModelFile(versionDir string) {
-
+	allCollections.RLock()
 	sort.Sort(SchemaNameSorter(allCollections.Collections))
+	allCollections.RUnlock()
 
 	modelToWrite += "func ResolveEntity(key string) modelEntity{\n\n"
 	modelToWrite += "switch key{\n"

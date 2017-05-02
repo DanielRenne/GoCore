@@ -89,7 +89,7 @@ var APP_LOCATION string
 var GOCORE_PATH string
 var SWAGGER_UI_PATH string
 
-func Initialize(path string, configurationFile string) {
+func Initialize(path string, configurationFile string) (err error) {
 
 	APP_LOCATION = path
 	SWAGGER_UI_PATH = APP_LOCATION + "/web/swagger/dist"
@@ -117,6 +117,7 @@ func Initialize(path string, configurationFile string) {
 			WebConfig.DbConnection = dbConnection
 		}
 	}
+	return
 }
 
 //Sets the GoCore path for go core packages to reference.
