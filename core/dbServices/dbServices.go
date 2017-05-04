@@ -15,8 +15,10 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"sync"
 )
 
+var DBMutex *sync.RWMutex
 var DB *sql.DB
 var BoltDB *storm.DB
 var MongoSession *mgo.Session
@@ -32,6 +34,24 @@ const (
 	DATABASE_DRIVER_BOLTDB  = "boltDB"
 	DATABASE_DRIVER_MONGODB = "mongoDB"
 )
+
+func init() {
+	DBMutex = &sync.RWMutex{}
+}
+
+func ReadMongoDB() (mdb *mgo.Database) {
+	DBMutex.RLock()
+	mdb = MongoDB
+	DBMutex.RUnlock()
+	return mdb
+}
+
+func ReadMongoDBAuth() (mdb *mgo.Database) {
+	DBMutex.RLock()
+	mdb = MongoDBAuth
+	DBMutex.RUnlock()
+	return mdb
+}
 
 func Initialize() error {
 
@@ -52,14 +72,18 @@ func Initialize() error {
 
 func openSQLDriver() error {
 	var err error
+	DBMutex.Lock()
 	DB, err = sql.Open(serverSettings.WebConfig.DbConnection.Driver, serverSettings.WebConfig.DbConnection.ConnectionString)
+	DBMutex.Unlock()
 
 	if err != nil {
 		color.Red("Open connection failed:" + err.Error())
 		return err
 	}
 
+	DBMutex.RLock()
 	color.Cyan("Open Database Connections: " + string(DB.Stats().OpenConnections))
+	DBMutex.RUnlock()
 	return nil
 }
 
@@ -71,7 +95,9 @@ func openBolt() error {
 
 	// (Create if not exist) open a database
 	var err error
+	DBMutex.Lock()
 	BoltDB, err = storm.Open(myDBDir, storm.AutoIncrement())
+	DBMutex.Unlock()
 
 	if err != nil {
 		color.Red("Failed to create or open boltDB Database at " + myDBDir + ":\n\t" + err.Error())
@@ -142,15 +168,22 @@ func openMongo() error {
 	}
 
 	var err error
+	DBMutex.Lock()
 	MongoSession, err = mgo.Dial(serverSettings.WebConfig.DbConnection.ConnectionString) // open an connection -> Dial function
-	if err != nil {                                                                      //  if you have a
+	DBMutex.Unlock()
+
+	if err != nil { //  if you have a
 		color.Red("Failed to create or open mongo Database at " + serverSettings.WebConfig.DbConnection.ConnectionString + "\n\t" + err.Error())
 		return err
 	}
 
 	if serverSettings.WebConfig.HasDbAuth && serverSettings.WebConfig.DbAuthConnection.AuthServer {
+
+		DBMutex.Lock()
 		MongoSessionAuth, err = mgo.Dial(serverSettings.WebConfig.DbAuthConnection.ConnectionString) // open an connection -> Dial function
-		if err != nil {                                                                              //  if you have a
+		DBMutex.Unlock()
+
+		if err != nil { //  if you have a
 			color.Red("Failed to create or open mongo Database at " + serverSettings.WebConfig.DbAuthConnection.ConnectionString + "\n\t" + err.Error())
 			return err
 		}
@@ -160,11 +193,11 @@ func openMongo() error {
 }
 
 func connectMongoDB() error {
+	DBMutex.Lock()
 	MongoSession.SetMode(mgo.Monotonic, true) // Optional. Switch the session to a monotonic behavior.
 	MongoSession.SetSyncTimeout(2000 * time.Millisecond)
 
 	MongoDB = MongoSession.DB(serverSettings.WebConfig.DbConnection.Database)
-
 	color.Green("Mongo Database Connected Successfully.")
 	if serverSettings.WebConfig.HasDbAuth {
 		MongoSessionAuth.SetMode(mgo.Monotonic, true) // Optional. Switch the session to a monotonic behavior.
@@ -172,5 +205,6 @@ func connectMongoDB() error {
 		MongoDBAuth = MongoSession.DB(serverSettings.WebConfig.DbAuthConnection.Database)
 		color.Green("Mongo Authentication Database Connected Successfully.")
 	}
+	DBMutex.Unlock()
 	return nil
 }

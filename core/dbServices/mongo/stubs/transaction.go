@@ -10,6 +10,7 @@ import (
 	"github.com/DanielRenne/GoCore/core/dbServices"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"sync"
 )
 
 var Transactions modelTransactions
@@ -17,12 +18,15 @@ var Transactions modelTransactions
 type modelTransactions struct{}
 
 var mongoTransactionsCollection *mgo.Collection
+var collectionTransactionMutex *sync.RWMutex
 
 func init() {
+	collectionTransactionMutex = &sync.RWMutex{}
 	go func() {
 
 		for {
-			if dbServices.MongoDB != nil {
+			mdb := dbServices.ReadMongoDB()
+			if mdb != nil {
 				initTransactions()
 				return
 			}
@@ -32,10 +36,15 @@ func init() {
 }
 
 func initTransactions() {
+	mdb := dbServices.ReadMongoDB()
 	log.Println("Building Indexes for MongoDB collection Transactions:")
-	mongoTransactionsCollection = dbServices.MongoDB.C("Transactions")
+	collectionTransactionMutex.Lock()
+	mongoTransactionsCollection = mdb.C("Transactions")
+	collectionTransactionMutex.Unlock()
 	ci := mgo.CollectionInfo{ForceIdIndex: true}
+	collectionTransactionMutex.RLock()
 	mongoTransactionsCollection.Create(&ci)
+	collectionTransactionMutex.RUnlock()
 	var obj modelTransactions
 	obj.Index()
 }
@@ -74,13 +83,20 @@ func (obj modelTransactions) Query() *Query {
 	var query Query
 
 	for {
-		if mongoTransactionsCollection != nil {
+		collectionTransactionMutex.RLock()
+		collection := mongoTransactionsCollection
+		collectionTransactionMutex.RUnlock()
+
+		if collection != nil {
 			break
 		}
 		time.Sleep(time.Millisecond * 2)
 	}
 
+	collectionTransactionMutex.RLock()
 	query.collection = mongoTransactionsCollection
+	collectionTransactionMutex.RUnlock()
+
 	return &query
 }
 
@@ -96,7 +112,9 @@ func (obj *modelTransactions) Index() error {
 			index.Unique = true
 		}
 
+		collectionTransactionMutex.RLock()
 		err := mongoTransactionsCollection.EnsureIndex(index)
+		collectionTransactionMutex.RUnlock()
 		if err != nil {
 			log.Println("Failed to create index for Transaction." + key + ":  " + err.Error())
 		} else {
@@ -115,14 +133,17 @@ func (obj *modelTransactions) New(userId string) (*Transaction, error) {
 }
 
 func (self *Transaction) Save() error {
-	if mongoTransactionsCollection == nil {
+	collectionTransactionMutex.RLock()
+	collection := mongoTransactionsCollection
+	collectionTransactionMutex.RUnlock()
+	if collection == nil {
 		initTransactions()
 	}
 	objectId := bson.NewObjectId()
 	if self.Id != "" {
 		objectId = self.Id
 	}
-	changeInfo, err := mongoTransactionsCollection.UpsertId(objectId, &self)
+	changeInfo, err := collection.UpsertId(objectId, &self)
 	if err != nil {
 		log.Println("Failed to upsertId for Transaction:  " + err.Error())
 		return err
@@ -134,7 +155,10 @@ func (self *Transaction) Save() error {
 }
 
 func (self *Transaction) Delete() error {
-	return mongoTransactionsCollection.Remove(self)
+	collectionTransactionMutex.RLock()
+	collection := mongoTransactionsCollection
+	collectionTransactionMutex.RUnlock()
+	return collection.Remove(self)
 }
 
 func (self *Transaction) Begin() error {

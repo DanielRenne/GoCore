@@ -4,27 +4,32 @@ package core
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/DanielRenne/GoCore/core/extensions"
+	"github.com/DanielRenne/GoCore/core/serverSettings"
+	"github.com/davidrenne/reflections"
+	"github.com/go-errors/errors"
 	"log"
 	"os"
 	"reflect"
 	"runtime"
 	"runtime/debug"
 	"strings"
+	"sync"
 	"time"
-
-	"github.com/DanielRenne/GoCore/core/extensions"
-	"github.com/DanielRenne/GoCore/core/serverSettings"
-	"github.com/davidrenne/reflections"
-	"github.com/go-errors/errors"
 )
-
-var TransactionLog string
 
 type core_debug struct{}
 
 var core_logger = log.New(os.Stdout, "", 0)
+
+var TransactionLog string
 var Debug = core_debug{}
 var Logger = core_logger
+var TransactionLogMutex *sync.RWMutex
+
+func init() {
+	TransactionLogMutex = &sync.RWMutex{}
+}
 
 // Nop is a dummy function that can be called in source files where
 // other debug functions are constantly added and removed.
@@ -110,25 +115,33 @@ func (self *core_debug) Dump(valuesOriginal ...interface{}) {
 	l := "!!!!!!!!!!!!! DEBUG " + t.String() + "!!!!!!!!!!!!!\n\n"
 	Logger.Println(l)
 	if serverSettings.WebConfig.Application.ReleaseMode == "development" {
+		TransactionLogMutex.Lock()
 		TransactionLog += l
+		TransactionLogMutex.Unlock()
 	}
 	for _, value := range valuesOriginal {
 		l := self.DumpBase(value)
 		Logger.Print(l)
 		if serverSettings.WebConfig.Application.ReleaseMode == "development" {
+			TransactionLogMutex.Lock()
 			TransactionLog += l
+			TransactionLogMutex.Unlock()
 		}
 	}
 	l = self.ThrowAndPrintError()
 	Logger.Print(l)
 
 	if serverSettings.WebConfig.Application.ReleaseMode == "development" {
+		TransactionLogMutex.Lock()
 		TransactionLog += l
+		TransactionLogMutex.Unlock()
 	}
 	l = "!!!!!!!!!!!!! ENDDEBUG " + t.String() + "!!!!!!!!!!!!!"
 	Logger.Println(l)
 	if serverSettings.WebConfig.Application.ReleaseMode == "development" {
+		TransactionLogMutex.Lock()
 		TransactionLog += l
+		TransactionLogMutex.Unlock()
 	}
 }
 
@@ -175,9 +188,8 @@ func (self *core_debug) DumpBase(values ...interface{}) (output string) {
 				var rawBytes []byte
 				rawBytes, err = json.MarshalIndent(value, "", "\t")
 				if err == nil {
-					value = string(rawBytes[:])
+					output += fmt.Sprintf("#### %-39s ####\n%+v", kind, string(rawBytes[:]))
 				}
-				output += fmt.Sprintf("#### %-39s ####\n%+v", kind, value)
 			} else {
 				if strings.TrimSpace(kind) == "string" {
 					var stringVal = value.(string)

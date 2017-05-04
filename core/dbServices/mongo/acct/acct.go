@@ -15,11 +15,13 @@ func init() {
 	go func() {
 
 		for {
-			if dbServices.MongoSession != nil {
+			dbServices.DBMutex.RLock()
+			session := dbServices.MongoSession
+			dbServices.DBMutex.RUnlock()
+			if session != nil {
 				log.Println("Building Indexes for MongoDB collection Accounts:")
 				return
 			}
-
 			time.Sleep(200 * time.Millisecond)
 
 		}

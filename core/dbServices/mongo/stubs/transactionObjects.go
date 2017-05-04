@@ -18,9 +18,10 @@ func init() {
 	go func() {
 
 		for {
-			if dbServices.MongoDB != nil {
+			mdb := dbServices.ReadMongoDB()
+			if mdb != nil {
 				log.Println("Building Indexes for MongoDB collection TransactionObjects:")
-				mongoTransactionObjectsCollection = dbServices.MongoDB.C("TransactionObjects")
+				mongoTransactionObjectsCollection = mdb.C("TransactionObjects")
 				ci := mgo.CollectionInfo{ForceIdIndex: true}
 				mongoTransactionObjectsCollection.Create(&ci)
 				var obj TransactionObjects

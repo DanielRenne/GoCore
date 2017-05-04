@@ -10,6 +10,7 @@ import (
 	"github.com/DanielRenne/GoCore/core/serverSettings"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"sync"
 )
 
 var HistCollection modelHistCollection
@@ -17,12 +18,16 @@ var HistCollection modelHistCollection
 type modelHistCollection struct{}
 
 var mongoHistCollectionCollection *mgo.Collection
+var collectionHistCollectionMutex *sync.RWMutex
 
 func init() {
+	collectionHistCollectionMutex = &sync.RWMutex{}
 	go func() {
 
 		for {
-			if (dbServices.MongoDB != nil && !serverSettings.WebConfig.HasDbAuth) || (serverSettings.WebConfig.HasDbAuth && dbServices.MongoDBAuth != nil) {
+			mdb := dbServices.ReadMongoDB()
+			mdba := dbServices.ReadMongoDBAuth()
+			if (mdb != nil && !serverSettings.WebConfig.HasDbAuth) || (serverSettings.WebConfig.HasDbAuth && mdba != nil) {
 				initHistCollection()
 				return
 			}
@@ -36,7 +41,9 @@ func initHistCollection() {
 	fmt.Sprint(serverSettings.WebConfig.HasDbAuth)
 	//CollectionVariable
 	ci := mgo.CollectionInfo{ForceIdIndex: true}
+	collectionHistCollectionMutex.RLock()
 	mongoHistCollectionCollection.Create(&ci)
+	collectionHistCollectionMutex.RUnlock()
 	HistCollection.Index()
 }
 
@@ -52,12 +59,19 @@ type HistEntity struct {
 func (obj modelHistCollection) Query() *Query {
 	var query Query
 	for {
-		if mongoHistCollectionCollection != nil {
+		collectionHistCollectionMutex.RLock()
+		collection := mongoHistCollectionCollection
+		collectionHistCollectionMutex.RUnlock()
+		if collection != nil {
 			break
 		}
 		time.Sleep(time.Millisecond * 2)
 	}
-	query.collection = mongoHistCollectionCollection
+	collectionHistCollectionMutex.RLock()
+	collection := mongoHistCollectionCollection
+	collectionHistCollectionMutex.RUnlock()
+
+	query.collection = collection
 	return &query
 }
 
@@ -107,8 +121,10 @@ func (obj *modelHistCollection) Index() error {
 		if value == "unique" {
 			index.Unique = true
 		}
-
-		err := mongoHistCollectionCollection.EnsureIndex(index)
+		collectionHistCollectionMutex.RLock()
+		collection := mongoHistCollectionCollection
+		collectionHistCollectionMutex.RUnlock()
+		err := collection.EnsureIndex(index)
 		if err != nil {
 			log.Println("Failed to create index for HistEntity." + key + ":  " + err.Error())
 		} else {
@@ -123,14 +139,19 @@ func (obj *modelHistCollection) New() *HistEntity {
 }
 
 func (self *HistEntity) Save() error {
-	if mongoHistCollectionCollection == nil {
+	collectionHistCollectionMutex.RLock()
+	collection := mongoHistCollectionCollection
+	collectionHistCollectionMutex.RUnlock()
+	if collection == nil {
 		initHistCollection()
 	}
 	objectId := bson.NewObjectId()
 	if self.Id != "" {
 		objectId = self.Id
 	}
+	collectionHistCollectionMutex.RLock()
 	changeInfo, err := mongoHistCollectionCollection.UpsertId(objectId, &self)
+	collectionHistCollectionMutex.RUnlock()
 	if err != nil {
 		log.Println("Failed to upsertId for HistEntity:  " + err.Error())
 		return err
@@ -146,7 +167,10 @@ func (obj *HistEntity) Reflect() []Field {
 }
 
 func (self *HistEntity) Delete() error {
-	return mongoHistCollectionCollection.Remove(self)
+	collectionHistCollectionMutex.RLock()
+	collection := mongoHistCollectionCollection
+	collectionHistCollectionMutex.RUnlock()
+	return collection.Remove(self)
 }
 
 func (self *HistEntity) SaveWithTran(t *Transaction) error {

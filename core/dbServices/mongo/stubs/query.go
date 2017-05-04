@@ -1446,7 +1446,9 @@ func (self *Query) handleQueryError(err error, callback queryError) error {
 		for i := 0; i < 2; i++ {
 
 			log.Println("Attempting to Refresh Mongo Session")
+			dbServices.DBMutex.Lock()
 			dbServices.MongoSession.Refresh()
+			dbServices.DBMutex.Unlock()
 
 			err = callback()
 			if !self.isDBConnectionError(err) {
