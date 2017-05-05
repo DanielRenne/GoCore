@@ -159,14 +159,8 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context) {
 		}
 	}()
 
-	//Close Message
-	closeHandler := func(code int, text string) error {
-		deleteWebSocket(wsConn)
-		return nil
-	}
-
-	conn.SetCloseHandler(closeHandler)
-
+	
+	
 	WebSocketConnections.Lock()
 	WebSocketConnections.Connections = append(WebSocketConnections.Connections, wsConn)
 	WebSocketConnections.Unlock()
