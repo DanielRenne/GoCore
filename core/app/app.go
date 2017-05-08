@@ -20,7 +20,7 @@ import (
 )
 
 type WebSocketConnection struct {
-	sync.Mutex
+	sync.RWMutex
 	Id         string
 	Connection *websocket.Conn
 	Req        *http.Request
@@ -159,8 +159,6 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context) {
 		}
 	}()
 
-	
-	
 	WebSocketConnections.Lock()
 	WebSocketConnections.Connections = append(WebSocketConnections.Connections, wsConn)
 	WebSocketConnections.Unlock()
