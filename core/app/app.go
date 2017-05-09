@@ -227,6 +227,9 @@ func ReplyToWebSocket(conn *WebSocketConnection, data []byte) {
 			ReplyToWebSocket(conn, data)
 			return
 		}
+
+		//clear out locks when this is done
+		WebSocketConnections.RUnlock()
 	}()
 	WebSocketConnections.RLock()
 	for _, wsConn := range WebSocketConnections.Connections {
@@ -240,7 +243,6 @@ func ReplyToWebSocket(conn *WebSocketConnection, data []byte) {
 			return
 		}
 	}
-	WebSocketConnections.RUnlock()
 }
 
 func ReplyToWebSocketJSON(conn *WebSocketConnection, v interface{}) {
@@ -252,6 +254,7 @@ func ReplyToWebSocketJSON(conn *WebSocketConnection, v interface{}) {
 			ReplyToWebSocketJSON(conn, v)
 			return
 		}
+		WebSocketConnections.RUnlock()
 	}()
 	WebSocketConnections.RLock()
 	for _, wsConn := range WebSocketConnections.Connections {
@@ -265,16 +268,17 @@ func ReplyToWebSocketJSON(conn *WebSocketConnection, v interface{}) {
 			return
 		}
 	}
-	WebSocketConnections.RUnlock()
 }
 
 func ReplyToWebSocketPubSub(conn *WebSocketConnection, key string, v interface{}) {
+
+	WebSocketConnections.RLock()
+	defer WebSocketConnections.RUnlock()
 
 	var payload WebSocketPubSubPayload
 	payload.Key = key
 	payload.Content = v
 
-	WebSocketConnections.RLock()
 	for _, wsConn := range WebSocketConnections.Connections {
 		ws := wsConn
 		if ws.Id == conn.Id {
@@ -286,7 +290,6 @@ func ReplyToWebSocketPubSub(conn *WebSocketConnection, key string, v interface{}
 			return
 		}
 	}
-	WebSocketConnections.RUnlock()
 }
 
 func BroadcastWebSocketData(data []byte) {
