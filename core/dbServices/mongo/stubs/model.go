@@ -626,7 +626,7 @@ func NewObjectId() string {
 	return bson.NewObjectId().Hex()
 }
 
-func BootstrapDirectory(directoryName string) (files [][]byte, err error) {
+func BootstrapDirectory(directoryName string, collectionCount int) (files [][]byte, err error) {
 
 	defer func() {
 		if r := recover(); r != nil {
@@ -674,7 +674,7 @@ func BootstrapDirectory(directoryName string) (files [][]byte, err error) {
 			}
 		}
 
-		if f.IsDir() {
+		if f.IsDir() || collectionCount == 0 {
 			readFile = true
 		}
 

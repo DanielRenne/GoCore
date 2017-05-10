@@ -1504,7 +1504,20 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 	val += "if serverSettings.WebConfig.Application.BootstrapData == false {\n"
 	val += "	obj.BootStrapComplete()\n"
 	val += "	return nil\n"
-	val += "}\n"
+	val += "}\n\n"
+
+	val += heredoc.Docf(`
+	var isError bool
+	var query Query
+	collection%sMutex.RLock()
+	query.collection = mongo%sCollection
+	collection%sMutex.RUnlock()
+	`, strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name))
+
+	val += "cnt, errCount := query.Count()\n"
+	val += "if errCount != nil{\n"
+	val += "cnt = 1\n"
+	val += "}\n\n"
 
 	//First check if the path exists to bootstrap data
 	path := serverSettings.APP_LOCATION + "/db/bootstrap/" + extensions.MakeFirstLowerCase(collection.Name) + "/" + extensions.MakeFirstLowerCase(collection.Name) + ".json"
@@ -1533,7 +1546,7 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 				return err
 			}
 
-			files, err = BootstrapDirectory("%s")
+			files, err = BootstrapDirectory("%s", cnt)
 			if err != nil {
 				obj.BootStrapComplete()
 				log.Println("Failed to bootstrap data for %s: " + err.Error())
@@ -1556,7 +1569,7 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 				hash := md5.Sum(file)
 				hexString := hex.EncodeToString(hash[:])
 				err = json.Unmarshal(file, &fileBootstrap)
-				if !fileCache.DoesHashExistInCache("%s", hexString) {
+				if !fileCache.DoesHashExistInCache("%s", hexString) || cnt == 0 {
 					fileCache.UpdateBootStrapMemoryCache("%s", hexString)
 					if err != nil {
 						obj.BootStrapComplete()
@@ -1578,13 +1591,6 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 	case DATABASE_DRIVER_BOLTDB:
 		val += ""
 	case DATABASE_DRIVER_MONGODB:
-		val += heredoc.Docf(`
-		var isError bool
-		var query Query
-		collection%sMutex.RLock()
-		query.collection = mongo%sCollection
-		collection%sMutex.RUnlock()
-		`, strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name))
 
 		val += heredoc.Docf(`
 		var actualCount int
