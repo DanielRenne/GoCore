@@ -1570,12 +1570,14 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 				hexString := hex.EncodeToString(hash[:])
 				err = json.Unmarshal(file, &fileBootstrap)
 				if !fileCache.DoesHashExistInCache("%s", hexString) || cnt == 0 {
-					fileCache.UpdateBootStrapMemoryCache("%s", hexString)
 					if err != nil {
-						obj.BootStrapComplete()
-						log.Println("Failed to bootstrap data for %s: " + err.Error())
-						return err
+
+						logger.Message("Failed to bootstrap data for %s: " + err.Error(), logger.RED)
+						utils.TalkDirtyToMe("Failed to bootstrap data for %s: " + err.Error())
+						continue
 					}
+
+					fileCache.UpdateBootStrapMemoryCache("%s", hexString)
 
 					for i, _ := range fileBootstrap {
 						fb := fileBootstrap[i]
@@ -1585,7 +1587,7 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 			}
 			fileCache.WriteBootStrapCacheFile("%s")
 
-	`, strings.Title(collection.Name), strings.Title(collection.Name), extensions.MakeFirstLowerCase(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(schema.Name), strings.Title(schema.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name))
+	`, strings.Title(collection.Name), strings.Title(collection.Name), extensions.MakeFirstLowerCase(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(schema.Name), strings.Title(schema.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name))
 
 	switch driver {
 	case DATABASE_DRIVER_BOLTDB:
