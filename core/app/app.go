@@ -2,6 +2,7 @@ package app
 
 import (
 	"crypto/rand"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -348,6 +349,10 @@ func PublishWebSocketJSON(key string, v interface{}) {
 	var payload WebSocketPubSubPayload
 	payload.Key = key
 	payload.Content = v
+
+	//Serialize and Deserialize to prevent Race Conditions from caller.
+	data, _ := json.Marshal(payload)
+	json.Unmarshal(data, &payload)
 
 	WebSocketConnections.RLock()
 	for _, wsConn := range WebSocketConnections.Connections {
