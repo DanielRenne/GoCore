@@ -13,7 +13,7 @@ import (
 
 type Color int
 
-var goRoutineId int32
+var TotalSystemGoRoutines int32
 
 const (
 	RED     = 1
@@ -46,12 +46,13 @@ func Message(message string, c Color) {
 
 func deferGoRoutine(routineDesc string, goRoutineIdStarted int32) {
 	TimeTrack(time.Now(), "gopher["+extensions.Int32ToString(goRoutineIdStarted)+"]["+routineDesc+"] "+time.Now().String()+" Ended")
+	atomic.AddInt32(&TotalSystemGoRoutines, -1)
 }
 
 func GoRoutineLogger(fn func(), routineDesc string) {
 	if serverSettings.WebConfig.Application.LogGophers {
-		atomic.AddInt32(&goRoutineId, 1)
-		goRoutineIdStarted := atomic.LoadInt32(&goRoutineId)
+		atomic.AddInt32(&TotalSystemGoRoutines, 1)
+		goRoutineIdStarted := atomic.LoadInt32(&TotalSystemGoRoutines)
 		defer deferGoRoutine(routineDesc, goRoutineIdStarted)
 		log.Println("gopher[" + extensions.Int32ToString(goRoutineIdStarted) + "][" + routineDesc + "] " + time.Now().String() + " Started")
 	}
