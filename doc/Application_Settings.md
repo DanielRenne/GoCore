@@ -86,9 +86,9 @@ Tells the application which domain to redirect https traffic to.
 
 Currently only used for bootstrap purposes to compare domainName where you want your data inserted
 
-####httpPort, httpsPort
+####logGophers
 
-Tells the application which ports to listen on for http and https.
+Instead of calling go func on anonymous functions.  Use logger.GoRoutineLogger() and pass the func with a description.  Then setup logGophers to true in your web config to log the time in which a goroutine starts and potentially exits.
 
 ####releaseMode
 
@@ -123,6 +123,10 @@ Useful to show the users a dot-based version
 ####info
 
 Tells the application details about the application for swagger.io information and schema.
+
+####htmlTemplates
+
+Tells the application to use HTML templates that conform to the GIN Engine.  See [HTML Rendering in GIN](https://github.com/gin-gonic/gin#html-rendering]).  See [HTML Templates](https://github.com/DanielRenne/GoCore/blob/master/doc/HTML_Templates.md) for more details and examples.
 
 ####htmlTemplates
 

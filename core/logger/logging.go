@@ -1,14 +1,19 @@
 package logger
 
 import (
+	"github.com/DanielRenne/GoCore/core/extensions"
+	"github.com/DanielRenne/GoCore/core/serverSettings"
 	"github.com/fatih/color"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"log"
+	"sync/atomic"
 	"time"
 )
 
 type Color int
+
+var goRoutineId int32
 
 const (
 	RED     = 1
@@ -37,6 +42,20 @@ func Message(message string, c Color) {
 	case 7:
 		color.White(message)
 	}
+}
+
+func deferGoRoutine(routineDesc string, goRoutineIdStarted int32) {
+	TimeTrack(time.Now(), "gopher["+extensions.Int32ToString(goRoutineIdStarted)+"]["+routineDesc+"] "+time.Now().String()+" Ended")
+}
+
+func GoRoutineLogger(fn func(), routineDesc string) {
+	if serverSettings.WebConfig.Application.LogGophers {
+		atomic.AddInt32(&goRoutineId, 1)
+		goRoutineIdStarted := atomic.LoadInt32(&goRoutineId)
+		defer deferGoRoutine(routineDesc, goRoutineIdStarted)
+		log.Println("gopher[" + extensions.Int32ToString(goRoutineIdStarted) + "][" + routineDesc + "] " + time.Now().String() + " Started")
+	}
+	fn()
 }
 
 func TimeTrack(start time.Time, name string) {

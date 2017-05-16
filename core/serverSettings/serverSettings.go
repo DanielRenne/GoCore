@@ -73,6 +73,7 @@ type Application struct {
 	LogQueryStackTraces   bool          `json:"logQueryStackTraces"`
 	LogJoinQueries        bool          `json:"logJoinQueries"`
 	LogQueryTimes         bool          `json:"logQueryTimes"`
+	LogGophers            bool          `json:"logGophers"`
 	CoreDebugStackTrace   bool          `json:"coreDebugStackTrace"`
 }
 

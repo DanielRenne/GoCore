@@ -105,11 +105,21 @@ func IntToString(val int) string {
 	return strconv.Itoa(val)
 }
 
+func Int32ToString(val int32) string {
+	return strconv.Itoa(Int32ToInt(val))
+}
+
 func Int64ToString(val int64) string {
 	return strconv.FormatInt(val, 10)
 }
 
 func Int64ToInt32(val int64) (ret int) {
+	tempLong := ((val >> 32) << 32) //shift it right then left 32 bits, which zeroes the lower half of the long
+	ret = (int)(val - tempLong)
+	return ret
+}
+
+func Int32ToInt(val int32) (ret int) {
 	tempLong := ((val >> 32) << 32) //shift it right then left 32 bits, which zeroes the lower half of the long
 	ret = (int)(val - tempLong)
 	return ret
