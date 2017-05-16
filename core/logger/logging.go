@@ -3,6 +3,7 @@ package logger
 import (
 	"github.com/DanielRenne/GoCore/core/extensions"
 	"github.com/DanielRenne/GoCore/core/serverSettings"
+	"github.com/DanielRenne/GoCore/core/utils"
 	"github.com/fatih/color"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -44,25 +45,26 @@ func Message(message string, c Color) {
 	}
 }
 
-func deferGoRoutine(routineDesc string, goRoutineIdStarted int32) {
-	TimeTrack(time.Now(), "gopher["+extensions.Int32ToString(goRoutineIdStarted)+"]["+routineDesc+"] "+time.Now().String()+" Ended")
+func deferGoRoutine(routineDesc string, goRoutineIdStarted int32, id string) {
+	TimeTrack(time.Now(), "["+extensions.Int32ToString(goRoutineIdStarted)+"] total gopher(s)->"+id+"Mr."+id+" finished ["+routineDesc+"] died on "+time.Now().String())
 	atomic.AddInt32(&TotalSystemGoRoutines, -1)
 }
 
 func GoRoutineLogger(fn func(), routineDesc string) {
 	if serverSettings.WebConfig.Application.LogGophers {
+		id := utils.RandStringRunes(5)
 		atomic.AddInt32(&TotalSystemGoRoutines, 1)
 		goRoutineIdStarted := atomic.LoadInt32(&TotalSystemGoRoutines)
-		defer deferGoRoutine(routineDesc, goRoutineIdStarted)
-		log.Println("gopher[" + extensions.Int32ToString(goRoutineIdStarted) + "][" + routineDesc + "] " + time.Now().String() + " Started")
+		defer deferGoRoutine(routineDesc, goRoutineIdStarted, id)
+		log.Println("[" + extensions.Int32ToString(goRoutineIdStarted) + "] total gopher(s)->Mr." + id + " is starting to [" + routineDesc + "] on " + time.Now().String())
 	}
 	fn()
 }
 
 func TimeTrack(start time.Time, name string) {
 	elapsed := time.Since(start)
-	if elapsed.Seconds() > 1 {
-	}
+	//if elapsed.Seconds() > 1 {
+	//}
 	log.Printf("<Timing>%s took %s</Timing>", name, elapsed)
 }
 
