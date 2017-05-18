@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"runtime"
 	"strings"
+	"sync"
 )
 
 type htmlTemplates struct {
@@ -86,6 +87,7 @@ type webConfigObj struct {
 }
 
 var WebConfig webConfigObj
+var WebConfigMutex sync.RWMutex
 var APP_LOCATION string
 var GOCORE_PATH string
 var SWAGGER_UI_PATH string
@@ -104,6 +106,7 @@ func Initialize(path string, configurationFile string) (err error) {
 		return
 	}
 
+	WebConfigMutex.Lock()
 	errUnmarshal := json.Unmarshal(jsonData, &WebConfig)
 	if errUnmarshal != nil {
 		fmt.Println("Parsing / Unmarshaling of webConfig.json failed:  " + errUnmarshal.Error())
@@ -118,6 +121,8 @@ func Initialize(path string, configurationFile string) (err error) {
 			WebConfig.DbConnection = dbConnection
 		}
 	}
+	WebConfigMutex.Unlock()
+
 	return
 }
 

@@ -15,6 +15,7 @@ import (
 	"github.com/DanielRenne/GoCore/core/dbServices"
 	"github.com/DanielRenne/GoCore/core/fileCache"
 	"github.com/DanielRenne/GoCore/core/ginServer"
+	"github.com/DanielRenne/GoCore/core/logger"
 	"github.com/DanielRenne/GoCore/core/serverSettings"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -60,7 +61,11 @@ func Initialize(path string) (err error) {
 		return
 	}
 
-	if serverSettings.WebConfig.Application.ReleaseMode == "release" {
+	serverSettings.WebConfigMutex.RLock()
+	inRelease := serverSettings.WebConfig.Application.ReleaseMode == "release"
+	serverSettings.WebConfigMutex.RUnlock()
+
+	if inRelease {
 		ginServer.Initialize(gin.ReleaseMode)
 	} else {
 		ginServer.Initialize(gin.DebugMode)
@@ -142,23 +147,23 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context) {
 	}
 
 	//Reader
-	go func() {
+	go logger.GoRoutineLogger(func() {
 		for {
 			messageType, p, err := conn.ReadMessage()
 			if err == nil {
-				go func() {
+				go logger.GoRoutineLogger(func() {
 					WebSocketCallbacks.RLock()
 					for _, callback := range WebSocketCallbacks.callbacks {
 						callback(wsConn, c, messageType, p)
 					}
 					WebSocketCallbacks.RUnlock()
-				}()
+				}, "GoCore/app.go->webSocketHandler[Callback calls]")
 			} else {
 				deleteWebSocket(wsConn)
 				return
 			}
 		}
-	}()
+	}, "GoCore/app.go->webSocketHandler[Reader]")
 
 	WebSocketConnections.Lock()
 	WebSocketConnections.Connections = append(WebSocketConnections.Connections, wsConn)
@@ -236,11 +241,12 @@ func ReplyToWebSocket(conn *WebSocketConnection, data []byte) {
 	for _, wsConn := range WebSocketConnections.Connections {
 		ws := wsConn
 		if ws.Id == conn.Id {
-			go func() {
+			go logger.GoRoutineLogger(func() {
+
 				ws.Lock()
 				ws.Connection.WriteMessage(websocket.BinaryMessage, data)
 				ws.Unlock()
-			}()
+			}, "GoCore/app.go->ReplyToWebSocket[WriteMessage]")
 			return
 		}
 	}
@@ -261,11 +267,12 @@ func ReplyToWebSocketJSON(conn *WebSocketConnection, v interface{}) {
 	for _, wsConn := range WebSocketConnections.Connections {
 		ws := wsConn
 		if ws.Id == conn.Id {
-			go func() {
+			go logger.GoRoutineLogger(func() {
+
 				ws.Lock()
 				ws.Connection.WriteJSON(v)
 				ws.Unlock()
-			}()
+			}, "GoCore/app.go->ReplyToWebSocketJSON[WriteJSON]")
 			return
 		}
 	}
@@ -283,11 +290,11 @@ func ReplyToWebSocketPubSub(conn *WebSocketConnection, key string, v interface{}
 	for _, wsConn := range WebSocketConnections.Connections {
 		ws := wsConn
 		if ws.Id == conn.Id {
-			go func() {
+			go logger.GoRoutineLogger(func() {
 				ws.Lock()
 				ws.Connection.WriteJSON(payload)
 				ws.Unlock()
-			}()
+			}, "GoCore/app.go->ReplyToWebSocketPubSub[WriteJSON]")
 			return
 		}
 	}
@@ -307,11 +314,12 @@ func BroadcastWebSocketData(data []byte) {
 	WebSocketConnections.RLock()
 	for _, wsConn := range WebSocketConnections.Connections {
 		ws := wsConn
-		go func() {
+		go logger.GoRoutineLogger(func() {
+
 			ws.Lock()
 			ws.Connection.WriteMessage(websocket.BinaryMessage, data)
 			ws.Unlock()
-		}()
+		}, "GoCore/app.go->BroadcastWebSocketData[WriteMessage]")
 	}
 	WebSocketConnections.RUnlock()
 }
@@ -328,11 +336,11 @@ func BroadcastWebSocketJSON(v interface{}) {
 	WebSocketConnections.RLock()
 	for _, wsConn := range WebSocketConnections.Connections {
 		ws := wsConn
-		go func() {
+		go logger.GoRoutineLogger(func() {
 			ws.Lock()
 			ws.Connection.WriteJSON(v)
 			ws.Unlock()
-		}()
+		}, "GoCore/app.go->BroadcastWebSocketData[WriteJSON]")
 	}
 	WebSocketConnections.RUnlock()
 }
@@ -357,11 +365,11 @@ func PublishWebSocketJSON(key string, v interface{}) {
 	WebSocketConnections.RLock()
 	for _, wsConn := range WebSocketConnections.Connections {
 		ws := wsConn
-		go func() {
+		go logger.GoRoutineLogger(func() {
 			ws.Lock()
 			ws.Connection.WriteJSON(payload)
 			ws.Unlock()
-		}()
+		}, "GoCore/app.go->WriteJSON")
 	}
 	WebSocketConnections.RUnlock()
 }

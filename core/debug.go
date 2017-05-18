@@ -114,35 +114,44 @@ func (self *core_debug) Dump(valuesOriginal ...interface{}) {
 	t := time.Now()
 	l := "!!!!!!!!!!!!! DEBUG " + t.String() + "!!!!!!!!!!!!!\n\n"
 	Logger.Println(l)
+
+	serverSettings.WebConfigMutex.RLock()
 	if serverSettings.WebConfig.Application.ReleaseMode == "development" {
 		TransactionLogMutex.Lock()
 		TransactionLog += l
 		TransactionLogMutex.Unlock()
 	}
+	serverSettings.WebConfigMutex.RUnlock()
 	for _, value := range valuesOriginal {
 		l := self.DumpBase(value)
 		Logger.Print(l)
+		serverSettings.WebConfigMutex.RLock()
 		if serverSettings.WebConfig.Application.ReleaseMode == "development" {
 			TransactionLogMutex.Lock()
 			TransactionLog += l
 			TransactionLogMutex.Unlock()
 		}
+		serverSettings.WebConfigMutex.RUnlock()
 	}
 	l = self.ThrowAndPrintError()
 	Logger.Print(l)
 
+	serverSettings.WebConfigMutex.RLock()
 	if serverSettings.WebConfig.Application.ReleaseMode == "development" {
 		TransactionLogMutex.Lock()
 		TransactionLog += l
 		TransactionLogMutex.Unlock()
 	}
+	serverSettings.WebConfigMutex.RUnlock()
 	l = "!!!!!!!!!!!!! ENDDEBUG " + t.String() + "!!!!!!!!!!!!!"
 	Logger.Println(l)
+	serverSettings.WebConfigMutex.RLock()
 	if serverSettings.WebConfig.Application.ReleaseMode == "development" {
 		TransactionLogMutex.Lock()
 		TransactionLog += l
 		TransactionLogMutex.Unlock()
 	}
+	serverSettings.WebConfigMutex.RUnlock()
 }
 
 func (self *core_debug) GetDump(valuesOriginal ...interface{}) (output string) {
@@ -212,7 +221,11 @@ func (self *core_debug) DumpBase(values ...interface{}) (output string) {
 }
 
 func (self *core_debug) ThrowAndPrintError() (output string) {
-	if serverSettings.WebConfig.Application.CoreDebugStackTrace {
+
+	serverSettings.WebConfigMutex.RLock()
+	ok := serverSettings.WebConfig.Application.CoreDebugStackTrace
+	serverSettings.WebConfigMutex.RUnlock()
+	if ok {
 		output += "\n"
 		errorInfo := self.ThrowError()
 		stack := strings.Split(errorInfo.ErrorStack(), "\n")

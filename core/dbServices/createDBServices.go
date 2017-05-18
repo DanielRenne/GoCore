@@ -1020,7 +1020,7 @@ func genNOSQLQuery(collection NOSQLCollection, schema NOSQLSchema, driver string
 	//heredocs are concatenated like this because percent is a special thing and the modulus it will think its a tag
 	val := heredoc.Docf(`
 	func (obj model%s) Query() *Query {
-		var query Query
+		query := new(Query)
 		var elapseMs int
 		for {
 			collection%sMutex.RLock()
@@ -1042,7 +1042,7 @@ func genNOSQLQuery(collection NOSQLCollection, schema NOSQLSchema, driver string
 		collection%sMutex.RUnlock()
 		query.collection = collection
 		query.entityName = "%s"
-		return &query
+		return query
 	}
 `, strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(schema.Name))
 	return val
