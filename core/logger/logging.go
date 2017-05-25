@@ -39,14 +39,14 @@ func init() {
 	RunningGophers = utils.Array()
 	GopherTimeRunning = make(map[string]time.Time, 0)
 	go func() {
-		time.Sleep(time.Minute * 1)
+		time.Sleep(time.Second * 15)
 		for {
 			serverSettings.WebConfigMutex.RLock()
 			if serverSettings.WebConfig.Application.LogGophers {
 				ViewRunningGophers()
 			}
 			serverSettings.WebConfigMutex.RUnlock()
-			time.Sleep(time.Minute * 1)
+			time.Sleep(time.Second * 15)
 		}
 	}()
 }
