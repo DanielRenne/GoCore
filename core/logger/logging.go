@@ -114,6 +114,8 @@ at ` + time.Now().String() + " " + extensions.IntToString(len(RunningGophers)) +
 			}
 			log.Println("#" + extensions.IntToString(i) + ":" + gopher + timeRunning)
 		}
+	} else {
+		log.Println(time.Now().String() + " no gophers in memory yay!")
 	}
 	gopherMutex.RUnlock()
 }
