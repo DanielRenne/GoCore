@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"fmt"
 	"github.com/DanielRenne/GoCore/core/extensions"
 	"github.com/DanielRenne/GoCore/core/serverSettings"
 	"github.com/DanielRenne/GoCore/core/utils"
@@ -33,6 +34,7 @@ const (
 )
 
 func init() {
+	//VerboseBornAndDeadGophers= true
 	rand.Seed(time.Now().UnixNano())
 	RunningGophers = utils.Array()
 	GopherTimeRunning = make(map[string]time.Time, 0)
@@ -70,7 +72,7 @@ func Message(message string, c Color) {
 
 func deferGoRoutine(routineDesc string, goRoutineIdStarted int32, id string) {
 	if VerboseBornAndDeadGophers {
-		TimeTrack(time.Now(), time.Now().String()+" "+id+" finished ["+routineDesc+"] died ;.-(")
+		log.Println(TimeTrack(time.Now(), time.Now().String()+" "+id+" finished ["+routineDesc+"] died ;.-("))
 	}
 	atomic.AddInt32(&TotalSystemGoRoutines, -1)
 	gopherMutex.Lock()
@@ -102,7 +104,7 @@ func ViewRunningGophers() {
     ]             ~ ~             |
     |                            |
      |                           |
-      ` + extensions.IntToString(len(RunningGophers)) + ` Gophers workin up in here!
+at ` + time.Now().String() + " " + extensions.IntToString(len(RunningGophers)) + ` Gophers workin up in here!
 `)
 		for i, gopher := range RunningGophers {
 			val, ok := GopherTimeRunning[gopher]
@@ -134,28 +136,19 @@ func GoRoutineLogger(fn func(), routineDesc string) {
 	fn()
 }
 
-func TimeTrack(start time.Time, name string) {
+func TimeTrack(start time.Time, name string) (log string) {
 	elapsed := time.Since(start)
 	//if elapsed.Seconds() > 1 {
 	//}
-	log.Printf("<Timing>%s took %s</Timing>", name, elapsed)
+	return fmt.Sprintf("<Timing>%s took %s</Timing>", name, elapsed)
 }
 
-func TimeTrackQuery(start time.Time, name string, collection *mgo.Collection, m bson.M, q *mgo.Query) {
+func TimeTrackQuery(start time.Time, name string, collection *mgo.Collection, m bson.M, q *mgo.Query) (log string) {
 	elapsed := time.Since(start)
-	log.Println("<Timing>")
-	log.Println()
-	log.Printf("%#v", collection)
-	log.Println()
-	log.Println()
-	log.Printf("%#v", m)
-	log.Println()
-	log.Println()
-	log.Printf("%#v", q)
-	log.Println()
-	log.Println()
-
-	log.Printf("%s took %s", name, elapsed)
-	log.Println()
-	log.Println("</Timing>")
+	log += "<Timing>\n\n"
+	log += fmt.Sprintf("%#v", collection) + "\n\n"
+	log += fmt.Sprintf("%#v", m) + "\n\n"
+	log += fmt.Sprintf("%#v", q) + "\n\n"
+	log += fmt.Sprintf("%s took %s", name, elapsed) + "\n</Timing>\n"
+	return
 }

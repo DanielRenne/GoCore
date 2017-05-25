@@ -268,8 +268,8 @@ func ReplyToWebSocketJSON(conn *WebSocketConnection, v interface{}) {
 		ws := wsConn
 		if ws.Id == conn.Id {
 			go logger.GoRoutineLogger(func() {
-
 				ws.Lock()
+				ws.Connection.SetWriteDeadline(time.Now().Add(time.Duration(10000) * time.Millisecond))
 				ws.Connection.WriteJSON(v)
 				ws.Unlock()
 			}, "GoCore/app.go->ReplyToWebSocketJSON[WriteJSON]")
@@ -290,11 +290,10 @@ func ReplyToWebSocketPubSub(conn *WebSocketConnection, key string, v interface{}
 	for _, wsConn := range WebSocketConnections.Connections {
 		ws := wsConn
 		if ws.Id == conn.Id {
-			go logger.GoRoutineLogger(func() {
-				ws.Lock()
-				ws.Connection.WriteJSON(payload)
-				ws.Unlock()
-			}, "GoCore/app.go->ReplyToWebSocketPubSub[WriteJSON]")
+			ws.Lock()
+			ws.Connection.SetWriteDeadline(time.Now().Add(time.Duration(10000) * time.Millisecond))
+			ws.Connection.WriteJSON(payload)
+			ws.Unlock()
 			return
 		}
 	}
@@ -338,6 +337,7 @@ func BroadcastWebSocketJSON(v interface{}) {
 		ws := wsConn
 		go logger.GoRoutineLogger(func() {
 			ws.Lock()
+			ws.Connection.SetWriteDeadline(time.Now().Add(time.Duration(10000) * time.Millisecond))
 			ws.Connection.WriteJSON(v)
 			ws.Unlock()
 		}, "GoCore/app.go->BroadcastWebSocketData[WriteJSON]")
@@ -367,6 +367,7 @@ func PublishWebSocketJSON(key string, v interface{}) {
 		ws := wsConn
 		go logger.GoRoutineLogger(func() {
 			ws.Lock()
+			ws.Connection.SetWriteDeadline(time.Now().Add(time.Duration(10000) * time.Millisecond))
 			ws.Connection.WriteJSON(payload)
 			ws.Unlock()
 		}, "GoCore/app.go->WriteJSON")
