@@ -177,7 +177,7 @@ func (self *core_debug) GetDumpWithInfo(valuesOriginal ...interface{}) (output s
 	serverSettings.WebConfigMutex.RUnlock()
 
 	for _, value := range valuesOriginal {
-		output += self.DumpBase(value)
+		output += self.DumpBase(value) + "\n"
 	}
 
 	serverSettings.WebConfigMutex.RLock()
