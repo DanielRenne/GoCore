@@ -162,6 +162,53 @@ func (self *core_debug) GetDump(valuesOriginal ...interface{}) (output string) {
 	return output
 }
 
+func (self *core_debug) GetDumpWithInfo(valuesOriginal ...interface{}) (output string) {
+
+	t := time.Now()
+	l := "\n!!!!!!!!!!!!! DEBUG " + t.String() + "!!!!!!!!!!!!!\n\n"
+	output += l
+
+	serverSettings.WebConfigMutex.RLock()
+	if serverSettings.WebConfig.Application.ReleaseMode == "development" {
+		TransactionLogMutex.Lock()
+		TransactionLog += l
+		TransactionLogMutex.Unlock()
+	}
+	serverSettings.WebConfigMutex.RUnlock()
+
+	for _, value := range valuesOriginal {
+		output += self.DumpBase(value)
+	}
+
+	serverSettings.WebConfigMutex.RLock()
+	if serverSettings.WebConfig.Application.ReleaseMode == "development" {
+		TransactionLogMutex.Lock()
+		TransactionLog += output
+		TransactionLogMutex.Unlock()
+	}
+	serverSettings.WebConfigMutex.RUnlock()
+
+	l = self.ThrowAndPrintError()
+	output += l
+	serverSettings.WebConfigMutex.RLock()
+	if serverSettings.WebConfig.Application.ReleaseMode == "development" {
+		TransactionLogMutex.Lock()
+		TransactionLog += l
+		TransactionLogMutex.Unlock()
+	}
+	serverSettings.WebConfigMutex.RUnlock()
+	l = "!!!!!!!!!!!!! ENDDEBUG " + t.String() + "!!!!!!!!!!!!!\n"
+	output += l
+	serverSettings.WebConfigMutex.RLock()
+	if serverSettings.WebConfig.Application.ReleaseMode == "development" {
+		TransactionLogMutex.Lock()
+		TransactionLog += l
+		TransactionLogMutex.Unlock()
+	}
+	serverSettings.WebConfigMutex.RUnlock()
+	return output
+}
+
 func (self *core_debug) DumpBase(values ...interface{}) (output string) {
 	//golog "github.com/DanielRenne/GoCore/core/log"
 	//defer golog.TimeTrack(time.Now(), "Dump")
@@ -244,6 +291,8 @@ func (self *core_debug) ThrowAndPrintError() (output string) {
 			output += "\n golines ==> " + strings.TrimSpace(stack[6])
 			output += "\n         ==> " + strings.TrimSpace(stack[7])
 			output += "\n         ==> " + strings.TrimSpace(stack[8])
+			output += "\n         ==> " + strings.TrimSpace(stack[9])
+			output += "\n         ==> " + strings.TrimSpace(stack[10])
 			output += "\n---------------"
 			output += "\n"
 			output += "\n"
