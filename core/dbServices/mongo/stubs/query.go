@@ -1192,10 +1192,25 @@ func (self *Query) processViews(x interface{}) (err error) {
 
 			s := source.Index(i)
 			go func(s reflect.Value) {
+				defer func() {
+					if r := recover(); r != nil {
+						log.Println("Panic at query.go->processViews:  " + +fmt.Sprintf("%+v", r))
+						return
+					}
+				}()
+
 				defer wg.Done()
 				var wgSetViews sync.WaitGroup
 				for _, v := range views { //Update and format the view fields that have ref
 					wgSetViews.Add(1)
+					defer func() {
+
+						if r := recover(); r != nil {
+							log.Println("Panic at query.go->processViews:  " + +fmt.Sprintf("%+v", r))
+							return
+						}
+					}()
+
 					go func(v view, s reflect.Value) {
 						defer wgSetViews.Done()
 						self.setViewValue(v, s)
@@ -1223,6 +1238,14 @@ func (self *Query) processViews(x interface{}) (err error) {
 		for _, v := range views { //Update and format the view fields that have ref
 			wgSetViews.Add(1)
 			go func(v view, s reflect.Value) {
+
+				defer func() {
+					if r := recover(); r != nil {
+						log.Println("Panic at query.go->processViews:  " + +fmt.Sprintf("%+v", r))
+						return
+					}
+				}()
+
 				defer wgSetViews.Done()
 				self.setViewValue(v, s)
 			}(v, source)
@@ -1295,7 +1318,12 @@ func (self *Query) setViewValue(v view, source reflect.Value) {
 		timeZone = self.format.LocalTimeZone
 	}
 
-	location, _ := time.LoadLocation(timeZone)
+	location, err := time.LoadLocation(timeZone)
+
+	if err != nil {
+		log.Println("Failed to Load time.LoadLocation at query.go->SetViewValue:  " + err.Error())
+		return
+	}
 
 	switch v.format {
 	case "DateNumeric":
