@@ -1194,7 +1194,7 @@ func (self *Query) processViews(x interface{}) (err error) {
 			go func(s reflect.Value) {
 				defer func() {
 					if r := recover(); r != nil {
-						log.Println("Panic at query.go->processViews:  " + +fmt.Sprintf("%+v", r))
+						log.Println("Panic at query.go->processViews:  " + fmt.Sprintf("%+v", r))
 						return
 					}
 				}()
@@ -1206,7 +1206,7 @@ func (self *Query) processViews(x interface{}) (err error) {
 					defer func() {
 
 						if r := recover(); r != nil {
-							log.Println("Panic at query.go->processViews:  " + +fmt.Sprintf("%+v", r))
+							log.Println("Panic at query.go->processViews:  " + fmt.Sprintf("%+v", r))
 							return
 						}
 					}()
@@ -1241,7 +1241,7 @@ func (self *Query) processViews(x interface{}) (err error) {
 
 				defer func() {
 					if r := recover(); r != nil {
-						log.Println("Panic at query.go->processViews:  " + +fmt.Sprintf("%+v", r))
+						log.Println("Panic at query.go->processViews:  " + fmt.Sprintf("%+v", r))
 						return
 					}
 				}()
