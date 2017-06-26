@@ -146,6 +146,9 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context) {
 		wsConn.Id = uuid
 	}
 
+	// log.Println("Upgrading Websocket")
+	// log.Printf("%+v\n", r)
+
 	//Reader
 	go logger.GoRoutineLogger(func() {
 		for {
