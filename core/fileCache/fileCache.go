@@ -122,6 +122,14 @@ func DeleteAllBootStrapFileCache() (err error) {
 		}
 		os.MkdirAll(CACHE_BOOTSTRAP_STORAGE_PATH, 0777)
 	}
+	if extensions.DoesFileExist(CACHE_MANIFEST_STORAGE_PATH) {
+		err = extensions.RemoveDirectory(CACHE_MANIFEST_STORAGE_PATH)
+		if err != nil {
+			core.Debug.Dump(err)
+			return err
+		}
+		os.MkdirAll(CACHE_MANIFEST_STORAGE_PATH, 0777)
+	}
 	return
 }
 
