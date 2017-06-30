@@ -18,6 +18,7 @@ const (
 	CRON_TOP_OF_HOUR
 	CRON_TOP_OF_DAY
 	CRON_TOP_OF_30_SECONDS
+	CRON_TOP_OF_SECOND
 )
 
 type cronJobs struct {
@@ -58,6 +59,7 @@ func (jobs *cronJobs) Start() {
 		callTopHour := true
 		callTopDay := true
 		callTop30Seconds := true
+		previousSec := 0
 
 		for t := range ticker.C {
 			tm := t
@@ -101,6 +103,11 @@ func (jobs *cronJobs) Start() {
 			}
 			if sec == 31 {
 				callTop30Seconds = true
+			}
+
+			if previousSec != sec {
+				previousSec = sec
+				go callRecurringEvents(CRON_TOP_OF_SECOND, tm)
 			}
 		}
 	}()

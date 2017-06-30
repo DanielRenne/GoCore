@@ -55,7 +55,7 @@ var upgrader = websocket.Upgrader{
 var WebSocketConnections WebSocketConnectionCollection
 var WebSocketCallbacks WebSocketCallbackSync
 
-func Initialize(path string) (err error) {
+func Initialize(path string, cookieDomain string) (err error) {
 	err = serverSettings.Initialize(path, "webConfig.json")
 	if err != nil {
 		return
@@ -66,9 +66,9 @@ func Initialize(path string) (err error) {
 	serverSettings.WebConfigMutex.RUnlock()
 
 	if inRelease {
-		ginServer.Initialize(gin.ReleaseMode)
+		ginServer.Initialize(gin.ReleaseMode, cookieDomain)
 	} else {
-		ginServer.Initialize(gin.DebugMode)
+		ginServer.Initialize(gin.DebugMode, cookieDomain)
 	}
 	fileCache.Initialize()
 

@@ -1,12 +1,13 @@
 package ginServer
 
 import (
+	"sync"
+
 	"github.com/DanielRenne/GoCore/core/serverSettings"
 	"github.com/fatih/color"
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/utrack/gin-csrf"
-	"sync"
 )
 
 const (
@@ -36,17 +37,24 @@ type routerGroup struct {
 var initializedRouterGroups []routerGroup
 var hasInitialized bool
 
-func Initialize(mode string) {
+func Initialize(mode string, cookieDomain string) {
 	gin.SetMode(mode)
 	Router = gin.Default()
 	store := sessions.NewCookieStore([]byte(serverSettings.WebConfig.Application.SessionKey))
 	store.Options(sessions.Options{MaxAge: 86400 * serverSettings.WebConfig.Application.SessionExpirationDays,
+		Secure: serverSettings.WebConfig.Application.SessionSecureCookie,
+		Domain: cookieDomain})
+
+	store2 := sessions.NewCookieStore([]byte(serverSettings.WebConfig.Application.SessionKey))
+	store2.Options(sessions.Options{MaxAge: 86400 * serverSettings.WebConfig.Application.SessionExpirationDays,
 		Secure: serverSettings.WebConfig.Application.SessionSecureCookie})
 
 	if serverSettings.WebConfig.Application.SessionName != "" {
 		Router.Use(sessions.Sessions(serverSettings.WebConfig.Application.SessionName, store))
+		Router.Use(sessions.Sessions(serverSettings.WebConfig.Application.SessionName, store2))
 	} else {
 		Router.Use(sessions.Sessions("defaultSession", store))
+		Router.Use(sessions.Sessions(serverSettings.WebConfig.Application.SessionName, store2))
 	}
 
 	//Protect from CSRF Hacking
