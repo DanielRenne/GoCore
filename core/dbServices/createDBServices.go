@@ -299,22 +299,22 @@ func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir s
 	//Copy Stub Files
 	if driver == DATABASE_DRIVER_MONGODB {
 		// copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/mongo/stubs/transaction.go", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/transaction.go")
-		copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/mongo/stubs/query.go", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/query.go")
-		copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/mongo/stubs/timeZone.go", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/timeZone.go")
-		copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/mongo/stubs/timeZoneLocations.go", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/timeZoneLocations.go")
-		copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/mongo/stubs/locales.go", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/locales.go")
+		copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/mongo/stubs/query", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/query.go")
+		copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/mongo/stubs/timeZone", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/timeZone.go")
+		copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/mongo/stubs/timeZoneLocations", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/timeZoneLocations.go")
+		copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/mongo/stubs/locales", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/locales.go")
 		////Support for Long Running Transactions Later Maybe
 		//copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/mongo/stubs/transactionObjects.go", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/transactionObjects.go")
 	}
 
-	histTemplate, err := extensions.ReadFile(serverSettings.GOCORE_PATH + "/core/dbServices/mongo/stubs/histTemplate.go")
+	histTemplate, err := extensions.ReadFile(serverSettings.GOCORE_PATH + "/core/dbServices/mongo/stubs/histTemplate")
 
 	if err != nil {
 		color.Red("Error reading histTemplate.go:  " + err.Error())
 		return
 	}
 
-	transactionTemplate, err := extensions.ReadFile(serverSettings.GOCORE_PATH + "/core/dbServices/mongo/stubs/transaction.go")
+	transactionTemplate, err := extensions.ReadFile(serverSettings.GOCORE_PATH + "/core/dbServices/mongo/stubs/transaction")
 
 	if err != nil {
 		color.Red("Error reading transactionTemplate.go:  " + err.Error())
@@ -376,7 +376,7 @@ func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir s
 
 func initializeModelFile() {
 
-	modelData, err := extensions.ReadFile(serverSettings.GOCORE_PATH + "/core/dbServices/mongo/stubs/model.go")
+	modelData, err := extensions.ReadFile(serverSettings.GOCORE_PATH + "/core/dbServices/mongo/stubs/model")
 
 	if err != nil {
 		color.Red("Failed to read and append model.go:  " + err.Error())

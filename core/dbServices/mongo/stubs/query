@@ -189,6 +189,10 @@ func (self *Query) ById(objectId interface{}, modelInstance interface{}) error {
 
 }
 
+func (self *Query) GetCollection() *mgo.Collection {
+	return self.collection
+}
+
 func (self *Query) Join(criteria string) *Query {
 
 	if self.joins == nil {
