@@ -50,6 +50,27 @@ type recurringEvent struct {
 }
 
 //Starts the cron job engine.
+func (jobs *cronJobs) ShouldRunEveryTenMinutes(x time.Time) (run bool) {
+	if x.Minute() == 0 || x.Minute() == 10 || x.Minute() == 20 || x.Minute() == 30 || x.Minute() == 40 || x.Minute() == 50 {
+		run = true
+	}
+	return
+}
+
+func (jobs *cronJobs) ShouldRunEveryFiveMinutes(x time.Time) (run bool) {
+	if x.Minute() == 0 || x.Minute() == 5 || x.Minute() == 10 || x.Minute() == 15 || x.Minute() == 20 || x.Minute() == 25 || x.Minute() == 30 || x.Minute() == 35 || x.Minute() == 40 || x.Minute() == 45 || x.Minute() == 50 || x.Minute() == 55 {
+		run = true
+	}
+	return
+}
+
+func (jobs *cronJobs) ShouldRunEvery15Minutes(x time.Time) (run bool) {
+	if x.Minute() == 0 || x.Minute() == 15 || x.Minute() == 30 || x.Minute() == 45 {
+		run = true
+	}
+	return
+}
+
 func (jobs *cronJobs) Start() {
 
 	ticker := time.NewTicker(time.Millisecond * 100)

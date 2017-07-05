@@ -13,8 +13,78 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 )
+
+type ByOldestFile []os.FileInfo
+
+func (a ByOldestFile) Len() int           { return len(a) }
+func (a ByOldestFile) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByOldestFile) Less(i, j int) bool { return a[i].ModTime().Unix() < a[j].ModTime().Unix() }
+
+func GetAllFilesSortedBy(path string, fileSearch string) (files []os.FileInfo, err error) {
+	files, err = GetAllFilesWithSearch(path, fileSearch)
+	if err == nil {
+		sort.Sort(ByOldestFile(files))
+	}
+	return files, err
+}
+
+func GetAllFiles(path string) (files []os.FileInfo, err error) {
+	return GetAllFilesWithSearch(path, "")
+}
+
+func GetAllFilesWithSearch(path string, fileSearch string) (files []os.FileInfo, err error) {
+	files = make([]os.FileInfo, 0)
+	filesAll, err := ioutil.ReadDir(path)
+	if err == nil {
+		for _, file := range filesAll {
+			if !file.IsDir() {
+				if fileSearch == "" || strings.Index(file.Name(), fileSearch) != -1 {
+					files = append(files, file)
+				}
+			}
+		}
+	}
+	return files, err
+}
+
+func GetAllDirs(path string) (files []os.FileInfo, err error) {
+	return GetAllDirWithExclude(path, "")
+}
+
+func GetAllDirWithExclude(path string, except string) (files []os.FileInfo, err error) {
+	files = make([]os.FileInfo, 0)
+	filesAll, err := ioutil.ReadDir(path)
+	if err == nil {
+		for _, file := range filesAll {
+			if file.IsDir() {
+				if except == "" || strings.Index(file.Name(), except) == -1 {
+					files = append(files, file)
+				}
+			}
+		}
+	}
+	return files, err
+}
+
+func DirSize(path string) (int64, error) {
+	return DirSizeWithSearch(path, "")
+}
+
+func DirSizeWithSearch(path string, fileSearch string) (int64, error) {
+	var size int64
+	err := filepath.Walk(path, func(_ string, info os.FileInfo, err error) error {
+		if !info.IsDir() {
+			if fileSearch == "" || strings.Index(info.Name(), fileSearch) != -1 {
+				size += info.Size()
+			}
+		}
+		return err
+	})
+	return size, err
+}
 
 func RemoveDirectory(dir string) error {
 	d, err := os.Open(dir)
