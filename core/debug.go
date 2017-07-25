@@ -110,6 +110,17 @@ func (self *core_debug) HandleError(err error) (s string) {
 	return ""
 }
 
+func (self *core_debug) ErrLineAndFile(err error) (s string) {
+	if err != nil {
+		// notice that we're using 1, so it will actually log the where
+		// the error happened, 0 = this function, we don't want that.
+		_, fn, line, _ := runtime.Caller(1)
+		fileNameParts := strings.Split(fn, "/")
+		return fmt.Sprintf("%s Line %d", fileNameParts[len(fileNameParts)-1], line)
+	}
+	return ""
+}
+
 func (self *core_debug) Dump(valuesOriginal ...interface{}) {
 	t := time.Now()
 	l := "!!!!!!!!!!!!! DEBUG " + t.String() + "!!!!!!!!!!!!!\n\n"
