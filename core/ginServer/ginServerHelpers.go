@@ -161,49 +161,49 @@ func ReadGzipJSFile(path string, c *gin.Context) {
 func RespondGzipJSFile(data []byte, modTime time.Time, c *gin.Context) {
 	c.Header("Content-Type", "application/javascript")
 	c.Header("Content-Encoding", "gzip")
-	checkLastModified(c.Writer, c.Request, modTime)
+	CheckLastModified(c.Writer, c.Request, modTime)
 	c.Writer.Write(data)
 }
 
 func RespondJSFile(data []byte, modTime time.Time, c *gin.Context) {
 	c.Header("Content-Type", "application/javascript")
-	checkLastModified(c.Writer, c.Request, modTime)
+	CheckLastModified(c.Writer, c.Request, modTime)
 	c.Writer.Write(data)
 }
 
 func RespondTtfFile(data []byte, modTime time.Time, c *gin.Context) {
 	c.Header("Content-Type", "application/x-font-ttf")
-	checkLastModified(c.Writer, c.Request, modTime)
+	CheckLastModified(c.Writer, c.Request, modTime)
 	c.Writer.Write(data)
 }
 
 func RespondOtfFile(data []byte, modTime time.Time, c *gin.Context) {
 	c.Header("Content-Type", "application/x-font-otf")
-	checkLastModified(c.Writer, c.Request, modTime)
+	CheckLastModified(c.Writer, c.Request, modTime)
 	c.Writer.Write(data)
 }
 
 func RespondWoffFile(data []byte, modTime time.Time, c *gin.Context) {
 	c.Header("Content-Type", "application/font-woff")
-	checkLastModified(c.Writer, c.Request, modTime)
+	CheckLastModified(c.Writer, c.Request, modTime)
 	c.Writer.Write(data)
 }
 
 func RespondWoff2File(data []byte, modTime time.Time, c *gin.Context) {
 	c.Header("Content-Type", "application/font-woff2")
-	checkLastModified(c.Writer, c.Request, modTime)
+	CheckLastModified(c.Writer, c.Request, modTime)
 	c.Writer.Write(data)
 }
 
 func RespondEotFile(data []byte, modTime time.Time, c *gin.Context) {
 	c.Header("Content-Type", "application/vnd.ms-fontobject")
-	checkLastModified(c.Writer, c.Request, modTime)
+	CheckLastModified(c.Writer, c.Request, modTime)
 	c.Writer.Write(data)
 }
 
 func RespondSvgFile(data []byte, modTime time.Time, c *gin.Context) {
 	c.Header("Content-Type", "image/svg+xml")
-	checkLastModified(c.Writer, c.Request, modTime)
+	CheckLastModified(c.Writer, c.Request, modTime)
 	c.Writer.Write(data)
 }
 
@@ -218,7 +218,7 @@ func ReadGzipCSSFile(path string, c *gin.Context) {
 func RespondGzipCSSFile(data []byte, modTime time.Time, c *gin.Context) {
 	c.Header("Content-Type", "text/css")
 	c.Header("Content-Encoding", "gzip")
-	checkLastModified(c.Writer, c.Request, modTime)
+	CheckLastModified(c.Writer, c.Request, modTime)
 	c.Writer.Write(data)
 }
 
@@ -234,7 +234,7 @@ func ReadJpgFile(path string, c *gin.Context) {
 
 // modtime is the modification time of the resource to be served, or IsZero().
 // return value is whether this request is now complete.
-func checkLastModified(w http.ResponseWriter, r *http.Request, modtime time.Time) bool {
+func CheckLastModified(w http.ResponseWriter, r *http.Request, modtime time.Time) bool {
 	if modtime.IsZero() || modtime.Equal(unixEpochTime) {
 		// If the file doesn't have a modtime (IsZero), or the modtime
 		// is obviously garbage (Unix time == 0), then ignore modtimes
