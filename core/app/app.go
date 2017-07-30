@@ -157,7 +157,9 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context) {
 				go logger.GoRoutineLogger(func() {
 					WebSocketCallbacks.RLock()
 					for _, callback := range WebSocketCallbacks.callbacks {
-						callback(wsConn, c, messageType, p)
+						if callback != nil {
+							callback(wsConn, c, messageType, p)
+						}
 					}
 					WebSocketCallbacks.RUnlock()
 				}, "GoCore/app.go->webSocketHandler[Callback calls]")
