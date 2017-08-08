@@ -1059,6 +1059,16 @@ func genNoSQLSchemaJSONRuntime(schema NOSQLSchema) string {
 	val += "func (obj *" + strings.Title(schema.Name) + ") JSONBytes() ([]byte, error) {\n"
 	val += "	return json.Marshal(obj)\n"
 	val += "}\n\n"
+
+	val += "func (obj *" + strings.Title(schema.Name) + ") BSONString() (string, error) {\n"
+	val += "bytes, err := bson.Marshal(obj)\n"
+	val += "return string(bytes), err\n"
+	val += "}\n\n"
+
+	val += "func (obj *" + strings.Title(schema.Name) + ") BSONBytes() (in []byte, err error) {\n"
+	val += "err = bson.Unmarshal(in, obj)\n"
+	val += "return\n"
+	val += "}\n\n"
 	return val
 }
 
@@ -1135,13 +1145,11 @@ func genNoSQLSchemaSaveByTran(collection NOSQLCollection, schema NOSQLSchema, dr
 		val += "	self.UpdateDate = time.Now()\n"
 		val += "	self.LastUpdateId = t.UserId\n"
 
-		val += "newJson, err := self.JSONString()\n\n"
+		val += "newBson, err := self.BSONString()\n\n"
 
 		val += "if err != nil {\n"
 		val += "	return err\n"
 		val += "}\n\n"
-
-		val += "newBase64 := getBase64(newJson)\n"
 
 		val += "var eTransactionNew entityTransaction\n"
 		val += "eTransactionNew.changeType = TRANSACTION_CHANGETYPE_INSERT\n"
@@ -1149,7 +1157,7 @@ func genNoSQLSchemaSaveByTran(collection NOSQLCollection, schema NOSQLSchema, dr
 
 		val += "var histRecord " + strings.Title(schema.Name) + "HistoryRecord\n"
 		val += "histRecord.TId = t.Id.Hex()\n"
-		val += "histRecord.Data = newBase64\n"
+		val += "histRecord.Data = newBson\n"
 		val += "histRecord.Type = TRANSACTION_CHANGETYPE_INSERT\n\n"
 		val += "histRecord.ObjId = self.Id.Hex()\n"
 		val += "histRecord.CreateDate = time.Now()\n"
@@ -1172,14 +1180,13 @@ func genNoSQLSchemaSaveByTran(collection NOSQLCollection, schema NOSQLSchema, dr
 		val += "	return err\n"
 		val += "}\n\n"
 
-		val += "	originalJson, err := original.JSONString()\n\n"
+		val += "	originalBson, err := original.BSONString()\n\n"
 
 		val += "	if err != nil {\n"
 		val += "		return err\n"
 		val += "	}\n\n"
 
-		val += "	originalBase64 := getBase64(originalJson)\n"
-		val += "	histRecord.Data = originalBase64\n\n"
+		val += "	histRecord.Data = originalBson\n\n"
 
 		val += "}\n\n"
 
@@ -1215,9 +1222,9 @@ func genNoSQLReflect(collection NOSQLCollection, schema NOSQLSchema, driver stri
 func genNoSQLUnMarshal(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
 
 	val := ""
-	val += "func (self *" + strings.Title(schema.Name) + ") Unmarshal(data string) error {\n\n"
+	val += "func (self *" + strings.Title(schema.Name) + ") Unmarshal(data []byte) error {\n\n"
 
-	val += "err := json.Unmarshal([]byte(data), &self)\n"
+	val += "err := bson.Unmarshal(data, &self)\n"
 
 	val += "if err != nil {\n"
 	val += "	return err\n"

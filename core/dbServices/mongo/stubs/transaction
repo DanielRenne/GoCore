@@ -343,3 +343,13 @@ func (obj *Transaction) JSONString() (string, error) {
 func (obj *Transaction) JSONBytes() ([]byte, error) {
 	return json.Marshal(obj)
 }
+
+func (obj *Transaction) BSONString() (string, error) {
+	bytes, err := bson.Marshal(obj)
+	return string(bytes), err
+}
+
+func (obj *Transaction) BSONBytes() (in []byte, err error) {
+	err = bson.Unmarshal(in, obj)
+	return
+}
