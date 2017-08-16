@@ -39,7 +39,14 @@ var hasInitialized bool
 
 func Initialize(mode string, cookieDomain string) {
 	gin.SetMode(mode)
-	Router = gin.Default()
+
+	if serverSettings.WebConfig.Application.CustomGinLogger {
+		Router = gin.New()
+		Router.Use(gin.Recovery())
+	} else {
+		Router = gin.Default()
+	}
+
 	store := sessions.NewCookieStore([]byte(serverSettings.WebConfig.Application.SessionKey))
 	store.Options(sessions.Options{MaxAge: 86400 * serverSettings.WebConfig.Application.SessionExpirationDays,
 		Secure: serverSettings.WebConfig.Application.SessionSecureCookie,

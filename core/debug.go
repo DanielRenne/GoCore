@@ -173,10 +173,14 @@ func (self *core_debug) GetDump(valuesOriginal ...interface{}) (output string) {
 	return output
 }
 
-func (self *core_debug) GetDumpWithInfo(valuesOriginal ...interface{}) (output string) {
 
+func (self *core_debug) GetDumpWithInfo(valuesOriginal ...interface{}) (output string) {
 	t := time.Now()
-	l := "\n!!!!!!!!!!!!! DEBUG " + t.String() + "!!!!!!!!!!!!!\n\n"
+	return self.GetDumpWithInfoAndTimeString(t.String(), valuesOriginal...)
+}
+
+func (self *core_debug) GetDumpWithInfoAndTimeString(timeStr string, valuesOriginal ...interface{}) (output string) {
+	l := "\n!!!!!!!!!!!!! DEBUG " + timeStr + "!!!!!!!!!!!!!\n\n"
 	output += l
 
 	serverSettings.WebConfigMutex.RLock()
@@ -208,7 +212,7 @@ func (self *core_debug) GetDumpWithInfo(valuesOriginal ...interface{}) (output s
 		TransactionLogMutex.Unlock()
 	}
 	serverSettings.WebConfigMutex.RUnlock()
-	l = "!!!!!!!!!!!!! ENDDEBUG " + t.String() + "!!!!!!!!!!!!!\n"
+	l = "!!!!!!!!!!!!! ENDDEBUG " + timeStr + "!!!!!!!!!!!!!\n"
 	output += l
 	serverSettings.WebConfigMutex.RLock()
 	if serverSettings.WebConfig.Application.ReleaseMode == "development" {

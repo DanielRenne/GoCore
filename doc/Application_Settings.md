@@ -98,6 +98,10 @@ Tells the application to debug and run GIN http routing into release mode.  "rel
 
 Tells the application only route web service paths.  NO static file routing will be enabled when set to true.
 
+####customGinLogger
+
+If you plan to write and .Use a custom gin logger in your AppIndex, set to true.  Otherwise the default of false will use the default logger and recovery handler.
+
 ####productName
 
 A short name (usually not human with spaces).  Can be used to control which bootstrap information to seed based on the webConfig.json
