@@ -173,7 +173,6 @@ func (self *core_debug) GetDump(valuesOriginal ...interface{}) (output string) {
 	return output
 }
 
-
 func (self *core_debug) GetDumpWithInfo(valuesOriginal ...interface{}) (output string) {
 	t := time.Now()
 	return self.GetDumpWithInfoAndTimeString(t.String(), valuesOriginal...)

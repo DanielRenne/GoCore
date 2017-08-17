@@ -72,7 +72,7 @@ func Message(message string, c Color) {
 
 func deferGoRoutine(routineDesc string, goRoutineIdStarted int32, id string) {
 	if VerboseBornAndDeadGophers {
-		log.Println(TimeTrack(time.Now(), time.Now().String()+" "+id+" finished ["+routineDesc+"] died ;.-("))
+		log.Println(time.Now().String() + " " + id + " finished [" + routineDesc + "] died ;.-(")
 	}
 	atomic.AddInt32(&TotalSystemGoRoutines, -1)
 	gopherMutex.Lock()

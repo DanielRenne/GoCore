@@ -1507,8 +1507,9 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 
 	val += "func (obj model" + strings.Title(collection.Name) + ") Bootstrap() error {\n"
 
+	val += "start := time.Now()\n"
 	val += "defer func() {\n"
-	val += "log.Println(logger.TimeTrack(time.Now(), \"Bootstraping of " + strings.Title(collection.Name) + " Took\"))\n"
+	val += "log.Println(logger.TimeTrack(start, \"Bootstraping of " + strings.Title(collection.Name) + " Took\"))\n"
 	val += "}()\n"
 	val += "if serverSettings.WebConfig.Application.BootstrapData == false {\n"
 	val += "	obj.BootStrapComplete()\n"
