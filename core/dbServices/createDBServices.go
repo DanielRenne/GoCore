@@ -1670,12 +1670,16 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 		if isError {
 			log.Println("FAILED to bootstrap %s")
 		} else {
-			log.Println("Successfully bootstrapped %s")
-			if actualCount != originalCount {
-				logger.Message("%s counts are different than original bootstrap and actual inserts, please inpect data." + core.Debug.GetDump("Actual", actualCount, "OriginalCount", originalCount), logger.RED)
+
+			err = BootstrapMongoDump("%s", "%s")
+			if err == nil {
+				log.Println("Successfully bootstrapped %s")
+				if actualCount != originalCount {
+					logger.Message("%s counts are different than original bootstrap and actual inserts, please inpect data." + core.Debug.GetDump("Actual", actualCount, "OriginalCount", originalCount), logger.RED)
+				}
 			}
 		}
-`, strings.Title(collection.Name), strings.Title(schema.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name))
+`, strings.Title(collection.Name), strings.Title(schema.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), extensions.MakeFirstLowerCase(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name))
 	}
 	val += "obj.BootStrapComplete()\n"
 	val += "return nil\n"

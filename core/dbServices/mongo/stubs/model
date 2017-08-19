@@ -12,6 +12,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"runtime"
+	"os/exec"
 
 	"log"
 
@@ -624,6 +626,37 @@ func CallMethod(i interface{}, methodName string, in []reflect.Value) (err error
 
 func NewObjectId() string {
 	return bson.NewObjectId().Hex()
+}
+
+
+func BootstrapMongoDump(directoryName string, collectionName string) (err error) {
+
+	defer func() {
+		if r := recover(); r != nil {
+			log.Println("Panic Recovered at model.BootstrapMongoDump(): " + fmt.Sprintf("%+v", r))
+			return
+		}
+	}()
+
+	path := serverSettings.APP_LOCATION + "/db/bootstrap/" + directoryName + "/mongoDump"
+
+	if extensions.DoesFileExist(path) == false {
+		return
+	}
+
+	path = path + "/" + directoryName + "Dump.json"
+
+	dbName := serverSettings.WebConfig.DbConnection.Database
+
+	var commandPath string
+	if runtime.GOOS == "linux" {
+		commandPath = "/usr/bin/mongoimport"
+	} else if runtime.GOOS == "darwin" {
+		commandPath = "mongoimport"
+	}
+	err = exec.Command(commandPath, "--db", dbName, "--collection", collectionName, "--file", path, "--upsert").Run()
+	return
+
 }
 
 func BootstrapDirectory(directoryName string, collectionCount int) (files [][]byte, err error) {
