@@ -8,6 +8,8 @@ import (
 	"path"
 	"time"
 
+	"sync"
+
 	"github.com/DanielRenne/GoCore/core/serverSettings"
 	"github.com/asdine/storm"
 	_ "github.com/denisenkom/go-mssqldb"
@@ -15,7 +17,6 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"sync"
 )
 
 var DBMutex *sync.RWMutex
@@ -25,6 +26,9 @@ var MongoSession *mgo.Session
 var MongoSessionAuth *mgo.Session
 var MongoDB *mgo.Database
 var MongoDBAuth *mgo.Database
+
+var mongoDBOverride string
+var mongoDBNameOverride string
 
 const (
 
@@ -37,6 +41,11 @@ const (
 
 func init() {
 	DBMutex = &sync.RWMutex{}
+}
+
+func OverrideMongoDBConnection(connectionString string, dbName string) {
+	mongoDBOverride = connectionString
+	mongoDBNameOverride = dbName
 }
 
 func ReadMongoDB() (mdb *mgo.Database) {
@@ -168,23 +177,28 @@ func openMongo() error {
 	}
 
 	var err error
+	connectionString := serverSettings.WebConfig.DbConnection.ConnectionString
+	if mongoDBOverride != "" {
+		connectionString = mongoDBOverride
+	}
+
 	DBMutex.Lock()
-	MongoSession, err = mgo.Dial(serverSettings.WebConfig.DbConnection.ConnectionString) // open an connection -> Dial function
+	MongoSession, err = mgo.Dial(connectionString) // open an connection -> Dial function
 	DBMutex.Unlock()
 
 	if err != nil { //  if you have a
-		color.Red("Failed to create or open mongo Database at " + serverSettings.WebConfig.DbConnection.ConnectionString + "\n\t" + err.Error())
+		color.Red("Failed to create or open mongo Database at " + connectionString + "\n\t" + err.Error())
 		return err
 	}
 
 	if serverSettings.WebConfig.HasDbAuth && serverSettings.WebConfig.DbAuthConnection.AuthServer {
 
 		DBMutex.Lock()
-		MongoSessionAuth, err = mgo.Dial(serverSettings.WebConfig.DbAuthConnection.ConnectionString) // open an connection -> Dial function
+		MongoSessionAuth, err = mgo.Dial(connectionString) // open an connection -> Dial function
 		DBMutex.Unlock()
 
 		if err != nil { //  if you have a
-			color.Red("Failed to create or open mongo Database at " + serverSettings.WebConfig.DbAuthConnection.ConnectionString + "\n\t" + err.Error())
+			color.Red("Failed to create or open mongo Database at " + connectionString + "\n\t" + err.Error())
 			return err
 		}
 	}
@@ -197,7 +211,12 @@ func connectMongoDB() error {
 	MongoSession.SetMode(mgo.Monotonic, true) // Optional. Switch the session to a monotonic behavior.
 	MongoSession.SetSyncTimeout(2000 * time.Millisecond)
 
-	MongoDB = MongoSession.DB(serverSettings.WebConfig.DbConnection.Database)
+	dbName := serverSettings.WebConfig.DbConnection.Database
+	if mongoDBNameOverride != "" {
+		dbName = mongoDBNameOverride
+	}
+
+	MongoDB = MongoSession.DB(dbName)
 	color.Green("Mongo Database Connected Successfully.")
 	if serverSettings.WebConfig.HasDbAuth {
 		MongoSessionAuth.SetMode(mgo.Monotonic, true) // Optional. Switch the session to a monotonic behavior.

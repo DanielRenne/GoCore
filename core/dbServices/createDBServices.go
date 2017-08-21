@@ -1549,6 +1549,7 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 	val += heredoc.Docf(`
 			var files [][]byte
 			var err error
+			var distDirectoryFound bool
 			err = fileCache.LoadCachedBootStrapFromKeyIntoMemory("%s")
 			if err != nil {
 				obj.BootStrapComplete()
@@ -1556,7 +1557,7 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 				return err
 			}
 
-			files, err = BootstrapDirectory("%s", cnt)
+			files, err, distDirectoryFound = BootstrapDirectory("%s", cnt)
 			if err != nil {
 				obj.BootStrapComplete()
 				log.Println("Failed to bootstrap data for %s: " + err.Error())
@@ -1671,7 +1672,9 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 			log.Println("FAILED to bootstrap %s")
 		} else {
 
-			err = BootstrapMongoDump("%s", "%s")
+			if distDirectoryFound {
+				err = BootstrapMongoDump("%s", "%s")
+			}
 			if err == nil {
 				log.Println("Successfully bootstrapped %s")
 				if actualCount != originalCount {

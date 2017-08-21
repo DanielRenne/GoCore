@@ -646,6 +646,10 @@ func BootstrapMongoDump(directoryName string, collectionName string) (err error)
 
 	path = path + "/" + directoryName + "Dump.json"
 
+	if extensions.DoesFileExist(path) == false {
+		return
+	}
+
 	dbName := serverSettings.WebConfig.DbConnection.Database
 
 	var commandPath string
@@ -659,7 +663,7 @@ func BootstrapMongoDump(directoryName string, collectionName string) (err error)
 
 }
 
-func BootstrapDirectory(directoryName string, collectionCount int) (files [][]byte, err error) {
+func BootstrapDirectory(directoryName string, collectionCount int) (files [][]byte, err error, directoryFound bool) {
 
 	defer func() {
 		if r := recover(); r != nil {
@@ -675,6 +679,8 @@ func BootstrapDirectory(directoryName string, collectionCount int) (files [][]by
 	if extensions.DoesFileExist(path) == false {
 		return
 	}
+
+	directoryFound = true
 
 	err = fileCache.LoadCachedManifestFromKeyIntoMemory(directoryName)
 	if err != nil {
