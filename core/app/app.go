@@ -23,10 +23,12 @@ import (
 
 type WebSocketConnection struct {
 	sync.RWMutex
-	Id         string
-	Connection *websocket.Conn
-	Req        *http.Request
-	Context    interface{}
+	Id            string
+	Connection    *websocket.Conn
+	Req           *http.Request
+	Context       interface{}
+	ContextString string
+	ContextType   string
 }
 
 type WebSocketConnectionCollection struct {
