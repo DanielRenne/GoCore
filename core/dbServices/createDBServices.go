@@ -1672,7 +1672,7 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 			log.Println("FAILED to bootstrap %s")
 		} else {
 
-			if distDirectoryFound {
+			if distDirectoryFound == false {
 				err = BootstrapMongoDump("%s", "%s")
 			}
 			if err == nil {
