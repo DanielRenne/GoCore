@@ -21,6 +21,8 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+type WebSocketRemoval func(conn *WebSocketConnection)
+
 type WebSocketConnection struct {
 	sync.RWMutex
 	Id            string
@@ -56,6 +58,7 @@ var upgrader = websocket.Upgrader{
 
 var WebSocketConnections WebSocketConnectionCollection
 var WebSocketCallbacks WebSocketCallbackSync
+var WebSocketRemovalCallback WebSocketRemoval
 
 func Initialize(path string, cookieDomain string) (err error) {
 	err = serverSettings.Initialize(path, "webConfig.json")
@@ -390,6 +393,17 @@ func deleteWebSocket(c *WebSocketConnection) {
 		if wsConn.Id == c.Id {
 			log.Println("Deleting Web Socket from client:  " + wsConn.Connection.RemoteAddr().String())
 			WebSocketConnections.Connections = removeWebSocket(WebSocketConnections.Connections, i)
+			if WebSocketRemovalCallback != nil {
+				go func(c *WebSocketConnection) {
+					defer func() {
+						if recover := recover(); recover != nil {
+							log.Println("Panic Recovered at deleteWebSocket():  ", recover)
+							return
+						}
+					}()
+					WebSocketRemovalCallback(c)
+				}(wsConn)
+			}
 			i--
 		}
 	}
