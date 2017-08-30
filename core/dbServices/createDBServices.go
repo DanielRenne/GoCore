@@ -1106,9 +1106,12 @@ func genNoSQLSchemaSave(collection NOSQLCollection, schema NOSQLSchema, driver s
 func genNoSQLSchemaSaveByTran(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
 	val := ""
 	val += "func (self *" + strings.Title(schema.Name) + ") SaveWithTran(t *Transaction) error {\n\n"
-	val += "return self.ForceCreateWithTran(t, false)\n"
+	val += "return self.CreateWithTran(t, false)\n"
 	val += "}\n"
-	val += "func (self *" + strings.Title(schema.Name) + ") ForceCreateWithTran(t *Transaction, forceCreate bool) error {\n\n"
+	val += "func (self *" + strings.Title(schema.Name) + ") ForceCreateWithTran(t *Transaction) error {\n\n"
+	val += "return self.CreateWithTran(t, true)\n"
+	val += "}\n"
+	val += "func (self *" + strings.Title(schema.Name) + ") CreateWithTran(t *Transaction, forceCreate bool) error {\n\n"
 	switch driver {
 	case DATABASE_DRIVER_BOLTDB:
 		val += "return dbServices.BoltDB.Save(self)\n"
