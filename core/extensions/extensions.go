@@ -3,8 +3,10 @@ package extensions
 import (
 	"bytes"
 	"fmt"
+	"math/rand"
 	"strconv"
 	"strings"
+	"time"
 	"unicode"
 )
 
@@ -247,4 +249,9 @@ func ExtractArgsWithinBrackets(str string) (res []string) {
 
 	res = strings.FieldsFunc(str, isBracket)
 	return
+}
+
+func Random(min, max int) int {
+	rand.Seed(time.Now().UTC().UnixNano())
+	return rand.Intn(max-min) + min
 }
