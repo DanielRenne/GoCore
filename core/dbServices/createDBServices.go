@@ -1104,6 +1104,7 @@ func genNoSQLSchemaSave(collection NOSQLCollection, schema NOSQLSchema, driver s
 }
 
 func genNoSQLSchemaSaveByTran(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
+	showLog := false
 	val := ""
 	val += "func (self *" + strings.Title(schema.Name) + ") SaveWithTran(t *Transaction) error {\n\n"
 	val += "return self.CreateWithTran(t, false)\n"
@@ -1116,6 +1117,13 @@ func genNoSQLSchemaSaveByTran(collection NOSQLCollection, schema NOSQLSchema, dr
 	case DATABASE_DRIVER_BOLTDB:
 		val += "return dbServices.BoltDB.Save(self)\n"
 	case DATABASE_DRIVER_MONGODB:
+		val += "transactionQueue.Lock()\n"
+		val += "defer func() {\n"
+		val += "  transactionQueue.Unlock()\n"
+		val += "}()\n"
+		if showLog {
+			val += "	log.Println(\"in with: \" + self.Id.Hex())\n"
+		}
 		val += "collection" + strings.Title(collection.Name) + "Mutex.RLock()\n"
 		val += "collection := mongo" + strings.Title(collection.Name) + "Collection\n"
 		val += "collection" + strings.Title(collection.Name) + "Mutex.RUnlock()\n"
@@ -1125,16 +1133,11 @@ func genNoSQLSchemaSaveByTran(collection NOSQLCollection, schema NOSQLSchema, dr
 		val += "//Validate the Model first.  If it fails then clean up the transaction in memory\n"
 		val += "err := self.ValidateAndClean()\n"
 		val += "if err != nil {\n"
-		val += "transactionQueue.Lock()\n"
 		val += "delete(transactionQueue.queue, t.Id.Hex())\n"
-		val += "transactionQueue.Unlock()\n"
 		val += "return err\n"
 		val += "}\n"
 
-		val += "transactionQueue.RLock()\n"
-		val += "tPersist, ok := transactionQueue.queue[t.Id.Hex()]\n"
-		val += "transactionQueue.RUnlock()\n\n"
-
+		val += "_, ok := transactionQueue.queue[t.Id.Hex()]\n"
 		val += "if ok == false {\n"
 		val += "	return errors.New(dbServices.ERROR_CODE_TRANSACTION_NOT_PRESENT)\n"
 		val += "}\n\n"
@@ -1158,6 +1161,9 @@ func genNoSQLSchemaSaveByTran(collection NOSQLCollection, schema NOSQLSchema, dr
 		val += "newBson, err := self.BSONString()\n\n"
 
 		val += "if err != nil {\n"
+		if showLog {
+			val += "	log.Println(\"exit bson\")\n"
+		}
 		val += "	return err\n"
 		val += "}\n\n"
 
@@ -1172,12 +1178,38 @@ func genNoSQLSchemaSaveByTran(collection NOSQLCollection, schema NOSQLSchema, dr
 		val += "histRecord.ObjId = self.Id.Hex()\n"
 		val += "histRecord.CreateDate = time.Now()\n"
 
+		if showLog {
+			val += "for i := range transactionQueue.queue[t.Id.Hex()].newItems {\n"
+			val += "log.Println(\"" + strings.Title(schema.Name) + "\" + transactionQueue.queue[t.Id.Hex()].newItems[i].entity.GetId())\n"
+			val += "}\n"
+		}
 		val += "//Get the Original Record if it is a Update\n"
 		val += "if isUpdate {\n\n"
 
-		val += "if tPersist.UpdateEntity(self) == true {\n"
-		val += "return nil\n"
-		val += "}\n\n"
+		val += "//For items in memory return and dont run ById\n"
+		val += "for i := range transactionQueue.queue[t.Id.Hex()].newItems {\n"
+		val += "  if transactionQueue.queue[t.Id.Hex()].newItems[i].entity.GetId() == self.Id.Hex() {\n"
+		val += "    transactionQueue.queue[t.Id.Hex()].newItems[i].entity = self\n"
+		if showLog {
+			val += "	log.Println(\"exit found it\" + self.Id.Hex())\n"
+		}
+		val += "    return nil\n"
+		val += "  }\n"
+		val += "}\n"
+
+		val += "// Last ditch effort in case of garbage collector error in pointers\n"
+		val += "for _, encounteredId := range transactionQueue.ids[t.Id.Hex()] {\n"
+		if showLog {
+			val += "  log.Println(encounteredId)\n"
+		}
+		val += "  if encounteredId == self.Id.Hex() {\n"
+		if showLog {
+			val += "  log.Println(\"found encontered id append newItems\")\n"
+		}
+		val += "    transactionQueue.queue[t.Id.Hex()].newItems = append(transactionQueue.queue[t.Id.Hex()].newItems, eTransactionNew)\n"
+		val += "    return nil\n"
+		val += "  }\n"
+		val += "}\n"
 
 		val += "	histRecord.Type = TRANSACTION_CHANGETYPE_UPDATE\n"
 
@@ -1187,12 +1219,18 @@ func genNoSQLSchemaSaveByTran(collection NOSQLCollection, schema NOSQLSchema, dr
 		val += "err := " + strings.Title(collection.Name) + ".Query().ById(self.Id, &original)\n\n"
 
 		val += "if err != nil {\n"
+		if showLog {
+			val += "	log.Println(\"exit 12441241\")\n"
+		}
 		val += "	return err\n"
 		val += "}\n\n"
 
 		val += "	originalBson, err := original.BSONString()\n\n"
 
 		val += "	if err != nil {\n"
+		if showLog {
+			val += "	log.Println(\"exit t32t32\")\n"
+		}
 		val += "		return err\n"
 		val += "	}\n\n"
 
@@ -1203,9 +1241,13 @@ func genNoSQLSchemaSaveByTran(collection NOSQLCollection, schema NOSQLSchema, dr
 		val += "var eTransactionOriginal entityTransaction\n"
 		val += "eTransactionOriginal.entity = &histRecord\n\n"
 
-		val += "tPersist.originalItems = append(tPersist.originalItems, eTransactionOriginal)\n"
-		val += "tPersist.newItems = append(tPersist.newItems, eTransactionNew)\n\n"
+		val += "transactionQueue.ids[t.Id.Hex()] = append(transactionQueue.ids[t.Id.Hex()], eTransactionNew.entity.GetId())\n"
+		val += "transactionQueue.queue[t.Id.Hex()].originalItems = append(transactionQueue.queue[t.Id.Hex()].originalItems, eTransactionOriginal)\n"
+		val += "transactionQueue.queue[t.Id.Hex()].newItems = append(transactionQueue.queue[t.Id.Hex()].newItems, eTransactionNew)\n\n"
 
+		if showLog {
+			val += "	log.Println(\"exit end\")\n"
+		}
 		val += "return nil\n"
 
 		val += "}\n\n"
@@ -1772,14 +1814,14 @@ func genNoSQLSchemaDeleteWithTran(collection NOSQLCollection, schema NOSQLSchema
 	case "boltDB":
 		val += "return dbServices.BoltDB.Remove(self)\n"
 	case "mongoDB":
+		val += "transactionQueue.Lock()\n"
+		val += "defer func() {\n"
+		val += "  transactionQueue.Unlock()\n"
+		val += "}()\n"
 		val += "if self.Id.Hex() == \"\" {\n"
 		val += "return errors.New(dbServices.ERROR_CODE_TRANSACTION_RECORD_NOT_EXISTS)\n"
 		val += "}\n\n"
-
-		val += "transactionQueue.RLock()\n"
-		val += "tPersist, ok := transactionQueue.queue[t.Id.Hex()]\n"
-		val += "transactionQueue.RUnlock()\n\n"
-
+		val += "_, ok := transactionQueue.queue[t.Id.Hex()]\n"
 		val += "if ok == false {\n"
 		val += "	return errors.New(dbServices.ERROR_CODE_TRANSACTION_NOT_PRESENT)\n"
 		val += "}\n\n"
@@ -1816,8 +1858,9 @@ func genNoSQLSchemaDeleteWithTran(collection NOSQLCollection, schema NOSQLSchema
 
 		val += "t.Collections = append(t.Collections, \"" + strings.Title(collection.Name) + "History\")\n"
 
-		val += "tPersist.originalItems = append(tPersist.originalItems, eTransactionOriginal)\n"
-		val += "tPersist.newItems = append(tPersist.newItems, eTransactionNew)\n"
+		val += "transactionQueue.queue[t.Id.Hex()].originalItems = append(transactionQueue.queue[t.Id.Hex()].originalItems, eTransactionOriginal)\n"
+		val += "transactionQueue.queue[t.Id.Hex()].newItems = append(transactionQueue.queue[t.Id.Hex()].newItems, eTransactionNew)\n\n"
+		val += "transactionQueue.ids[t.Id.Hex()] = append(transactionQueue.ids[t.Id.Hex()], eTransactionNew.entity.GetId())\n"
 
 		val += "return nil"
 	}
