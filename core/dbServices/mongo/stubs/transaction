@@ -218,6 +218,7 @@ func (self *Transaction) Commit() error {
 	rollBack := false
 	var rollBackErrorMessage string
 
+
 	for _, entityTran := range tPersist.newItems {
 		if entityTran.changeType == TRANSACTION_CHANGETYPE_DELETE {
 			err := entityTran.entity.Delete()
