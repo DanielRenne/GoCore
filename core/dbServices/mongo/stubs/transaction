@@ -219,19 +219,18 @@ func (self *Transaction) Commit() error {
 	var rollBackErrorMessage string
 
 	for _, entityTran := range tPersist.newItems {
-
 		if entityTran.changeType == TRANSACTION_CHANGETYPE_DELETE {
 			err := entityTran.entity.Delete()
-			if err != nil {
+			if err != nil && err.Error() != "not found" {
 				rollBack = true
-				rollBackErrorMessage = "Failed to delete object in transaction collection.  Rolling back transaction id " + self.Id.Hex() + ".\n" + err.Error()
+				rollBackErrorMessage = "Failed to delete object in transaction collection.  Rolling back transaction id " + self.Id.Hex() + ".\n" + err.Error() + "\n\nRecord:\n\n" + core.Debug.GetDump(entityTran.entity)
 				break
 			}
 		} else {
 			err := entityTran.entity.Save()
 			if err != nil {
 				rollBack = true
-				rollBackErrorMessage = "Failed to persist object in transaction collection.  Rolling back transaction id " + self.Id.Hex() + ".\n" + err.Error()
+				rollBackErrorMessage = "Failed to persist object in transaction collection.  Rolling back transaction id " + self.Id.Hex() + ".\n" + err.Error() + "\n\nRecord:\n\n" + core.Debug.GetDump(entityTran.entity)
 				break
 			}
 		}
