@@ -84,6 +84,32 @@ func Initialize(path string, cookieDomain string) (err error) {
 	return
 }
 
+func InitializeLite(path string) (err error) {
+	ginServer.InitializeLite(gin.ReleaseMode)
+	fileCache.Initialize()
+	return
+}
+
+func RunLite(port int) {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Println("Panic Recovered at RunLite():  ", r)
+			time.Sleep(time.Millisecond * 3000)
+			RunLite(port)
+			return
+		}
+	}()
+
+	ginServer.Router.GET("/ws", func(c *gin.Context) {
+		webSocketHandler(c.Writer, c.Request, c)
+	})
+
+	log.Println("GoCore Application Started")
+
+	ginServer.Router.Run(":" + strconv.Itoa(port))
+
+}
+
 func Run() {
 
 	defer func() {

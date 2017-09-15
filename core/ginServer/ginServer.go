@@ -81,6 +81,17 @@ func Initialize(mode string, cookieDomain string) {
 	initializedRouterGroups = nil
 }
 
+func InitializeLite(mode string) {
+	gin.SetMode(mode)
+	Router = gin.Default()
+	hasInitialized = true
+
+	for _, group := range initializedRouterGroups {
+		AddRouterGroup(group.group, group.route, group.method, group.fp)
+	}
+	initializedRouterGroups = nil
+}
+
 func AddRouterGroup(group string, route string, method string, fp func(*gin.Context)) {
 
 	if !hasInitialized {
