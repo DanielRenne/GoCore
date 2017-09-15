@@ -1,13 +1,14 @@
 package utils
 
 import (
-	"github.com/atlonaeng/studio/settings"
 	"io/ioutil"
 	"log"
 	"math/rand"
 	"os/exec"
 	"strings"
 	"time"
+
+	"github.com/DanielRenne/GoCore/core/serverSettings"
 )
 
 func init() {
@@ -45,7 +46,7 @@ func ReplaceTokenInFile(file string, find string, replaceWith string) {
 }
 
 func TalkDirtyToMe(sayWhat string) {
-	if settings.ServerSettings.ReleaseMode == "development" {
+	if serverSettings.WebConfig.Application.TalkDirty {
 		exec.Command("say", sayWhat).Output()
 	}
 }

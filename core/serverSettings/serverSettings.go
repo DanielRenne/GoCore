@@ -77,6 +77,7 @@ type Application struct {
 	LogQueryTimes         bool          `json:"logQueryTimes"`
 	LogGophers            bool          `json:"logGophers"`
 	CoreDebugStackTrace   bool          `json:"coreDebugStackTrace"`
+	TalkDirty             bool          `json:"TalkDirty"`
 }
 
 type webConfigObj struct {
