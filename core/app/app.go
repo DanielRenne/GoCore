@@ -84,7 +84,7 @@ func Initialize(path string, cookieDomain string) (err error) {
 	return
 }
 
-func InitializeLite(path string) (err error) {
+func InitializeLite() (err error) {
 	ginServer.InitializeLite(gin.ReleaseMode)
 	fileCache.Initialize()
 	return
