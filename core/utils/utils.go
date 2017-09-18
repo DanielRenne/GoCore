@@ -35,7 +35,7 @@ func ReplaceTokenInFile(file string, find string, replaceWith string) {
 
 	for i, line := range lines {
 		if strings.Contains(line, find) {
-			lines[i] = replaceWith
+			lines[i] = strings.Replace(lines[i], find, replaceWith, -1)
 		}
 	}
 	output := strings.Join(lines, "\n")

@@ -216,7 +216,7 @@ func walkNoSQLSchema() {
 			}
 
 			//Create Swagger Definition With the latest Version being equal to swagger.json, all others swagger_1.0.0.json etc...
-			writeSwaggerConfiguration("/api/"+versionDir, version.Value)
+			//writeSwaggerConfiguration("/api/"+versionDir, version.Value)
 		}
 	}
 

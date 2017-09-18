@@ -9,29 +9,31 @@ const basePath = "/api"
 
 func genSchemaWebAPI(collection NOSQLCollection, schema NOSQLSchema, dbPackageName string, driver string, versionDir string) string {
 
-	val := extensions.GenPackageImport("webAPI", []string{dbPackageName, "github.com/DanielRenne/GoCore/core/ginServer", "github.com/gin-gonic/gin", "github.com/DanielRenne/GoCore/core/extensions", "strings", "io/ioutil", "encoding/json"})
+	//, "github.com/DanielRenne/GoCore/core/extensions", "strings"
+	val := extensions.GenPackageImport("webAPI", []string{dbPackageName, "github.com/DanielRenne/GoCore/core/ginServer", "github.com/gin-gonic/gin", "io/ioutil", "encoding/json"})
 	val += "func init(){\n\n"
 	//val += "\tginServer.AddRouterGroup(\"" + versionDir + "\", \"/" + extensions.MakeFirstLowerCase(schema.Name) + "\", \"GET\", get" + strings.Title(schema.Name) + ")\n"
-	val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/" + extensions.MakeFirstLowerCase(collection.Name) + "/singleBy\", \"GET\", getSingle" + strings.Title(collection.Name) + ")\n"
-	val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/" + extensions.MakeFirstLowerCase(collection.Name) + "/searchBy\", \"GET\", getSearch" + strings.Title(collection.Name) + ")\n"
-	val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/" + extensions.MakeFirstLowerCase(collection.Name) + "/sortBy\", \"GET\", getSort" + strings.Title(collection.Name) + ")\n"
-	val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/" + extensions.MakeFirstLowerCase(collection.Name) + "/rangeBy\", \"GET\", getRange" + strings.Title(collection.Name) + ")\n"
-	val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/" + extensions.MakeFirstLowerCase(collection.Name) + "\", \"GET\", get" + strings.Title(collection.Name) + ")\n"
+	//val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/" + extensions.MakeFirstLowerCase(collection.Name) + "/singleBy\", \"GET\", getSingle" + strings.Title(collection.Name) + ")\n"
+	//val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/" + extensions.MakeFirstLowerCase(collection.Name) + "/searchBy\", \"GET\", getSearch" + strings.Title(collection.Name) + ")\n"
+	//val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/" + extensions.MakeFirstLowerCase(collection.Name) + "/sortBy\", \"GET\", getSort" + strings.Title(collection.Name) + ")\n"
+	//val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/" + extensions.MakeFirstLowerCase(collection.Name) + "/rangeBy\", \"GET\", getRange" + strings.Title(collection.Name) + ")\n"
+
+	//val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/" + extensions.MakeFirstLowerCase(collection.Name) + "\", \"GET\", get" + strings.Title(collection.Name) + ")\n"
 
 	val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/" + extensions.MakeFirstLowerCase(schema.Name) + "\", \"POST\", post" + strings.Title(schema.Name) + ")\n"
-	val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/" + extensions.MakeFirstLowerCase(schema.Name) + "\", \"PUT\", put" + strings.Title(schema.Name) + ")\n"
+	//val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/" + extensions.MakeFirstLowerCase(schema.Name) + "\", \"PUT\", put" + strings.Title(schema.Name) + ")\n"
 	val += "\tginServer.AddRouterGroup(\"" + basePath + "/" + versionDir + "\", \"/" + extensions.MakeFirstLowerCase(schema.Name) + "\", \"DELETE\", delete" + strings.Title(schema.Name) + ")\n"
 
 	val += "}\n\n"
 
-	val += genNOSQLSingleCollectionGET(collection)
-	val += genNOSQLSearchCollectionGET(collection)
-	val += genNOSQLSortCollectionGET(collection)
-	val += genNOSQLRangeCollectionGET(collection)
-	val += genNOSQLCollectionGET(collection)
+	//val += genNOSQLSingleCollectionGET(collection)
+	//val += genNOSQLSearchCollectionGET(collection)
+	//val += genNOSQLSortCollectionGET(collection)
+	//val += genNOSQLRangeCollectionGET(collection)
+	//val += genNOSQLCollectionGET(collection)
 
 	val += genNOSQLSchemaPost(schema)
-	val += genNOSQLSchemaPut(collection, schema, getNoSQLSchemaPrimaryKey(schema))
+	//val += genNOSQLSchemaPut(collection, schema, getNoSQLSchemaPrimaryKey(schema))
 	val += genNOSQLSchemaDelete(schema)
 
 	//Add Swagger Paths
@@ -59,7 +61,7 @@ func genNOSQLCollectionGET(collection NOSQLCollection) string {
 
 	val += "\tlimit := extensions.StringToInt(c.DefaultQuery(\"limit\",\"\"))\n"
 	val += "\tskip := extensions.StringToInt(c.DefaultQuery(\"skip\",\"\"))\n"
-	val += "\titems := model." + name + "{}\n"
+	val += "\titems := model." + name + "\n"
 	val += "\tif limit != 0 || skip != 0{\n"
 	val += "\titemsArray, _ := items.AllAdvanced(limit, skip)\n"
 	val += "\tginServer.RespondJSON(itemsArray, c)\n"
@@ -310,7 +312,7 @@ func genNOSQLSearchCollectionGET(collection NOSQLCollection) string {
 	val += "\tvalue := c.DefaultQuery(\"value\",\"\")\n"
 	val += "\tlimit := extensions.StringToInt(c.DefaultQuery(\"limit\",\"\"))\n"
 	val += "\tskip := extensions.StringToInt(c.DefaultQuery(\"skip\",\"\"))\n"
-	val += "\titems := model." + name + "{}\n"
+	val += "\titems := model." + name + "\n"
 	val += "\tif limit != 0 || skip != 0{\n"
 	val += "\titemsArray, _ := items.SearchAdvanced(field, value, limit, skip)\n"
 	val += "\tginServer.RespondJSON(itemsArray, c)\n"
@@ -334,7 +336,7 @@ func genNOSQLSortCollectionGET(collection NOSQLCollection) string {
 	val += "\tfield := strings.Title(c.DefaultQuery(\"field\",\"\"))\n"
 	val += "\tlimit := extensions.StringToInt(c.DefaultQuery(\"limit\",\"\"))\n"
 	val += "\tskip := extensions.StringToInt(c.DefaultQuery(\"skip\",\"\"))\n"
-	val += "\titems := model." + name + "{}\n"
+	val += "\titems := model." + name + "\n"
 	val += "\tif limit != 0 || skip != 0{\n"
 	val += "\titemsArray, _ := items.AllByIndexAdvanced(field, limit, skip)\n"
 	val += "\tginServer.RespondJSON(itemsArray, c)\n"
@@ -360,7 +362,7 @@ func genNOSQLRangeCollectionGET(collection NOSQLCollection) string {
 	val += "\tskip := extensions.StringToInt(c.DefaultQuery(\"skip\",\"\"))\n"
 	val += "\tmin := c.DefaultQuery(\"min\",\"\")\n"
 	val += "\tmax := c.DefaultQuery(\"max\",\"\")\n"
-	val += "\titems := model." + name + "{}\n"
+	val += "\titems := model." + name + "\n"
 	val += "\tif limit != 0 || skip != 0{\n"
 	val += "\titemsArray, _ := items.RangeAdvanced(min, max, field, limit, skip)\n"
 	val += "\tginServer.RespondJSON(itemsArray, c)\n"
@@ -383,7 +385,7 @@ func genNOSQLSingleCollectionGET(collection NOSQLCollection) string {
 
 	val += "\tfield := strings.Title(c.DefaultQuery(\"field\",\"\"))\n"
 	val += "\tvalue := c.DefaultQuery(\"value\",\"\")\n"
-	val += "\titems := model." + name + "{}\n"
+	val += "\titems := model." + name + "\n"
 	val += "\titemsArray, _ := items.Single(field, value)\n"
 	val += "\tginServer.RespondJSON(itemsArray, c)\n"
 
@@ -438,7 +440,7 @@ func genNOSQLSchemaPut(collection NOSQLCollection, schema NOSQLSchema, pkFieldNa
 	val += "\treturn\n"
 	val += "\t}\n"
 
-	val += "obj" + colName + " := model." + colName + "{}\n"
+	val += "obj" + colName + " := model." + colName + "\n"
 	val += "\t_ , errSingle := obj" + colName + ".Single(\"" + pkFieldName + "\",obj." + pkFieldName + ")\n"
 	val += "\tif errSingle != nil{\n"
 	val += "\t\tc.Data(404, gin.MIMEHTML, ginServer.RespondError(\"Existing " + name + " not found.  Please check your primary key to update.\"))\n"

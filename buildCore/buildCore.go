@@ -11,5 +11,7 @@ func Initialize(path string, fileName string) {
 	serverSettings.Initialize(path, fileName)
 	dbServices.Initialize()
 	appGen.GenerateApp()
+	// Reinitialize if webConfig.json created
+	serverSettings.Initialize(path, fileName)
 	dbServices.RunDBCreate()
 }
