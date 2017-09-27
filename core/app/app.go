@@ -60,8 +60,8 @@ var WebSocketConnections WebSocketConnectionCollection
 var WebSocketCallbacks WebSocketCallbackSync
 var WebSocketRemovalCallback WebSocketRemoval
 
-func Initialize(path string, cookieDomain string) (err error) {
-	err = serverSettings.Initialize(path, "webConfig.json")
+func Initialize(path string, config string, cookieDomain string) (err error) {
+	err = serverSettings.Initialize(path, config)
 	if err != nil {
 		return
 	}
