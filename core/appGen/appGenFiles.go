@@ -140,7 +140,7 @@ func moveAppFiles() {
 	copyFolder("/errors")
 	replacePath("/errors", project, githubName, appName)
 	for _, v := range utils.Array("/web/app/manifests", "/web/app/globalization/translations", "/web/app/javascript/pages/logs", "/web/app/javascript/globals", "/web/app/markup/app") {
-		replaceAnything(v, "GoCoreAppHumanName", string(humanTitle))
+		replaceAnything(v, "GoCoreAppHumanName", strings.TrimSpace(string(humanTitle)))
 	}
 	secret := bson.NewObjectId()
 	replaceAnything("/password", "GoCorePasswordSecret", secret.Hex())
