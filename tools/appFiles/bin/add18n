@@ -13,3 +13,34 @@ else
   python $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/translate_all.py "$1"
   echo " --- All done! ---"
 fi
+
+
+#!/bin/bash
+set -e
+if [ $# -lt 3 ]; then
+  echo 1>&2 "$0: not enough arguments to call add18n"
+  exit 2
+elif [ $# -gt 3 ]; then
+  echo 1>&2 "$0: too many arguments to call add18n"
+  exit 2
+else
+  output=$(python $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n.py "$1" "$2" "$3" "0")
+  if [[ "$output" == "TranslationExists" ]]; then
+      echo -n "Blast existing translation?" && read statusBlast
+      if [[ "$statusBlast" == "y" ]]; then
+          output2=$(python $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n_getkey.py "$1" "$2" "$3" "0")
+          python $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n.py "$1" "$2" "$3" "1"
+          bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/translation_seed "$1" "$output2"
+          sleep 1
+          python $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/translate_all.py "$1"
+          echo " --- All done! ---"
+      else
+        echo "Nothing done... just check clipboard"
+      fi
+  else
+      bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/translation_seed "$1"
+      sleep 1
+      python $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/translate_all.py "$1"
+      echo " --- All done! ---"
+  fi
+fi

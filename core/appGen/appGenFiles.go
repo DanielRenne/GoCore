@@ -80,7 +80,13 @@ func moveAppFiles() {
 		logger.Message("Copied webConfig.json to Application.", logger.GREEN)
 	}
 
-	for _, v := range utils.Array("webConfig.prod.json", "webConfig.json") {
+	_, err = os.Stat(serverSettings.APP_LOCATION + "/webConfig.dev.json")
+	if err != nil {
+		extensions.CopyFile(serverSettings.GOCORE_PATH+"/tools/appFiles/webConfig.dev.json", serverSettings.APP_LOCATION+"/webConfig.dev.json")
+		logger.Message("Copied webConfig.json to Application.", logger.GREEN)
+	}
+
+	for _, v := range utils.Array("webConfig.prod.json", "webConfig.dev.json", "webConfig.json") {
 		id1 := bson.NewObjectId()
 		id2 := bson.NewObjectId()
 		utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/" + v, "goCoreProductName", appName + "BaseProduct")
@@ -270,6 +276,7 @@ debug
 web/swagger/dist/swagger.*
 /models/
 /webAPIs/
+/log/*
 webConfig.json
 /dist
 *.upx

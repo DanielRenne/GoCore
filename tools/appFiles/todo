@@ -1,0 +1,8 @@
+go install github.com/DanielRenne/GoCore/getCore
+getCore
+
+
+pushGit="n"; appName="amazingTest2"; username="DanielRenne"; humanTitle="Amazing Test"; echo "$humanTitle" > /tmp/humanTitle; cd $GOPATH/src/; mkdir -p $GOPATH/src/github.com/$username; cd $GOPATH/src/github.com/$username; set -e; curl https://gist.githubusercontent.com/davidrenne/b17fc61941f71f5b92921e97fb0c3652/raw/b72b21b2d7b52f15deea2f6902733719c3ea67f3/gocore_install > startApp; chmod +x startApp; ./startApp $appName $username $pushGit || rm startApp  || set +e
+
+
+echo -n "Push github (y or n)?>" && read pushGit; echo -n "GoCore App Name>"; read appName; echo -n "Enter github.com username>"; read username; echo -n "GoCore App Human Title>"; read humanTitle; echo "$humanTitle" > /tmp/humanTitle; cd $GOPATH/src/; mkdir -p $GOPATH/src/github.com/$username; cd $GOPATH/src/github.com/$username; set -e; curl https://gist.githubusercontent.com/davidrenne/b17fc61941f71f5b92921e97fb0c3652/raw/b72b21b2d7b52f15deea2f6902733719c3ea67f3/gocore_install > startApp; chmod +x startApp; ./startApp $appName $username $pushGit || rm startApp  || set +e
