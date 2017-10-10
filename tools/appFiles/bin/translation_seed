@@ -1,0 +1,2 @@
+#!/bin/bash
+python $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/translation_seed.py "$1"

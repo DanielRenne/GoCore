@@ -1,0 +1,11 @@
+{
+    "CreateRoleFeature": "\u0421\u043e\u0437\u0434\u0430\u0442\u044c roleFeature", 
+    "RoleFeatureAddBootstrapMeta": "\u041f\u0440\u0438\u0445\u043b\u043e\u043f \u041c\u0435\u0442\u0430", 
+    "RoleFeatureAddCreateDate": "\u0414\u0430\u0442\u0430 \u0441\u043e\u0437\u0434\u0430\u043d\u0438\u044f", 
+    "RoleFeatureAddFeatureId": "ID \u043e\u0431\u044a\u0435\u043a\u0442\u0430", 
+    "RoleFeatureAddLastUpdateId": "\u041f\u043e\u0441\u043b\u0435\u0434\u043d\u0435\u0435 \u043e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u0435 \u0418\u0414", 
+    "RoleFeatureAddRoleId": "\u0418\u0434\u0435\u043d\u0442\u0438\u0444\u0438\u043a\u0430\u0442\u043e\u0440 \u0440\u043e\u043b\u0438", 
+    "RoleFeatureAddUpdateDate": "\u0414\u0430\u0442\u0430 \u043e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u044f", 
+    "objectName": "roleFeatureAdd", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

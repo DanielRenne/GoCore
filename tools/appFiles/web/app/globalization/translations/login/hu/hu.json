@@ -1,0 +1,13 @@
+{
+    "AliasDeviceLabel": "* Alias Eszk\u00f6z", 
+    "Cancel": "M\u00e9gse", 
+    "EnterAlias": "K\u00e9rem, adjon meg egy \u00e1lnevet ezt a csatlakoztatott k\u00e9sz\u00fcl\u00e9k", 
+    "ErrorNoAlias": "K\u00e9rj\u00fck, adja meg, hogy egy nem \u00fcres alias", 
+    "ErrorNoBuildings": "Nem \u00e9p\u00fcletek \u00e1llnak rendelkez\u00e9sre", 
+    "ErrorNoSites": "Nem el\u00e9rhet\u0151 oldalak", 
+    "ResetPass": "Jelsz\u00f3 Vissza\u00e1ll\u00edt\u00e1sa", 
+    "RoomSync": "Szoba Szinkroniz\u00e1l\u00e1si", 
+    "Synchronizing": "Szinkroniz\u00e1l\u00e1s", 
+    "UserCanceled": "A felhaszn\u00e1l\u00f3 megszak\u00edtotta a cselekv\u00e9si szinkroniz\u00e1lni ezt a szob\u00e1t, k\u00e9rj\u00fck, pr\u00f3b\u00e1lja \u00fajra.", 
+    "Waiting": "J\u00f3v\u00e1hagy\u00e1sra v\u00e1r..."
+}

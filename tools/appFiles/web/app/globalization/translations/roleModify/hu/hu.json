@@ -1,0 +1,11 @@
+{
+    "RoleModifyAccountId": "Fi\u00f3k azonos\u00edt\u00f3", 
+    "RoleModifyCanDelete": "Lehet t\u00f6r\u00f6lni", 
+    "RoleModifyCreateDate": "L\u00e9trehoz\u00e1s d\u00e1tuma", 
+    "RoleModifyLastUpdateId": "Utols\u00f3 friss\u00edt\u00e9s id", 
+    "RoleModifyName": "N\u00e9v", 
+    "RoleModifyShortName": "R\u00f6vid n\u00e9v", 
+    "RoleModifyUpdateDate": "Friss\u00edt\u00e9s d\u00e1tuma", 
+    "objectName": "roleModify", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

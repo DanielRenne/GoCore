@@ -1,0 +1,36 @@
+{
+	"collections":
+	[
+		{
+			"name":"States",
+			"schema":
+			{
+				"name": "State",
+				"fields":
+				[
+					{
+						"name":"Id",
+						"type":"int",
+						"index":"primary"
+                    },
+                    {
+						"name":"Short",
+						"type":"string"
+                    },
+					{
+						"name":"Name",
+						"type":"string"
+                    },
+                    {
+						"name":"AlternativeName",
+						"type":"string"
+					},
+					{
+						"name":"Country",
+						"type":"string"
+					}
+				]
+			}
+		}
+	]
+}

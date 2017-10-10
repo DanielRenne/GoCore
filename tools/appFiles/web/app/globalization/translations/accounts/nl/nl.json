@@ -1,0 +1,5 @@
+{
+    "ErrorAccountNotFound": "Geen account.", 
+    "objectName": "accounts", 
+    "welcomeExample": "Welkom op de {pagina} pagina!"
+}

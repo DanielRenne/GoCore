@@ -1,0 +1,13 @@
+{
+    "CreateFeature": "Recurso de cria\u00e7\u00e3o de", 
+    "FeatureAddBootstrapMeta": "Bootstrap meta", 
+    "FeatureAddCreateDate": "Data de cria\u00e7\u00e3o", 
+    "FeatureAddDescription": "Descri\u00e7\u00e3o", 
+    "FeatureAddFeatureGroupId": "Recurso de id de grupo", 
+    "FeatureAddKey": "Chave", 
+    "FeatureAddLastUpdateId": "\u00daltima atualiza\u00e7\u00e3o de identifica\u00e7\u00e3o", 
+    "FeatureAddName": "Nome", 
+    "FeatureAddUpdateDate": "Data de atualiza\u00e7\u00e3o", 
+    "objectName": "featureAdd", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

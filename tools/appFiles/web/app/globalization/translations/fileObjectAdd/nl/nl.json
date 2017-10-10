@@ -1,0 +1,16 @@
+{
+    "CreateFileObject": "Maak fileObject", 
+    "FileObjectAddAccountId": "Account-id", 
+    "FileObjectAddContent": "Inhoud", 
+    "FileObjectAddCreateDate": "Datum aanmaken", 
+    "FileObjectAddLastUpdateId": "Laatste update id", 
+    "FileObjectAddMD5": "MD 5", 
+    "FileObjectAddModified": "Gewijzigd", 
+    "FileObjectAddModifiedUnix": "Gemodificeerde unix", 
+    "FileObjectAddName": "Naam", 
+    "FileObjectAddSize": "Grootte", 
+    "FileObjectAddType": "Type", 
+    "FileObjectAddUpdateDate": "Update datum", 
+    "objectName": "fileObjectAdd", 
+    "welcomeExample": "Welkom op de {pagina} pagina!"
+}

@@ -1,0 +1,7 @@
+whoami=$(whoami)
+if [[ "$whoami" == "root" ]]; then
+    ps -ax | grep goWatch | awk '{print $1}' | xargs kill > /dev/null 2>&1
+else
+    ps -ax | grep goWatch | awk '{print $1}' | xargs sudo kill > /dev/null 2>&1
+fi
+bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/kill_servers

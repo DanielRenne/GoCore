@@ -1,0 +1,57 @@
+// Name:            Example
+//
+// Component:       `example`
+//
+//
+// ========================================================================
+
+// Variables
+// ========================================================================
+
+@example-title-text-shadow:     @color-white;
+@example-title-span-color:      #ED5565;
+
+@example-typography-note-color: #AAB2BD;
+@example-well-bg:               #eceff1;
+
+// Modifier: `example-well`
+// ========================================================================
+
+.example-well {
+  background-color: @example-well-bg;
+}
+
+// Modifier: `example-grid`
+// ========================================================================
+
+.example-grid .example-col, .example-blocks .example-col {
+  background-color: @example-well-bg;
+}
+
+.example-grid .example-col .example-col {
+  background-color: darken(@example-well-bg, 5%);
+}
+
+// Modifier: `example-box`
+// ========================================================================
+
+.example-box {
+  border: 1px solid @border-color-base;
+
+  &:after {
+    color: #959595;
+  }
+}
+
+// Modifier: `example-typography`
+// ========================================================================
+
+.example-typography {
+
+  .heading-note,
+  .text-note {
+    color: @example-typography-note-color;
+  }
+}
+
+

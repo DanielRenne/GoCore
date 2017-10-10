@@ -1,0 +1,15 @@
+{
+    "FileObjectModifyAccountId": "!ro!Account id", 
+    "FileObjectModifyContent": "!ro!Content", 
+    "FileObjectModifyCreateDate": "!ro!Create date", 
+    "FileObjectModifyLastUpdateId": "!ro!Last update id", 
+    "FileObjectModifyMD5": "!ro!MD 5", 
+    "FileObjectModifyModified": "!ro!Modified", 
+    "FileObjectModifyModifiedUnix": "!ro!Modified unix", 
+    "FileObjectModifyName": "!ro!Name", 
+    "FileObjectModifySize": "!ro!Size", 
+    "FileObjectModifyType": "!ro!Type", 
+    "FileObjectModifyUpdateDate": "!ro!Update date", 
+    "objectName": "!ro!fileObjectModify", 
+    "welcomeExample": "!ro!Welcome to the {page} page!"
+}

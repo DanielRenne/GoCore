@@ -1,0 +1,13 @@
+{
+    "ConfirmPassword": "Confirmar Contrase\u00f1a", 
+    "ErrorPasswordNotValid": "La contrase\u00f1a debe tener al menos 8 caracteres. Incluyen: 1, n\u00famero 1, en may\u00fasculas.", 
+    "FieldRequired": "Campo Obligatorio.", 
+    "NewPassword": "Nueva Contrase\u00f1a", 
+    "OriginalPassword": "Contrase\u00f1a Original", 
+    "PasswordResetHeader": "Para restablecer contrase\u00f1a para {Email}.", 
+    "PasswordResetMessage": "Una de restablecimiento de contrase\u00f1a para {Email} ha sido solicitada. Por favor, haga clic en {Link} para restablecer su contrase\u00f1a. \n\nEste restablecimiento caducar\u00e1 en un plazo de 48 horas.", 
+    "PasswordResetTitle": "GoCoreAppHumanName De Restablecimiento De Contrase\u00f1a", 
+    "PasswordsNoMatch": "Las contrase\u00f1as no coinciden.", 
+    "ResetCompleted": "Esta solicitud ha sido completada. Por favor, solicite otra de restablecimiento de contrase\u00f1a.", 
+    "Title": "De Restablecimiento De Contrase\u00f1a"
+}

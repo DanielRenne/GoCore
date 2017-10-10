@@ -1,0 +1,9 @@
+{
+    "FeatureGroupModifyBootstrapMeta": "!zh!Bootstrap meta", 
+    "FeatureGroupModifyCreateDate": "!zh!Create date", 
+    "FeatureGroupModifyLastUpdateId": "!zh!Last update id", 
+    "FeatureGroupModifyName": "!zh!Name", 
+    "FeatureGroupModifyUpdateDate": "!zh!Update date", 
+    "objectName": "!zh!featureGroupModify", 
+    "welcomeExample": "!zh!Welcome to the {page} page!"
+}

@@ -1,0 +1,110 @@
+// Name:            Widget
+//
+// Component:       `widget`
+// ========================================================================
+
+// Variables
+// ========================================================================
+@widget-article-bg:                @inverse;
+
+@widget-title-color:               @title-color;
+
+@widget-meta-color:                @prompt-color;
+
+@widget-actions-link-color:        @gray;
+@widget-actions-link-hover-color:  @gray-light;
+
+@widget-posts-horizontal-border:   @border-color-base;
+
+@widget-posts-hasBg-bg:            @bg-color-base;
+
+// Component: Widget
+// ========================================================================
+
+.widget {
+  background-color: @widget-article-bg;
+}
+
+// Strucutes
+// ========================================================================
+.widget-title {
+ 
+  color: @widget-title-color;
+
+  .overlay-panel & {
+    color: @inverse;
+  }
+}
+
+
+.widget-metas {
+  color: @widget-meta-color;
+
+  &.type-link {
+    > a {
+      color: @gray;
+
+      &:hover {
+        color: @gray-light;
+      }
+
+      + a:before {
+        background-color: @gray;
+      }
+    }
+  }
+}
+
+.widget-time {
+  .overlay-background & {
+    color: @inverse;
+  }
+}
+
+// Widget Actions
+// ========================================================================
+
+.widget-actions {
+  a {
+    color: @widget-actions-link-color;
+
+    &.active, &:hover, &:focus {
+      color: @widget-actions-link-hover-color;
+    }
+  }
+}
+
+.widget-actions-sidebar {
+  a {
+    border-right: 1px solid @widget-posts-horizontal-border;
+
+    + a {
+      border-top: 1px solid @widget-posts-horizontal-border;
+    }
+  }
+}
+
+// Widget Watermark
+// ========================================================================
+
+.widget-watermark {
+  &.darker {
+    color: black;
+  }
+
+  &.lighter {
+    color: white;
+  }
+}
+
+// Widget divider
+// ========================================================================
+
+.widget-divider {
+  &:after {
+    background-color: @inverse;
+  }
+}
+
+
+

@@ -1,0 +1,5 @@
+@media (max-width: 479px) {
+  .nav-tabs-line > li > a {
+    padding: 5px 12px;
+  }
+}

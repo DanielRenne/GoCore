@@ -1,0 +1,13 @@
+{
+    "AliasDeviceLabel": "!ko!* Alias of Device", 
+    "Cancel": "!ko!Cancel", 
+    "EnterAlias": "!ko!Please enter an alias for this connected device", 
+    "ErrorNoAlias": "!ko!Please enter a non blank alias", 
+    "ErrorNoBuildings": "!ko!No buildings available", 
+    "ErrorNoSites": "!ko!No sites available", 
+    "ResetPass": "!ko!Reset Password", 
+    "RoomSync": "!ko!Room Synchronization", 
+    "Synchronizing": "!ko!Synchronizing", 
+    "UserCanceled": "!ko!A user canceled the action to synchronize this room, please try again.", 
+    "Waiting": "!ko!Waiting for Approval..."
+}

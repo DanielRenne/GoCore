@@ -1,0 +1,95 @@
+// Name:            Dotnav
+//
+// Component:       `dotnav`
+//
+// Modifiers:       'dotnav-scaleup'
+//                  'dotnav-stroke'
+//                  'dotnav-fillin'
+//                  'dotnav-dotstroke'
+//                  'dotnav-fall'
+//
+// ========================================================================
+
+// Variables
+// ========================================================================
+@dotnav-list-bgColor:                    rgba(255, 255, 255, 0.3);
+@dotnav-list-active-bgColor:             @inverse;
+
+@dotnav-stroke-list-active-border-color: @inverse;
+
+// Component: Dotnav
+// ========================================================================
+
+.dotnav {
+  > li {
+    > a {
+      background-color: @dotnav-list-bgColor;
+    }
+    &.active,
+    &:hover,
+    &:focus {
+      > a {
+        background-color: @dotnav-list-active-bgColor;
+      }
+    }
+  }
+}
+
+
+// Modifier: `dotnav-stroke`
+// ========================================================================
+
+.dotnav-stroke {
+  > li {
+    > a {
+      border: 2px solid transparent;
+    }
+    &.active {
+      > a {
+        background-color: transparent;
+        border-color: @dotnav-stroke-list-active-border-color;
+      }
+    }
+  }
+}
+
+// Modifier: `dotnav-fillin`
+// ========================================================================
+
+.dotnav-fillin {
+  > li {
+    > a {
+      background-color: transparent;
+    }
+    &:hover,
+    &:focus {
+      > a {
+        background-color: transparent;
+      }
+    }
+  }
+}
+
+// Modifier: `dotnav-dotstroke`
+// ========================================================================
+
+.dotnav-dotstroke {
+  > li {
+    &.active {
+      > a {
+        background-color: rgba(255, 255, 255, .3);
+      }
+    }
+  }
+}
+
+// Modifier: `dotnav-fall`
+// ========================================================================
+
+.dotnav-fall {
+  > li {
+    &:after {
+      background-color: rgba(0, 0, 0, .3);
+    }
+  }
+}

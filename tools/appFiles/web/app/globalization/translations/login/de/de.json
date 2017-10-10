@@ -1,0 +1,13 @@
+{
+    "AliasDeviceLabel": "* Alias-Ger\u00e4t", 
+    "Cancel": "Abbrechen", 
+    "EnterAlias": "Bitte geben Sie einen alias f\u00fcr das angeschlossene Ger\u00e4t", 
+    "ErrorNoAlias": "Bitte geben Sie einen nicht leeren alias", 
+    "ErrorNoBuildings": "Keine Geb\u00e4ude zur Verf\u00fcgung", 
+    "ErrorNoSites": "Keine Seiten zur Verf\u00fcgung", 
+    "ResetPass": "Passwort Zur\u00fccksetzen", 
+    "RoomSync": "Zimmer Synchronisation", 
+    "Synchronizing": "Synchronisieren", 
+    "UserCanceled": "Ein Benutzer hat abgebrochen die Aktion zu synchronisieren, in diesem Zimmer, bitte versuchen Sie es erneut.", 
+    "Waiting": "Warten auf die Zulassung..."
+}

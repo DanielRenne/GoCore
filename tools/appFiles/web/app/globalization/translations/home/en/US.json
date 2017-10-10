@@ -1,0 +1,23 @@
+{
+    "Access": "Access",
+    "Accounts": "Accounts", 
+    "Cancel": "Cancel",
+    "NoRecent": "No recent information found",
+    "ProdDoc": "Product Documentation",
+    "ResetPass": "Reset Password",
+    "TY": "Thank you for purchasing GoCoreAppHumanName!",
+    "Updates": "Updates",
+    "Users": "Users",
+    "AppVersion": "Version Notes",
+    "AppVersionNotes": "View Full Notes",
+    "ViewDocs": "View Documentation",
+    "ViewDocumentation": "View Full Documentation",
+    "Welcome": "Welcome to:", 
+    "Welcome2": "Welcome", 
+    "taskbarCustomTitle": "Home Title",
+    "taskbarCustomTitleContent": "Home Button", 
+    "taskbarTitle": "Home", 
+    "taskbarTitleContent": "Home", 
+    "title": "Home", 
+    "titleInfo": "Home"
+}

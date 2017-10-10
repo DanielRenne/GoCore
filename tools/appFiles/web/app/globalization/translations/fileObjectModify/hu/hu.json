@@ -1,0 +1,15 @@
+{
+    "FileObjectModifyAccountId": "Fi\u00f3k azonos\u00edt\u00f3", 
+    "FileObjectModifyContent": "Tartalom", 
+    "FileObjectModifyCreateDate": "L\u00e9trehoz\u00e1s d\u00e1tuma", 
+    "FileObjectModifyLastUpdateId": "Utols\u00f3 friss\u00edt\u00e9s id", 
+    "FileObjectModifyMD5": "MD 5", 
+    "FileObjectModifyModified": "M\u00f3dos\u00edtott", 
+    "FileObjectModifyModifiedUnix": "M\u00f3dos\u00edtott unix", 
+    "FileObjectModifyName": "N\u00e9v", 
+    "FileObjectModifySize": "M\u00e9ret", 
+    "FileObjectModifyType": "T\u00edpus", 
+    "FileObjectModifyUpdateDate": "Friss\u00edt\u00e9s d\u00e1tuma", 
+    "objectName": "fileObjectModify", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

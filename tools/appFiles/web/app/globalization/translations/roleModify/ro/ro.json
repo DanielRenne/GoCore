@@ -1,0 +1,11 @@
+{
+    "RoleModifyAccountId": "!ro!Account id", 
+    "RoleModifyCanDelete": "!ro!Can delete", 
+    "RoleModifyCreateDate": "!ro!Create date", 
+    "RoleModifyLastUpdateId": "!ro!Last update id", 
+    "RoleModifyName": "!ro!Name", 
+    "RoleModifyShortName": "!ro!Short name", 
+    "RoleModifyUpdateDate": "!ro!Update date", 
+    "objectName": "!ro!roleModify", 
+    "welcomeExample": "!ro!Welcome to the {page} page!"
+}

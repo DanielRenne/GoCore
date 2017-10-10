@@ -1,0 +1,13 @@
+{
+    "CreateFeature": "Creare caratteristica", 
+    "FeatureAddBootstrapMeta": "Bootstrap meta", 
+    "FeatureAddCreateDate": "Data di creazione", 
+    "FeatureAddDescription": "Descrizione", 
+    "FeatureAddFeatureGroupId": "Funzione id di gruppo", 
+    "FeatureAddKey": "Chiave", 
+    "FeatureAddLastUpdateId": "Ultimo aggiornamento id", 
+    "FeatureAddName": "Nome", 
+    "FeatureAddUpdateDate": "La data di aggiornamento", 
+    "objectName": "featureAdd", 
+    "welcomeExample": "Benvenuti a {page} pagina!"
+}

@@ -1,0 +1,18 @@
+{
+    "AddFeatureGroup": "Hinzuf\u00fcgen eines neuen FeatureGroup", 
+    "AreYouSure": "Are you sure you wish to delete {total} featureGroups?", 
+    "AreYouSureInline": "Sind Sie sicher, dass Sie m\u00f6chten, l\u00f6schen Sie diese featureGroup?", 
+    "ConfirmDeleteMessage": "Sind Sie sicher, dass Sie m\u00f6chten, l\u00f6schen Sie diese featureGroup? Diese Aktion kann nicht r\u00fcckg\u00e4ngig gemacht werden.", 
+    "CopyFeatureGroup": "Kopieren featureGroup", 
+    "DeleteFeatureGroup": "L\u00f6schen featureGroup", 
+    "EditFeatureGroup": "Edit featureGroup", 
+    "FeatureGroupListHeaderLastUpdateId": "Letztes update-id", 
+    "FeatureGroupListHeaderName": "Name", 
+    "FeatureGroupListHeaderUpdateDate": "Update-Datum", 
+    "FeatureGroupListToolTipLastUpdateId": "Letztes update-id", 
+    "FeatureGroupListToolTipName": "Name", 
+    "FeatureGroupListToolTipUpdateDate": "Update-Datum", 
+    "ShowingAllFeatureGroups": "Zeigt Alle FeatureGroups", 
+    "objectName": "featureGroupList", 
+    "welcomeExample": "Willkommen auf {Seite} Seite!"
+}

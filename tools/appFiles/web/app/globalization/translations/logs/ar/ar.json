@@ -1,0 +1,12 @@
+{
+    "AutoPaused": "!ar!Auto paused new logs due to scroll.", 
+    "AutoPausedNewData": "!ar!{dataByte} new logs are ready to view, just click the play button.", 
+    "ClearingLog": "!ar!Clearing Log in {sec} seconds", 
+    "LogClear2": "!ar!Log data on this screen will clear in {sec} seconds", 
+    "LogClear3": "!ar!Please wait, {sec} seconds and it will clear automatically", 
+    "MemUsage": "!ar!Memory Usage:", 
+    "Pause": "!ar!Pause", 
+    "Resume": "!ar!Resume", 
+    "objectName": "!ar!logs", 
+    "welcomeExample": "!ar!Welcome to the {page} page!"
+}

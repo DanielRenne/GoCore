@@ -1,0 +1,12 @@
+{
+    "CreateRole": "Rol maken", 
+    "RoleAddAccountId": "Account-id", 
+    "RoleAddCanDelete": "Kunt verwijderen", 
+    "RoleAddCreateDate": "Datum aanmaken", 
+    "RoleAddLastUpdateId": "Laatste update id", 
+    "RoleAddName": "Naam", 
+    "RoleAddShortName": "Korte naam", 
+    "RoleAddUpdateDate": "Update datum", 
+    "objectName": "roleAdd", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

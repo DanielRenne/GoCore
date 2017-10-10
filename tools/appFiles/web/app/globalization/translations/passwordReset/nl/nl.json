@@ -1,0 +1,13 @@
+{
+    "ConfirmPassword": "Wachtwoord Bevestigen", 
+    "ErrorPasswordNotValid": "Het wachtwoord moet minstens 8 tekens bevatten. Inclusief 1 cijfer, 1 hoofdletter.", 
+    "FieldRequired": "Verplicht Veld.", 
+    "NewPassword": "Nieuw Wachtwoord", 
+    "OriginalPassword": "Oorspronkelijke Wachtwoord", 
+    "PasswordResetHeader": "Password reset for {Email}.", 
+    "PasswordResetMessage": "An password reset for {Email} has been requested. Please click {Link} to reset your password.  \n\nThis reset will expire in 48 hours.", 
+    "PasswordResetTitle": "GoCoreAppHumanName Wachtwoord Opnieuw Instellen", 
+    "PasswordsNoMatch": "Wachtwoorden komen niet overeen.", 
+    "ResetCompleted": "Deze aanvraag is voltooid. Vraag een wachtwoord reset.", 
+    "Title": "Wachtwoord Opnieuw Instellen"
+}

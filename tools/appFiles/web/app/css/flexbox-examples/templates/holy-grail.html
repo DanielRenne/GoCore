@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  {% include 'head.html' %}
+  <body class="HolyGrail">
+    <header class="HolyGrail-header">
+      <div class="Header Header--cozy" role="banner">
+        {% include 'header.html' %}
+      </div>
+    </header>
+    <main class="HolyGrail-body">
+      <article class="HolyGrail-content">
+        <h1>{{ page.title }}</h1>
+        {{ page.content }}
+      </article>
+      <nav class="HolyGrail-nav u-textCenter">
+        <strong>Navigation</strong>
+      </nav>
+      <aside class="HolyGrail-ads u-textCenter">
+        <strong>Advertisements</strong>
+      </aside>
+    </main>
+    <footer class="HolyGrail-footer">
+      <div class="Footer">
+        {% include 'footer.html' %}
+      </div>
+    </footer>
+    {% include 'scripts.html' %}
+  </body>
+</html>

@@ -1,0 +1,16 @@
+{
+    "TransactionModifyCollections": "Collections",
+    "TransactionModifyCommitted": "Committed",
+    "TransactionModifyCompleteDate": "Complete date",
+    "TransactionModifyCreateDate": "Create date",
+    "TransactionModifyDetails": "Details",
+    "TransactionModifyError": "Error",
+    "TransactionModifyLastUpdate": "Last update",
+    "TransactionModifyRollbackDate": "Rollback date",
+    "TransactionModifyRollbackReason": "Rollback reason",
+    "TransactionModifyRolledBack": "Rolled back",
+    "TransactionModifyRolledBackBy": "Rolled back by",
+    "TransactionModifyUserId": "User id",
+    "objectName": "transactionModify",
+    "welcomeExample": "Welcome to the {page} page!"
+}

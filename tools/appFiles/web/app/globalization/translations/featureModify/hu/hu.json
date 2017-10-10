@@ -1,0 +1,12 @@
+{
+    "FeatureModifyBootstrapMeta": "Bootstrap meta", 
+    "FeatureModifyCreateDate": "L\u00e9trehoz\u00e1s d\u00e1tuma", 
+    "FeatureModifyDescription": "Le\u00edr\u00e1s", 
+    "FeatureModifyFeatureGroupId": "Funkci\u00f3 csoport azonos\u00edt\u00f3ja", 
+    "FeatureModifyKey": "Kulcs", 
+    "FeatureModifyLastUpdateId": "Utols\u00f3 friss\u00edt\u00e9s id", 
+    "FeatureModifyName": "N\u00e9v", 
+    "FeatureModifyUpdateDate": "Friss\u00edt\u00e9s d\u00e1tuma", 
+    "objectName": "featureModify", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

@@ -1,0 +1,7 @@
+package viewModel
+
+var -CAPITALIZED-_CONST map[string]string
+
+func init() {
+	-CAPITALIZED-_CONST = make(map[string]string)
+}

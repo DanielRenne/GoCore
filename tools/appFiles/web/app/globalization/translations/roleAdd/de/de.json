@@ -1,0 +1,12 @@
+{
+    "CreateRole": "Rolle anlegen", 
+    "RoleAddAccountId": "Konto-id", 
+    "RoleAddCanDelete": "L\u00f6schen kann", 
+    "RoleAddCreateDate": "Datum erstellen", 
+    "RoleAddLastUpdateId": "Letztes update-id", 
+    "RoleAddName": "Name", 
+    "RoleAddShortName": "Kurze Namen", 
+    "RoleAddUpdateDate": "Update-Datum", 
+    "objectName": "roleAdd", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

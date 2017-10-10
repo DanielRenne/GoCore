@@ -1,0 +1,77 @@
+// Name:            Forms
+//
+// Component:       `form`
+//
+// ========================================================================
+
+// Component: Form
+// ========================================================================
+
+.has-success {
+  .form-control-validation(@form-success-text; @form-success-text; @form-success-bg);
+}
+
+.has-warning {
+  .form-control-validation(@form-warning-text; @form-warning-text; @form-warning-bg);
+}
+
+.has-error {
+  .form-control-validation(@form-danger-text; @form-danger-text; @form-danger-bg);
+}
+
+
+
+
+// Modifier: `input-group-file`
+// ----------------------------
+
+.input-group-file {
+  input[type="text"] {
+    background-color: @input-bg;
+  }
+}
+
+// Input Search
+// ========================================================================
+
+.input-search-close {
+  color: @close-color;
+
+  &:hover,
+  &:focus {
+    color: @close-color;
+  }
+
+  button& {
+    background: transparent;
+    border: 0;
+  }
+}
+
+.input-search {
+  .input-search-icon {
+    color: @input-color-placeholder;
+  }
+}
+
+.input-search-btn {
+  background: transparent;
+  border: none;
+}
+
+.input-search-dark {
+  .input-search-icon {
+    color: @gray-dark;
+  }
+
+  .form-control {
+    background: @gray-lightest;
+
+    &:focus {
+      background-color: transparent;
+    }
+  }
+}
+
+
+

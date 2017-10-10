@@ -1,0 +1,13 @@
+{
+    "CreateFeature": "Cr\u00e9er la fonction", 
+    "FeatureAddBootstrapMeta": "Bootstrap meta", 
+    "FeatureAddCreateDate": "Date de cr\u00e9ation", 
+    "FeatureAddDescription": "Description", 
+    "FeatureAddFeatureGroupId": "Fonction de l'id de groupe", 
+    "FeatureAddKey": "Cl\u00e9", 
+    "FeatureAddLastUpdateId": "Derni\u00e8re mise \u00e0 jour de l'id", 
+    "FeatureAddName": "Nom", 
+    "FeatureAddUpdateDate": "Date de mise \u00e0 jour", 
+    "objectName": "featureAdd", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

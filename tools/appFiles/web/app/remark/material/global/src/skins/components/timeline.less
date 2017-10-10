@@ -1,0 +1,60 @@
+// Name:            Timeline
+//
+// Component:       `timeline`
+//
+// Modifiers:       'timeline-simple'
+//                  'timeline-single'
+//                  'timeline-avatar'
+//                  'timeline-nav'
+//                  'timeline-nav-single'
+//
+// ========================================================================
+
+// Variables
+// ========================================================================
+
+@timeline-line-color:                  @border-color-base;
+
+@timeline-dot-color:                   @color-white;
+@timeline-dot-bg:                      @brand-primary;
+@timeline-dot-border:                  @color-white;
+
+@timeline-info-bg:                     @gray-lighter;
+@timeline-info-border:                 @timeline-info-bg;
+
+@timeline-period-bg:                   @page-bg;
+
+@timeline-nav-color:                   @color-white;
+@timeline-nav-bg:                      @brand-primary;
+@timeline-nav-hover-bg:                @brand-primary-hover;
+
+@timeline-info-border-size:            1px;
+
+
+// Component: Timeline
+// ========================================================================
+
+.timeline {
+  background: transparent;
+
+  &:before {
+    background-color: @timeline-line-color;
+  }
+
+  > li {
+    &.timeline-period {
+      background: @timeline-period-bg;
+    }
+  }
+}
+
+.timeline-dot {
+  color: @timeline-dot-color;
+  background-color: @timeline-dot-bg;
+}
+
+.timeline-info {
+  background: @timeline-info-bg;
+  border: @timeline-info-border-size solid @timeline-info-border;
+}
+

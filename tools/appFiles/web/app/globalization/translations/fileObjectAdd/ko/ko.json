@@ -1,0 +1,16 @@
+{
+    "CreateFileObject": "!ko!Create fileObject", 
+    "FileObjectAddAccountId": "!ko!Account id", 
+    "FileObjectAddContent": "!ko!Content", 
+    "FileObjectAddCreateDate": "!ko!Create date", 
+    "FileObjectAddLastUpdateId": "!ko!Last update id", 
+    "FileObjectAddMD5": "!ko!MD 5", 
+    "FileObjectAddModified": "!ko!Modified", 
+    "FileObjectAddModifiedUnix": "!ko!Modified unix", 
+    "FileObjectAddName": "!ko!Name", 
+    "FileObjectAddSize": "!ko!Size", 
+    "FileObjectAddType": "!ko!Type", 
+    "FileObjectAddUpdateDate": "!ko!Update date", 
+    "objectName": "!ko!fileObjectAdd", 
+    "welcomeExample": "!ko!Welcome to the {page} page!"
+}

@@ -1,0 +1,13 @@
+{
+    "CreateFeature": "Het maken van functie", 
+    "FeatureAddBootstrapMeta": "Bootstrap meta", 
+    "FeatureAddCreateDate": "Datum aanmaken", 
+    "FeatureAddDescription": "Beschrijving", 
+    "FeatureAddFeatureGroupId": "Functie groep id", 
+    "FeatureAddKey": "Sleutel", 
+    "FeatureAddLastUpdateId": "Laatste update id", 
+    "FeatureAddName": "Naam", 
+    "FeatureAddUpdateDate": "Update datum", 
+    "objectName": "featureAdd", 
+    "welcomeExample": "Welkom op de {pagina} pagina!"
+}

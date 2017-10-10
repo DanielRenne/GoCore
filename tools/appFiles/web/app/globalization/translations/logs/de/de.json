@@ -1,0 +1,12 @@
+{
+    "AutoPaused": "Auto angehalten, neue Protokolle durch zu Bl\u00e4ttern.", 
+    "AutoPausedNewData": "{dataByte} new logs are ready to view, just click the play button.", 
+    "ClearingLog": "Clearing Log in {sec} seconds", 
+    "LogClear2": "Log data on this screen will clear in {sec} seconds", 
+    "LogClear3": "Please wait, {sec} seconds and it will clear automatically", 
+    "MemUsage": "Speicherauslastung:", 
+    "Pause": "Pause", 
+    "Resume": "Lebenslauf", 
+    "objectName": "Protokolle", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

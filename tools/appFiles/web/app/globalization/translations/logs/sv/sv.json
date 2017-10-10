@@ -1,0 +1,12 @@
+{
+    "AutoPaused": "Auto pausl\u00e4ge nya stockar p\u00e5 grund av att bl\u00e4ddra.", 
+    "AutoPausedNewData": "{dataByte} new logs are ready to view, just click the play button.", 
+    "ClearingLog": "Clearing Log in {sec} seconds", 
+    "LogClear2": "Log data on this screen will clear in {sec} seconds", 
+    "LogClear3": "Please wait, {sec} seconds and it will clear automatically", 
+    "MemUsage": "Minne:", 
+    "Pause": "Paus", 
+    "Resume": "\u00c5teruppta", 
+    "objectName": "loggar", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

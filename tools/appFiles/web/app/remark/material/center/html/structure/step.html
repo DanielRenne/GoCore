@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html class="no-js css-menubar" lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+  <meta name="description" content="bootstrap admin template">
+  <meta name="author" content="">
+
+  <title>Step | Remark Admin Template</title>
+
+  <link rel="apple-touch-icon" href="../../assets/images/apple-touch-icon.png">
+  <link rel="shortcut icon" href="../../assets/images/favicon.ico">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../../../global/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../../../global/css/bootstrap-extend.min.css">
+  <link rel="stylesheet" href="../../assets/css/site.min.css">
+
+  <!-- Plugins -->
+
+
+  <link rel="stylesheet" href="../../../global/vendor/animsition/animsition.css">
+  <link rel="stylesheet" href="../../../global/vendor/asscrollable/asScrollable.css">
+  <link rel="stylesheet" href="../../../global/vendor/switchery/switchery.css">
+  <link rel="stylesheet" href="../../../global/vendor/intro-js/introjs.css">
+  <link rel="stylesheet" href="../../../global/vendor/slidepanel/slidePanel.css">
+  <link rel="stylesheet" href="../../../global/vendor/flag-icon-css/flag-icon.css">
+  <link rel="stylesheet" href="../../../global/vendor/waves/waves.css">
+
+  <!-- !PageSpecific Plugins -->
+
+
+  <!-- Fonts -->
+
+  <link rel="stylesheet" href="../../../global/fonts/material-design/material-design.min.css">
+  <link rel="stylesheet" href="../../../global/fonts/brand-icons/brand-icons.min.css">
+  <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto:300,400,500,300italic'>
+
+  <!-- !PageSpecific Fonts -->
+
+
+  <!--[if lt IE 9]>
+    <script src="../../../global/vendor/html5shiv/html5shiv.min.js"></script>
+    <![endif]-->
+
+  <!--[if lt IE 10]>
+    <script src="../../../global/vendor/media-match/media.match.min.js"></script>
+    <script src="../../../global/vendor/respond/respond.min.js"></script>
+    <![endif]-->
+
+  <!-- Scripts -->
+  <script src="../../../global/vendor/modernizr/modernizr.js"></script>
+  <script src="../../../global/vendor/breakpoints/breakpoints.js"></script>
+  <script>
+    Breakpoints();
+  </script>
+</head>
+<body>
+  <!--[if lt IE 8]>
+        <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+
+
+  <!-- Page -->
+  <div class="page animsition">
+    <div class="page-header">
+      <h1 class="page-title">Step</h1>
+      <ol class="breadcrumb">
+        <li><a href="../index.html">Home</a></li>
+        <li class="active">Structure</li>
+      </ol>
+      <div class="page-header-actions">
+        <form>
+          <div class="input-search input-search-dark">
+            <i class="input-search-icon md-search" aria-hidden="true"></i>
+            <input type="text" class="form-control" name="" placeholder="Search...">
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="page-content">
+      <!-- Panel -->
+      <div class="panel">
+        <div class="panel-body container-fluid">
+          <div class="row">
+            <div class="col-md-12">
+              <!-- Example Default -->
+              <div class="example-wrap">
+                <h4 class="example-title">Default</h4>
+                <p>A set of step.</p>
+                <div class="example">
+                  <div class="steps row">
+                    <div class="step col-md-4">
+                      <span class="step-number">1</span>
+                      <div class="step-desc">
+                        <span class="step-title">Shopping</span>
+                        <p>Choose what you want</p>
+                      </div>
+                    </div>
+
+                    <div class="step col-md-4 current">
+                      <span class="step-number">2</span>
+                      <div class="step-desc">
+                        <span class="step-title">Billing</span>
+                        <p>Pay for the bill</p>
+                      </div>
+                    </div>
+
+                    <div class="step col-md-4">
+                      <span class="step-number">3</span>
+                      <div class="step-desc">
+                        <span class="step-title">Getting</span>
+                        <p>Waiting for the goods</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- End Example Default -->
+            </div>
+            <div class="col-md-12">
+              <!-- Example Icon -->
+              <div class="example-wrap">
+                <h4 class="example-title">STEPS WITH ICONS</h4>
+                <p>A set of steps with a available icon.</p>
+                <div class="example">
+                  <div class="steps row">
+                    <div class="step col-sm-4">
+                      <span class="step-icon icon md-shopping-cart" aria-hidden="true"></span>
+                      <div class="step-desc">
+                        <span class="step-title">Shopping</span>
+                      </div>
+                    </div>
+
+                    <div class="step col-sm-4 current">
+                      <span class="step-icon icon md-card" aria-hidden="true"></span>
+                      <div class="step-desc">
+                        <span class="step-title">Billing</span>
+                      </div>
+                    </div>
+
+                    <div class="step col-sm-4">
+                      <span class="step-icon icon md-time" aria-hidden="true"></span>
+                      <div class="step-desc">
+                        <span class="step-title">Getting</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- End Example Icon -->
+            </div>
+          </div>
+          <div class="row row-lg">
+            <div class="col-lg-3 col-md-6">
+              <!-- Example State Done -->
+              <div class="example-wrap">
+                <h4 class="example-title">States Done</h4>
+                <p>A step with classname <code>.done</code></p>
+                <div class="example">
+                  <div class="step done">
+                    <span class="step-number">1</span>
+                    <div class="step-desc">
+                      <span class="step-title">Getting</span>
+                      <p>Waiting for the goods</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- End Example State Done -->
+            </div>
+            <div class="col-lg-3 col-md-6">
+              <!-- Example State Error -->
+              <div class="example-wrap">
+                <h4 class="example-title">States Error</h4>
+                <p>A step with classname <code>.error</code></p>
+                <div class="example">
+                  <div class="step error">
+                    <span class="step-number">2</span>
+                    <div class="step-desc">
+                      <span class="step-title">Getting</span>
+                      <p>Waiting for the goods</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- End Example State Error -->
+            </div>
+            <div class="col-lg-3 col-md-6">
+              <!-- Example State Current -->
+              <div class="example-wrap">
+                <h4 class="example-title">States Current</h4>
+                <p>A step with classname <code>.current</code></p>
+                <div class="example">
+                  <div class="step current">
+                    <span class="step-number">3</span>
+                    <div class="step-desc">
+                      <span class="step-title">Getting</span>
+                      <p>Waiting for the goods</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- End Example State Current -->
+            </div>
+            <div class="col-lg-3 col-md-6">
+              <!-- Example State Disabled -->
+              <div class="example-wrap">
+                <h4 class="example-title">States Disabled</h4>
+                <p>A step with classname <code>.disabled</code></p>
+                <div class="example">
+                  <div class="step disabled">
+                    <span class="step-number">4</span>
+                    <div class="step-desc">
+                      <span class="step-title">Getting</span>
+                      <p>Waiting for the goods</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- End Example State Disabled -->
+            </div>
+          </div>
+          <div class="row row-lg">
+            <div class="col-md-8">
+              <!-- Example Sizing -->
+              <div class="example-wrap margin-md-0">
+                <h4 class="example-title">Sizing</h4>
+                <p>Steps can have different sizes.</p>
+                <!-- XS Size -->
+                <div class="example">
+                  <div class="steps row steps-xs">
+                    <div class="step col-sm-4">
+                      <span class="step-icon icon md-shopping-cart" aria-hidden="true"></span>
+                      <div class="step-desc">
+                        <span class="step-title">Shopping</span>
+                      </div>
+                    </div>
+                    <div class="step col-sm-4 current">
+                      <span class="step-icon icon md-card" aria-hidden="true"></span>
+                      <div class="step-desc">
+                        <span class="step-title">Billing</span>
+                      </div>
+                    </div>
+                    <div class="step col-sm-4">
+                      <span class="step-icon icon md-time" aria-hidden="true"></span>
+                      <div class="step-desc">
+                        <span class="step-title">Getting</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- End XS Size -->
+
+                <!-- SM Size -->
+                <div class="example">
+                  <div class="steps row steps-sm">
+                    <div class="step col-sm-4">
+                      <span class="step-icon icon md-shopping-cart" aria-hidden="true"></span>
+                      <div class="step-desc">
+                        <span class="step-title">Shopping</span>
+                      </div>
+                    </div>
+                    <div class="step col-sm-4 current">
+                      <span class="step-icon icon md-card" aria-hidden="true"></span>
+                      <div class="step-desc">
+                        <span class="step-title">Billing</span>
+                      </div>
+                    </div>
+                    <div class="step col-sm-4">
+                      <span class="step-icon icon md-time" aria-hidden="true"></span>
+                      <div class="step-desc">
+                        <span class="step-title">Getting</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- End SM Size -->
+                <!-- Normal Size -->
+                <div class="example">
+                  <div class="steps row">
+                    <div class="step col-sm-4">
+                      <span class="step-icon icon md-shopping-cart" aria-hidden="true"></span>
+                      <div class="step-desc">
+                        <span class="step-title">Shopping</span>
+                      </div>
+                    </div>
+                    <div class="step col-sm-4 current">
+                      <span class="step-icon icon md-card" aria-hidden="true"></span>
+                      <div class="step-desc">
+                        <span class="step-title">Billing</span>
+                      </div>
+                    </div>
+                    <div class="step col-sm-4">
+                      <span class="step-icon icon md-time" aria-hidden="true"></span>
+                      <div class="step-desc">
+                        <span class="step-title">Getting</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- End Normal Size -->
+
+                <!-- LG Size -->
+                <div class="example">
+                  <div class="steps row steps-lg">
+                    <div class="step col-sm-4">
+                      <span class="step-icon icon md-shopping-cart" aria-hidden="true"></span>
+                      <div class="step-desc">
+                        <span class="step-title">Shopping</span>
+                      </div>
+                    </div>
+                    <div class="step col-sm-4 current">
+                      <span class="step-icon icon md-card" aria-hidden="true"></span>
+                      <div class="step-desc">
+                        <span class="step-title">Billing</span>
+                      </div>
+                    </div>
+                    <div class="step col-sm-4">
+                      <span class="step-icon icon md-time" aria-hidden="true"></span>
+                      <div class="step-desc">
+                        <span class="step-title">Getting</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- End LG Size -->
+              </div>
+              <!-- End Example Sizing -->
+            </div>
+
+            <div class="col-md-4">
+              <!-- Example Vertical -->
+              <div class="example-wrap">
+                <h4 class="example-title">VERTICAL</h4>
+                <p>A step can be displayed stacked vertically.</p>
+                <div class="example">
+                  <div class="steps steps-vertical">
+                    <div class="step">
+                      <span class="step-number">1</span>
+                      <div class="step-desc">
+                        <span class="step-title">Shopping</span>
+                        <p>Choose what you want</p>
+                      </div>
+                    </div>
+                    <div class="step current">
+                      <span class="step-number">2</span>
+                      <div class="step-desc">
+                        <span class="step-title">Billing</span>
+                        <p>Pay for the bill</p>
+                      </div>
+                    </div>
+                    <div class="step">
+                      <span class="step-number">3</span>
+                      <div class="step-desc">
+                        <span class="step-title">Getting</span>
+                        <p>Waiting for the goods</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- End Example Vertical -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- End Panel -->
+
+
+      <!-- Panel Pearls -->
+      <div class="panel">
+        <div class="panel-heading">
+          <div class="panel-title">
+            Pearls Steps
+          </div>
+        </div>
+        <div class="panel-body container-fluid">
+          <div class="row row-lg">
+            <div class="col-md-6">
+              <!-- Example Default -->
+              <div class="example-wrap">
+                <h4 class="example-title">Default</h4>
+                <div class="example">
+                  <div class="pearls row">
+                    <div class="pearl done col-xs-4">
+                      <span class="pearl-number">1</span>
+                      <span class="pearl-title">Account Info</span>
+                    </div>
+                    <div class="pearl current col-xs-4">
+                      <span class="pearl-number">2</span>
+                      <span class="pearl-title">Billing Info</span>
+                    </div>
+                    <div class="pearl col-xs-4">
+                      <span class="pearl-number">3</span>
+                      <span class="pearl-title">Confirmation</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- End Example Default -->
+            </div>
+
+            <div class="col-md-6">
+              <!-- Example Default -->
+              <div class="example-wrap">
+                <h4 class="example-title">Icon</h4>
+                <div class="example">
+                  <div class="pearls row">
+                    <div class="pearl done col-xs-4">
+                      <div class="pearl-icon"><i class="icon md-account" aria-hidden="true"></i></div>
+                      <span class="pearl-title">Account Info</span>
+                    </div>
+                    <div class="pearl current col-xs-4">
+                      <div class="pearl-icon"><i class="icon md-card" aria-hidden="true"></i></div>
+                      <span class="pearl-title">Billing Info</span>
+                    </div>
+                    <div class="pearl col-xs-4">
+                      <div class="pearl-icon"><i class="icon md-check" aria-hidden="true"></i></div>
+                      <span class="pearl-title">Confirmation</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- End Example Default -->
+            </div>
+
+            <div class="col-md-6">
+              <!-- Example Default -->
+              <div class="example-wrap margin-md-0">
+                <h4 class="example-title">Sizing</h4>
+                <!-- Pearls Xs -->
+                <div class="example">
+                  <div class="pearls pearls-xs row">
+                    <div class="pearl done col-xs-4">
+                      <span class="pearl-number">1</span>
+                      <span class="pearl-title">Account Info</span>
+                    </div>
+                    <div class="pearl current col-xs-4">
+                      <span class="pearl-number">2</span>
+                      <span class="pearl-title">Billing Info</span>
+                    </div>
+                    <div class="pearl col-xs-4">
+                      <span class="pearl-number">3</span>
+                      <span class="pearl-title">Confirmation</span>
+                    </div>
+                  </div>
+                </div>
+                <!-- End Pearls Xs -->
+
+                <!-- Pearls Sm -->
+                <div class="example">
+                  <div class="pearls pearls-sm row">
+                    <div class="pearl done col-xs-4">
+                      <span class="pearl-number">1</span>
+                      <span class="pearl-title">Account Info</span>
+                    </div>
+                    <div class="pearl current col-xs-4">
+                      <span class="pearl-number">2</span>
+                      <span class="pearl-title">Billing Info</span>
+                    </div>
+                    <div class="pearl col-xs-4">
+                      <span class="pearl-number">3</span>
+                      <span class="pearl-title">Confirmation</span>
+                    </div>
+                  </div>
+                </div>
+                <!-- End Pearls Sm -->
+
+                <!-- Pearls Normal -->
+                <div class="example">
+                  <div class="pearls row">
+                    <div class="pearl done col-xs-4">
+                      <span class="pearl-number">1</span>
+                      <span class="pearl-title">Account Info</span>
+                    </div>
+                    <div class="pearl current col-xs-4">
+                      <span class="pearl-number">2</span>
+                      <span class="pearl-title">Billing Info</span>
+                    </div>
+                    <div class="pearl col-xs-4">
+                      <span class="pearl-number">3</span>
+                      <span class="pearl-title">Confirmation</span>
+                    </div>
+                  </div>
+                </div>
+                <!-- End Pearls Normal -->
+
+                <!-- Pearls Lg -->
+                <div class="example">
+                  <div class="pearls pearls-lg row">
+                    <div class="pearl done col-xs-4">
+                      <span class="pearl-number">1</span>
+                      <span class="pearl-title">Account Info</span>
+                    </div>
+                    <div class="pearl current col-xs-4">
+                      <span class="pearl-number">2</span>
+                      <span class="pearl-title">Billing Info</span>
+                    </div>
+                    <div class="pearl col-xs-4">
+                      <span class="pearl-number">3</span>
+                      <span class="pearl-title">Confirmation</span>
+                    </div>
+                  </div>
+                </div>
+                <!-- End Pearls Lg -->
+
+              </div>
+              <!-- End Example Default -->
+            </div>
+
+            <div class="col-md-6">
+              <!-- Example Default -->
+              <div class="example-wrap">
+                <h4 class="example-title">States</h4>
+                <div class="example">
+                  <div class="pearls row">
+                    <div class="pearl current col-xs-4">
+                      <div class="pearl-icon"><i class="icon md-account" aria-hidden="true"></i></div>
+                      <span class="pearl-title">Account Info</span>
+                    </div>
+                    <div class="pearl disabled col-xs-4">
+                      <div class="pearl-icon"><i class="icon md-card" aria-hidden="true"></i></div>
+                      <span class="pearl-title">Billing Info</span>
+                    </div>
+                    <div class="pearl disabled col-xs-4">
+                      <div class="pearl-icon"><i class="icon md-check" aria-hidden="true"></i></div>
+                      <span class="pearl-title">Confirmation</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="example">
+                  <div class="pearls row">
+                    <div class="pearl done col-xs-4">
+                      <div class="pearl-icon"><i class="icon md-account" aria-hidden="true"></i></div>
+                      <span class="pearl-title">Account Info</span>
+                    </div>
+                    <div class="pearl current col-xs-4">
+                      <div class="pearl-icon"><i class="icon md-card" aria-hidden="true"></i></div>
+                      <span class="pearl-title">Billing Info</span>
+                    </div>
+                    <div class="pearl disabled col-xs-4">
+                      <div class="pearl-icon"><i class="icon md-check" aria-hidden="true"></i></div>
+                      <span class="pearl-title">Confirmation</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="example">
+                  <div class="pearls row">
+                    <div class="pearl done col-xs-4">
+                      <div class="pearl-icon"><i class="icon md-account" aria-hidden="true"></i></div>
+                      <span class="pearl-title">Account Info</span>
+                    </div>
+                    <div class="pearl current error col-xs-4">
+                      <div class="pearl-icon"><i class="icon md-card" aria-hidden="true"></i></div>
+                      <span class="pearl-title">Billing Info</span>
+                    </div>
+                    <div class="pearl disabled col-xs-4">
+                      <div class="pearl-icon"><i class="icon md-check" aria-hidden="true"></i></div>
+                      <span class="pearl-title">Confirmation</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="example">
+                  <div class="pearls row">
+                    <div class="pearl done col-xs-4">
+                      <div class="pearl-icon"><i class="icon md-account" aria-hidden="true"></i></div>
+                      <span class="pearl-title">Account Info</span>
+                    </div>
+                    <div class="pearl done col-xs-4">
+                      <div class="pearl-icon"><i class="icon md-card" aria-hidden="true"></i></div>
+                      <span class="pearl-title">Billing Info</span>
+                    </div>
+                    <div class="pearl current col-xs-4">
+                      <div class="pearl-icon"><i class="icon md-check" aria-hidden="true"></i></div>
+                      <span class="pearl-title">Confirmation</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- End Example Default -->
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <!-- End Panel Pearls -->
+    </div>
+  </div>
+
+
+  <!-- Core  -->
+  <script src="../../../global/vendor/jquery/jquery.js"></script>
+  <script src="../../../global/vendor/bootstrap/bootstrap.js"></script>
+  <script src="../../../global/vendor/animsition/animsition.js"></script>
+  <script src="../../../global/vendor/asscroll/jquery-asScroll.js"></script>
+  <script src="../../../global/vendor/mousewheel/jquery.mousewheel.js"></script>
+  <script src="../../../global/vendor/asscrollable/jquery.asScrollable.all.js"></script>
+  <script src="../../../global/vendor/ashoverscroll/jquery-asHoverScroll.js"></script>
+  <script src="../../../global/vendor/waves/waves.js"></script>
+
+  <!-- Plugins -->
+
+  <script src="../../../global/vendor/switchery/switchery.min.js"></script>
+  <script src="../../../global/vendor/intro-js/intro.js"></script>
+  <script src="../../../global/vendor/screenfull/screenfull.js"></script>
+  <script src="../../../global/vendor/slidepanel/jquery-slidePanel.js"></script>
+
+  <!-- !PageSpecific Plugins -->
+
+  <!-- Scripts -->
+
+  <script src="../../../global/js/core.js"></script>
+  <script src="../../assets/js/site.js"></script>
+
+  <script src="../../assets/js/sections/menu.js"></script>
+  <script src="../../assets/js/sections/menubar.js"></script>
+  <script src="../../assets/js/sections/sidebar.js"></script>
+
+  <script src="../../../global/js/configs/config-colors.js"></script>
+  <script src="../../assets/js/configs/config-tour.js"></script>
+
+  <script src="../../../global/js/components/asscrollable.js"></script>
+  <script src="../../../global/js/components/animsition.js"></script>
+  <script src="../../../global/js/components/slidepanel.js"></script>
+  <script src="../../../global/js/components/switchery.js"></script>
+  <script src="../../../global/js/components/tabs.js"></script>
+
+  <!-- !PageSpecific Scripts -->
+
+  <script>
+    (function(document, window, $) {
+      'use strict';
+
+      var Site = window.Site;
+      $(document).ready(function() {
+        Site.run();
+      });
+    })(document, window, jQuery);
+  </script>
+
+</body>
+</html>

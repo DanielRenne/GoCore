@@ -1,0 +1,11 @@
+{
+    "CreateRoleFeature": "!zh!Create roleFeature", 
+    "RoleFeatureAddBootstrapMeta": "!zh!Bootstrap meta", 
+    "RoleFeatureAddCreateDate": "!zh!Create date", 
+    "RoleFeatureAddFeatureId": "!zh!Feature id", 
+    "RoleFeatureAddLastUpdateId": "!zh!Last update id", 
+    "RoleFeatureAddRoleId": "!zh!Role id", 
+    "RoleFeatureAddUpdateDate": "!zh!Update date", 
+    "objectName": "!zh!roleFeatureAdd", 
+    "welcomeExample": "!zh!Welcome to the {page} page!"
+}

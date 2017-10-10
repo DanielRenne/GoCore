@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html class="no-js css-menubar" lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+  <meta name="description" content="bootstrap admin template">
+  <meta name="author" content="">
+
+  <title>Form Masks | Remark Admin Template</title>
+
+  <link rel="apple-touch-icon" href="../../assets/images/apple-touch-icon.png">
+  <link rel="shortcut icon" href="../../assets/images/favicon.ico">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../../../global/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../../../global/css/bootstrap-extend.min.css">
+  <link rel="stylesheet" href="../../assets/css/site.min.css">
+
+  <!-- Plugins -->
+
+
+  <link rel="stylesheet" href="../../../global/vendor/animsition/animsition.css">
+  <link rel="stylesheet" href="../../../global/vendor/asscrollable/asScrollable.css">
+  <link rel="stylesheet" href="../../../global/vendor/switchery/switchery.css">
+  <link rel="stylesheet" href="../../../global/vendor/intro-js/introjs.css">
+  <link rel="stylesheet" href="../../../global/vendor/slidepanel/slidePanel.css">
+  <link rel="stylesheet" href="../../../global/vendor/flag-icon-css/flag-icon.css">
+  <link rel="stylesheet" href="../../../global/vendor/waves/waves.css">
+
+  <!-- !PageSpecific Plugins -->
+
+  <link rel="stylesheet" href="../../assets/examples/css/forms/masks.css">
+
+  <link rel="stylesheet" href="https://www.google.com/fonts/specimen/Roboto+Mono">
+
+  <!-- Fonts -->
+
+  <link rel="stylesheet" href="../../../global/fonts/material-design/material-design.min.css">
+  <link rel="stylesheet" href="../../../global/fonts/brand-icons/brand-icons.min.css">
+  <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto:300,400,500,300italic'>
+
+  <!-- !PageSpecific Fonts -->
+
+
+  <!--[if lt IE 9]>
+    <script src="../../../global/vendor/html5shiv/html5shiv.min.js"></script>
+    <![endif]-->
+
+  <!--[if lt IE 10]>
+    <script src="../../../global/vendor/media-match/media.match.min.js"></script>
+    <script src="../../../global/vendor/respond/respond.min.js"></script>
+    <![endif]-->
+
+  <!-- Scripts -->
+  <script src="../../../global/vendor/modernizr/modernizr.js"></script>
+  <script src="../../../global/vendor/breakpoints/breakpoints.js"></script>
+  <script>
+    Breakpoints();
+  </script>
+</head>
+<body>
+  <!--[if lt IE 8]>
+        <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+
+
+  <!-- Page -->
+  <div class="page animsition">
+    <div class="page-header">
+      <h1 class="page-title">Form Masks</h1>
+      <ol class="breadcrumb">
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="javascript:void(0)">Forms</a></li>
+        <li class="active">Masks</li>
+      </ol>
+      <div class="page-header-actions">
+        <a class="btn btn-sm btn-primary btn-round" href="https://github.com/firstopinion/formatter.js"
+          target="_blank">
+          <i class="icon md-link" aria-hidden="true"></i>
+          <span class="hidden-xs">Official Website</span>
+        </a>
+      </div>
+    </div>
+    <div class="page-content container-fluid">
+      <div class="row">
+        <div class="col-md-6">
+          <!-- Panel Basic -->
+          <div class="panel">
+            <div class="panel-heading">
+              <h3 class="panel-title">Basic</h3>
+            </div>
+            <div class="panel-body">
+              <form class="form-horizontal">
+                <div class="form-group form-material">
+                  <label class="col-sm-3 control-label">Date</label>
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control" id="inputDate1" data-plugin="formatter"
+                      data-pattern="[[9999]]-[[99]]-[[99]]" />
+                    <p class="help-block">2016-01-01</p>
+                  </div>
+                </div>
+                <div class="form-group form-material">
+                  <label class="col-sm-3 control-label">Date</label>
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control" id="inputDate2" data-plugin="formatter"
+                      data-pattern="[[99]]/[[99]]/[[9999]]" />
+                    <p class="help-block">01/01/2016</p>
+                  </div>
+                </div>
+                <div class="form-group form-material">
+                  <label class="col-sm-3 control-label">Time</label>
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control" id="inputTime" data-plugin="formatter"
+                      data-pattern="[[99]]: [[99]]" />
+                    <p class="help-block">00: 00</p>
+                  </div>
+                </div>
+                <div class="form-group form-material">
+                  <label class="col-sm-3 control-label">Time-Date</label>
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control" id="inputTimeDate" data-plugin="formatter"
+                      data-pattern="[[99]]: [[99]] [[99]]/[[99]]/[[9999]]" />
+                    <p class="help-block">00: 00 01/01/2016</p>
+                  </div>
+                </div>
+                <div class="form-group form-material">
+                  <label class="col-sm-3 control-label">Characters (only)</label>
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control" id="inputCharacters" data-plugin="formatter"
+                      data-pattern="[[aaaaaaaaa]]" />
+                    <p class="help-block">abcdefghk (max 9)</p>
+                  </div>
+                </div>
+                <div class="form-group form-material">
+                  <div class="col-sm-9 col-sm-offset-3">
+                    <button type="button" class="btn-primary btn">Submit</button>
+                    <button type="button" class="btn-default btn-pure btn">Cancel</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+          <!-- End Panel Basic -->
+        </div>
+
+        <div class="col-md-6">
+          <!-- Panel Extended -->
+          <div class="panel">
+            <div class="panel-heading">
+              <h3 class="panel-title">Extended</h3>
+            </div>
+            <div class="panel-body">
+              <form class="form-horizontal">
+                <div class="form-group form-material">
+                  <label class="col-sm-3 control-label">Phone</label>
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control" id="inputPhone" data-plugin="formatter"
+                      data-pattern="([[999]]) [[999]]-[[9999]]" />
+                    <p class="help-block">(123) 123-1234</p>
+                  </div>
+                </div>
+                <div class="form-group form-material">
+                  <label class="col-sm-3 control-label">Phone2</label>
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control" id="inputPhone2" data-plugin="formatter"
+                      data-pattern="+186 [[999]]-[[999]]-[[9999]]" />
+                    <p class="help-block">+186 123-123-1234</p>
+                  </div>
+                </div>
+                <div class="form-group form-material">
+                  <label class="col-sm-3 control-label">Phone Ext</label>
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control" id="inputPhoneExt" data-plugin="formatter"
+                      data-pattern="([[999]]) [[999]]-[[9999]] x[[99999]]" />
+                    <p class="help-block">(123) 123-1234 x12345</p>
+                  </div>
+                </div>
+                <div class="form-group form-material">
+                  <label class="col-sm-3 control-label">Credit Card</label>
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control" id="inputCredit" data-plugin="formatter"
+                      data-pattern="[[9999]]-[[9999]]-[[9999]]-[[9999]]" />
+                    <p class="help-block">1234-1234-1234-1234</p>
+                  </div>
+                </div>
+                <div class="form-group form-material">
+                  <label class="col-sm-3 control-label">Product Key</label>
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control" id="inputProduct" data-plugin="formatter"
+                      data-pattern="a[[*]]-[[9999]]-C[[999]]" />
+                    <p class="help-block">a*-1234-C123</p>
+                  </div>
+                </div>
+                <div class="form-group form-material">
+                  <label class="col-sm-3 control-label">Percent</label>
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control" id="inputPercent" data-plugin="formatter"
+                      data-pattern="[[99]].[[99]]%" />
+                    <p class="help-block">99.99%</p>
+                  </div>
+                </div>
+                <div class="form-group form-material">
+                  <label class="col-sm-3 control-label">Currency</label>
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control" id="inputCurrency" data-plugin="formatter"
+                      data-pattern="$[[999]],[[999]],[[999]].[[99]]" />
+                    <p class="help-block">$999,999,999.99</p>
+                  </div>
+                </div>
+                <div class="form-group form-material">
+                  <label class="col-sm-3 control-label">Currency</label>
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control text-right" id="inputCurrency2" data-plugin="formatter"
+                      data-pattern="$[[999]],[[999]],[[999]].[[99]]" />
+                    <p class="help-block">$999,999,999.99</p>
+                  </div>
+                </div>
+                <div class="form-group form-material">
+                  <div class="col-sm-9 col-sm-offset-3">
+                    <button type="button" class="btn-primary btn">Submit</button>
+                    <button type="button" class="btn-default btn">Cancel</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+          <!-- End Panel Extended -->
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- End Page -->
+
+
+  <!-- Core  -->
+  <script src="../../../global/vendor/jquery/jquery.js"></script>
+  <script src="../../../global/vendor/bootstrap/bootstrap.js"></script>
+  <script src="../../../global/vendor/animsition/animsition.js"></script>
+  <script src="../../../global/vendor/asscroll/jquery-asScroll.js"></script>
+  <script src="../../../global/vendor/mousewheel/jquery.mousewheel.js"></script>
+  <script src="../../../global/vendor/asscrollable/jquery.asScrollable.all.js"></script>
+  <script src="../../../global/vendor/ashoverscroll/jquery-asHoverScroll.js"></script>
+  <script src="../../../global/vendor/waves/waves.js"></script>
+
+  <!-- Plugins -->
+
+  <script src="../../../global/vendor/switchery/switchery.min.js"></script>
+  <script src="../../../global/vendor/intro-js/intro.js"></script>
+  <script src="../../../global/vendor/screenfull/screenfull.js"></script>
+  <script src="../../../global/vendor/slidepanel/jquery-slidePanel.js"></script>
+
+  <!-- !PageSpecific Plugins -->
+  <script src="../../../global/vendor/formatter-js/jquery.formatter.js"></script>
+
+  <!-- Scripts -->
+
+  <script src="../../../global/js/core.js"></script>
+  <script src="../../assets/js/site.js"></script>
+
+  <script src="../../assets/js/sections/menu.js"></script>
+  <script src="../../assets/js/sections/menubar.js"></script>
+  <script src="../../assets/js/sections/sidebar.js"></script>
+
+  <script src="../../../global/js/configs/config-colors.js"></script>
+  <script src="../../assets/js/configs/config-tour.js"></script>
+
+  <script src="../../../global/js/components/asscrollable.js"></script>
+  <script src="../../../global/js/components/animsition.js"></script>
+  <script src="../../../global/js/components/slidepanel.js"></script>
+  <script src="../../../global/js/components/switchery.js"></script>
+  <script src="../../../global/js/components/tabs.js"></script>
+
+  <!-- !PageSpecific Scripts -->
+  <script src="../../../global/js/components/formatter-js.js"></script>
+
+  <script>
+    (function(document, window, $) {
+      'use strict';
+
+      var Site = window.Site;
+      $(document).ready(function() {
+        Site.run();
+      });
+    })(document, window, jQuery);
+  </script>
+
+</body>
+</html>
