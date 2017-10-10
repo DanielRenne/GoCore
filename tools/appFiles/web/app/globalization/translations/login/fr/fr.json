@@ -1,0 +1,13 @@
+{
+    "AliasDeviceLabel": "* Alias de P\u00e9riph\u00e9rique", 
+    "Cancel": "Annuler", 
+    "EnterAlias": "Veuillez saisir un alias pour ce p\u00e9riph\u00e9rique connect\u00e9", 
+    "ErrorNoAlias": "Veuillez saisir un non vide alias", 
+    "ErrorNoBuildings": "Pas de b\u00e2timents disponibles", 
+    "ErrorNoSites": "Pas de sites disponibles", 
+    "ResetPass": "R\u00e9initialiser Le Mot De Passe", 
+    "RoomSync": "Salle De Synchronisation", 
+    "Synchronizing": "La synchronisation", 
+    "UserCanceled": "Un utilisateur a annul\u00e9 l'action de synchroniser cette chambre, s'il vous pla\u00eet essayer de nouveau.", 
+    "Waiting": "En attente d'Approbation..."
+}

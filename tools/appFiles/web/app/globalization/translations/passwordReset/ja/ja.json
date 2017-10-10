@@ -1,0 +1,13 @@
+{
+    "ConfirmPassword": "!ja!Confirm Password", 
+    "ErrorPasswordNotValid": "!ja!Password must be at least 8 characters.  Include 1 number, 1 uppercase.", 
+    "FieldRequired": "!ja!Required Field.", 
+    "NewPassword": "!ja!New Password", 
+    "OriginalPassword": "!ja!Original Password", 
+    "PasswordResetHeader": "!ja!Password reset for {Email}.", 
+    "PasswordResetMessage": "!ja!An password reset for {Email} has been requested. Please click {Link} to reset your password.  \n\nThis reset will expire in 48 hours.", 
+    "PasswordResetTitle": "GoCoreAppHumanName\u30d1\u30b9\u30ef\u30fc\u30c9\u3092\u30ea\u30bb\u30c3\u30c8", 
+    "PasswordsNoMatch": "!ja!Passwords do not match.", 
+    "ResetCompleted": "!ja!This request has been completed.  Please request another password reset.", 
+    "Title": "!ja!Password Reset"
+}

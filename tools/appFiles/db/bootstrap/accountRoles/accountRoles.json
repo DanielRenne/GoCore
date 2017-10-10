@@ -1,0 +1,12 @@
+[
+	{
+		"Id":"58419ae6ab5b6f3dd5377272",
+		"AccountId":"58405718f94c671b05350857",
+		"UserId":"58405b79f94c671b05350858",
+		"RoleId":"57c07ef3dcba0f7a0be338b8",
+		"LastUpdateId":"58405b79f94c671b05350858",
+		"BootstrapMeta": {
+			"AlwaysUpdate":true
+		}
+	}
+]

@@ -1,0 +1,13 @@
+{
+    "AddUserTooltip": "Benutzer Hinzuf\u00fcgen", 
+    "ErrorUserListFailedParse": "Fehler beim Parsen Konto-Rolle aufgerufen wird.", 
+    "ErrorUserListFailedRevoke": "Fehler beim Widerruf-Benutzer-account.", 
+    "UserAddEditCompanyName": "Name Des Unternehmens", 
+    "UserListLastNameFirstName": "Name, Vorname", 
+    "UserListPhoneNumber": "Telefonnummer", 
+    "UserListResendInvitationEmail": "Einladungs-E-Mail Erneut Senden", 
+    "UserListRevokeUser": "Widerrufen Sie diesen Benutzer aus dem Konto.", 
+    "UserListRevokedUser": "Erfolgreich Widerrufene Benutzer-account.", 
+    "UserListRole": "Rolle", 
+    "UserListShowingAllUsers": "Zeigt Alle Benutzer"
+}

@@ -1,0 +1,11 @@
+{
+    "CreateRoleFeature": "!ko!Create roleFeature", 
+    "RoleFeatureAddBootstrapMeta": "!ko!Bootstrap meta", 
+    "RoleFeatureAddCreateDate": "!ko!Create date", 
+    "RoleFeatureAddFeatureId": "!ko!Feature id", 
+    "RoleFeatureAddLastUpdateId": "!ko!Last update id", 
+    "RoleFeatureAddRoleId": "!ko!Role id", 
+    "RoleFeatureAddUpdateDate": "!ko!Update date", 
+    "objectName": "!ko!roleFeatureAdd", 
+    "welcomeExample": "!ko!Welcome to the {page} page!"
+}

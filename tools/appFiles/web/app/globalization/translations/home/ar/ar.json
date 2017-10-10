@@ -1,0 +1,23 @@
+{
+    "Access": "!ar!Access", 
+    "Accounts": "!ar!Accounts", 
+    "AppVersion": "\u0645\u0644\u0627\u062d\u0638\u0627\u062a \u0627\u0644\u0625\u0635\u062f\u0627\u0631", 
+    "AppVersionNotes": "!ar!View Full Notes", 
+    "Cancel": "!ar!Cancel", 
+    "NoRecent": "!ar!No recent information found", 
+    "ProdDoc": "!ar!Product Documentation", 
+    "ResetPass": "!ar!Reset Password", 
+    "TY": "\u0634\u0643\u0631\u0627 \u0644\u0643\u0645 \u0644 \u0634\u0631\u0627\u0621 GoCoreAppHumanName!", 
+    "Updates": "!ar!Updates", 
+    "Users": "!ar!Users", 
+    "ViewDocs": "\u0639\u0631\u0636 \u0627\u0644\u0648\u062b\u0627\u0626\u0642", 
+    "ViewDocumentation": "!ar!View Full Documentation", 
+    "Welcome": "\u0645\u0631\u062d\u0628\u0627 \u0628\u0643\u0645 \u0641\u064a:", 
+    "Welcome2": "!ar!Welcome", 
+    "taskbarCustomTitle": "!ar!Home Title", 
+    "taskbarCustomTitleContent": "!ar!Home Button", 
+    "taskbarTitle": "!ar!Home", 
+    "taskbarTitleContent": "!ar!Home", 
+    "title": "!ar!Home", 
+    "titleInfo": "\u0627\u0644\u0645\u0646\u0632\u0644"
+}

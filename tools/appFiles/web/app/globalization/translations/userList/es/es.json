@@ -1,0 +1,13 @@
+{
+    "AddUserTooltip": "Agregar Usuario", 
+    "ErrorUserListFailedParse": "Error al analizar la cuenta de papel para invocar.", 
+    "ErrorUserListFailedRevoke": "No pudo Revocar usuario de la cuenta.", 
+    "UserAddEditCompanyName": "Nombre De La Empresa", 
+    "UserListLastNameFirstName": "Apellido, Nombre", 
+    "UserListPhoneNumber": "N\u00famero De Tel\u00e9fono", 
+    "UserListResendInvitationEmail": "Enviar Un Correo Electr\u00f3nico De Invitaci\u00f3n", 
+    "UserListRevokeUser": "Revocar este usuario de la cuenta.", 
+    "UserListRevokedUser": "Con \u00e9xito Revocado de usuario de la cuenta.", 
+    "UserListRole": "Papel", 
+    "UserListShowingAllUsers": "Mostrando Todos Los Usuarios"
+}

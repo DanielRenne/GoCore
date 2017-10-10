@@ -1,0 +1,16 @@
+{
+    "AddRoleFeature": "!ro!Add a new RoleFeature", 
+    "AreYouSure": "!ro!Are you sure you wish to delete {total} roleFeatures?", 
+    "AreYouSureInline": "!ro!Are you sure you wish to delete this roleFeature?", 
+    "ConfirmDeleteMessage": "!ro!Are you sure you would like to delete this roleFeature? This action cannot be undone.", 
+    "CopyRoleFeature": "!ro!Copy roleFeature", 
+    "DeleteRoleFeature": "!ro!Delete roleFeature", 
+    "EditRoleFeature": "!ro!Edit roleFeature", 
+    "RoleFeatureListHeaderLastUpdateId": "!ro!Last update id", 
+    "RoleFeatureListHeaderUpdateDate": "!ro!Update date", 
+    "RoleFeatureListToolTipLastUpdateId": "!ro!Last update id", 
+    "RoleFeatureListToolTipUpdateDate": "!ro!Update date", 
+    "ShowingAllRoleFeatures": "!ro!Showing All RoleFeatures", 
+    "objectName": "!ro!roleFeatureList", 
+    "welcomeExample": "!ro!Welcome to the {page} page!"
+}

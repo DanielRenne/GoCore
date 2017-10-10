@@ -1,0 +1,12 @@
+{
+    "CreateRole": "Crear papel", 
+    "RoleAddAccountId": "Id de la cuenta", 
+    "RoleAddCanDelete": "Puede eliminar", 
+    "RoleAddCreateDate": "Fecha de creaci\u00f3n", 
+    "RoleAddLastUpdateId": "\u00daltima actualizaci\u00f3n de identificaci\u00f3n", 
+    "RoleAddName": "Nombre", 
+    "RoleAddShortName": "Nombre corto", 
+    "RoleAddUpdateDate": "Fecha de actualizaci\u00f3n", 
+    "objectName": "roleAdd", 
+    "welcomeExample": "Bienvenidos a la {page} p\u00e1gina!"
+}

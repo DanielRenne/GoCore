@@ -1,0 +1,16 @@
+{
+    "CreateFileObject": "Criar fileObject", 
+    "FileObjectAddAccountId": "Id da conta", 
+    "FileObjectAddContent": "Conte\u00fado", 
+    "FileObjectAddCreateDate": "Data de cria\u00e7\u00e3o", 
+    "FileObjectAddLastUpdateId": "\u00daltima atualiza\u00e7\u00e3o de identifica\u00e7\u00e3o", 
+    "FileObjectAddMD5": "MD 5", 
+    "FileObjectAddModified": "Modificado", 
+    "FileObjectAddModifiedUnix": "Modificado unix", 
+    "FileObjectAddName": "Nome", 
+    "FileObjectAddSize": "Tamanho", 
+    "FileObjectAddType": "Tipo", 
+    "FileObjectAddUpdateDate": "Data de atualiza\u00e7\u00e3o", 
+    "objectName": "fileObjectAdd", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

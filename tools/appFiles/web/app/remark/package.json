@@ -1,0 +1,28 @@
+{
+  "name": "remark-generator",
+  "version": "2.2.0",
+  "description": "A command line tool for creating remark project",
+  "main": "index.js",
+  "scripts": {
+    "generate": "node .src/index.js"
+  },
+  "bugs": {
+    "url": "http://getbootstrapadmin.com/remark"
+  },
+  "homepage": "http://getbootstrapadmin.com/remark",
+  "dependencies": {
+    "bluebird": "*",
+    "applause": "*",
+    "commander": "*",
+    "dive": "*",
+    "extend": "*",
+    "fs-extra": "*",
+    "fs-extra-promise": "*",
+    "inquirer": "*",
+    "load-json-file": "*",
+    "multi-glob": "*",
+    "preprocess": "*",
+    "treeify": "*",
+    "write-json-file": "*"
+  }
+}

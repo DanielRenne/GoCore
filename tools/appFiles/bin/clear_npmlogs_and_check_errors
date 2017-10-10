@@ -1,0 +1,70 @@
+#!/bin/bash
+cd $GOPATH
+RED='\033[0;31m'
+REACTCOMPILING=0
+NC='\033[0m' # No Color
+GREEN="\[$(tput setaf 2)\]"
+pkill clear_npmlogs_and_check_errors
+echo "" >  $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log
+i=1
+while true; do
+   grep "build modules" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log > /dev/null 2>&1
+   retx=$?
+   if [[ "$retx" -eq 0 ]] && [[ "$REACTCOMPILING" -eq 0 ]]; then
+     whoami=$(whoami)
+     if [[ "$whoami" == "root" ]]; then
+       say "React compiling"  > /dev/null 2>&1
+     fi
+     REACTCOMPILING=1
+   fi
+   grep "bundle is now VALID" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log > /dev/null 2>&1
+   ret=$?
+   grep "webpack: Compiled successfully" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log > /dev/null 2>&1
+   ret2=$?
+   grep "pack: Failed to compil" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log  > /dev/null 2>&1
+   ret3=$?
+   grep "ERROR in" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log  > /dev/null 2>&1
+   ret4=$?
+   grep "SyntaxError" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log  > /dev/null 2>&1
+   ret5=$?
+   grep "npm ERR" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log  > /dev/null 2>&1
+   ret6=$?
+   if [[ "$ret" -eq 0 ]] || [[ "$ret2" -eq 0 ]] || [[ "$ret3" -eq 0 ]] || [[ "$ret4" -eq 0 ]] || [[ "$ret5" -eq 0 ]] || [[ "$ret6" -eq 0 ]]; then
+       grep "ERROR in" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log  > /dev/null 2>&1
+       ret=$?
+       grep "SyntaxError" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log  > /dev/null 2>&1
+       ret2=$?
+       grep "pack: Failed to compil" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log  > /dev/null 2>&1
+       ret3=$?
+       grep "npm ERR" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log  > /dev/null 2>&1
+       ret4=$?
+       i=0
+       if [[ "$ret" -eq 0 ]] || [[ "$ret2" -eq 0 ]] || [[ "$ret3" -eq 0 ]] || [[ "$ret4" -eq 0 ]]; then
+         echo -e "${RED}>>>>>>>>>>>>>>>>>> Webpack has errors in your JSX!!!! <<<<<<<<<<<<<<<<<<${NC}"
+         grep "ERROR in" -A50 $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log
+         say "Errors in React"  > /dev/null 2>&1
+         cp $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npmErrors.log
+         #if [ "$(uname)" == "Darwin" ]; then
+           #open -a TextEdit $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log &
+         #elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+           #gedit $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log &
+         #fi
+       else
+         if [[ "$REACTCOMPILING" -eq 1 ]]; then
+           say "React compiled"  > /dev/null 2>&1
+         fi
+       fi
+       echo "" >  $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log
+       REACTCOMPILING=0
+   else
+       if [[ "$REACTCOMPILING" -eq 1 ]]; then
+         echo -e "(Slow node.js: (${RED}${i}${NC}) seconds elapsed to build) Webpack still mounting/transcompiling JSX on port 3000..."
+       fi
+       if [[ $i -eq 5 ]] || [[ $i -eq 10 ]] || [[ $i -eq 15 ]] || [[ $i -eq 20 ]] || [[ $i -eq 25 ]] || [[ $i -eq 30 ]] || [[ $i -eq 35 ]] || [[ $i -eq 40 ]] || [[ $i -eq 45 ]] || [[ $i -eq 50 ]] || [[ $i -eq 55 ]] || [[ $i -eq 60 ]] || [[ $i -eq 65 ]] || [[ $i -eq 70 ]] || [[ $i -eq 75 ]] || [[ $i -eq 80 ]] || [[ $i -eq 85 ]] || [[ $i -eq 90 ]] || [[ $i -eq 95 ]] || [[ $i -eq 100 ]]; then
+         log=$(tail $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log)
+         echo $log
+       fi
+   fi
+   ((++i))
+   sleep 1
+done

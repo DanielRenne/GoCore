@@ -1,0 +1,18 @@
+{
+    "AddFeatureGroup": "!zh!Add a new FeatureGroup", 
+    "AreYouSure": "!zh!Are you sure you wish to delete {total} featureGroups?", 
+    "AreYouSureInline": "!zh!Are you sure you wish to delete this featureGroup?", 
+    "ConfirmDeleteMessage": "!zh!Are you sure you would like to delete this featureGroup? This action cannot be undone.", 
+    "CopyFeatureGroup": "!zh!Copy featureGroup", 
+    "DeleteFeatureGroup": "!zh!Delete featureGroup", 
+    "EditFeatureGroup": "!zh!Edit featureGroup", 
+    "FeatureGroupListHeaderLastUpdateId": "!zh!Last update id", 
+    "FeatureGroupListHeaderName": "!zh!Name", 
+    "FeatureGroupListHeaderUpdateDate": "!zh!Update date", 
+    "FeatureGroupListToolTipLastUpdateId": "!zh!Last update id", 
+    "FeatureGroupListToolTipName": "!zh!Name", 
+    "FeatureGroupListToolTipUpdateDate": "!zh!Update date", 
+    "ShowingAllFeatureGroups": "!zh!Showing All FeatureGroups", 
+    "objectName": "!zh!featureGroupList", 
+    "welcomeExample": "!zh!Welcome to the {page} page!"
+}

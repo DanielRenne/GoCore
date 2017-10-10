@@ -1,0 +1,28 @@
+@import "vars.less";
+
+.ui-helper-hidden {
+  display: none;
+}
+.ui-helper-hidden-accessible {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+
+#custom_view {
+  .panel-actions {
+    @media (max-width: @screen-md) {
+      position: relative;
+      right: 0;
+      top: 0;
+      float: right;
+      padding: 0 30px 10px;
+      transform: none;
+    }
+  }
+}

@@ -1,0 +1,5 @@
+{
+    "ErrorAccountNotFound": "!ro!Failed to find account.", 
+    "objectName": "!ro!accounts", 
+    "welcomeExample": "!ro!Welcome to the {page} page!"
+}

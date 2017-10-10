@@ -1,0 +1,10 @@
+{
+    "CreateFeatureGroup": "Skapa featureGroup", 
+    "FeatureGroupAddBootstrapMeta": "Bootstrap-meta", 
+    "FeatureGroupAddCreateDate": "Skapa dagen", 
+    "FeatureGroupAddLastUpdateId": "Senaste uppdatering id", 
+    "FeatureGroupAddName": "Namn", 
+    "FeatureGroupAddUpdateDate": "Uppdatera datum", 
+    "objectName": "featureGroupAdd", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

@@ -1,0 +1,12 @@
+{
+    "CreateRole": "!zh!Create role", 
+    "RoleAddAccountId": "!zh!Account id", 
+    "RoleAddCanDelete": "!zh!Can delete", 
+    "RoleAddCreateDate": "!zh!Create date", 
+    "RoleAddLastUpdateId": "!zh!Last update id", 
+    "RoleAddName": "!zh!Name", 
+    "RoleAddShortName": "!zh!Short name", 
+    "RoleAddUpdateDate": "!zh!Update date", 
+    "objectName": "!zh!roleAdd", 
+    "welcomeExample": "!zh!Welcome to the {page} page!"
+}

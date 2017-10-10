@@ -1,0 +1,10 @@
+{
+    "CreateFeatureGroup": "!ko!Create featureGroup", 
+    "FeatureGroupAddBootstrapMeta": "!ko!Bootstrap meta", 
+    "FeatureGroupAddCreateDate": "!ko!Create date", 
+    "FeatureGroupAddLastUpdateId": "!ko!Last update id", 
+    "FeatureGroupAddName": "!ko!Name", 
+    "FeatureGroupAddUpdateDate": "!ko!Update date", 
+    "objectName": "!ko!featureGroupAdd", 
+    "welcomeExample": "!ko!Welcome to the {page} page!"
+}

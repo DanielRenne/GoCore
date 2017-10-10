@@ -1,0 +1,19 @@
+
+whoami=$(whoami)
+if [[ "$whoami" == "root" ]]; then
+    rm -rf /tmp/go-build* > /dev/null 2>&1
+else
+    sudo rm -rf /tmp/go-build* > /dev/null 2>&1
+fi
+bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/kill_go_watch
+echo "" > $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/app.log
+echo "" > $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/db.log
+echo "" > /tmp/go_watch.log
+echo "" > $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log
+
+if [[ "$whoami" == "root" ]]; then
+    rm $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/mongo.log
+else
+    sudo rm $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/mongo.log
+fi
+bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/dev

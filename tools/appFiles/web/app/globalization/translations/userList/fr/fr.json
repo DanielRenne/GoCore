@@ -1,0 +1,13 @@
+{
+    "AddUserTooltip": "Ajouter Un Utilisateur", 
+    "ErrorUserListFailedParse": "Pas r\u00e9ussi \u00e0 analyser compte du r\u00f4le de l'invoquer.", 
+    "ErrorUserListFailedRevoke": "\u00c9chec de R\u00e9voquer l'utilisateur de compte.", 
+    "UserAddEditCompanyName": "Nom De La Soci\u00e9t\u00e9", 
+    "UserListLastNameFirstName": "Nom, Pr\u00e9nom", 
+    "UserListPhoneNumber": "Num\u00e9ro De T\u00e9l\u00e9phone", 
+    "UserListResendInvitationEmail": "Renvoyer Le Courriel D'Invitation", 
+    "UserListRevokeUser": "R\u00e9voquer cet utilisateur du compte.", 
+    "UserListRevokedUser": "Avec succ\u00e8s R\u00e9voqu\u00e9 de l'utilisateur du compte.", 
+    "UserListRole": "R\u00f4le", 
+    "UserListShowingAllUsers": "Montrant Tous Les Utilisateurs"
+}

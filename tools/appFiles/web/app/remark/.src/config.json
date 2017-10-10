@@ -1,0 +1,72 @@
+{
+// @ifdef processHtml
+  "html": "html",
+// @endif
+  "assets": "assets",
+  "destination": {
+// @ifdef processCss
+    "css": "assets/css",
+// @endif
+// @ifdef processJs
+    "js": "assets/js",
+// @endif
+// @ifdef processSkins
+    "skins": "assets/skins",
+// @endif
+// @ifdef processExamples
+    "examples": "assets/examples",
+// @endif
+// @ifdef processFonts
+    "fonts": "fonts",
+// @endif
+// @ifdef processVendor
+    "vendor": "vendor"
+// @endif
+  },
+  "source": {
+// @ifdef processJs
+    "js": "src/js",
+// @endif
+// @ifdef processCss
+    "less": "src/less",
+// @endif
+// @ifdef processSkins
+    "skins": "src/skins",
+// @endif
+// @ifdef processExamples
+    "examples": "src/examples",
+// @endif
+// @ifdef processFonts
+    "fonts": "src/fonts",
+// @endif
+// @ifdef processVendor
+    "vendor": "src/vendor"
+// @endif
+  },
+// @ifdef processHtml
+  "templates": {
+    "data": "src/templates/data",
+    "helpers": "src/templates/helpers",
+    "partials": "src/templates/partials",
+    "pages": "src/templates/pages"
+  },
+// @endif
+// @ifdef processCss
+  "bootstrap": {
+    "less": "src/less/bootstrap",
+    "mixins": "src/less/mixins"
+  },
+// @endif
+// @ifdef processCss
+  "autoprefixerBrowsers": [
+    "Android 2.3",
+    "Android >= 4",
+    "Chrome >= 20",
+    "Firefox >= 24",
+    "Explorer >= 8",
+    "iOS >= 6",
+    "Opera >= 12",
+    "Safari >= 6"
+  ]
+// @endif
+}

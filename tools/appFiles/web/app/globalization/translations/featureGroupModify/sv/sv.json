@@ -1,0 +1,9 @@
+{
+    "FeatureGroupModifyBootstrapMeta": "Bootstrap-meta", 
+    "FeatureGroupModifyCreateDate": "Skapa dagen", 
+    "FeatureGroupModifyLastUpdateId": "Senaste uppdatering id", 
+    "FeatureGroupModifyName": "Namn", 
+    "FeatureGroupModifyUpdateDate": "Uppdatera datum", 
+    "objectName": "featureGroupModify", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

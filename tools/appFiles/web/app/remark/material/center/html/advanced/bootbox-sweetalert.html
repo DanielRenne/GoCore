@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html class="no-js css-menubar" lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+  <meta name="description" content="bootstrap admin template">
+  <meta name="author" content="">
+
+  <title>Bootbox &amp;amp; Sweetalert | Remark Admin Template</title>
+
+  <link rel="apple-touch-icon" href="../../assets/images/apple-touch-icon.png">
+  <link rel="shortcut icon" href="../../assets/images/favicon.ico">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../../../global/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../../../global/css/bootstrap-extend.min.css">
+  <link rel="stylesheet" href="../../assets/css/site.min.css">
+
+  <!-- Plugins -->
+
+
+  <link rel="stylesheet" href="../../../global/vendor/animsition/animsition.css">
+  <link rel="stylesheet" href="../../../global/vendor/asscrollable/asScrollable.css">
+  <link rel="stylesheet" href="../../../global/vendor/switchery/switchery.css">
+  <link rel="stylesheet" href="../../../global/vendor/intro-js/introjs.css">
+  <link rel="stylesheet" href="../../../global/vendor/slidepanel/slidePanel.css">
+  <link rel="stylesheet" href="../../../global/vendor/flag-icon-css/flag-icon.css">
+  <link rel="stylesheet" href="../../../global/vendor/waves/waves.css">
+
+  <!-- !PageSpecific Plugins -->
+
+  <link rel="stylesheet" href="../../../global/vendor/bootstrap-sweetalert/sweet-alert.css">
+  <link rel="stylesheet" href="../../../global/vendor/toastr/toastr.css">
+
+
+  <!-- Fonts -->
+
+  <link rel="stylesheet" href="../../../global/fonts/material-design/material-design.min.css">
+  <link rel="stylesheet" href="../../../global/fonts/brand-icons/brand-icons.min.css">
+  <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto:300,400,500,300italic'>
+
+  <!-- !PageSpecific Fonts -->
+
+
+  <!--[if lt IE 9]>
+    <script src="../../../global/vendor/html5shiv/html5shiv.min.js"></script>
+    <![endif]-->
+
+  <!--[if lt IE 10]>
+    <script src="../../../global/vendor/media-match/media.match.min.js"></script>
+    <script src="../../../global/vendor/respond/respond.min.js"></script>
+    <![endif]-->
+
+  <!-- Scripts -->
+  <script src="../../../global/vendor/modernizr/modernizr.js"></script>
+  <script src="../../../global/vendor/breakpoints/breakpoints.js"></script>
+  <script>
+    Breakpoints();
+  </script>
+</head>
+<body>
+  <!--[if lt IE 8]>
+        <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+
+
+  <!-- Page -->
+  <div class="page animsition">
+    <div class="page-header">
+      <ol class="breadcrumb">
+        <li><a href="../index.html">Home</a></li>
+        <li class="active">Advanced UI</li>
+      </ol>
+      <h1 class="page-title">Bootbox &amp; Sweetalert</h1>
+      <div class="page-header-actions">
+        <button type="button" class="btn btn-sm btn-icon btn-primary btn-round" data-toggle="tooltip"
+          data-original-title="Edit">
+          <i class="icon md-edit" aria-hidden="true"></i>
+        </button>
+        <button type="button" class="btn btn-sm btn-icon btn-primary btn-round" data-toggle="tooltip"
+          data-original-title="Refresh">
+          <i class="icon md-refresh-alt" aria-hidden="true"></i>
+        </button>
+        <button type="button" class="btn btn-sm btn-icon btn-primary btn-round" data-toggle="tooltip"
+          data-original-title="Setting">
+          <i class="icon md-settings" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="page-content">
+      <!-- Panel Bootbox -->
+      <div class="panel">
+        <div class="panel-heading">
+          <h3 class="panel-title">Bootbox
+            <small><a class="example-plugin-link" href="https://github.com/makeusabrew/bootbox"
+                target="_blank">official website</a></small>
+          </h3>
+        </div>
+        <div class="panel-body container-fluid">
+          <p class="margin-bottom-30">Bootbox.js is a small javaScript library which allows you to create programmatic
+            dialog boxes using Bootstrap modals, without having to worry about
+            creating, managing or removing any of the required DOM elements or
+            JS event handlers.</p>
+          <div class="row row-lg">
+            <div class="col-md-5">
+              <!-- Example Examples -->
+              <div class="example-wrap margin-md-0">
+                <h4 class="example-title">Examples</h4>
+                <div class="example example-buttons">
+                  <button class="btn btn-info" data-type="alert" data-message="Hello world!" data-plugin="bootbox"
+                    data-callback="exampleBootboxAlertCallback" type="button">Alert</button>
+                  <button class="btn btn-info" data-type="confirm" data-message="Are you sure?" data-plugin="bootbox"
+                    data-callback="exampleBootboxConfirmCallback" type="button">Confirm</button>
+                  <button class="btn btn-info" data-type="prompt" data-title="What is your name?"
+                    data-plugin="bootbox" data-callback="exampleBootboxPromptCallback"
+                    type="button">Prompt</button>
+                  <button class="btn btn-info" id="exampleBootboxPromptDefaultValue" type="button">Prompt with default value</button>
+                  <button class="btn btn-info" id="exampleBootboxCustomDialog" type="button">Custom Dialog</button>
+                  <button class="btn btn-info" id="exampleBootboxCustomHtmlContents" type="button">Custom HTML Contents</button>
+                  <button class="btn btn-info" id="exampleBootboxCustomHtmlForms" type="button">Custom HTML Forms</button>
+                </div>
+              </div>
+              <!-- End Example Examples -->
+            </div>
+
+            <div class="col-md-7">
+              <!-- Example Nifty Effects -->
+              <div class="example-wrap">
+                <h4 class="example-title">Work With Nifty Effects</h4>
+                <div class="example example-buttons">
+                  <button class="btn btn-info" data-plugin="bootbox" data-title="Triggered by Bootbox"
+                    data-message="I am a custom dialog with effects" data-classname="modal-fade-in-scale-up"
+                    type="button">Fade in &amp; Scale</button>
+
+                  <button class="btn btn-info" data-plugin="bootbox" data-title="Triggered by Bootbox"
+                    data-message="I am a custom dialog with effects" data-classname="modal-slide-in-right"
+                    type="button">Slide in from right</button>
+
+                  <button class="btn btn-info" data-plugin="bootbox" data-title="Triggered by Bootbox"
+                    data-message="I am a custom dialog with effects" data-classname="modal-slide-from-bottom"
+                    type="button">Slide in from bottom</button>
+
+                  <button class="btn btn-info" data-plugin="bootbox" data-title="Triggered by Bootbox"
+                    data-message="I am a custom dialog with effects" data-classname="modal-newspaper"
+                    type="button">Newspaper</button>
+
+                  <button class="btn btn-info" data-plugin="bootbox" data-title="Triggered by Bootbox"
+                    data-message="I am a custom dialog with effects" data-classname="modal-fall"
+                    type="button">Fall</button>
+
+                  <button class="btn btn-info" data-plugin="bootbox" data-title="Triggered by Bootbox"
+                    data-message="I am a custom dialog with effects" data-classname="modal-side-fall"
+                    type="button">Side Fall</button>
+
+                  <button class="btn btn-info" data-plugin="bootbox" data-title="Triggered by Bootbox"
+                    data-message="I am a custom dialog with effects" data-classname="modal-3d-flip-horizontal"
+                    type="button">3D Flip horizontal</button>
+
+                  <button class="btn btn-info" data-plugin="bootbox" data-title="Triggered by Bootbox"
+                    data-message="I am a custom dialog with effects" data-classname="modal-3d-flip-vertical"
+                    type="button">3D Flip vertical</button>
+
+                  <button class="btn btn-info" data-plugin="bootbox" data-title="Triggered by Bootbox"
+                    data-message="I am a custom dialog with effects" data-classname="modal-3d-sign"
+                    type="button">3D Sign</button>
+
+                  <button class="btn btn-info" data-plugin="bootbox" data-title="Triggered by Bootbox"
+                    data-message="I am a custom dialog with effects" data-classname="modal-super-scaled"
+                    type="button">Super Scaled</button>
+
+                  <button class="btn btn-info" data-plugin="bootbox" data-title="Triggered by Bootbox"
+                    data-message="I am a custom dialog with effects" data-classname="modal-just-me"
+                    type="button">Just Me</button>
+
+                  <button class="btn btn-info" data-plugin="bootbox" data-title="Triggered by Bootbox"
+                    data-message="I am a custom dialog with effects" data-classname="modal-3d-slit"
+                    type="button">3D Slit</button>
+
+                  <button class="btn btn-info" data-plugin="bootbox" data-title="Triggered by Bootbox"
+                    data-message="I am a custom dialog with effects" data-classname="modal-rotate-from-bottom"
+                    type="button">3D Rotate Bottom</button>
+
+                  <button class="btn btn-info" data-plugin="bootbox" data-title="Triggered by Bootbox"
+                    data-message="I am a custom dialog with effects" data-classname="modal-rotate-from-left"
+                    type="button">3D Rotate In Left</button>
+                </div>
+              </div>
+              <!-- End Example Nifty Effects -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- End Panel Bootbox -->
+
+      <!-- Panel Sweet Alert -->
+      <div class="panel">
+        <div class="panel-heading">
+          <h3 class="panel-title">Sweet Alert
+            <small><a class="example-plugin-link" href="https://select2.github.iohttp://lipis.github.io/bootstrap-sweetalert/"
+                target="_blank">official website</a></small>
+          </h3>
+        </div>
+        <div class="panel-body container-fluid">
+          <div class="row row-lg">
+            <div class="col-lg-6 col-md-12">
+              <div class="example example-well height-350">
+                <img class="center" src="../../assets//examples/images/modal/sweet-alert.png" alt="...">
+              </div>
+            </div>
+            <div class="col-lg-6 col-md-12">
+              <!-- Example Styles -->
+              <div class="example-wrap">
+                <h4 class="example-title">Sweet Alert Styles</h4>
+                <p>Here’s a comparison of a standard error message. The first one
+                  uses the built-in alert-function, while the second is using sweetAlert.
+                  SweetAlert automatically centers itself on the page and looks
+                  great no matter if you're using a desktop computer, mobile or
+                  tablet. It's even highly customizeable, as you can see below!</p>
+                <div class="example example-buttons">
+                  <button type="button" class="btn btn-info" id="exampleBasic" data-plugin="sweetalert"
+                    data-title="Here's a message!">Basic</button>
+                  <button type="button" class="btn btn-info" id="exampleCloseTimer" data-plugin="sweetalert"
+                    data-title="Auto close alert!" data-text="I will close in 2 seconds."
+                    data-timer="2000">Close timer</button>
+                  <button type="button" class="btn btn-info" id="exampleTitleText" data-plugin="sweetalert"
+                    data-title="Here's a message!" data-text="It's pretty, isn't it?">Title text</button>
+                  <button type="button" class="btn btn-info" id="exampleSuccessMessage" data-plugin="sweetalert"
+                    data-title="Good job!" data-text="You clicked the button!" data-type="success">Success message</button>
+                  <button type="button" class="btn btn-info" id="exampleCustomIcon" data-plugin="sweetalert"
+                    data-title="Sweet!" data-text="Here's a custom image." data-image-url="http://i.imgur.com/4NZ6uLY.jpg">Custom icon</button>
+                </div>
+                <p>With a function attached to the "Confirm" button :</p>
+                <div class="example">
+                  <button type="button" class="btn btn-info" id="exampleWarningConfirm">Warning Confirm</button>
+                </div>
+                <p>And by passing a parameter, you can execute something else for
+                  "Cancel".
+                </p>
+                <div class="example">
+                  <button type="button" class="btn btn-info" id="exampleWarningCancel">Warning Cancel</button>
+                </div>
+              </div>
+              <!-- End Example Styles -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- End Panel Sweet Alert -->
+
+    </div>
+  </div>
+  <!-- End Page -->
+
+
+  <!-- Core  -->
+  <script src="../../../global/vendor/jquery/jquery.js"></script>
+  <script src="../../../global/vendor/bootstrap/bootstrap.js"></script>
+  <script src="../../../global/vendor/animsition/animsition.js"></script>
+  <script src="../../../global/vendor/asscroll/jquery-asScroll.js"></script>
+  <script src="../../../global/vendor/mousewheel/jquery.mousewheel.js"></script>
+  <script src="../../../global/vendor/asscrollable/jquery.asScrollable.all.js"></script>
+  <script src="../../../global/vendor/ashoverscroll/jquery-asHoverScroll.js"></script>
+  <script src="../../../global/vendor/waves/waves.js"></script>
+
+  <!-- Plugins -->
+
+  <script src="../../../global/vendor/switchery/switchery.min.js"></script>
+  <script src="../../../global/vendor/intro-js/intro.js"></script>
+  <script src="../../../global/vendor/screenfull/screenfull.js"></script>
+  <script src="../../../global/vendor/slidepanel/jquery-slidePanel.js"></script>
+
+  <!-- !PageSpecific Plugins -->
+  <script src="../../../global/vendor/bootbox/bootbox.js"></script>
+  <script src="../../../global/vendor/bootstrap-sweetalert/sweet-alert.js"></script>
+  <script src="../../../global/vendor/toastr/toastr.js"></script>
+
+  <!-- Scripts -->
+
+  <script src="../../../global/js/core.js"></script>
+  <script src="../../assets/js/site.js"></script>
+
+  <script src="../../assets/js/sections/menu.js"></script>
+  <script src="../../assets/js/sections/menubar.js"></script>
+  <script src="../../assets/js/sections/sidebar.js"></script>
+
+  <script src="../../../global/js/configs/config-colors.js"></script>
+  <script src="../../assets/js/configs/config-tour.js"></script>
+
+  <script src="../../../global/js/components/asscrollable.js"></script>
+  <script src="../../../global/js/components/animsition.js"></script>
+  <script src="../../../global/js/components/slidepanel.js"></script>
+  <script src="../../../global/js/components/switchery.js"></script>
+  <script src="../../../global/js/components/tabs.js"></script>
+
+  <!-- !PageSpecific Scripts -->
+  <script src="../../../global/js/components/bootbox.js"></script>
+  <script src="../../../global/js/components/bootstrap-sweetalert.js"></script>
+  <script src="../../../global/js/components/toastr.js"></script>
+
+  <script src="../../assets/examples/js/advanced/bootbox-sweetalert.js"></script>
+
+</body>
+</html>

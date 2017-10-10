@@ -1,0 +1,10 @@
+{
+    "CreateFeatureGroup": "!ro!Create featureGroup", 
+    "FeatureGroupAddBootstrapMeta": "!ro!Bootstrap meta", 
+    "FeatureGroupAddCreateDate": "!ro!Create date", 
+    "FeatureGroupAddLastUpdateId": "!ro!Last update id", 
+    "FeatureGroupAddName": "!ro!Name", 
+    "FeatureGroupAddUpdateDate": "!ro!Update date", 
+    "objectName": "!ro!featureGroupAdd", 
+    "welcomeExample": "!ro!Welcome to the {page} page!"
+}

@@ -1,0 +1,15 @@
+{
+    "FileObjectModifyAccountId": "Account id", 
+    "FileObjectModifyContent": "Content", 
+    "FileObjectModifyCreateDate": "Create date", 
+    "FileObjectModifyLastUpdateId": "Last update id", 
+    "FileObjectModifyMD5": "MD 5", 
+    "FileObjectModifyModified": "Modified", 
+    "FileObjectModifyModifiedUnix": "Modified unix", 
+    "FileObjectModifyName": "Name", 
+    "FileObjectModifySize": "Size", 
+    "FileObjectModifyType": "Type", 
+    "FileObjectModifyUpdateDate": "Update date", 
+    "objectName": "fileObjectModify", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

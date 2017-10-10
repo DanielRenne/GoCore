@@ -1,0 +1,18 @@
+{
+    "AddFeatureGroup": "Adjunk hozz\u00e1 egy \u00faj FeatureGroup", 
+    "AreYouSure": "Are you sure you wish to delete {total} featureGroups?", 
+    "AreYouSureInline": "Biztos, hogy t\u00f6r\u00f6lni szeretn\u00e9 ezt a featureGroup?", 
+    "ConfirmDeleteMessage": "Biztos, hogy t\u00f6r\u00f6lni szeretn\u00e9 ezt a featureGroup? Ez a m\u0171velet nem vonhat\u00f3 vissza.", 
+    "CopyFeatureGroup": "M\u00e1sol\u00e1s featureGroup", 
+    "DeleteFeatureGroup": "T\u00f6rl\u00e9s featureGroup", 
+    "EditFeatureGroup": "Szerkeszt\u00e9s featureGroup", 
+    "FeatureGroupListHeaderLastUpdateId": "Utols\u00f3 friss\u00edt\u00e9s id", 
+    "FeatureGroupListHeaderName": "N\u00e9v", 
+    "FeatureGroupListHeaderUpdateDate": "Friss\u00edt\u00e9s d\u00e1tuma", 
+    "FeatureGroupListToolTipLastUpdateId": "Utols\u00f3 friss\u00edt\u00e9s id", 
+    "FeatureGroupListToolTipName": "N\u00e9v", 
+    "FeatureGroupListToolTipUpdateDate": "Friss\u00edt\u00e9s d\u00e1tuma", 
+    "ShowingAllFeatureGroups": "Mutatja Az \u00d6sszes FeatureGroups", 
+    "objectName": "featureGroupList", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

@@ -1,0 +1,12 @@
+{
+    "CreateRole": "!ja!Create role", 
+    "RoleAddAccountId": "!ja!Account id", 
+    "RoleAddCanDelete": "!ja!Can delete", 
+    "RoleAddCreateDate": "!ja!Create date", 
+    "RoleAddLastUpdateId": "!ja!Last update id", 
+    "RoleAddName": "!ja!Name", 
+    "RoleAddShortName": "!ja!Short name", 
+    "RoleAddUpdateDate": "!ja!Update date", 
+    "objectName": "!ja!roleAdd", 
+    "welcomeExample": "!ja!Welcome to the {page} page!"
+}

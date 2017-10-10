@@ -1,0 +1,10 @@
+{
+    "CreateFeatureGroup": "!ja!Create featureGroup", 
+    "FeatureGroupAddBootstrapMeta": "!ja!Bootstrap meta", 
+    "FeatureGroupAddCreateDate": "!ja!Create date", 
+    "FeatureGroupAddLastUpdateId": "!ja!Last update id", 
+    "FeatureGroupAddName": "!ja!Name", 
+    "FeatureGroupAddUpdateDate": "!ja!Update date", 
+    "objectName": "!ja!featureGroupAdd", 
+    "welcomeExample": "!ja!Welcome to the {page} page!"
+}

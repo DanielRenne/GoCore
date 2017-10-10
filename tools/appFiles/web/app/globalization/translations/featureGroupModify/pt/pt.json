@@ -1,0 +1,9 @@
+{
+    "FeatureGroupModifyBootstrapMeta": "Bootstrap meta", 
+    "FeatureGroupModifyCreateDate": "Data de cria\u00e7\u00e3o", 
+    "FeatureGroupModifyLastUpdateId": "\u00daltima atualiza\u00e7\u00e3o de identifica\u00e7\u00e3o", 
+    "FeatureGroupModifyName": "Nome", 
+    "FeatureGroupModifyUpdateDate": "Data de atualiza\u00e7\u00e3o", 
+    "objectName": "featureGroupModify", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

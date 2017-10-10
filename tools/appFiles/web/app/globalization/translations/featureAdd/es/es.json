@@ -1,0 +1,13 @@
+{
+    "CreateFeature": "Crear caracter\u00edstica", 
+    "FeatureAddBootstrapMeta": "Bootstrap meta", 
+    "FeatureAddCreateDate": "Fecha de creaci\u00f3n", 
+    "FeatureAddDescription": "Descripci\u00f3n", 
+    "FeatureAddFeatureGroupId": "La caracter\u00edstica de id de grupo", 
+    "FeatureAddKey": "Clave", 
+    "FeatureAddLastUpdateId": "\u00daltima actualizaci\u00f3n de identificaci\u00f3n", 
+    "FeatureAddName": "Nombre", 
+    "FeatureAddUpdateDate": "Fecha de actualizaci\u00f3n", 
+    "objectName": "featureAdd", 
+    "welcomeExample": "Bienvenidos a la {page} p\u00e1gina!"
+}

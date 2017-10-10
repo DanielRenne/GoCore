@@ -1,0 +1,5 @@
+{
+    "ErrorAccountNotFound": "!ar!Failed to find account.", 
+    "objectName": "!ar!accounts", 
+    "welcomeExample": "!ar!Welcome to the {page} page!"
+}

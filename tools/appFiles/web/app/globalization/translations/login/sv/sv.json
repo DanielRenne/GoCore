@@ -1,0 +1,13 @@
+{
+    "AliasDeviceLabel": "* Alias f\u00f6r Enheten", 
+    "Cancel": "Avbryt", 
+    "EnterAlias": "V\u00e4nligen ange ett alias f\u00f6r detta \u00e4r ansluten enhet", 
+    "ErrorNoAlias": "V\u00e4nligen ange ett icke-tomt alias", 
+    "ErrorNoBuildings": "Inga byggnader finns", 
+    "ErrorNoSites": "Inga platser finns", 
+    "ResetPass": "\u00c5terst\u00e4lla L\u00f6senord", 
+    "RoomSync": "Rummet Synkronisering", 
+    "Synchronizing": "Synkronisera", 
+    "UserCanceled": "En anv\u00e4ndare in \u00e5tg\u00e4rder f\u00f6r att synkronisera detta rum, var god f\u00f6rs\u00f6k igen.", 
+    "Waiting": "V\u00e4ntar p\u00e5 Godk\u00e4nnande..."
+}

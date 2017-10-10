@@ -1,0 +1,27 @@
+# Kill hotreload and port 80
+bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/kill_golang
+
+
+whoami=$(whoami)
+if [[ "$whoami" == "root" ]]; then
+    ps -ax | grep webpack-dev-server | awk '{print $1}' | xargs kill > /dev/null 2>&1
+
+    # Kill gulp and goCoreAppTemplate log process
+    ps -ax | grep tail | awk '{print $1}' | xargs kill > /dev/null 2>&1
+
+    # Kill gowatch
+    ps -ax | grep goWatch | awk '{print $1}' | xargs kill > /dev/null 2>&1
+else
+    ps -ax | grep webpack-dev-server | awk '{print $1}' | xargs sudo kill > /dev/null 2>&1
+
+    # Kill gulp and goCoreAppTemplate log process
+    ps -ax | grep tail | awk '{print $1}' | xargs sudo kill > /dev/null 2>&1
+
+    # Kill gowatch
+    ps -ax | grep goWatch | awk '{print $1}' | xargs sudo kill > /dev/null 2>&1
+fi
+
+echo ""
+say "Kill Servers Complete"
+echo "kill_servers Complete!"
+echo ""

@@ -1,0 +1,60 @@
+#!/bin/bash
+set -e
+GREEN="\[$(tput setaf 2)\]"
+NC='\033[0m' # No Color
+cd $GOPATH
+camel=$1
+camelUpper="${1^}"
+base=src/github.com/DanielRenne/goCoreAppTemplate/
+markup=web/app/markup/$camel/
+trans=web/app/globalization/translations/$camel/en
+controllerbase=controllers
+vmbase=viewModel
+jsbase=web/app/javascript
+jspagebase=$jsbase/pages
+js=$jspagebase/$camel
+
+cd src/github.com/DanielRenne/goCoreAppTemplate
+
+git rm -fr $trans
+rm -rf $trans
+git rm -fr $markup
+rm -rf $markup
+git rm -fr $js
+rm -rf $js
+vm="$vmbase/${camel}ViewModel.go"
+git rm -f $vm
+vm="$vmbase/${camel}Constants.go"
+git rm -f $vm
+
+
+ctl="$controllerbase/${camel}Controller.go"
+git rm -f $ctl
+
+ctl="$controllerbase/${camel}GetController.go"
+git rm -f $ctl
+
+
+ctl="$controllerbase/${camel}PostController.go"
+git rm -f $ctl
+
+echo ""
+echo ""
+echo "Manually remove pointers in $base$jsbase/App.js"
+vim "$jsbase/App.js"
+echo ""
+echo ""
+echo "Manually remove pointers in $base$controllerbase/constants.go"
+vim "$controllerbase/constants.go"
+echo ""
+echo ""
+echo "Manually remove pointers in $base$controllerbase/controllers.go"
+vim "$controllerbase/controllers.go"
+echo ""
+echo ""
+echo "Manually remove pointers in $base$vmbase/constants.go"
+vim "$vmbase/constants.go"
+echo ""
+echo ""
+echo "Manually remove pointers in $base$vmbase/viewModel.go"
+vim "$vmbase/viewModel.go"

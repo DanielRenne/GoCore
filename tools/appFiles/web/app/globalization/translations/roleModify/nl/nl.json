@@ -1,0 +1,11 @@
+{
+    "RoleModifyAccountId": "Account-id", 
+    "RoleModifyCanDelete": "Kunt verwijderen", 
+    "RoleModifyCreateDate": "Datum aanmaken", 
+    "RoleModifyLastUpdateId": "Laatste update id", 
+    "RoleModifyName": "Naam", 
+    "RoleModifyShortName": "Korte naam", 
+    "RoleModifyUpdateDate": "Update datum", 
+    "objectName": "roleModify", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

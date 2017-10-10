@@ -1,0 +1,17 @@
+@import "vars.less";
+
+
+.page-header {
+  z-index: 100;
+}
+
+@media screen and (max-width: @screen-xs) {
+	.page-content {
+		.blocks,
+		[class*=blocks-] {
+			li {
+				width: 100%;
+			}
+		}
+	}
+}

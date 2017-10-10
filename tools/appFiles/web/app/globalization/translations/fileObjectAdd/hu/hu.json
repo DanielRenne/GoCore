@@ -1,0 +1,16 @@
+{
+    "CreateFileObject": "Hozzon l\u00e9tre fileObject", 
+    "FileObjectAddAccountId": "Fi\u00f3k azonos\u00edt\u00f3", 
+    "FileObjectAddContent": "Tartalom", 
+    "FileObjectAddCreateDate": "L\u00e9trehoz\u00e1s d\u00e1tuma", 
+    "FileObjectAddLastUpdateId": "Utols\u00f3 friss\u00edt\u00e9s id", 
+    "FileObjectAddMD5": "MD 5", 
+    "FileObjectAddModified": "M\u00f3dos\u00edtott", 
+    "FileObjectAddModifiedUnix": "M\u00f3dos\u00edtott unix", 
+    "FileObjectAddName": "N\u00e9v", 
+    "FileObjectAddSize": "M\u00e9ret", 
+    "FileObjectAddType": "T\u00edpus", 
+    "FileObjectAddUpdateDate": "Friss\u00edt\u00e9s d\u00e1tuma", 
+    "objectName": "fileObjectAdd", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

@@ -1,0 +1,16 @@
+{
+    "AddRoleFeature": "Voeg een nieuwe RoleFeature", 
+    "AreYouSure": "Are you sure you wish to delete {total} roleFeatures?", 
+    "AreYouSureInline": "Weet u zeker dat u wilt verwijderen dit roleFeature?", 
+    "ConfirmDeleteMessage": "Bent u zeker dat u wilt verwijderen in dit roleFeature? Deze actie kan niet ongedaan worden gemaakt.", 
+    "CopyRoleFeature": "Kopieer roleFeature", 
+    "DeleteRoleFeature": "Verwijderen roleFeature", 
+    "EditRoleFeature": "Bewerken roleFeature", 
+    "RoleFeatureListHeaderLastUpdateId": "Laatste update id", 
+    "RoleFeatureListHeaderUpdateDate": "Update datum", 
+    "RoleFeatureListToolTipLastUpdateId": "Laatste update id", 
+    "RoleFeatureListToolTipUpdateDate": "Update datum", 
+    "ShowingAllRoleFeatures": "Met Alle RoleFeatures", 
+    "objectName": "roleFeatureList", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

@@ -1,0 +1,236 @@
+// Name:            Panel
+//
+// Component:       `panel`
+//
+// Modifiers:       `panel-heading`
+//                  `panel-body`
+//                  `panel-footer`
+//                  `panel-title`
+//                  `panel-dec`
+//                  `panel-actions`
+//                  `panel-toolbar`
+//                  `panel-bordered`
+//                  `panel-footer-chart`
+//                  `panel-control`
+//                  `panel-dark`
+//
+// ========================================================================
+
+// Variables
+// ========================================================================
+@panel-desc-color                        : @gray-dark;
+
+@panel-toolbar-color                     : @gray;
+@panel-toolbar-color-hover               : @gray-dark;
+@panel-toolbar-bg                        : transparent;
+@panel-toolbar-border                    : @panel-inner-border;
+
+@panel-dark-text                         : @color-white;
+@panel-dark-border                       : @brand-dark;
+@panel-dark-heading-bg                   : @brand-dark;
+
+@panel-action-color                      : @gray;
+@panel-action-active-color               : @gray-darker;
+@panel-action-hover-color                : @gray-darker;
+
+@panel-colored-title-color               : @inverse;
+@panel-colored-action-color              : @inverse;
+
+
+// Component: Panel
+// ========================================================================
+
+.panel {
+
+  & > .nav-tabs-vertical {
+    .nav-tabs {
+      > li {
+        > a {
+          border-left: none;
+        }
+      }
+
+      &.nav-tabs-reverse {
+        margin-right: -1px;
+        > li {
+          > a {
+            border-right: none;
+          }
+        }
+      }
+    }
+  }
+
+  > .table > tbody:first-child > tr:first-child th,
+  > .table > tbody:first-child > tr:first-child td {
+    border-top: 1px solid @panel-inner-border;
+  }
+}
+
+// Panel Heading
+// ========================================================================
+
+.panel-heading {
+  border-bottom: 1px solid transparent;
+
+  > .nav-tabs {
+    border-bottom: none;
+  }
+}
+
+
+// Panel Body
+// ========================================================================
+
+.panel-body {
+
+  > .list-group-dividered:only-child {
+    > .list-group-item:last-child {
+      border-bottom-color: transparent;
+    }
+  }
+}
+
+// Panel Footer
+// ========================================================================
+
+.panel-footer {
+  border-top: 1px solid transparent;
+
+  .table + & {
+    border-color: @panel-inner-border;
+  }
+}
+
+// Panel Title
+// ========================================================================
+
+.panel-title {
+  color: @headings-color;
+  //font-weight: @font-weight-bold;
+
+  small {
+    color: @panel-desc-color;
+  }
+}
+
+
+// Panel Desc
+// ========================================================================
+
+.panel-desc {
+  color: @panel-desc-color;
+}
+
+
+// Panel Actions
+// ========================================================================
+
+.panel-actions {
+
+  a {
+    color: inherit;
+  }
+
+  .panel-action {
+    color: @panel-action-color;
+    background-color: transparent;
+
+    &:hover {
+      color: @panel-action-hover-color;
+    }
+
+    &:active {
+      color: @panel-action-active-color;
+    }
+  }
+}
+
+
+// Panel Toolbar
+// ========================================================================
+
+.panel-toolbar {
+  background-color: @panel-toolbar-bg;
+  border-bottom: 1px solid @panel-toolbar-border;
+  border-top: 1px solid @panel-toolbar-border;
+
+  .panel-bordered & {
+    border-top-color: transparent;
+  }
+
+  .btn {
+    color: @panel-toolbar-color;
+
+    &:hover, &:active, &.active {
+      color: @panel-toolbar-color-hover;
+    }
+  }
+}
+
+// Modifier: `panel-control`
+// ========================================================================
+
+.panel-control {
+  border: none;
+}
+
+// Modifier: `panel-bordered`
+// ========================================================================
+
+.panel-bordered {
+  > .panel-heading {
+    border-bottom: 1px solid @panel-inner-border;
+  }
+
+  > .panel-footer {
+    border-top: 1px solid @panel-inner-border;
+  }
+
+  > .table > tbody:first-child > tr:first-child th,
+  > .table > tbody:first-child > tr:first-child td {
+    border-top: 0;
+  }
+}
+
+// Color Modifier
+// ========================================================================
+
+// Modifier: `panel-transparent`
+// ----------------------------
+.panel.panel-transparent {
+  background: transparent;
+  border-color: transparent;
+
+  > .panel-heading, > .panel-footer {
+    border-color: transparent;
+  }
+}
+
+// Modifier: `panel-dark`
+// -------------------------
+.panel-dark {
+  .panel-variant(@panel-dark-border; @panel-dark-text; @panel-dark-heading-bg; @panel-dark-border);
+}
+
+.panel-primary,
+.panel-info,
+.panel-success,
+.panel-warning,
+.panel-danger,
+.panel-dark {
+  border: none;
+
+  .panel-heading {
+    border: none;
+  }
+
+  .panel-title {
+    color: @panel-colored-title-color;
+  }
+
+  .panel-action {
+    color: @panel-colored-action-color;
+  }
+}
+

@@ -1,0 +1,181 @@
+@form-material-focus-text:              @brand-primary;
+
+
+@form-material-danger-text:               @form-danger-text;
+@form-material-warning-text:              @form-warning-text;
+@form-material-success-text:              @form-success-text;
+@form-material-info-text:                 @form-info-text;
+
+@form-material-underline-color:           @gray-lighter;
+
+@form-material-floating-label-color:      @gray-dark;
+
+@form-material-disabled-floating-label-color:   @gray-light;
+@form-material-disabled-underline-color:        @gray-light;
+@form-material-disabled-placeholder-color:      @gray-light;
+
+
+// Form material
+// ========================================================================
+.form-material {
+  .form-control {
+    &, &:focus, &.focus {
+      border: 0;
+      box-shadow: none;
+      .form-material-control-underline(@form-material-focus-text, @form-material-underline-color);
+    }
+
+    background-color: transparent;
+    background-color: rgba(0,0,0,0);
+
+    .no-cssgradients & {
+      border-bottom: 2px solid @form-material-underline-color;
+    }
+
+    &::-webkit-input-placeholder {
+      color: @input-color-placeholder;
+    }
+    &::-moz-placeholder {
+      color: @input-color-placeholder;
+    }
+    &:-ms-input-placeholder {
+      color: @input-color-placeholder;
+    }
+
+    &:disabled {
+      &::-webkit-input-placeholder {
+        color: @form-material-disabled-placeholder-color;
+      }
+      &::-moz-placeholder {
+        color: @form-material-disabled-placeholder-color;
+      }
+      &:-ms-input-placeholder {
+        color: @form-material-disabled-placeholder-color;
+      }
+    }
+
+    &:focus, &.focus {
+      background-size: 100% 2px, 100% 1px;
+
+      .no-cssgradients & {
+        background: transparent;
+        border-bottom: 2px solid @form-material-focus-text;
+      }
+    }
+
+    &:disabled,
+    &[disabled],
+    fieldset[disabled] & {
+      background: transparent;
+      background: rgba(0,0,0,0);
+      border-bottom: 1px dashed @form-material-disabled-underline-color;
+
+      ~ .floating-label {
+        color: @form-material-disabled-floating-label-color;
+      }
+    }
+  }
+
+  .floating-label {
+    color: @form-material-floating-label-color;
+  }
+
+  .form-control {
+    &:focus, &.focus {
+      ~ .floating-label {
+        color: @form-material-focus-text;
+      }
+    }
+  }
+
+  // Select
+  select.form-control {
+    border: 0;
+  }
+
+  // Invalid
+  .form-control {
+    &:not(.empty):invalid, &.focus:invalid {
+      ~ .floating-label {
+        color: @form-material-danger-text;
+      }
+    }
+  }
+
+  .form-control:invalid {
+    .form-material-control-underline(@form-material-danger-text, @form-material-underline-color);
+  }
+
+  // States
+  &.form-group {
+    &.has-warning {
+      .form-material-control-validation(@form-material-warning-text, @form-material-underline-color);
+    }
+
+    &.has-error {
+      .form-material-control-validation(@form-material-danger-text, @form-material-underline-color);
+    }
+
+    &.has-success {
+      .form-material-control-validation(@form-material-success-text, @form-material-underline-color);
+    }
+
+    &.has-info {
+      .form-material-control-validation(@form-material-info-text, @form-material-underline-color);
+    }
+  }
+
+  .input-group {
+    .input-group-addon {
+      border: 0;
+      background: transparent;
+    }
+  }
+}
+
+// Mixins
+// ========================================================================
+.form-material-control-validation(@text-color; @border-color: @form-material-underline-color) {
+  .form-control {
+    // box-shadow: none;
+
+    &:focus, &.focus, &:not(.empty) {
+      .form-material-control-underline(@text-color, @border-color);
+
+      .no-cssgradients & {
+        background: transparent;
+        border-bottom: 2px solid @text-color;
+      }
+    }
+
+    &:-webkit-autofill {
+      .form-material-control-underline(@text-color, @border-color);
+
+      .no-cssgradients & {
+        background: transparent;
+        border-bottom: 2px solid @text-color;
+      }
+    }
+  }
+
+  .control-label {
+    color: @text-color;
+  }
+
+  .form-control {
+    &:focus, &.focus, &:not(.empty) {
+      ~ .floating-label {
+        color: @text-color;
+      }
+    }
+    &:-webkit-autofill {
+      ~ .floating-label {
+        color: @text-color;
+      }
+    }
+  }
+}
+
+.form-material-control-underline(@text-color, @border-color) {
+  background-image: linear-gradient(@text-color, @text-color), linear-gradient(@border-color, @border-color);
+}

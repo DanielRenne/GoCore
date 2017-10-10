@@ -1,0 +1,15 @@
+{
+    "FileObjectModifyAccountId": "!ja!Account id", 
+    "FileObjectModifyContent": "!ja!Content", 
+    "FileObjectModifyCreateDate": "!ja!Create date", 
+    "FileObjectModifyLastUpdateId": "!ja!Last update id", 
+    "FileObjectModifyMD5": "!ja!MD 5", 
+    "FileObjectModifyModified": "!ja!Modified", 
+    "FileObjectModifyModifiedUnix": "!ja!Modified unix", 
+    "FileObjectModifyName": "!ja!Name", 
+    "FileObjectModifySize": "!ja!Size", 
+    "FileObjectModifyType": "!ja!Type", 
+    "FileObjectModifyUpdateDate": "!ja!Update date", 
+    "objectName": "!ja!fileObjectModify", 
+    "welcomeExample": "!ja!Welcome to the {page} page!"
+}

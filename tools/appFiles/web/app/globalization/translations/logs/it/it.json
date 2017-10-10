@@ -1,0 +1,12 @@
+{
+    "AutoPaused": "Auto in pausa nuovi registri a causa di scorrimento.", 
+    "AutoPausedNewData": "{dataByte} new logs are ready to view, just click the play button.", 
+    "ClearingLog": "Clearing Log in {sec} seconds", 
+    "LogClear2": "Log data on this screen will clear in {sec} seconds", 
+    "LogClear3": "Please wait, {sec} seconds and it will clear automatically", 
+    "MemUsage": "Memoria Di Utilizzo:", 
+    "Pause": "Pausa", 
+    "Resume": "Riprendere", 
+    "objectName": "i registri di", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

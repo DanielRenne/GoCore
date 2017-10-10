@@ -1,0 +1,32 @@
+set -e
+if [ $# -lt 1 ]; then
+    echo 1>&2 "$0: not enough arguments to call addtranslation"
+    exit 2
+elif [ $# -gt 1 ]; then
+    echo 1>&2 "$0: too many arguments to call addtranslation"
+    exit 2
+else
+    normalized_url="${1/https\:\/\//}"
+    normalized_url="${normalized_url/git\@github\.com\:/github.com/}"
+    normalized_url="${normalized_url/\.git/}"
+    cd /tmp/
+    base=$(basename $1)
+    rm -rf $base
+    git clone $1
+    cd $base
+    commit=$(git rev-parse HEAD)
+    rm -rf .git
+    rm -rf $GOPATH/src/$normalized_url
+    rm -rf $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/vendorPackages/$normalized_url
+    mkdir -p $GOPATH/src/$normalized_url
+    mkdir -p $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/vendorPackages/$normalized_url
+    rsync -rtv . $GOPATH/src/$normalized_url
+    rsync -rtv . $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/vendorPackages/$normalized_url
+    cd $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/vendorPackages/
+    git add -A $normalized_url
+    git commit github-manifest.json $normalized_url/* -m "Vendoring: $normalized_url at rev $commit"
+    python $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/manifest.py $commit $normalized_url
+    rm -rf /tmp/$base
+    bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/build_partial
+    echo "github vendoring complete for rev: $commit on $base!!!"
+fi
