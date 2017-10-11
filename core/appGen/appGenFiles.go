@@ -24,14 +24,16 @@ func createFile(path string, contents string) {
 	}
 }
 
-func copyFolder(path string) {
+func copyFolder(path string) (wasCopied bool) {
 	_, err := os.Stat(serverSettings.APP_LOCATION + path)
 
 	if err != nil {
+		wasCopied = true
 		os.MkdirAll(serverSettings.APP_LOCATION+path, 0777)
 		extensions.CopyFolder(serverSettings.GOCORE_PATH+"/tools/appFiles" + path, serverSettings.APP_LOCATION + path)
 		logger.Message("Created " + path + " in Application.", logger.GREEN)
 	}
+	return
 }
 
 func replacePath(path string, newpath string, newGithubUser string, newProject string) {
@@ -61,15 +63,14 @@ func moveAppFiles() {
 	humanTitle, err := extensions.ReadFile("/tmp/humanTitle")
 	if err != nil {
 		log.Println("error reading humanTitle")
-		os.Exit(1)
 	}
 	parts := strings.Split(serverSettings.APP_LOCATION, "/")
 	appName := parts[len(parts) - 1]
 	githubName := parts[len(parts) - 2]
 	project := githubName + "/" + appName
 	//First check for the WebConfig.json file
-	_, err = os.Stat(serverSettings.APP_LOCATION + "/webConfig.json")
-	if err != nil {
+	_, errNoWebConfig := os.Stat(serverSettings.APP_LOCATION + "/webConfig.json")
+	if errNoWebConfig != nil {
 		extensions.CopyFile(serverSettings.GOCORE_PATH+"/tools/appFiles/webConfig.json", serverSettings.APP_LOCATION+"/webConfig.json")
 		logger.Message("Copied webConfig.json to Application.", logger.GREEN)
 	}
@@ -98,59 +99,91 @@ func moveAppFiles() {
 	if err != nil {
 		os.MkdirAll(serverSettings.APP_LOCATION + "/log/plugins", 0777)
 	}
-	copyFolder("/vendorPackages")
-	copyFolder("/keys")
-	copyFolder("/web")
-	utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/web/app/watchFile.json", "DanielRenne/goCoreAppTemplate", project)
-	utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/web/app/javascript/build-css.sh", "DanielRenne/goCoreAppTemplate", project)
-	replacePath("/web/app/javascript/pages/template", project, githubName, appName)
-	copyFolder("/payloads")
-	copyFolder("/constants")
-	replacePath("/constants", project, githubName, appName)
-	copyFolder("/controllers")
-	copyFolder("/bin")
-	replacePath("/bin", project, githubName, appName)
-	replacePath("/controllers", project, githubName, appName)
-	utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/controllers/homeGetController.go", "-APPNAME", "-" + strings.ToUpper(appName))
-	copyFolder("/cron")
-	replacePath("/cron", project, githubName, appName)
-	copyFolder("/constants")
-	replacePath("/constants", project, githubName, appName)
-	copyFolder("/install")
-	replacePath("/install", project, githubName, appName)
+	var wasCopied bool
+	wasCopied = copyFolder("/vendorPackages")
+	wasCopied = copyFolder("/keys")
+	wasCopied = copyFolder("/web")
+	if wasCopied {
+		utils.ReplaceTokenInFile(serverSettings.APP_LOCATION + "/web/app/watchFile.json", "DanielRenne/goCoreAppTemplate", project)
+		utils.ReplaceTokenInFile(serverSettings.APP_LOCATION + "/web/app/javascript/build-css.sh", "DanielRenne/goCoreAppTemplate", project)
+		replacePath("/web/app/javascript/pages/template", project, githubName, appName)
+		for _, v := range utils.Array("/web/app/manifests", "/web/app/globalization/translations", "/web/app/javascript/pages/logs", "/web/app/javascript/globals", "/web/app/markup/app") {
+			replaceAnything(v, "GoCoreAppHumanName", strings.TrimSpace(string(humanTitle)))
+		}
+	}
+	wasCopied = copyFolder("/payloads")
+	wasCopied = copyFolder("/constants")
+	if wasCopied {
+		replacePath("/constants", project, githubName, appName)
+	}
+	wasCopied = copyFolder("/controllers")
+	if wasCopied {
+		replacePath("/controllers", project, githubName, appName)
+		utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/controllers/homeGetController.go", "goCoreProductName", appName)
+		utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/controllers/homeGetController.go", "-APPNAME", "-" + strings.ToUpper(appName))
+	}
+	wasCopied = copyFolder("/bin")
+	if wasCopied {
+		replacePath("/bin", project, githubName, appName)
+	}
+	wasCopied = copyFolder("/cron")
+	if wasCopied {
+		replacePath("/cron", project, githubName, appName)
+	}
+	wasCopied = copyFolder("/constants")
+	if wasCopied {
+		replacePath("/constants", project, githubName, appName)
+	}
 
-	err = os.Rename(serverSettings.APP_LOCATION+"/install/install.go", serverSettings.APP_LOCATION+"/install/install" + strings.Title(appName) + ".go")
-	if err != nil {
-		log.Println("error renaming install")
-		// not sure why these are failing.  this doesnt make sense.
-		//os.Exit(1)
+	// no web config only do this once when theres no webConfig.  In theory we can go back to the old buildApp if we ever merge to DanielRenne
+	if errNoWebConfig != nil {
+		copyFolder("/install")
+		replacePath("/install", project, githubName, appName)
+		err = os.Rename(serverSettings.APP_LOCATION + "/install/install.go", serverSettings.APP_LOCATION + "/install/install" + strings.Title(appName) + ".go")
+		if err != nil {
+			log.Println("error renaming install")
+			os.Exit(1)
+		}
+		err = os.Rename(serverSettings.APP_LOCATION + "/install", serverSettings.APP_LOCATION + "/install" + strings.Title(appName))
+		if err != nil {
+			log.Println("error renaming install folder")
+			os.Exit(1)
+		}
 	}
-	err = os.Rename(serverSettings.APP_LOCATION+"/install", serverSettings.APP_LOCATION+"/install" + strings.Title(appName))
-	if err != nil {
-		log.Println("error renaming install folder")
-		//os.Exit(1)
+	wasCopied = copyFolder("/br")
+	if wasCopied {
+		replacePath("/br", project, githubName, appName)
 	}
-	copyFolder("/br")
-	replacePath("/br", project, githubName, appName)
-	copyFolder("/scheduleEngine")
-	replacePath("/scheduleEngine", project, githubName, appName)
-	copyFolder("/password")
-	replacePath("/password", project, githubName, appName)
-	copyFolder("/queries")
-	replacePath("/queries", project, githubName, appName)
-	copyFolder("/settings")
-	replacePath("/settings", project, githubName, appName)
-	copyFolder("/sessionFunctions")
-	replacePath("/sessionFunctions", project, githubName, appName)
-	copyFolder("/viewModel")
-	replacePath("/viewModel", project, githubName, appName)
-	copyFolder("/errors")
-	replacePath("/errors", project, githubName, appName)
-	for _, v := range utils.Array("/web/app/manifests", "/web/app/globalization/translations", "/web/app/javascript/pages/logs", "/web/app/javascript/globals", "/web/app/markup/app") {
-		replaceAnything(v, "GoCoreAppHumanName", strings.TrimSpace(string(humanTitle)))
+	wasCopied = copyFolder("/scheduleEngine")
+	if wasCopied {
+		replacePath("/scheduleEngine", project, githubName, appName)
 	}
-	secret := bson.NewObjectId()
-	replaceAnything("/password", "GoCorePasswordSecret", secret.Hex())
+	wasCopied = copyFolder("/password")
+	if wasCopied {
+		replacePath("/password", project, githubName, appName)
+		secret := bson.NewObjectId()
+		replaceAnything("/password", "GoCorePasswordSecret", secret.Hex())
+	}
+	wasCopied = copyFolder("/queries")
+	if wasCopied {
+		replacePath("/queries", project, githubName, appName)
+	}
+	wasCopied = copyFolder("/settings")
+	if wasCopied {
+		replacePath("/settings", project, githubName, appName)
+	}
+	wasCopied = copyFolder("/sessionFunctions")
+	if wasCopied {
+		replacePath("/sessionFunctions", project, githubName, appName)
+	}
+	wasCopied = copyFolder("/viewModel")
+	if wasCopied {
+		replacePath("/viewModel", project, githubName, appName)
+	}
+	wasCopied = copyFolder("/errors")
+	if wasCopied {
+		replacePath("/errors", project, githubName, appName)
+	}
 
 	_, err = os.Stat(serverSettings.APP_LOCATION + "/db")
 
@@ -162,8 +195,6 @@ func moveAppFiles() {
 		extensions.CopyFolder(serverSettings.GOCORE_PATH+"/tools/appFiles/db/bootstrap", serverSettings.APP_LOCATION+"/db/bootstrap")
 		logger.Message("Created db/schemas/1.0.0 in Application.", logger.GREEN)
 	}
-
-	utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/controllers/homeGetController.go", "goCoreProductName", appName)
 
 	_, err = os.Stat(serverSettings.APP_LOCATION + "/models")
 
@@ -182,6 +213,7 @@ Legend:
 
 -`+strings.ToUpper(appName)+` 0.0.1 Firmware
 				[*] First version app notes`)
+
 	createFile("/" + appName + ".go", `
 package main
 
