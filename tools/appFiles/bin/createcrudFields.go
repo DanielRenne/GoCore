@@ -223,7 +223,7 @@ func main() {
 	vm := serverSettings.APP_LOCATION + "/viewModel/" + capCamelPlural + "ImportViewModel.go"
 	list := serverSettings.APP_LOCATION + "/web/app/javascript/pages/" + lowerCamel + "List/" + lowerCamel + "ListComponents.js"
 	modify := serverSettings.APP_LOCATION + "/web/app/javascript/pages/" + lowerCamel + "Modify/" + lowerCamel + "ModifyComponents.js"
-	br := serverSettings.APP_LOCATION + "/controllers/" + lowerCamel + "BusinessRules.go"
+	br := serverSettings.APP_LOCATION + "/controllers/" + lowerCamel + ".go"
 
 	editFields := ""
 	editEvents := ""
