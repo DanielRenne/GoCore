@@ -7,23 +7,6 @@ elif [ $# -gt 3 ]; then
   echo 1>&2 "$0: too many arguments to call add18n"
   exit 2
 else
-  python $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n.py "$1" "$2" "$3"
-  bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/translation_seed "$1"
-  sleep 1
-  python $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/translate_all.py "$1"
-  echo " --- All done! ---"
-fi
-
-
-#!/bin/bash
-set -e
-if [ $# -lt 3 ]; then
-  echo 1>&2 "$0: not enough arguments to call add18n"
-  exit 2
-elif [ $# -gt 3 ]; then
-  echo 1>&2 "$0: too many arguments to call add18n"
-  exit 2
-else
   output=$(python $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n.py "$1" "$2" "$3" "0")
   if [[ "$output" == "TranslationExists" ]]; then
       echo -n "Blast existing translation?" && read statusBlast
