@@ -6,11 +6,11 @@ GREEN="\[$(tput setaf 2)\]"
 
 say "Go Core App compiling"  > /dev/null 2>&1
 
-for ((i=1;i<=45;i++));
+for ((i=1;i<=90;i++));
 do
-   grep "goCoreAppTemplate Started" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/app.log  > /dev/null 2>&1
+   grep "GoCore Application Started" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/app.log  > /dev/null 2>&1
    ret=$?
-   grep "created index for Equipment.ManufacturerId" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/app.log  > /dev/null 2>&1
+   grep "created index for AppErrorHistoryRecord" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/app.log  > /dev/null 2>&1
    ret2=$?
    if [[ "$ret" -eq 0 ]] || [[ "$ret2" -eq 0 ]]; then
      echo -e "${GREEN}>>>>>>>>>>>>>>>>>>GOLANG IS FULLY MOUNTED<<<<<<<<<<<<<<<<<<${NC} "
@@ -26,7 +26,7 @@ do
      echo -e "Golang compiling: (${RED}${i}${NC}) seconds"
 
      if [[ "$ret" -eq 0 ]]; then
-       i=34
+       i=1000
        #break out
        set +e
        say "You broke the build.  Go fix it" > /dev/null 2>&1
@@ -43,7 +43,7 @@ do
    sleep 1
 done
 
-if [[ "$i" -eq "46" ]]; then
+if [[ "$i" -eq "91" ]]; then
   say "Check golang logs.  Probably failed or timed out or is slowly compiling"
 
 fi

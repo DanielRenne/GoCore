@@ -3,7 +3,7 @@ package appGen
 import (
 	"github.com/DanielRenne/GoCore/core/extensions"
 	"github.com/DanielRenne/GoCore/core/logger"
-	"github.com/DanielRenne/GoCore/core/serverSettings"
+	"github.com/cloud-ignite/GoCore/core/serverSettings"
 	"os"
 	"strings"
 	"path/filepath"
@@ -61,7 +61,7 @@ func moveAppFiles() {
 	humanTitle, err := extensions.ReadFile("/tmp/humanTitle")
 	if err != nil {
 		log.Println("error reading humanTitle")
-		return
+		os.Exit(1)
 	}
 	parts := strings.Split(serverSettings.APP_LOCATION, "/")
 	appName := parts[len(parts) - 1]
@@ -122,12 +122,13 @@ func moveAppFiles() {
 	err = os.Rename(serverSettings.APP_LOCATION+"/install/install.go", serverSettings.APP_LOCATION+"/install/install" + strings.Title(appName) + ".go")
 	if err != nil {
 		log.Println("error renaming install")
-		return
+		// not sure why these are failing.  this doesnt make sense.
+		//os.Exit(1)
 	}
 	err = os.Rename(serverSettings.APP_LOCATION+"/install", serverSettings.APP_LOCATION+"/install" + strings.Title(appName))
 	if err != nil {
-		log.Println("error renaming install")
-		return
+		log.Println("error renaming install folder")
+		//os.Exit(1)
 	}
 	copyFolder("/br")
 	replacePath("/br", project, githubName, appName)
