@@ -13,7 +13,7 @@ import (
 )
 
 func (self *-CAPCAMELPLURAL-Controller) Update-CAPCAMEL-Details(context session_functions.RequestContext, state string, respond session_functions.ServerResponse) {
-	
+
 	var vm viewModel.-CAPCAMEL-ModifyViewModel
 	vm.Parse(state)
 	if !session_functions.CheckRoleAccess(context(), constants.FEATURE_-CAPITALIZED-_MODIFY) {
@@ -355,7 +355,7 @@ func (self *-CAPCAMELPLURAL-Controller) Copy-CAPCAMEL-(context session_functions
 		return
 	}
 
-    copyVm, message, err := br.-CAPCAMELPLURAL-.Copy(context, &vm, t)
+    copyVm, message, err := br.-CAPCAMELPLURAL-.Copy(context, vm, t)
 	if err != nil {
 		respond(PARAM_REDIRECT_NONE, message, PARAM_SNACKBAR_TYPE_ERROR, err, PARAM_TRANSACTION_ID_NONE, vm)
 		return
