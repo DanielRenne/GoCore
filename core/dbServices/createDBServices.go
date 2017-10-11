@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/DanielRenne/GoCore/core/extensions"
-	"github.com/DanielRenne/GoCore/core/serverSettings"
+	"github.com/cloud-ignite/GoCore/core/extensions"
+	"github.com/cloud-ignite/GoCore/core/serverSettings"
 	// "fmt"
 	"encoding/base64"
 	"io/ioutil"
@@ -250,7 +250,7 @@ func walkNoSQLVersion(path string, versionDir string) {
 				defer wg.Done()
 				jsonData, err := ioutil.ReadFile(path)
 				if err != nil {
-					color.Red("Reading of " + path + " failed:  " + err.Error())
+					color.Red("Reading in walkNoSQLVersion of " + path + " failed:  " + err.Error())
 					e = err
 				}
 
