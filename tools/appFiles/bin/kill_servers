@@ -22,6 +22,8 @@ else
 fi
 
 echo ""
+set +e
 say "Kill Servers Complete"
+set -e
 echo "kill_servers Complete!"
 echo ""

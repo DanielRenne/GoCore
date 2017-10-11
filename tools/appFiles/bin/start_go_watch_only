@@ -10,5 +10,7 @@ go install github.com/DanielRenne/goWatch
 cd $GOPATH/bin
 go build github.com/DanielRenne/goWatch
 cd $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/
+set +e
 say "Go watch is running."
+set -e
 sudo goWatch watchFile.json > /tmp/goWatch.log 2>&1 &

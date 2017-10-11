@@ -7,13 +7,19 @@ echo "-----$ret----"
 
 if [[ "$ret" -eq 0 ]]; then
     cat $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/db.log
+    set +e
     say "Models successfully rebuilt"
+    set -e
 else
     cat $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/db.log
     if [[ "$1" == "1" ]]; then
+        set +e
         say "Model build for a second time, please inspect why it failed twice and run model build again"
+        set -e
     else
         bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/model_build "1"
+        set +e
         say "Model build failed"
+        set -e
     fi
 fi

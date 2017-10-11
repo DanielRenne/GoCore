@@ -5,4 +5,6 @@ else
     ps -ax | grep goWatch | awk '{print $1}' | xargs sudo kill > /dev/null 2>&1
 fi
 
+set +e
 say "Go Watch was killed"
+set -e

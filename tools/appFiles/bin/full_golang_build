@@ -3,4 +3,6 @@ cd $GOPATH
 cd src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/
 bash build-css.sh
 bash build-reactjs.sh
+set +e
 say "Fully Compiled Distribution Zip Files"
+set -e

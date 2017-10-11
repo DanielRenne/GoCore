@@ -163,7 +163,9 @@ else
 
 
     fi
+    set +e
     say "Create new web page complete"
+    set -e
     bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/create_crud_done &
 
     set +e
