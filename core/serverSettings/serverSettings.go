@@ -137,6 +137,6 @@ func setGoCorePath() {
 	if ok == true {
 		GOCORE_PATH = strings.Replace(filename[strings.Index(filename, "/src")+1:], "/core/serverSettings/serverSettings.go", "", -1)
 	} else {
-		GOCORE_PATH = "src/github.com/DanielRenne/GoCore"
+		GOCORE_PATH = "src/github.com/cloud-ignite/GoCore"
 	}
 }

@@ -1,9 +1,9 @@
 package buildCore
 
 import (
-	"github.com/DanielRenne/GoCore/core/appGen"
-	"github.com/DanielRenne/GoCore/core/dbServices"
-	"github.com/DanielRenne/GoCore/core/serverSettings"
+	"github.com/cloud-ignite/GoCore/core/appGen"
+	"github.com/cloud-ignite/GoCore/core/dbServices"
+	"github.com/cloud-ignite/GoCore/core/serverSettings"
 )
 
 func Initialize(path string, fileName string) {
