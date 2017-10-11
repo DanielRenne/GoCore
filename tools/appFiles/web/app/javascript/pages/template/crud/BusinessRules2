@@ -13,9 +13,9 @@ import (
 	"github.com/pkg/errors"
 )
 
-type -CAPCAMEL-_Br struct{}
+type -CAPCAMELPLURAL-_Br struct{}
 
-func (self -CAPCAMEL-_Br) Create(context session_functions.RequestContext, vm *viewModel.-CAPCAMEL-ModifyViewModel, t *model.Transaction) (message string, err error) {
+func (self -CAPCAMELPLURAL-_Br) Create(context session_functions.RequestContext, vm *viewModel.-CAPCAMEL-ModifyViewModel, t *model.Transaction) (message string, err error) {
 
 	message, err = self.Validate(vm)
 	if err != nil {
@@ -44,7 +44,7 @@ func (self -CAPCAMEL-_Br) Create(context session_functions.RequestContext, vm *v
 
 }
 
-func (self -CAPCAMEL-_Br) Update(context session_functions.RequestContext, vm *viewModel.-CAPCAMEL-ModifyViewModel, t *model.Transaction) (message string, err error) {
+func (self -CAPCAMELPLURAL-_Br) Update(context session_functions.RequestContext, vm *viewModel.-CAPCAMEL-ModifyViewModel, t *model.Transaction) (message string, err error) {
 
 	message, err = self.Validate(vm)
 	if err != nil {
@@ -74,8 +74,8 @@ func (self -CAPCAMEL-_Br) Update(context session_functions.RequestContext, vm *v
 }
 
 
-func (self -CAPCAMEL-_Br) CopyById(context session_functions.RequestContext, copyRowVm string, t *model.Transaction) (copyVm viewModel.-CAPCAMEL-ModifyViewModel, message string, err error) {
-	err = model.-CAPCAMEL-.Query().ById(copyRowVm, &copyVm.-CAPCAMEL-)
+func (self -CAPCAMELPLURAL-_Br) CopyById(context session_functions.RequestContext, copyRowVm string, t *model.Transaction) (copyVm viewModel.-CAPCAMEL-ModifyViewModel, message string, err error) {
+	err = model.-CAPCAMELPLURAL-.Query().ById(copyRowVm, &copyVm.-CAPCAMEL-)
 	if err != nil {
 		err = errors.Wrap(err, core.Debug.ErrLineAndFile(err))
 		message = constants.ERRORS_-CAPITALIZED-_COPY
@@ -84,7 +84,7 @@ func (self -CAPCAMEL-_Br) CopyById(context session_functions.RequestContext, cop
 	return self.Copy(context, copyVm, t)
 }
 
-func (self -CAPCAMEL-_Br) Copy(context session_functions.RequestContext, copyRowVm viewModel.-CAPCAMEL-ModifyViewModel, t *model.Transaction) (copyVm viewModel.-CAPCAMEL-ModifyViewModel, message string, err error) {
+func (self -CAPCAMELPLURAL-_Br) Copy(context session_functions.RequestContext, copyRowVm viewModel.-CAPCAMEL-ModifyViewModel, t *model.Transaction) (copyVm viewModel.-CAPCAMEL-ModifyViewModel, message string, err error) {
 	copyVm = copyRowVm
 	copyVm.-CAPCAMEL-.Id = ""
 
@@ -100,7 +100,7 @@ func (self -CAPCAMEL-_Br) Copy(context session_functions.RequestContext, copyRow
 }
 
 
-func (self -CAPCAMEL-_Br) Delete(context session_functions.RequestContext, vm *viewModel.-CAPCAMEL-ModifyViewModel, t *model.Transaction) (message string, err error) {
+func (self -CAPCAMELPLURAL-_Br) Delete(context session_functions.RequestContext, vm *viewModel.-CAPCAMEL-ModifyViewModel, t *model.Transaction) (message string, err error) {
 	err = vm.-CAPCAMEL-.DeleteWithTran(t)
 
 	if err != nil {
@@ -113,13 +113,13 @@ func (self -CAPCAMEL-_Br) Delete(context session_functions.RequestContext, vm *v
 	return
 }
 
-func (self -CAPCAMEL-_Br) WrapViewModel(-CAPCAMEL-Instance model.-CAPCAMEL-) viewModel.-CAPCAMEL-ModifyViewModel {
+func (self -CAPCAMELPLURAL-_Br) WrapViewModel(-CAPCAMEL-Instance model.-CAPCAMEL-) viewModel.-CAPCAMEL-ModifyViewModel {
 	vm := viewModel.-CAPCAMEL-ModifyViewModel{}
 	vm.-CAPCAMEL- = -CAPCAMEL-Instance
 	return vm
 }
 
-func (self -CAPCAMEL-_Br) Validate(vm *viewModel.-CAPCAMEL-ModifyViewModel) (message string, err error) {
+func (self -CAPCAMELPLURAL-_Br) Validate(vm *viewModel.-CAPCAMEL-ModifyViewModel) (message string, err error) {
 	return
 }
 
