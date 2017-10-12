@@ -255,6 +255,7 @@ func main() {
 
 	err := app.Initialize("` + serverSettings.APP_LOCATION + `", "webConfig.json", "mywebsite.com")
 	settings.Initialize()
+	br.Schedules.UpdateLinuxToGMT()
 
 	if err != nil {
 		//lastError := err.Error()

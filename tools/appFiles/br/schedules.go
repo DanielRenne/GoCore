@@ -30,11 +30,19 @@ type schedule struct {
 
 var timeZone string
 var schedulesLock sync.RWMutex
+var cachedLoc *time.Location
 
 func init() {
 	timeZone = "America/Los_Angeles"
+	cachedLoc, _ = time.LoadLocation(timeZone)
 	scheduleEngine.SetScheduleDay(Schedules.LoadDay)
 	scheduleEngine.SetLocationCallback(Schedules.GetLocation)
+}
+
+func (self schedulesBr) UpdateLinuxToGMT() {
+	if runtime.GOOS == "linux" {
+		SetTimeZone("UTC")
+	}
 }
 
 func (self schedulesBr) LoadDay(t time.Time) {
@@ -49,9 +57,7 @@ func (self schedulesBr) LoadDay(t time.Time) {
 	//session_functions.Log("Loading Daily Schedule", t.String())
 	//tUnix := t.Unix()
 	//
-	//if runtime.GOOS == "linux" {
-	//	SetTimeZone("UTC")
-	//}
+	//self.UpdateLinuxToGMT()
 	//
 	//timeZoneSetting, _ := queries.ServerSettings.ById(constants.SERVER_SETTING_TIMEZONE)
 	//if timeZoneSetting.Value != "" && timeZoneSetting.Value != "0" {
@@ -150,6 +156,7 @@ func (self schedulesBr) TriggerSchedule(x interface{}) {
 	jobId, ok := x.(string)
 	if ok {
 		session_functions.Log("Triggering MacroId", jobId)
+		//go controlEngine.RunMacro(macroId)
 	}
 }
 
@@ -164,17 +171,16 @@ func (self schedulesBr) GetTimeZone() (value string) {
 }
 
 func (self schedulesBr) SetTimeZone(value string) {
-	schedulesLock.RLock()
+	schedulesLock.Lock()
 	timeZone = value
-	schedulesLock.RUnlock()
+	cachedLoc, _ = time.LoadLocation(timeZone)
+	schedulesLock.Unlock()
 	return
 }
 
 func (self schedulesBr) GetLocation() (loc *time.Location) {
-	loc, err := time.LoadLocation(self.GetTimeZone())
-	if err != nil {
-		loc, _ = time.LoadLocation("America/Los_Angeles")
-		self.SetTimeZone("America/Los_Angeles")
-	}
+	schedulesLock.RLock()
+	loc = cachedLoc
+	schedulesLock.RUnlock()
 	return
 }

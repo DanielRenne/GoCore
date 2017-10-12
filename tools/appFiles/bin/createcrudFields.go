@@ -267,6 +267,13 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
+		os.Setenv("TMP_CONTROLLER", lowerCamel+"Add")
+		os.Setenv("TMP_TRANSLATIONKEY", capCamel+"Add"+inputFields[i].Name)
+		os.Setenv("TMP_TRANSLATION", inputFields[i].Label)
+		_, err = exec.Command("bash", "-c", "addenvtranslation").Output()
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	utils.ReplaceTokenInFile(modify, "-TEXT_FIELDS-", editFields)

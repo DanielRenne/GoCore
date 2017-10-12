@@ -17,7 +17,7 @@
 		"Name" : "Time Zone",
 		"Key" : "TimeZone",
 		"Category" : "timeSettings",
-		"Value" : "0",
+		"Value" : "America/Los_Angeles",
 		"CreateDate":"2016-08-26T10:49:04.630536446-04:00",
 		"UpdateDate":"2016-08-26T10:49:04.630536446-04:00",
 		"LastUpdateId":"57d9b383dcba0f51172f1f57",
