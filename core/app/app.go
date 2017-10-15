@@ -22,15 +22,19 @@ import (
 )
 
 type WebSocketRemoval func(conn *WebSocketConnection)
+type customLog func(desc string, message string)
+
+var CustomLog customLog
 
 type WebSocketConnection struct {
 	sync.RWMutex
-	Id            string
-	Connection    *websocket.Conn
-	Req           *http.Request
-	Context       interface{}
-	ContextString string
-	ContextType   string
+	Id               string
+	Connection       *websocket.Conn
+	Req              *http.Request
+	Context          interface{}
+	ContextString    string
+	ContextType      string
+	LastResponseTime time.Time
 }
 
 type WebSocketConnectionCollection struct {
@@ -160,6 +164,9 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 
 	if err != nil {
+		if CustomLog != nil {
+			CustomLog("app->webSocketHandler", "Failed to upgrade http connection to websocket:  "+err.Error())
+		}
 		log.Println("Failed to upgrade http connection to websocket:  " + err.Error())
 		return
 	}
@@ -168,6 +175,7 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context) {
 
 	wsConn := new(WebSocketConnection)
 	wsConn.Connection = conn
+	wsConn.LastResponseTime = time.Now()
 	wsConn.Req = r
 	uuid, err := newUUID()
 	if err == nil {
@@ -177,14 +185,18 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context) {
 		wsConn.Id = uuid
 	}
 
-	// log.Println("Upgrading Websocket")
-	// log.Printf("%+v\n", r)
+	if CustomLog != nil {
+		CustomLog("app->webSocketHandler", "Added Web Socket Connection from "+wsConn.Connection.RemoteAddr().String())
+	}
 
 	//Reader
 	go logger.GoRoutineLogger(func() {
 		for {
 			messageType, p, err := conn.ReadMessage()
 			if err == nil {
+				wsConn.Lock()
+				wsConn.LastResponseTime = time.Now()
+				wsConn.Unlock()
 				go logger.GoRoutineLogger(func() {
 					WebSocketCallbacks.RLock()
 					for _, callback := range WebSocketCallbacks.callbacks {
@@ -195,6 +207,9 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context) {
 					WebSocketCallbacks.RUnlock()
 				}, "GoCore/app.go->webSocketHandler[Callback calls]")
 			} else {
+				if CustomLog != nil {
+					CustomLog("app->deleteWebSocket", "Deleting Web Socket from read Timeout:  "+err.Error()+":  "+wsConn.Connection.RemoteAddr().String())
+				}
 				deleteWebSocket(wsConn)
 				return
 			}
@@ -411,12 +426,58 @@ func PublishWebSocketJSON(key string, v interface{}) {
 	WebSocketConnections.RUnlock()
 }
 
+func SetWebSocketTimeout(timeout int) {
+	defer func() {
+		if recover := recover(); recover != nil {
+			log.Println("Panic Recovered at SetWebSocketTimeout():  ", recover)
+			time.Sleep(time.Millisecond * 3000)
+			SetWebSocketTimeout(timeout)
+			return
+		}
+	}()
+
+	if CustomLog != nil {
+		CustomLog("app->SetWebSocketTimeout", "Checking for Web Socket Timeouts.")
+	}
+
+	var socketsToRemove []*WebSocketConnection
+	WebSocketConnections.RLock()
+	for i := 0; i < len(WebSocketConnections.Connections); i++ {
+		wsConn := WebSocketConnections.Connections[i]
+		wsConn.RLock()
+		lastResponseTime := wsConn.LastResponseTime
+		wsConn.RUnlock()
+
+		if lastResponseTime.Add(time.Millisecond * time.Duration(timeout)).Before(time.Now()) {
+			socketsToRemove = append(socketsToRemove, wsConn)
+		}
+	}
+	WebSocketConnections.RUnlock()
+
+	for i := 0; i < len(socketsToRemove); i++ {
+
+		c := socketsToRemove[i]
+		if CustomLog != nil {
+			CustomLog("app->SetWebSocketTimeout", "Removed Websocket due to timeout from :  "+c.Connection.RemoteAddr().String())
+		}
+		log.Println("Removed Websocket due to timeout from :  " + c.Connection.RemoteAddr().String())
+		deleteWebSocket(c)
+
+	}
+
+	time.Sleep(time.Millisecond * time.Duration(timeout))
+	SetWebSocketTimeout(timeout)
+}
+
 func deleteWebSocket(c *WebSocketConnection) {
 	WebSocketConnections.Lock()
 
 	for i := 0; i < len(WebSocketConnections.Connections); i++ {
 		wsConn := WebSocketConnections.Connections[i]
 		if wsConn.Id == c.Id {
+			if CustomLog != nil {
+				CustomLog("app->deleteWebSocket", "Deleting Web Socket from client:  "+wsConn.Connection.RemoteAddr().String())
+			}
 			log.Println("Deleting Web Socket from client:  " + wsConn.Connection.RemoteAddr().String())
 			WebSocketConnections.Connections = removeWebSocket(WebSocketConnections.Connections, i)
 			if WebSocketRemovalCallback != nil {
