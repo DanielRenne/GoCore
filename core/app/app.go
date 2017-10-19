@@ -359,7 +359,6 @@ func ReplyToWebSocket(conn *WebSocketConnection, data []byte) {
 	go logger.GoRoutineLogger(func() {
 		defer func() {
 			if recover := recover(); recover != nil {
-				conn.WriteLock.Unlock()
 				CustomLog("app->ReplyToWebSocket", "Panic Recovered at ReplyToWebSocket():  "+fmt.Sprintf("%+v", recover))
 			}
 		}()
@@ -385,7 +384,6 @@ func ReplyToWebSocketJSON(conn *WebSocketConnection, v interface{}) {
 	go logger.GoRoutineLogger(func() {
 		defer func() {
 			if recover := recover(); recover != nil {
-				conn.WriteLock.Unlock()
 				CustomLog("app->ReplyToWebSocketJSON", "Panic Recovered at ReplyToWebSocketJSON():  "+fmt.Sprintf("%+v", recover))
 			}
 		}()
@@ -412,7 +410,6 @@ func ReplyToWebSocketPubSub(conn *WebSocketConnection, key string, v interface{}
 	go func() {
 		defer func() {
 			if recover := recover(); recover != nil {
-				conn.WriteLock.Unlock()
 				CustomLog("app->ReplyToWebSocketPubSub", "Panic Recovered at ReplyToWebSocketPubSub():  "+fmt.Sprintf("%+v", recover))
 			}
 		}()
@@ -440,7 +437,6 @@ func BroadcastWebSocketData(data []byte) {
 		go logger.GoRoutineLogger(func() {
 			defer func() {
 				if recover := recover(); recover != nil {
-					conn.WriteLock.Unlock()
 					CustomLog("app->BroadcastWebSocketData", "Panic Recovered at BroadcastWebSocketData():  "+fmt.Sprintf("%+v", recover))
 				}
 			}()
@@ -467,7 +463,6 @@ func BroadcastWebSocketJSON(v interface{}) {
 		go logger.GoRoutineLogger(func() {
 			defer func() {
 				if recover := recover(); recover != nil {
-					conn.WriteLock.Unlock()
 					CustomLog("app->BroadcastWebSocketJSON", "Panic Recovered at BroadcastWebSocketJSON():  "+fmt.Sprintf("%+v", recover))
 				}
 			}()
@@ -502,7 +497,6 @@ func PublishWebSocketJSON(key string, v interface{}) {
 		go logger.GoRoutineLogger(func() {
 			defer func() {
 				if recover := recover(); recover != nil {
-					conn.WriteLock.Unlock()
 					CustomLog("app->PublishWebSocketJSON", "Panic Recovered at PublishWebSocketJSON():  "+fmt.Sprintf("%+v", recover))
 				}
 			}()
@@ -590,7 +584,6 @@ func deleteWebSocket(c *WebSocketConnection) {
 		go func() {
 			defer func() {
 				if recover := recover(); recover != nil {
-					WebSocketConnections.Unlock()
 					CustomLog("app->deleteWebSocket", "Panic Recovered at deleteWebSocket():  "+fmt.Sprintf("%+v", recover))
 					return
 				}
