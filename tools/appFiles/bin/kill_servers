@@ -11,6 +11,9 @@ if [[ "$whoami" == "root" ]]; then
 
     # Kill gowatch
     ps -ax | grep goWatch | awk '{print $1}' | xargs kill > /dev/null 2>&1
+
+    # Kill clear_npmlogs_and_check_errors
+    ps -ax | grep clear_npmlogs_and_check_errors | awk '{print $1}' | xargs kill > /dev/null 2>&1
 else
     ps -ax | grep webpack-dev-server | awk '{print $1}' | xargs sudo kill > /dev/null 2>&1
 
@@ -19,6 +22,9 @@ else
 
     # Kill gowatch
     ps -ax | grep goWatch | awk '{print $1}' | xargs sudo kill > /dev/null 2>&1
+
+    # Kill clear_npmlogs_and_check_errors
+    ps -ax | grep clear_npmlogs_and_check_errors | awk '{print $1}' | xargs sudo kill > /dev/null 2>&1
 fi
 
 echo ""
