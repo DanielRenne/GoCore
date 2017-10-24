@@ -1,58 +1,12 @@
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 GREEN="\[$(tput setaf 2)\]"
-
 cd $GOPATH
 echo ""
 echo ">>>>>>>>>>>>>>>>>>  Generating gocore models <<<<<<<<<<<<<<<<<<"
 bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/model_build
-
 bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/kill_servers
-cd $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript
-ret=$?
-echo ""
-echo -e ">>>>>>>>>>>>>>>>>>  Out = ${RED}$ret${NC} <<<<<<<<<<<<<<<<<<"
-if [[ "$ret" -eq 0 ]]; then
 cd $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app
 npm start > $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log 2>&1 &
-NPM_PID=$!
 bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/go_core_app_run &
-
-for ((i=1;i<=150;i++));
-do
-   grep "webpack: Compiled successfully." $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log  > /dev/null 2>&1
-   ret=$?
-   grep "webpack: bundle is now VALID" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log  > /dev/null 2>&1
-   ret2=$?
-   if [[ "$ret" -eq 0 ]] || [[ "$ret2" -eq 0 ]]; then
-       echo -e "${GREEN}>>>>>>>>>>>>>>>>>>NPM HOTRELOAD IS FULLY MOUNTED<<<<<<<<<<<<<<<<<<${NC} "
-       grep "ERROR in" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log  > /dev/null 2>&1
-       ret=$?
-       i=100
-       grep "SyntaxError" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log  > /dev/null 2>&1
-       ret2=$?
-       if [[ "$ret" -eq 0 ]] || [[ "$ret2" -eq 0 ]]; then
-         echo -e "${RED}>>>>>>>>>>>>>>>>>> Webpack has errors in your JSX!!!! <<<<<<<<<<<<<<<<<<${NC}"
-         say "Errors in React"  > /dev/null 2>&1
-         echo -n "When ready to see full webpack log:"
-         read none
-         grep "ERROR in" -A50 $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log
-         bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/kill_servers
-         if [ "$(uname)" == "Darwin" ]; then
-           open -a TextEdit $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log &
-         #elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-           #gedit $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log &
-         fi
-       else
-         say "JS compiled."  > /dev/null 2>&1
-         bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/start_go_watch_only
-         tail -f $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/app.log
-       fi
-   else
-     awk '/./{line=$0} END{print line}' $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log
-   fi
-   sleep 1
-done
-else
-  say "Gopher is broken"
-fi
+bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/clear_npmlogs_and_check_errors &
