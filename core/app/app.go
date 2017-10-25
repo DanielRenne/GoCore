@@ -21,7 +21,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-type WebSocketRemoval func(conn *WebSocketConnection)
+type WebSocketRemoval func(info WebSocketConnectionMeta)
 type customLog func(desc string, message string)
 
 var CustomLog customLog
@@ -598,15 +598,19 @@ func deleteWebSocket(c *WebSocketConnection) {
 			WebSocketConnections.Connections = removeWebSocket(WebSocketConnections.Connections, index)
 
 			if WebSocketRemovalCallback != nil {
-				go func(c *WebSocketConnection) {
-					defer func() {
-						if recover := recover(); recover != nil {
-							log.Println("Panic Recovered at deleteWebSocket():  ", recover)
-							return
-						}
-					}()
-					WebSocketRemovalCallback(c)
-				}(c)
+				info, ok := GetWebSocketMeta(c.Id)
+				if ok {
+					go func(c *WebSocketConnection) {
+						defer func() {
+							if recover := recover(); recover != nil {
+								log.Println("Panic Recovered at deleteWebSocket():  ", recover)
+								return
+							}
+						}()
+						WebSocketRemovalCallback(info)
+					}(c)
+				}
+
 			}
 
 			if idToRemove != "" {
