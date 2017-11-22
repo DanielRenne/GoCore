@@ -863,7 +863,7 @@ func genNoSQLSchema(collectionName string, schema NOSQLSchema, driver string, sc
 		val += "} `json:\"Joins\" bson:\"-\"`\n\n"
 	}
 
-	val += "\n\t sync.RWMutex `bson:\"-\"`\n"
+	// val += "\n\t sync.RWMutex `bson:\"-\"`\n"
 
 	val += "\n}\n\n"
 
