@@ -36,9 +36,12 @@ type routerGroup struct {
 
 var initializedRouterGroups []routerGroup
 var hasInitialized bool
+var ginCookieDomain string
 
 func Initialize(mode string, cookieDomain string) {
 	gin.SetMode(mode)
+
+	ginCookieDomain = cookieDomain
 
 	if serverSettings.WebConfig.Application.CustomGinLogger {
 		Router = gin.New()
@@ -49,19 +52,12 @@ func Initialize(mode string, cookieDomain string) {
 
 	store := sessions.NewCookieStore([]byte(serverSettings.WebConfig.Application.SessionKey))
 	store.Options(sessions.Options{MaxAge: 86400 * serverSettings.WebConfig.Application.SessionExpirationDays,
-		Secure: serverSettings.WebConfig.Application.SessionSecureCookie,
-		Domain: cookieDomain})
-
-	store2 := sessions.NewCookieStore([]byte(serverSettings.WebConfig.Application.SessionKey))
-	store2.Options(sessions.Options{MaxAge: 86400 * serverSettings.WebConfig.Application.SessionExpirationDays,
 		Secure: serverSettings.WebConfig.Application.SessionSecureCookie})
 
 	if serverSettings.WebConfig.Application.SessionName != "" {
 		Router.Use(sessions.Sessions(serverSettings.WebConfig.Application.SessionName, store))
-		Router.Use(sessions.Sessions(serverSettings.WebConfig.Application.SessionName, store2))
 	} else {
 		Router.Use(sessions.Sessions("defaultSession", store))
-		Router.Use(sessions.Sessions(serverSettings.WebConfig.Application.SessionName, store2))
 	}
 
 	//Protect from CSRF Hacking
