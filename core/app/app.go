@@ -519,9 +519,9 @@ func SetWebSocketTimeout(timeout int) {
 		}
 	}()
 
-	if CustomLog != nil {
-		CustomLog("app->SetWebSocketTimeout", "Checking for Web Socket Timeouts.")
-	}
+	// if CustomLog != nil {
+	// 	CustomLog("app->SetWebSocketTimeout", "Checking for Web Socket Timeouts.")
+	// }
 
 	webSocketConnectionsMeta.Range(func(key interface{}, value interface{}) bool {
 		meta, ok := value.(WebSocketConnectionMeta)
