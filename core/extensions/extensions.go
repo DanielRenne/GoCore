@@ -127,6 +127,10 @@ func FloatToString(input_num float64, decimals int) string {
 	return strconv.FormatFloat(input_num, 'f', decimals, 64)
 }
 
+func Round(x, unit float64) float64 {
+	return float64(int64(x/unit+0.5)) * unit
+}
+
 func StringToInt(val string) int {
 
 	r, err := strconv.Atoi(val)
