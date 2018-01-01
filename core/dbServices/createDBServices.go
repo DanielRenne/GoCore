@@ -514,7 +514,7 @@ func generateNoSQLModel(schema NOSQLSchema, collection NOSQLCollection, driver s
 	case DATABASE_DRIVER_BOLTDB:
 		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "encoding/json", "github.com/asdine/storm", timeImport})
 	case DATABASE_DRIVER_MONGODB:
-		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "github.com/DanielRenne/GoCore/core/serverSettings", "encoding/json", "gopkg.in/mgo.v2", "gopkg.in/mgo.v2/bson", "log", "time", "errors", "encoding/base64", "reflect", "github.com/DanielRenne/GoCore/core/utils", "fmt", "github.com/DanielRenne/GoCore/core/logger", "github.com/DanielRenne/GoCore/core", "github.com/DanielRenne/GoCore/core/fileCache", "crypto/md5", "encoding/hex", "sync"})
+		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "github.com/DanielRenne/GoCore/core/serverSettings", "encoding/json", "gopkg.in/mgo.v2", "gopkg.in/mgo.v2/bson", "log", "time", "errors", "encoding/base64", "reflect", "github.com/DanielRenne/GoCore/core/utils", "fmt", "github.com/DanielRenne/GoCore/core/logger", "github.com/DanielRenne/GoCore/core", "github.com/DanielRenne/GoCore/core/fileCache", "github.com/DanielRenne/GoCore/core/store", "crypto/md5", "encoding/hex", "sync"})
 		// val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "encoding/json", "gopkg.in/mgo.v2/bson", "log", "time"})
 	}
 
@@ -673,6 +673,7 @@ func genNoSQLCollection(collection NOSQLCollection, schema NOSQLSchema, driver s
 		val += "collection" + strings.Title(collection.Name) + "Mutex.RUnlock()\n"
 		val += strings.Title(collection.Name) + ".Index()\n"
 		val += strings.Title(collection.Name) + ".Bootstrap()\n"
+		val += "store.RegisterStore(" + strings.Title(collection.Name) + ")\n"
 		val += "}\n\n"
 
 		val += "func (self *" + strings.Title(schema.Name) + ") GetId() string { \n"
@@ -997,6 +998,7 @@ func genNoSQLRuntime(collection NOSQLCollection, schema NOSQLSchema, driver stri
 		val += genNoSQLSchemaRange(collection, schema, driver)
 	}
 
+	val += genById(collection, schema, driver)
 	val += genNOSQLQuery(collection, schema, driver)
 	val += genNoSQLSchemaIndex(collection, schema, driver)
 	val += genNoSQLBootstrap(collection, schema, driver)
@@ -1099,6 +1101,17 @@ func genNoSQLSchemaSave(collection NOSQLCollection, schema NOSQLSchema, driver s
 		val += "}\n"
 		val += "return nil\n"
 	}
+	val += "}\n\n"
+	return val
+}
+
+func genById(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
+	val := ""
+	val += "func (obj model" + strings.Title(collection.Name) + ") ById(objectID interface{}) (value reflect.Value, err error) {\n"
+	val += "var retObj " + strings.Title(schema.Name) + "\n"
+	val += "err = obj.Query().ById(objectID, &retObj)\n"
+	val += "value = reflect.ValueOf(&retObj)\n"
+	val += "return\n"
 	val += "}\n\n"
 	return val
 }
