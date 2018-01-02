@@ -150,7 +150,7 @@ func Set(key string, id string, path string, x interface{}, logger func(string, 
 
 		if i+1 == depth {
 			if properties[i].CanSet() {
-				log.Printf("%s%+v", "Set the Object ", x)
+
 				logger("Setting Field", fmt.Sprintf("%+v", x))
 
 				propType := reflect.TypeOf(properties[i].Interface()).String()
@@ -176,9 +176,8 @@ func Set(key string, id string, path string, x interface{}, logger func(string, 
 	method := obj.MethodByName("Save")
 
 	in := []reflect.Value{}
-	logger("Calling Call", "")
 	values := method.Call(in)
-	logger("Saved", "")
+
 	if values[0].Interface() != nil {
 		err, ok := values[0].Interface().(error)
 		if ok {
