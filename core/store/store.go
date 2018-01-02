@@ -13,7 +13,7 @@ import (
 //OnChange provides inserts, updates, and deletes to the store key.
 var OnChange func(key string, id string, path string, x interface{}, err error)
 
-//Get gets a collection entity by id, path.
+//Get gets a collection entity by id.
 func Get(key string, id string) (x interface{}, err error) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -33,6 +33,64 @@ func Get(key string, id string) (x interface{}, err error) {
 	}
 
 	x = obj.Elem().Interface()
+	return
+}
+
+//GetByPath gets a collection entity-propertie value by id & path.
+func GetByPath(key string, id string, path string) (x interface{}, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("%+v", r)
+			return
+		}
+	}()
+
+	collection, ok := getRegistry(key)
+	if !ok {
+		return
+	}
+
+	obj, err := collection.ById(id)
+	if err != nil {
+		return
+	}
+
+	objElem := obj.Elem()
+
+	fields := strings.Split(path, ".")
+	depth := len(fields)
+
+	properties := []reflect.Value{}
+
+	for i := range fields {
+		fieldName := fields[i]
+		arrayIndex := -1
+
+		if strings.Contains(fieldName, "[") {
+			arraySplit := strings.Split(fieldName, "[")
+			fieldName = arraySplit[0]
+			arrayIndex = extensions.StringToInt(strings.Replace(arraySplit[1], "]", "", -1))
+		}
+
+		var fieldValue reflect.Value
+
+		if i == 0 {
+			fieldValue = objElem.FieldByName(fieldName)
+		} else {
+			fieldValue = properties[i-1].FieldByName(fieldName)
+		}
+
+		if arrayIndex == -1 {
+			properties = append(properties, fieldValue)
+		} else {
+			properties = append(properties, fieldValue.Index(arrayIndex))
+		}
+
+		if i+1 == depth {
+			x = properties[i].Interface()
+		}
+	}
+
 	return
 }
 
@@ -60,8 +118,6 @@ func Set(key string, id string, path string, x interface{}, logger func(string, 
 	}
 
 	objElem := obj.Elem()
-
-	// log.Printf("%s%+v\n", "Original Entity ", objElem)
 
 	fields := strings.Split(path, ".")
 	depth := len(fields)
