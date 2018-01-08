@@ -55,7 +55,7 @@ while true; do
            if [[ "$GOWATCHRUNNING" -eq 0 ]]; then
              GOWATCHRUNNING=1
              bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/start_go_watch_only
-             tail -f $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/velocity.log &
+             tail -f $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/app.log &
            fi
          fi
        fi

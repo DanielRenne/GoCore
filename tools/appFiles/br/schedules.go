@@ -3,7 +3,7 @@ package br
 // commented libraries are for schedules LoadDays
 import (
 	"fmt"
-	//"runtime"
+	"runtime"
 	"runtime/debug"
 	"sync"
 	"time"
