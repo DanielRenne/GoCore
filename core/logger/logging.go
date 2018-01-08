@@ -2,17 +2,18 @@ package logger
 
 import (
 	"fmt"
-	"github.com/DanielRenne/GoCore/core/extensions"
-	"github.com/DanielRenne/GoCore/core/serverSettings"
-	"github.com/DanielRenne/GoCore/core/utils"
-	"github.com/fatih/color"
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
 	"log"
 	"math/rand"
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"github.com/DanielRenne/GoCore/core/extensions"
+	"github.com/DanielRenne/GoCore/core/serverSettings"
+	"github.com/DanielRenne/GoCore/core/utils"
+	"github.com/fatih/color"
+	"github.com/globalsign/mgo"
+	"github.com/globalsign/mgo/bson"
 )
 
 type Color int

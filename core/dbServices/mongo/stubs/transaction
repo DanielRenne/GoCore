@@ -10,8 +10,8 @@ import (
 	"github.com/DanielRenne/GoCore/core/dbServices"
 	"github.com/DanielRenne/GoCore/core"
 
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
+	"github.com/globalsign/mgo"
+	"github.com/globalsign/mgo/bson"
 	"sync"
 )
 
