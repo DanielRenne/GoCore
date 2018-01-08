@@ -9,7 +9,9 @@ import (
 var registry sync.Map
 
 type collectionStore interface {
-	ById(objectID interface{}) (value reflect.Value, err error)
+	ById(objectID interface{}, joins []string) (value reflect.Value, err error)
+	ByFilter(filter map[string]interface{}, inFilter map[string]interface{}, excludeFilter map[string]interface{}, joins []string) (value reflect.Value, err error)
+	ReflectByFieldName(fieldName string, x interface{}) (value reflect.Value)
 }
 
 //RegisterStore will register a new store to the store registry.

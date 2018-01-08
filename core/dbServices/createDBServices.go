@@ -106,6 +106,12 @@ type NOSQLCollection struct {
 	Name       string      `json:"name"`
 	IsSharable bool        `json:"isSharable"`
 	Schema     NOSQLSchema `json:"schema"`
+	FieldTypes map[string]FieldType
+}
+
+type FieldType struct {
+	IsArray bool
+	Value   string
 }
 
 type NOSQLSchemaDB struct {
@@ -504,6 +510,7 @@ func finalizeModelFile(versionDir string) {
 func generateNoSQLModel(schema NOSQLSchema, collection NOSQLCollection, driver string, scs *schemasCreatedSync) string {
 
 	val := ""
+	collection.FieldTypes = make(map[string]FieldType)
 
 	timeImport := ""
 	if checkSchemaForDateTime(schema) {
@@ -519,7 +526,7 @@ func generateNoSQLModel(schema NOSQLSchema, collection NOSQLCollection, driver s
 	}
 
 	val += genNoSQLCollection(collection, schema, driver)
-	val += genNoSQLSchema(collection.Name, schema, driver, scs, 0)
+	val += genNoSQLSchema(&collection, schema, driver, scs, 0)
 	val += genNoSQLRuntime(collection, schema, driver)
 
 	return val
@@ -705,7 +712,7 @@ func checkSchemaForDateTime(schema NOSQLSchema) bool {
 }
 
 // Recursive function that will recurse type object and objectArray's in order to create structs for the model.
-func genNoSQLSchema(collectionName string, schema NOSQLSchema, driver string, scs *schemasCreatedSync, seed int) string {
+func genNoSQLSchema(collection *NOSQLCollection, schema NOSQLSchema, driver string, scs *schemasCreatedSync, seed int) string {
 
 	allCollections.Lock()
 	var el entityList
@@ -719,7 +726,7 @@ func genNoSQLSchema(collectionName string, schema NOSQLSchema, driver string, sc
 	prefix := ""
 
 	if seed > 0 {
-		prefix = strings.Title(collectionName)
+		prefix = strings.Title(collection.Name)
 	}
 
 	scs.Lock()
@@ -750,7 +757,7 @@ func genNoSQLSchema(collectionName string, schema NOSQLSchema, driver string, sc
 
 		if field.Type == "object" || field.Type == "objectArray" {
 			schemasToCreate = append(schemasToCreate, field.Schema)
-			fieldPrefix = strings.Title(collectionName)
+			fieldPrefix = strings.Title(collection.Name)
 		}
 
 		additionalTags := genNoSQLAdditionalTags(field, driver)
@@ -765,7 +772,15 @@ func genNoSQLSchema(collectionName string, schema NOSQLSchema, driver string, sc
 		allCollections.Entities[strings.Title(schema.Name)] = entityConsts
 		allCollections.Unlock()
 
-		val += "\n\t" + strings.Replace(strings.Title(field.Name), " ", "_", -1) + "\t" + genNoSQLFieldType(fieldPrefix, schema, field, driver) + "\t\t`json:\"" + strings.Title(field.Name) + omitEmpty + "\"" + additionalTags + "`"
+		ft := FieldType{}
+		fieldStringType := genNoSQLFieldType(fieldPrefix, schema, field, driver)
+		if strings.Contains(fieldStringType, "[]") {
+			ft.IsArray = true
+		}
+		ft.Value = fieldStringType
+
+		collection.FieldTypes[strings.Replace(strings.Title(field.Name), " ", "_", -1)] = ft
+		val += "\n\t" + strings.Replace(strings.Title(field.Name), " ", "_", -1) + "\t" + fieldStringType + "\t\t`json:\"" + strings.Title(field.Name) + omitEmpty + "\"" + additionalTags + "`"
 	}
 
 	if seed == 0 {
@@ -869,7 +884,7 @@ func genNoSQLSchema(collectionName string, schema NOSQLSchema, driver string, sc
 	val += "\n}\n\n"
 
 	for _, schemaToCreate := range schemasToCreate {
-		val += genNoSQLSchema(collectionName, schemaToCreate, driver, scs, 1)
+		val += genNoSQLSchema(collection, schemaToCreate, driver, scs, 1)
 	}
 
 	return val
@@ -999,6 +1014,7 @@ func genNoSQLRuntime(collection NOSQLCollection, schema NOSQLSchema, driver stri
 	}
 
 	val += genById(collection, schema, driver)
+	val += genByFilter(collection, schema, driver)
 	val += genNOSQLQuery(collection, schema, driver)
 	val += genNoSQLSchemaIndex(collection, schema, driver)
 	val += genNoSQLBootstrap(collection, schema, driver)
@@ -1013,6 +1029,7 @@ func genNoSQLRuntime(collection NOSQLCollection, schema NOSQLSchema, driver stri
 	val += genNoSQLSchemaJoinFields(collection, schema, driver)
 	val += genNoSQLUnMarshal(collection, schema, driver)
 	val += genNoSQLSchemaJSONRuntime(schema)
+	val += genNoSQLSchemaReflectByFieldName(collection)
 
 	return val
 }
@@ -1074,6 +1091,38 @@ func genNoSQLSchemaJSONRuntime(schema NOSQLSchema) string {
 	return val
 }
 
+func genNoSQLSchemaReflectByFieldName(collection NOSQLCollection) string {
+	val := ""
+
+	val += "func (obj model" + strings.Title(collection.Name) + ") ReflectByFieldName(fieldName string, x interface{}) (value reflect.Value){\n\n"
+	val += "switch fieldName{\n"
+	for key, value := range collection.FieldTypes {
+		val += "\tcase \"" + key + "\":\n"
+		if value.IsArray {
+			val += "xArray, _ := x.([]interface{})\n\n"
+
+			val += "arrayToSet := make(" + value.Value + ", len(xArray))\n"
+			val += "for i := range xArray {\n"
+			val += "	inf := xArray[i]\n"
+			val += "	arrayToSet[i], _ = inf.(" + strings.Replace(value.Value, "[]", "", -1) + ")\n"
+			val += "}\n\n"
+
+			val += "value = reflect.ValueOf(arrayToSet)\n"
+		} else {
+			val += "\tobj, _ := x.(" + value.Value + ")\n"
+			val += "\tvalue = reflect.ValueOf(obj)\n"
+			val += "return\n"
+		}
+
+	}
+
+	val += "}\n"
+	val += "return\n"
+	val += "}\n\n"
+
+	return val
+}
+
 func genNoSQLSchemaSave(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
 	val := ""
 	val += "func (self *" + strings.Title(schema.Name) + ") Save() error {\n"
@@ -1107,9 +1156,36 @@ func genNoSQLSchemaSave(collection NOSQLCollection, schema NOSQLSchema, driver s
 
 func genById(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
 	val := ""
-	val += "func (obj model" + strings.Title(collection.Name) + ") ById(objectID interface{}) (value reflect.Value, err error) {\n"
+	val += "func (obj model" + strings.Title(collection.Name) + ") ById(objectID interface{}, joins []string) (value reflect.Value, err error) {\n"
 	val += "var retObj " + strings.Title(schema.Name) + "\n"
-	val += "err = obj.Query().ById(objectID, &retObj)\n"
+	val += "q := obj.Query()\n"
+	val += "for i := range joins {\n"
+	val += "joinValue := joins[i]\n"
+	val += "q = q.Join(joinValue)\n"
+	val += "}\n"
+	val += "err = q.ById(objectID, &retObj)\n"
+	val += "value = reflect.ValueOf(&retObj)\n"
+	val += "return\n"
+	val += "}\n\n"
+	return val
+}
+
+func genByFilter(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
+	val := ""
+	val += "func (obj model" + strings.Title(collection.Name) + ") ByFilter(filter map[string]interface{}, inFilter map[string]interface{}, excludeFilter map[string]interface{}, joins []string) (value reflect.Value, err error) {\n"
+	val += "var retObj " + strings.Title(schema.Name) + "\n"
+	val += "q := obj.Query().Filter(filter)\n"
+	val += "if len(inFilter) > 0 {\n"
+	val += "	q = q.In(inFilter)\n"
+	val += "}\n"
+	val += "if len(excludeFilter) > 0 {\n"
+	val += "	q = q.Exclude(excludeFilter)\n"
+	val += "}\n"
+	val += "for i := range joins {\n"
+	val += "joinValue := joins[i]\n"
+	val += "q = q.Join(joinValue)\n"
+	val += "}\n"
+	val += "err = q.All(&retObj)\n"
 	val += "value = reflect.ValueOf(&retObj)\n"
 	val += "return\n"
 	val += "}\n\n"
