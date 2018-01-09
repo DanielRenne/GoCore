@@ -190,7 +190,11 @@ func Set(key string, id string, path string, x interface{}, logger func(string, 
 					}
 				}
 
-				valueToSet := collection.ReflectByFieldName(fieldName, x)
+				valueToSet, err := collection.ReflectByFieldName(fieldName, x)
+				if err != nil {
+					logger("Error Setting Value to Store", fmt.Sprintf("%+v", valueToSet)+"\nError:  "+err.Error())
+					OnChange(key, id, path, x, err)
+				}
 
 				logger("valueToSet", fmt.Sprintf("%+v", valueToSet))
 				// properties[i].Set(reflect.ValueOf(x))

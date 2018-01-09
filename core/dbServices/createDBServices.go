@@ -774,7 +774,7 @@ func genNoSQLSchema(collection *NOSQLCollection, schema NOSQLSchema, driver stri
 
 		ft := FieldType{}
 		fieldStringType := genNoSQLFieldType(fieldPrefix, schema, field, driver)
-		if strings.Contains(fieldStringType, "[]") {
+		if strings.Contains(fieldStringType, "[]") && !strings.Contains(fieldStringType, "[]byte") {
 			ft.IsArray = true
 		}
 		ft.Value = fieldStringType
@@ -1094,9 +1094,21 @@ func genNoSQLSchemaJSONRuntime(schema NOSQLSchema) string {
 func genNoSQLSchemaReflectByFieldName(collection NOSQLCollection) string {
 	val := ""
 
-	val += "func (obj model" + strings.Title(collection.Name) + ") ReflectByFieldName(fieldName string, x interface{}) (value reflect.Value){\n\n"
+	val += "func (obj model" + strings.Title(collection.Name) + ") ReflectByFieldName(fieldName string, x interface{}) (value reflect.Value, err error){\n\n"
 	val += "switch fieldName{\n"
+
 	for key, value := range collection.FieldTypes {
+
+		valueType := strings.Replace(value.Value, "[]", "", -1)
+		marshalJSON := true
+		if valueType == "string" ||
+			valueType == "bool" ||
+			valueType == "int" ||
+			valueType == "float64" ||
+			valueType == "time.Time" {
+			marshalJSON = false
+		}
+
 		val += "\tcase \"" + key + "\":\n"
 		if value.IsArray {
 			val += "xArray, _ := x.([]interface{})\n\n"
@@ -1104,12 +1116,42 @@ func genNoSQLSchemaReflectByFieldName(collection NOSQLCollection) string {
 			val += "arrayToSet := make(" + value.Value + ", len(xArray))\n"
 			val += "for i := range xArray {\n"
 			val += "	inf := xArray[i]\n"
-			val += "	arrayToSet[i], _ = inf.(" + strings.Replace(value.Value, "[]", "", -1) + ")\n"
+			if marshalJSON {
+				val += "data, _ := json.Marshal(inf)\n"
+				val += "var obj " + valueType + "\n"
+				val += "err = json.Unmarshal(data, &obj)\n"
+				val += "if err != nil {\n"
+				val += "return\n"
+				val += "}\n"
+				val += "	arrayToSet[i] = obj\n"
+			} else {
+				val += "var ok bool\n"
+				val += "	arrayToSet[i], ok = inf.(" + valueType + ")\n"
+				val += "if !ok {\n"
+				val += "err = errors.New(\"Failed to typecast interface.\")\n"
+				val += "return\n"
+				val += "}\n"
+			}
+
 			val += "}\n\n"
 
 			val += "value = reflect.ValueOf(arrayToSet)\n"
 		} else {
-			val += "\tobj, _ := x.(" + value.Value + ")\n"
+			if marshalJSON {
+				val += "data, _ := json.Marshal(x)\n"
+				val += "var obj " + valueType + "\n"
+				val += "err = json.Unmarshal(data, &obj)\n"
+				val += "if err != nil {\n"
+				val += "return\n"
+				val += "}\n"
+			} else {
+				val += "\tobj, ok := x.(" + value.Value + ")\n"
+				val += "if !ok {\n"
+				val += "err = errors.New(\"Failed to typecast interface.\")\n"
+				val += "return\n"
+				val += "}\n"
+			}
+
 			val += "\tvalue = reflect.ValueOf(obj)\n"
 			val += "return\n"
 		}
