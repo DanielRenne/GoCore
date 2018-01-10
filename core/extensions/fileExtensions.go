@@ -51,6 +51,59 @@ func GetAllFilesWithSearch(path string, fileSearch string) (files []os.FileInfo,
 	return files, err
 }
 
+func GetAllFilesDeepWithSearch(path string, fileSearch string) (files []os.FileInfo, err error) {
+	files = make([]os.FileInfo, 0)
+	filesAll, err := ioutil.ReadDir(path)
+	if err == nil {
+		for _, file := range filesAll {
+			if !file.IsDir() {
+				if fileSearch == "" || strings.Index(file.Name(), fileSearch) != -1 {
+					files = append(files, file)
+				}
+			} else {
+				subFiles, err := GetAllFilesDeepWithSearch(path+string(os.PathSeparator)+file.Name(), fileSearch)
+				files = append(files, subFiles...)
+				if err != nil {
+					return files, err
+				}
+			}
+		}
+	}
+	return files, err
+}
+
+func GetAllFilesSearchWithPath(path string, fileSearch string) (files []FilePath, err error) {
+	files = make([]FilePath, 0)
+	filesAll, err := ioutil.ReadDir(path)
+	if err == nil {
+		for _, file := range filesAll {
+			if !file.IsDir() {
+				if fileSearch == "" || strings.Index(file.Name(), fileSearch) != -1 {
+					split := strings.Split(file.Name(), ".")
+					fileType := ""
+					if len(split) > 1 {
+						fileType = split[len(split)-1]
+					}
+
+					fp := FilePath{
+						Name: file.Name(),
+						Path: path,
+						Type: fileType,
+					}
+					files = append(files, fp)
+				}
+			} else {
+				subFiles, err := GetAllFilesSearchWithPath(path+string(os.PathSeparator)+file.Name(), fileSearch)
+				files = append(files, subFiles...)
+				if err != nil {
+					return files, err
+				}
+			}
+		}
+	}
+	return files, err
+}
+
 func GetAllDirs(path string) (files []os.FileInfo, err error) {
 	return GetAllDirWithExclude(path, "")
 }

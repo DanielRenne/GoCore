@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"math/rand"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -18,6 +19,16 @@ type Version struct {
 	MinorString    string
 	RevisionString string
 	Value          string
+}
+
+type FilePath struct {
+	Name string `json:"Name"`
+	Path string `json:"Path"`
+	Type string `json:"Type"`
+}
+
+func (obj *FilePath) ToString() (str string) {
+	return obj.Path + string(os.PathSeparator) + obj.Name + " | " + obj.Type
 }
 
 /*
