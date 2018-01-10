@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	"gopkg.in/mgo.v2/bson"
+	"github.com/globalsign/mgo/bson"
 
 	"xojoc.pw/useragent"
 	"github.com/DanielRenne/GoCore/core"
@@ -536,10 +536,6 @@ func readProductionCachedFile(path string) (data []byte, modTime time.Time, err 
 	}
 	defer f.Close()
 
-	if settings.AppSettings.DeveloperMode {
-		data, err = extensions.ReadFile(path)
-		return
-	}
 	data, err = fileCache.GetFile(path)
 	return
 }
@@ -1211,11 +1207,15 @@ func getMiddleWareErrorJSONPayload(c *gin.Context, path string, err string, hand
 
 }
 
-func handleWebSocketData(conn *app.WebSocketConnection, c *gin.Context, messageType int, data []byte) {
+func handleWebSocketData(conn *app.WebSocketConnection, c *gin.Context, messageType int, id string, data []byte) {
 
 	var apiRequest SocketAPIRequest
 
 	if strings.Contains(string(data), "\"Thank\"") {
+		return
+	}
+
+	if strings.Contains(string(data), "\"data\":{}") { //Empty Request
 		return
 	}
 
@@ -1250,13 +1250,20 @@ func handleWebSocketData(conn *app.WebSocketConnection, c *gin.Context, messageT
 	}
 
 	if apiRequest.ApiRequest.Action == "SetCurrentPage" && apiRequest.ApiRequest.Controller == "App" {
-		conn.Lock()
-		conn.Context = apiRequest.ApiRequest.State
-		conn.Unlock()
+
+		meta, ok := app.GetWebSocketMeta(id)
+		if ok == false {
+			return
+		}
+
+		meta.ContextString = apiRequest.ApiRequest.State
+		meta.ContextType = "ClientStatus"
+		app.SetWebSocketMeta(id, meta)
+
 		return
 	}
-	responseHandler := resp(c, apiRequest.CallbackId)
 
+	responseHandler := resp(c, apiRequest.CallbackId)
 	callState(apiRequest.ApiRequest.Controller, apiRequest.ApiRequest.Action, string(apiRequest.ApiRequest.State[:]), c, responseHandler)
 
 }

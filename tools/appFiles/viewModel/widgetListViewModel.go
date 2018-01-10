@@ -8,7 +8,7 @@ import (
 	"github.com/DanielRenne/GoCore/core/extensions"
 	"github.com/DanielRenne/GoCore/core/utils"
 	"github.com/DanielRenne/goCoreAppTemplate/models/v1/model"
-	"gopkg.in/mgo.v2/bson"
+	"github.com/globalsign/mgo/bson"
 )
 
 type WidgetListUserControlsViewModel struct {

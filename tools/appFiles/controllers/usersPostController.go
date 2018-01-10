@@ -12,7 +12,7 @@ import (
 	"github.com/DanielRenne/goCoreAppTemplate/password"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
-	"gopkg.in/mgo.v2/bson"
+	"github.com/globalsign/mgo/bson"
 )
 
 func (self *UserModifyController) CommonUserValidation(vm *viewModel.UserModifyViewModel) int {

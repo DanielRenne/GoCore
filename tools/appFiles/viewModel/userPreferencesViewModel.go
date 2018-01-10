@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/DanielRenne/goCoreAppTemplate/models/v1/model"
-	_ "gopkg.in/mgo.v2/bson"
+	_ "github.com/globalsign/mgo/bson"
 )
 
 type UserPreferences struct {

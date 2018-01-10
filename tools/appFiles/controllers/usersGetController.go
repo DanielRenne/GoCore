@@ -8,7 +8,7 @@ import (
 	"github.com/DanielRenne/goCoreAppTemplate/queries"
 	"github.com/DanielRenne/goCoreAppTemplate/sessionFunctions"
 	"github.com/DanielRenne/goCoreAppTemplate/viewModel"
-	"gopkg.in/mgo.v2/bson"
+	"github.com/globalsign/mgo/bson"
 	"regexp"
 )
 

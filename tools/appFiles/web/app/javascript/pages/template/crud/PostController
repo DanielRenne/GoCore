@@ -8,7 +8,7 @@ import (
 	"github.com/DanielRenne/goCoreAppTemplate/sessionFunctions"
 	"bytes"
 	"encoding/csv"
-	"gopkg.in/mgo.v2/bson"
+	"github.com/globalsign/mgo/bson"
 	"github.com/DanielRenne/GoCore/core/extensions"
 )
 
