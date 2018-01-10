@@ -20,7 +20,7 @@
 		"releaseMode":"development",
 		"webServiceOnly":false,
 		"versionNumeric": 1,
-		"versionDot": "0.0.1",
+		"versionDot": "0.0.2",
 		"productName": "goCoreProductNameMainProduct",
 		"customGinLogger": true,
 		"disableRootIndex": true,

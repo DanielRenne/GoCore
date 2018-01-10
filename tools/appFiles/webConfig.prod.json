@@ -44,7 +44,7 @@
 		"sessionKey": "goCoreSessionKey",
 		"sessionName": "goCoreProductName",
 		"sessionSecureCookie": false,
-		"versionDot": "1.1.4002",
+		"versionDot": "0.0.2",
 		"versionNumeric": 1,
 		"webServiceOnly": false
 	},

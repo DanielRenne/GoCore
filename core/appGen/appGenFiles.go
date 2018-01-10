@@ -120,7 +120,7 @@ func moveAppFiles() {
 	if wasCopied {
 		replacePath("/controllers", project, githubName, appName)
 		utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/controllers/homeGetController.go", "goCoreProductName", appName)
-		utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/controllers/homeGetController.go", "-APPNAME", "-" + strings.ToUpper(appName))
+		utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/controllers/homeGetController.go", "-APPNAME", "-" + appName)
 	}
 	wasCopied = copyFolder("/bin")
 	if wasCopied {
@@ -211,8 +211,13 @@ Legend:
 				[-] removed function
 				[*] bug fixed and improvement made
 
--`+strings.ToUpper(appName)+` 0.0.1 Firmware
-				[*] First version app notes`)
+-`+appName+` 0.0.2 Firmware
+				[*] Initial Changes By Developer
+
+-`+appName+` 0.0.1 Firmware
+				[*] GoCore Application Generated and Committed Base App
+
+				-APPNAME`)
 
 	createFile("/" + appName + ".go", `
 package main
