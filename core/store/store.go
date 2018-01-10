@@ -14,7 +14,7 @@ import (
 var OnChange func(key string, id string, path string, x interface{}, err error)
 
 //Get gets a collection entity by id.
-func Get(key string, id string) (x interface{}, err error) {
+func Get(key string, id string, joins []string) (x interface{}, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("%+v", r)
@@ -27,7 +27,7 @@ func Get(key string, id string) (x interface{}, err error) {
 		return
 	}
 
-	obj, err := collection.ById(id)
+	obj, err := collection.ById(id, joins)
 	if err != nil {
 		return
 	}
@@ -36,8 +36,8 @@ func Get(key string, id string) (x interface{}, err error) {
 	return
 }
 
-//GetByPath gets a collection entity-propertie value by id & path.
-func GetByPath(key string, id string, path string) (x interface{}, err error) {
+//GetByFilter gets a collection entity by filter.
+func GetByFilter(key string, filter map[string]interface{}, inFilter map[string]interface{}, excludeFilter map[string]interface{}, joins []string) (x interface{}, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("%+v", r)
@@ -50,7 +50,30 @@ func GetByPath(key string, id string, path string) (x interface{}, err error) {
 		return
 	}
 
-	obj, err := collection.ById(id)
+	obj, err := collection.ByFilter(filter, inFilter, excludeFilter, joins)
+	if err != nil {
+		return
+	}
+
+	x = obj.Elem().Interface()
+	return
+}
+
+//GetByPath gets a collection entity-property value by id & path.
+func GetByPath(key string, id string, joins []string, path string) (x interface{}, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("%+v", r)
+			return
+		}
+	}()
+
+	collection, ok := getRegistry(key)
+	if !ok {
+		return
+	}
+
+	obj, err := collection.ById(id, joins)
 	if err != nil {
 		return
 	}
@@ -111,7 +134,7 @@ func Set(key string, id string, path string, x interface{}, logger func(string, 
 		return
 	}
 
-	obj, err := collection.ById(id)
+	obj, err := collection.ById(id, []string{})
 	if err != nil {
 		log.Printf("%s%s", "Error Getting Collection Object by id.  ", err.Error())
 		return
@@ -167,7 +190,15 @@ func Set(key string, id string, path string, x interface{}, logger func(string, 
 					}
 				}
 
-				properties[i].Set(reflect.ValueOf(x))
+				valueToSet, err := collection.ReflectByFieldName(fieldName, x)
+				if err != nil {
+					logger("Error Setting Value to Store", fmt.Sprintf("%+v", valueToSet)+"\nError:  "+err.Error())
+					OnChange(key, id, path, x, err)
+				}
+
+				logger("valueToSet", fmt.Sprintf("%+v", valueToSet))
+				// properties[i].Set(reflect.ValueOf(x))
+				properties[i].Set(valueToSet)
 				logger("Done Setting Field", fmt.Sprintf("%+v", x))
 			}
 		}

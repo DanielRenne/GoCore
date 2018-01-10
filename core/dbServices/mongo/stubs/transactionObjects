@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/DanielRenne/GoCore/core/dbServices"
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
+	"github.com/globalsign/mgo"
+	"github.com/globalsign/mgo/bson"
 	"log"
 )
 

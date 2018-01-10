@@ -23,7 +23,7 @@ import (
 	"github.com/DanielRenne/GoCore/core/serverSettings"
 	"github.com/asaskevich/govalidator"
 	"github.com/fatih/camelcase"
-	"gopkg.in/mgo.v2/bson"
+	"github.com/globalsign/mgo/bson"
 )
 
 const (
