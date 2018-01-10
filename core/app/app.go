@@ -21,16 +21,31 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-type WebSocketRemoval func(conn *WebSocketConnection)
+type WebSocketRemoval func(info WebSocketConnectionMeta)
+type customLog func(desc string, message string)
+
+var CustomLog customLog
 
 type WebSocketConnection struct {
 	sync.RWMutex
-	Id            string
-	Connection    *websocket.Conn
-	Req           *http.Request
-	Context       interface{}
-	ContextString string
-	ContextType   string
+	Id                   string
+	Connection           *websocket.Conn
+	Req                  *http.Request
+	Context              interface{}
+	ContextString        string
+	ContextType          string
+	ContextLock          sync.RWMutex
+	WriteLock            sync.RWMutex
+	LastResponseTime     time.Time
+	LastResponseTimeLock sync.RWMutex
+}
+
+type WebSocketConnectionMeta struct {
+	Conn             *WebSocketConnection
+	Context          interface{}
+	ContextString    string
+	ContextType      string
+	LastResponseTime time.Time
 }
 
 type WebSocketConnectionCollection struct {
@@ -38,9 +53,65 @@ type WebSocketConnectionCollection struct {
 	Connections []*WebSocketConnection
 }
 
+type ConcurrentWebSocketConnectionItem struct {
+	Index int
+	Conn  *WebSocketConnection
+}
+
+func (wscc *WebSocketConnectionCollection) Append(item *WebSocketConnection) {
+	wscc.Lock()
+	defer wscc.Unlock()
+	wscc.Connections = append(wscc.Connections, item)
+}
+
+func (wscc *WebSocketConnectionCollection) Iter() <-chan ConcurrentWebSocketConnectionItem {
+	c := make(chan ConcurrentWebSocketConnectionItem)
+
+	f := func() {
+		wscc.RLock()
+		defer wscc.RUnlock()
+		for index := range wscc.Connections {
+			value := wscc.Connections[index]
+			c <- ConcurrentWebSocketConnectionItem{index, value}
+		}
+		close(c)
+	}
+	go f()
+
+	return c
+}
+
 type WebSocketCallbackSync struct {
 	sync.RWMutex
 	callbacks []WebSocketCallback
+}
+
+type ConcurrentWebSocketCallbackItem struct {
+	Index    int
+	Callback WebSocketCallback
+}
+
+func (self *WebSocketCallbackSync) Append(item WebSocketCallback) {
+	self.RLock()
+	defer self.RUnlock()
+	self.callbacks = append(self.callbacks, item)
+}
+
+func (self *WebSocketCallbackSync) Iter() <-chan ConcurrentWebSocketCallbackItem {
+	c := make(chan ConcurrentWebSocketCallbackItem)
+
+	f := func() {
+		self.Lock()
+		defer self.Unlock()
+		for index := range self.callbacks {
+			value := self.callbacks[index]
+			c <- ConcurrentWebSocketCallbackItem{index, value}
+		}
+		close(c)
+	}
+	go f()
+
+	return c
 }
 
 type WebSocketPubSubPayload struct {
@@ -48,7 +119,7 @@ type WebSocketPubSubPayload struct {
 	Content interface{} `json:"Content"`
 }
 
-type WebSocketCallback func(conn *WebSocketConnection, c *gin.Context, messageType int, data []byte)
+type WebSocketCallback func(conn *WebSocketConnection, c *gin.Context, messageType int, id string, data []byte)
 
 var upgrader = websocket.Upgrader{
 	CheckOrigin:     func(r *http.Request) bool { return true },
@@ -57,6 +128,7 @@ var upgrader = websocket.Upgrader{
 }
 
 var WebSocketConnections WebSocketConnectionCollection
+var webSocketConnectionsMeta sync.Map
 var WebSocketCallbacks WebSocketCallbackSync
 var WebSocketRemovalCallback WebSocketRemoval
 
@@ -148,6 +220,7 @@ func Run() {
 
 func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context) {
 
+	// return
 	defer func() {
 		if recover := recover(); recover != nil {
 			log.Println("Panic Recovered at webSocketHandler():  ", recover)
@@ -160,6 +233,9 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 
 	if err != nil {
+		if CustomLog != nil {
+			CustomLog("app->webSocketHandler", "Failed to upgrade http connection to websocket:  "+err.Error())
+		}
 		log.Println("Failed to upgrade http connection to websocket:  " + err.Error())
 		return
 	}
@@ -177,33 +253,43 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context) {
 		wsConn.Id = uuid
 	}
 
-	// log.Println("Upgrading Websocket")
-	// log.Printf("%+v\n", r)
+	SetWebSocketMeta(uuid, WebSocketConnectionMeta{LastResponseTime: time.Now(), Conn: wsConn})
+
+	if CustomLog != nil {
+		CustomLog("app->webSocketHandler", "Added Web Socket Connection from "+wsConn.Connection.RemoteAddr().String())
+	}
 
 	//Reader
 	go logger.GoRoutineLogger(func() {
 		for {
 			messageType, p, err := conn.ReadMessage()
 			if err == nil {
+
+				meta, ok := GetWebSocketMeta(uuid)
+				if ok {
+					meta.LastResponseTime = time.Now()
+					SetWebSocketMeta(uuid, meta)
+				}
+
 				go logger.GoRoutineLogger(func() {
-					WebSocketCallbacks.RLock()
-					for _, callback := range WebSocketCallbacks.callbacks {
-						if callback != nil {
-							callback(wsConn, c, messageType, p)
+
+					for item := range WebSocketCallbacks.Iter() {
+						if item.Callback != nil {
+							item.Callback(wsConn, c, messageType, uuid, p)
 						}
 					}
-					WebSocketCallbacks.RUnlock()
 				}, "GoCore/app.go->webSocketHandler[Callback calls]")
 			} else {
+				if CustomLog != nil {
+					CustomLog("app->deleteWebSocket", "Deleting Web Socket from read Timeout:  "+err.Error()+":  "+wsConn.Connection.RemoteAddr().String())
+				}
 				deleteWebSocket(wsConn)
 				return
 			}
 		}
 	}, "GoCore/app.go->webSocketHandler[Reader]")
 
-	WebSocketConnections.Lock()
-	WebSocketConnections.Connections = append(WebSocketConnections.Connections, wsConn)
-	WebSocketConnections.Unlock()
+	WebSocketConnections.Append(wsConn)
 }
 
 func loadHTMLTemplates() {
@@ -256,9 +342,7 @@ func initializeStaticRoutes() {
 }
 
 func RegisterWebSocketDataCallback(callback WebSocketCallback) {
-	WebSocketCallbacks.Lock()
-	WebSocketCallbacks.callbacks = append(WebSocketCallbacks.callbacks, callback)
-	WebSocketCallbacks.Unlock()
+	WebSocketCallbacks.Append(callback)
 }
 
 func ReplyToWebSocket(conn *WebSocketConnection, data []byte) {
@@ -270,22 +354,20 @@ func ReplyToWebSocket(conn *WebSocketConnection, data []byte) {
 			return
 		}
 
-		//clear out locks when this is done
-		WebSocketConnections.RUnlock()
 	}()
-	WebSocketConnections.RLock()
-	for _, wsConn := range WebSocketConnections.Connections {
-		ws := wsConn
-		if ws.Id == conn.Id {
-			go logger.GoRoutineLogger(func() {
 
-				ws.Lock()
-				ws.Connection.WriteMessage(websocket.BinaryMessage, data)
-				ws.Unlock()
-			}, "GoCore/app.go->ReplyToWebSocket[WriteMessage]")
-			return
-		}
-	}
+	go logger.GoRoutineLogger(func() {
+		defer func() {
+			if recover := recover(); recover != nil {
+				CustomLog("app->ReplyToWebSocket", "Panic Recovered at ReplyToWebSocket():  "+fmt.Sprintf("%+v", recover))
+			}
+		}()
+		conn.WriteLock.Lock()
+		defer conn.WriteLock.Unlock()
+		conn.Connection.WriteMessage(websocket.BinaryMessage, data)
+
+	}, "GoCore/app.go->ReplyToWebSocket[WriteMessage]")
+
 }
 
 func ReplyToWebSocketJSON(conn *WebSocketConnection, v interface{}) {
@@ -297,42 +379,46 @@ func ReplyToWebSocketJSON(conn *WebSocketConnection, v interface{}) {
 			ReplyToWebSocketJSON(conn, v)
 			return
 		}
-		WebSocketConnections.RUnlock()
 	}()
-	WebSocketConnections.RLock()
-	for _, wsConn := range WebSocketConnections.Connections {
-		ws := wsConn
-		if ws.Id == conn.Id {
-			go logger.GoRoutineLogger(func() {
-				ws.Lock()
-				ws.Connection.SetWriteDeadline(time.Now().Add(time.Duration(10000) * time.Millisecond))
-				ws.Connection.WriteJSON(v)
-				ws.Unlock()
-			}, "GoCore/app.go->ReplyToWebSocketJSON[WriteJSON]")
-			return
-		}
-	}
+
+	go logger.GoRoutineLogger(func() {
+		defer func() {
+			if recover := recover(); recover != nil {
+				CustomLog("app->ReplyToWebSocketJSON", "Panic Recovered at ReplyToWebSocketJSON():  "+fmt.Sprintf("%+v", recover))
+			}
+		}()
+		conn.WriteLock.Lock()
+		defer conn.WriteLock.Unlock()
+		conn.Connection.SetWriteDeadline(time.Now().Add(time.Duration(10000) * time.Millisecond))
+		conn.Connection.WriteJSON(v)
+
+	}, "GoCore/app.go->ReplyToWebSocketJSON[WriteJSON]")
+
 }
 
 func ReplyToWebSocketPubSub(conn *WebSocketConnection, key string, v interface{}) {
-
-	WebSocketConnections.RLock()
-	defer WebSocketConnections.RUnlock()
+	defer func() {
+		if recover := recover(); recover != nil {
+			conn.WriteLock.Unlock()
+		}
+	}()
 
 	var payload WebSocketPubSubPayload
 	payload.Key = key
 	payload.Content = v
 
-	for _, wsConn := range WebSocketConnections.Connections {
-		ws := wsConn
-		if ws.Id == conn.Id {
-			ws.Lock()
-			ws.Connection.SetWriteDeadline(time.Now().Add(time.Duration(10000) * time.Millisecond))
-			ws.Connection.WriteJSON(payload)
-			ws.Unlock()
-			return
-		}
-	}
+	go func() {
+		defer func() {
+			if recover := recover(); recover != nil {
+				CustomLog("app->ReplyToWebSocketPubSub", "Panic Recovered at ReplyToWebSocketPubSub():  "+fmt.Sprintf("%+v", recover))
+			}
+		}()
+		conn.WriteLock.Lock()
+		defer conn.WriteLock.Unlock()
+		conn.Connection.SetWriteDeadline(time.Now().Add(time.Duration(10000) * time.Millisecond))
+		conn.Connection.WriteJSON(payload)
+	}()
+
 }
 
 func BroadcastWebSocketData(data []byte) {
@@ -346,17 +432,20 @@ func BroadcastWebSocketData(data []byte) {
 		}
 	}()
 
-	WebSocketConnections.RLock()
-	for _, wsConn := range WebSocketConnections.Connections {
-		ws := wsConn
+	for item := range WebSocketConnections.Iter() {
+		conn := item.Conn
 		go logger.GoRoutineLogger(func() {
+			defer func() {
+				if recover := recover(); recover != nil {
+					CustomLog("app->BroadcastWebSocketData", "Panic Recovered at BroadcastWebSocketData():  "+fmt.Sprintf("%+v", recover))
+				}
+			}()
+			conn.WriteLock.Lock()
+			defer conn.WriteLock.Unlock()
+			conn.Connection.WriteMessage(websocket.BinaryMessage, data)
 
-			ws.Lock()
-			ws.Connection.WriteMessage(websocket.BinaryMessage, data)
-			ws.Unlock()
 		}, "GoCore/app.go->BroadcastWebSocketData[WriteMessage]")
 	}
-	WebSocketConnections.RUnlock()
 }
 
 func BroadcastWebSocketJSON(v interface{}) {
@@ -368,17 +457,22 @@ func BroadcastWebSocketJSON(v interface{}) {
 			return
 		}
 	}()
-	WebSocketConnections.RLock()
-	for _, wsConn := range WebSocketConnections.Connections {
-		ws := wsConn
+
+	for item := range WebSocketConnections.Iter() {
+		conn := item.Conn
 		go logger.GoRoutineLogger(func() {
-			ws.Lock()
-			ws.Connection.SetWriteDeadline(time.Now().Add(time.Duration(10000) * time.Millisecond))
-			ws.Connection.WriteJSON(v)
-			ws.Unlock()
+			defer func() {
+				if recover := recover(); recover != nil {
+					CustomLog("app->BroadcastWebSocketJSON", "Panic Recovered at BroadcastWebSocketJSON():  "+fmt.Sprintf("%+v", recover))
+				}
+			}()
+			conn.WriteLock.Lock()
+			defer conn.WriteLock.Unlock()
+			conn.Connection.SetWriteDeadline(time.Now().Add(time.Duration(10000) * time.Millisecond))
+			conn.Connection.WriteJSON(v)
+
 		}, "GoCore/app.go->BroadcastWebSocketData[WriteJSON]")
 	}
-	WebSocketConnections.RUnlock()
 }
 
 func PublishWebSocketJSON(key string, v interface{}) {
@@ -398,43 +492,154 @@ func PublishWebSocketJSON(key string, v interface{}) {
 	data, _ := json.Marshal(payload)
 	json.Unmarshal(data, &payload)
 
-	WebSocketConnections.RLock()
-	for _, wsConn := range WebSocketConnections.Connections {
-		ws := wsConn
+	for item := range WebSocketConnections.Iter() {
+		conn := item.Conn
 		go logger.GoRoutineLogger(func() {
-			ws.Lock()
-			ws.Connection.SetWriteDeadline(time.Now().Add(time.Duration(10000) * time.Millisecond))
-			ws.Connection.WriteJSON(payload)
-			ws.Unlock()
+			defer func() {
+				if recover := recover(); recover != nil {
+					CustomLog("app->PublishWebSocketJSON", "Panic Recovered at PublishWebSocketJSON():  "+fmt.Sprintf("%+v", recover))
+				}
+			}()
+			conn.WriteLock.Lock()
+			defer conn.WriteLock.Unlock()
+			conn.Connection.SetWriteDeadline(time.Now().Add(time.Duration(10000) * time.Millisecond))
+			conn.Connection.WriteJSON(payload)
+
 		}, "GoCore/app.go->WriteJSON")
 	}
-	WebSocketConnections.RUnlock()
+}
+
+func SetWebSocketTimeout(timeout int) {
+	defer func() {
+		if recover := recover(); recover != nil {
+			log.Println("Panic Recovered at SetWebSocketTimeout():  ", recover)
+			time.Sleep(time.Millisecond * 3000)
+			SetWebSocketTimeout(timeout)
+			return
+		}
+	}()
+
+	// if CustomLog != nil {
+	// 	CustomLog("app->SetWebSocketTimeout", "Checking for Web Socket Timeouts.")
+	// }
+
+	webSocketConnectionsMeta.Range(func(key interface{}, value interface{}) bool {
+		meta, ok := value.(WebSocketConnectionMeta)
+		if ok {
+			if meta.LastResponseTime.Add(time.Millisecond * time.Duration(timeout)).Before(time.Now()) {
+				if CustomLog != nil {
+					CustomLog("app->SetWebSocketTimeout", "Removed Websocket due to timeout from :  "+meta.Conn.Connection.RemoteAddr().String())
+				}
+				log.Println("Removed Websocket due to timeout from :  " + meta.Conn.Connection.RemoteAddr().String())
+				deleteWebSocket(meta.Conn)
+			}
+		}
+		return true
+	})
+
+	//
+	// var socketsToRemove []*WebSocketConnection
+	//
+	// for item := range WebSocketConnections.Iter() {
+	// 	wsConn := item.Conn
+	// 	wsConn.LastResponseTimeLock.RLock()
+	// 	lastResponseTime := wsConn.LastResponseTime
+	// 	wsConn.LastResponseTimeLock.RUnlock()
+	//
+	// 	if lastResponseTime.Add(time.Millisecond * time.Duration(timeout)).Before(time.Now()) {
+	// 		socketsToRemove = append(socketsToRemove, wsConn)
+	// 	}
+	// }
+	//
+	// for i := 0; i < len(socketsToRemove); i++ {
+	//
+	// 	c := socketsToRemove[i]
+	// 	if CustomLog != nil {
+	// 		CustomLog("app->SetWebSocketTimeout", "Removed Websocket due to timeout from :  "+c.Connection.RemoteAddr().String())
+	// 	}
+	// 	log.Println("Removed Websocket due to timeout from :  " + c.Connection.RemoteAddr().String())
+	// 	deleteWebSocket(c)
+	//
+	// }
+
+	time.Sleep(time.Millisecond * time.Duration(timeout))
+	SetWebSocketTimeout(timeout)
 }
 
 func deleteWebSocket(c *WebSocketConnection) {
-	WebSocketConnections.Lock()
 
-	for i := 0; i < len(WebSocketConnections.Connections); i++ {
-		wsConn := WebSocketConnections.Connections[i]
+	// return
+	index := -1
+	idToRemove := ""
+
+	for item := range WebSocketConnections.Iter() {
+		wsConn := item.Conn
 		if wsConn.Id == c.Id {
-			log.Println("Deleting Web Socket from client:  " + wsConn.Connection.RemoteAddr().String())
-			WebSocketConnections.Connections = removeWebSocket(WebSocketConnections.Connections, i)
-			if WebSocketRemovalCallback != nil {
-				go func(c *WebSocketConnection) {
-					defer func() {
-						if recover := recover(); recover != nil {
-							log.Println("Panic Recovered at deleteWebSocket():  ", recover)
-							return
-						}
-					}()
-					WebSocketRemovalCallback(c)
-				}(wsConn)
-			}
-			i--
+			index = item.Index
+			idToRemove = item.Conn.Id
 		}
 	}
 
-	WebSocketConnections.Unlock()
+	if index > -1 {
+		go func() {
+			defer func() {
+				if recover := recover(); recover != nil {
+					CustomLog("app->deleteWebSocket", "Panic Recovered at deleteWebSocket():  "+fmt.Sprintf("%+v", recover))
+					return
+				}
+			}()
+
+			if CustomLog != nil {
+				CustomLog("app->deleteWebSocket", "Deleting Web Socket from client:  "+c.Connection.RemoteAddr().String())
+			}
+
+			WebSocketConnections.Lock()
+			defer WebSocketConnections.Unlock()
+			WebSocketConnections.Connections = removeWebSocket(WebSocketConnections.Connections, index)
+
+			if WebSocketRemovalCallback != nil {
+				info, ok := GetWebSocketMeta(c.Id)
+				if ok {
+					go func(c *WebSocketConnection) {
+						defer func() {
+							if recover := recover(); recover != nil {
+								log.Println("Panic Recovered at deleteWebSocket():  ", recover)
+								return
+							}
+						}()
+						WebSocketRemovalCallback(info)
+					}(c)
+				}
+
+			}
+
+			if idToRemove != "" {
+				RemoveWebSocketMeta(idToRemove)
+			}
+		}()
+
+	}
+}
+
+func GetWebSocketMeta(id string) (info WebSocketConnectionMeta, ok bool) {
+	result, ok := webSocketConnectionsMeta.Load(id)
+	if ok {
+		info = result.(WebSocketConnectionMeta)
+		return
+	}
+	return
+}
+
+func SetWebSocketMeta(id string, info WebSocketConnectionMeta) {
+	webSocketConnectionsMeta.Store(id, info)
+}
+
+func RemoveWebSocketMeta(id string) {
+	webSocketConnectionsMeta.Delete(id)
+}
+
+func GetAllWebSocketMeta() (items *sync.Map) {
+	return &webSocketConnectionsMeta
 }
 
 func removeWebSocket(s []*WebSocketConnection, i int) []*WebSocketConnection {

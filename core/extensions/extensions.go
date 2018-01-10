@@ -127,6 +127,10 @@ func FloatToString(input_num float64, decimals int) string {
 	return strconv.FormatFloat(input_num, 'f', decimals, 64)
 }
 
+func Round(x, unit float64) float64 {
+	return float64(int64(x/unit+0.5)) * unit
+}
+
 func StringToInt(val string) int {
 
 	r, err := strconv.Atoi(val)
@@ -254,4 +258,22 @@ func ExtractArgsWithinBrackets(str string) (res []string) {
 func Random(min, max int) int {
 	rand.Seed(time.Now().UTC().UnixNano())
 	return rand.Intn(max-min) + min
+}
+
+//Between will return substring between two strings
+func Between(value string, a string, b string) string {
+	// Get substring between two strings.
+	posFirst := strings.Index(value, a)
+	if posFirst == -1 {
+		return ""
+	}
+	posLast := strings.Index(value, b)
+	if posLast == -1 {
+		return ""
+	}
+	posFirstAdjusted := posFirst + len(a)
+	if posFirstAdjusted >= posLast {
+		return ""
+	}
+	return value[posFirstAdjusted:posLast]
 }

@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/DanielRenne/GoCore/core/extensions"
+	"github.com/DanielRenne/GoCore/core/serverSettings"
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
@@ -29,6 +30,11 @@ type LocaleLanguage struct {
 
 func GetSessionKey(c *gin.Context, key string) string {
 	session := sessions.Default(c)
+	if strings.Contains(c.Request.Host, ".com") {
+		session.Options(sessions.Options{MaxAge: 86400 * serverSettings.WebConfig.Application.SessionExpirationDays,
+			Secure: serverSettings.WebConfig.Application.SessionSecureCookie,
+			Domain: ginCookieDomain})
+	}
 	value := session.Get(key)
 	if value == nil {
 		return ""
@@ -39,17 +45,32 @@ func GetSessionKey(c *gin.Context, key string) string {
 
 func SetSessionKey(c *gin.Context, key string, value string) {
 	session := sessions.Default(c)
+	if strings.Contains(c.Request.Host, ".com") {
+		session.Options(sessions.Options{MaxAge: 86400 * serverSettings.WebConfig.Application.SessionExpirationDays,
+			Secure: serverSettings.WebConfig.Application.SessionSecureCookie,
+			Domain: ginCookieDomain})
+	}
 	session.Set(key, value)
 	session.Save()
 }
 
 func SaveSession(c *gin.Context) {
 	session := sessions.Default(c)
+	if strings.Contains(c.Request.Host, ".com") {
+		session.Options(sessions.Options{MaxAge: 86400 * serverSettings.WebConfig.Application.SessionExpirationDays,
+			Secure: serverSettings.WebConfig.Application.SessionSecureCookie,
+			Domain: ginCookieDomain})
+	}
 	session.Save()
 }
 
 func ClearSession(c *gin.Context) {
 	session := sessions.Default(c)
+	if strings.Contains(c.Request.Host, ".com") {
+		session.Options(sessions.Options{MaxAge: 86400 * serverSettings.WebConfig.Application.SessionExpirationDays,
+			Secure: serverSettings.WebConfig.Application.SessionSecureCookie,
+			Domain: ginCookieDomain})
+	}
 	session.Clear()
 }
 

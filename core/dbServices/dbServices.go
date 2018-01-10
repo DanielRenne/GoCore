@@ -14,9 +14,9 @@ import (
 	"github.com/asdine/storm"
 	_ "github.com/denisenkom/go-mssqldb"
 	"github.com/fatih/color"
+	"github.com/globalsign/mgo"
+	"github.com/globalsign/mgo/bson"
 	_ "github.com/go-sql-driver/mysql"
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
 )
 
 var DBMutex *sync.RWMutex
