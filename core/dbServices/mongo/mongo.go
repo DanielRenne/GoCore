@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	_ "github.com/DanielRenne/GoCore/core/dbServices/mongo/acct"
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
+	"github.com/globalsign/mgo"
+	"github.com/globalsign/mgo/bson"
 )
 
 var MongoSession *mgo.Session

@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 	"path/filepath"
-	"gopkg.in/mgo.v2/bson"
+	"github.com/globalsign/mgo/bson"
 	"github.com/DanielRenne/GoCore/core/utils"
 	"log"
 )
@@ -244,7 +244,7 @@ import (
 	"` + strings.Replace(serverSettings.APP_LOCATION, "src/", "", -1) + `/sessionFunctions"
 	"` + strings.Replace(serverSettings.APP_LOCATION, "src/", "", -1) + `/settings"
 	"github.com/gin-gonic/gin"
-	"gopkg.in/mgo.v2"
+	"github.com/globalsign/mgo"
 )
 
 func main() {
