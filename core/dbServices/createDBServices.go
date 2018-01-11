@@ -1014,12 +1014,14 @@ func genNoSQLRuntime(collection NOSQLCollection, schema NOSQLSchema, driver stri
 	}
 
 	val += genById(collection, schema, driver)
+	val += genNewByReflection(collection, schema, driver)
 	val += genByFilter(collection, schema, driver)
 	val += genNOSQLQuery(collection, schema, driver)
 	val += genNoSQLSchemaIndex(collection, schema, driver)
 	val += genNoSQLBootstrap(collection, schema, driver)
 	val += genNoSQLSchemaRunTransaction(collection, schema, driver)
 	val += genNoSQLSchemaNew(collection, schema)
+	val += genNewId(collection, schema, driver)
 	val += genNoSQLSchemaSave(collection, schema, driver)
 	val += genNoSQLSchemaSaveByTran(collection, schema, driver)
 	val += genNoSQLValidate(collection, schema, driver)
@@ -1030,6 +1032,7 @@ func genNoSQLRuntime(collection NOSQLCollection, schema NOSQLSchema, driver stri
 	val += genNoSQLUnMarshal(collection, schema, driver)
 	val += genNoSQLSchemaJSONRuntime(schema)
 	val += genNoSQLSchemaReflectByFieldName(collection)
+	val += genNoSQLSchemaReflectBaseTypeByFieldName(collection)
 
 	return val
 }
@@ -1105,7 +1108,8 @@ func genNoSQLSchemaReflectByFieldName(collection NOSQLCollection) string {
 			valueType == "bool" ||
 			valueType == "int" ||
 			valueType == "float64" ||
-			valueType == "time.Time" {
+			valueType == "time.Time" ||
+			valueType == "bson.ObjectId" {
 			marshalJSON = false
 		}
 
@@ -1165,6 +1169,66 @@ func genNoSQLSchemaReflectByFieldName(collection NOSQLCollection) string {
 	return val
 }
 
+func genNoSQLSchemaReflectBaseTypeByFieldName(collection NOSQLCollection) string {
+	val := ""
+
+	val += "func (obj model" + strings.Title(collection.Name) + ") ReflectBaseTypeByFieldName(fieldName string, x interface{}) (value reflect.Value, err error){\n\n"
+	val += "switch fieldName{\n"
+
+	for key, value := range collection.FieldTypes {
+
+		valueType := strings.Replace(value.Value, "[]", "", -1)
+		marshalJSON := true
+		if valueType == "string" ||
+			valueType == "bool" ||
+			valueType == "int" ||
+			valueType == "float64" ||
+			valueType == "time.Time" ||
+			valueType == "bson.ObjectId" {
+			marshalJSON = false
+		}
+
+		val += "\tcase \"" + key + "\":\n"
+
+		if marshalJSON {
+			val += "if x == nil{\n"
+			val += "obj := " + valueType + "{}\n"
+			val += "\tvalue = reflect.ValueOf(&obj)\n"
+			val += "return\n"
+			val += "}\n\n"
+
+			val += "data, _ := json.Marshal(x)\n"
+			val += "var obj " + valueType + "\n"
+			val += "err = json.Unmarshal(data, &obj)\n"
+			val += "if err != nil {\n"
+			val += "return\n"
+			val += "}\n"
+		} else {
+			val += "if x == nil{\n"
+			val += "var obj " + valueType + "\n"
+			val += "\tvalue = reflect.ValueOf(obj)\n"
+			val += "return\n"
+			val += "}\n\n"
+
+			val += "\tobj, ok := x.(" + valueType + ")\n"
+			val += "if !ok {\n"
+			val += "err = errors.New(\"Failed to typecast interface.\")\n"
+			val += "return\n"
+			val += "}\n"
+		}
+
+		val += "\tvalue = reflect.ValueOf(obj)\n"
+		val += "return\n"
+
+	}
+
+	val += "}\n"
+	val += "return\n"
+	val += "}\n\n"
+
+	return val
+}
+
 func genNoSQLSchemaSave(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
 	val := ""
 	val += "func (self *" + strings.Title(schema.Name) + ") Save() error {\n"
@@ -1208,6 +1272,24 @@ func genById(collection NOSQLCollection, schema NOSQLSchema, driver string) stri
 	val += "err = q.ById(objectID, &retObj)\n"
 	val += "value = reflect.ValueOf(&retObj)\n"
 	val += "return\n"
+	val += "}\n\n"
+	return val
+}
+
+func genNewByReflection(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
+	val := ""
+	val += "func (obj model" + strings.Title(collection.Name) + ") NewByReflection() (value reflect.Value) {\n"
+	val += "retObj := " + strings.Title(schema.Name) + "{}\n"
+	val += "value = reflect.ValueOf(&retObj)\n"
+	val += "return\n"
+	val += "}\n\n"
+	return val
+}
+
+func genNewId(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
+	val := ""
+	val += "func (obj *" + strings.Title(schema.Name) + ") NewId() {\n"
+	val += "obj.Id = bson.NewObjectId()\n"
 	val += "}\n\n"
 	return val
 }
