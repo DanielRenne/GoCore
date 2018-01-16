@@ -21,6 +21,7 @@ import (
 	"github.com/DanielRenne/GoCore/core/extensions"
 	"github.com/DanielRenne/GoCore/core/fileCache"
 	"github.com/DanielRenne/GoCore/core/serverSettings"
+	"github.com/DanielRenne/GoCore/core/store"
 	"github.com/asaskevich/govalidator"
 	"github.com/fatih/camelcase"
 	"github.com/globalsign/mgo/bson"
@@ -226,6 +227,13 @@ func IsValidationError(err error) bool {
 func validateFields(x interface{}, objectToUpdate interface{}, val reflect.Value) error {
 
 	isError := false
+	collection := strings.Replace(reflect.TypeOf(x).String() + "s", "model.", "", -1)
+
+	obj := reflect.ValueOf(objectToUpdate)
+	methodGetID := obj.MethodByName("GetId")
+	inID := []reflect.Value{}
+	objectID := methodGetID.Call(inID)
+
 	for key, value := range dbServices.GetValidationTags(x) {
 
 		fieldValue := dbServices.GetReflectionFieldValue(key, objectToUpdate)
@@ -234,6 +242,9 @@ func validateFields(x interface{}, objectToUpdate interface{}, val reflect.Value
 		if validations[0] != "" {
 			if err := validateRequired(fieldValue, validations[0]); err != nil {
 				dbServices.SetFieldValue("Errors."+key, val, VALIDATION_ERROR_SPECIFIC_REQUIRED)
+				if store.OnChange != nil {
+					store.OnChange(collection, objectID[0].String(), "Errors."+key, VALIDATION_ERROR_SPECIFIC_REQUIRED, nil)
+				}
 				isError = true
 			}
 		}
@@ -244,6 +255,9 @@ func validateFields(x interface{}, objectToUpdate interface{}, val reflect.Value
 			if err != nil {
 				if err.Error() == VALIDATION_ERROR_EMAIL {
 					dbServices.SetFieldValue("Errors."+key, val, VALIDATION_ERROR_SPECIFIC_EMAIL)
+					if store.OnChange != nil {
+						store.OnChange(collection, objectID[0].String(), "Errors."+key, VALIDATION_ERROR_SPECIFIC_EMAIL, nil)
+					}
 				}
 				isError = true
 			}
