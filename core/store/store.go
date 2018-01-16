@@ -402,3 +402,51 @@ func Add(key string, x interface{}, logger func(string, string)) (y interface{},
 	y = obj.Interface()
 	return
 }
+
+//Remove removes an entity from the collection and returns the Id Removed.
+func Remove(key string, id string) (err error) {
+
+	defer func() {
+		if r := recover(); r != nil {
+			if OnChange != nil {
+				OnChange(key, "", "", nil, fmt.Errorf("%+v", r))
+			}
+		}
+	}()
+
+	collection, ok := getRegistry(key)
+	if !ok {
+		return
+	}
+
+	obj, err := collection.ById(id, []string{})
+	if err != nil {
+		return
+	}
+
+	methodGetID := obj.MethodByName("GetId")
+
+	inID := []reflect.Value{}
+	idValues := methodGetID.Call(inID)
+
+	method := obj.MethodByName("Delete")
+	in := []reflect.Value{}
+	values := method.Call(in)
+
+	if values[0].Interface() != nil {
+		errSave, ok := values[0].Interface().(error)
+		if ok {
+			log.Printf("%s%+v\n", "Error Deleting Object.", err.Error())
+			if OnChange != nil {
+				OnChange(key, "", "", nil, err)
+			}
+			err = errSave
+			return
+		}
+	}
+
+	if OnChange != nil {
+		OnChange(key, idValues[0].Interface().(string), "", nil, nil)
+	}
+	return
+}

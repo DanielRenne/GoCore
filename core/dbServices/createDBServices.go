@@ -1297,7 +1297,7 @@ func genNewId(collection NOSQLCollection, schema NOSQLSchema, driver string) str
 func genByFilter(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
 	val := ""
 	val += "func (obj model" + strings.Title(collection.Name) + ") ByFilter(filter map[string]interface{}, inFilter map[string]interface{}, excludeFilter map[string]interface{}, joins []string) (value reflect.Value, err error) {\n"
-	val += "var retObj " + strings.Title(schema.Name) + "\n"
+	val += "var retObj []" + strings.Title(schema.Name) + "\n"
 	val += "q := obj.Query().Filter(filter)\n"
 	val += "if len(inFilter) > 0 {\n"
 	val += "	q = q.In(inFilter)\n"
