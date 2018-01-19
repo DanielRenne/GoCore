@@ -11,6 +11,12 @@ import (
 	"github.com/DanielRenne/GoCore/core/extensions"
 )
 
+const (
+	WebSocketStoreKey = "WebSocket"
+	PathAdd           = "Add"
+	PathRemove        = "Remove"
+)
+
 //OnChange provides inserts, updates, and deletes to the store key.
 var OnChange func(key string, id string, path string, x interface{}, err error)
 
