@@ -149,60 +149,82 @@ func Set(key string, id string, path string, x interface{}, logger func(string, 
 
 	objElem := obj.Elem()
 
-	fields := strings.Split(path, ".")
-	depth := len(fields)
+	if path == "" {
 
-	properties := []reflect.Value{}
+		method := obj.MethodByName("ParseInterface")
 
-	for i := range fields {
-		fieldName := fields[i]
-		arrayIndex := -1
+		in := []reflect.Value{}
+		in = append(in, reflect.ValueOf(x))
+		values := method.Call(in)
 
-		if strings.Contains(fieldName, "[") {
-			arraySplit := strings.Split(fieldName, "[")
-			fieldName = arraySplit[0]
-			arrayIndex = extensions.StringToInt(strings.Replace(arraySplit[1], "]", "", -1))
-		}
-
-		var fieldValue reflect.Value
-
-		if i == 0 {
-			fieldValue = objElem.FieldByName(fieldName)
-		} else {
-			fieldValue = properties[i-1].FieldByName(fieldName)
-		}
-
-		if arrayIndex == -1 {
-			properties = append(properties, fieldValue)
-		} else {
-			properties = append(properties, fieldValue.Index(arrayIndex))
-		}
-
-		if i+1 == depth {
-			if properties[i].CanSet() {
-
-				propType := reflect.TypeOf(properties[i].Interface()).String()
-				logger("PropType", propType)
-				if propType == "int" {
-					floatVal, ok := x.(float64)
-					if ok {
-						x = int(floatVal)
-					}
-				} else if propType == "float64" {
-					intVal, ok := x.(int)
-					if ok {
-						x = float64(intVal)
-					}
-				}
-
-				valueToSet, err := collection.ReflectByFieldName(fieldName, x)
-				if err != nil {
-					logger("Error Setting Value to Store", fmt.Sprintf("%+v", valueToSet)+"\nError:  "+err.Error())
+		if values[0].Interface() != nil {
+			err, ok := values[0].Interface().(error)
+			if ok {
+				logger("Error", err.Error())
+				log.Printf("%s%+v\n", "Error Parsing Object.", err.Error())
+				if OnChange != nil {
 					OnChange(key, id, path, x, err)
 				}
+				return
+			}
+		}
 
-				// properties[i].Set(reflect.ValueOf(x))
-				properties[i].Set(valueToSet)
+	} else {
+		fields := strings.Split(path, ".")
+		depth := len(fields)
+
+		properties := []reflect.Value{}
+
+		for i := range fields {
+			fieldName := fields[i]
+			arrayIndex := -1
+
+			if strings.Contains(fieldName, "[") {
+				arraySplit := strings.Split(fieldName, "[")
+				fieldName = arraySplit[0]
+				arrayIndex = extensions.StringToInt(strings.Replace(arraySplit[1], "]", "", -1))
+			}
+
+			var fieldValue reflect.Value
+
+			if i == 0 {
+				fieldValue = objElem.FieldByName(fieldName)
+			} else {
+				fieldValue = properties[i-1].FieldByName(fieldName)
+			}
+
+			if arrayIndex == -1 {
+				properties = append(properties, fieldValue)
+			} else {
+				properties = append(properties, fieldValue.Index(arrayIndex))
+			}
+
+			if i+1 == depth {
+				if properties[i].CanSet() {
+
+					propType := reflect.TypeOf(properties[i].Interface()).String()
+					logger("PropType", propType)
+					if propType == "int" {
+						floatVal, ok := x.(float64)
+						if ok {
+							x = int(floatVal)
+						}
+					} else if propType == "float64" {
+						intVal, ok := x.(int)
+						if ok {
+							x = float64(intVal)
+						}
+					}
+
+					valueToSet, err := collection.ReflectByFieldName(fieldName, x)
+					if err != nil {
+						logger("Error Setting Value to Store", fmt.Sprintf("%+v", valueToSet)+"\nError:  "+err.Error())
+						OnChange(key, id, path, x, err)
+					}
+
+					// properties[i].Set(reflect.ValueOf(x))
+					properties[i].Set(valueToSet)
+				}
 			}
 		}
 	}

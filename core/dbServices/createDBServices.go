@@ -1031,6 +1031,7 @@ func genNoSQLRuntime(collection NOSQLCollection, schema NOSQLSchema, driver stri
 	val += genNoSQLSchemaJoinFields(collection, schema, driver)
 	val += genNoSQLUnMarshal(collection, schema, driver)
 	val += genNoSQLSchemaJSONRuntime(schema)
+	val += genParseInterface(collection, schema, driver)
 	val += genNoSQLSchemaReflectByFieldName(collection)
 	val += genNoSQLSchemaReflectBaseTypeByFieldName(collection)
 
@@ -1246,6 +1247,9 @@ func genNoSQLSchemaSave(collection NOSQLCollection, schema NOSQLSchema, driver s
 		val += "if self.Id != \"\"{\n"
 		val += "objectId = self.Id\n"
 		val += "}\n"
+		val += "t := time.Now()\n"
+		val += "self.CreateDate = t\n"
+		val += "self.UpdateDate = t\n"
 		val += "changeInfo, err := collection.UpsertId(objectId, &self)\n"
 		val += "if err != nil {\n"
 		val += "log.Println(\"Failed to upsertId for " + strings.Title(schema.Name) + ":  \" + err.Error())\n"
@@ -1283,6 +1287,19 @@ func genNewByReflection(collection NOSQLCollection, schema NOSQLSchema, driver s
 	val += "value = reflect.ValueOf(&retObj)\n"
 	val += "return\n"
 	val += "}\n\n"
+	return val
+}
+
+func genParseInterface(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
+	val := ""
+	val += "func (obj *" + strings.Title(schema.Name) + ") ParseInterface(x interface{}) (err error) {\n"
+	val += "data, err := json.Marshal(x)\n"
+	val += "if err != nil {\n"
+	val += "	return\n"
+	val += "}\n"
+	val += "err = json.Unmarshal(data, obj)\n"
+	val += "return\n"
+	val += "}\n"
 	return val
 }
 
