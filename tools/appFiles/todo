@@ -1,33 +1,6 @@
 go install github.com/DanielRenne/GoCore/getCore
 getCore
 
-
-Installation Patchwork after cloning for initial setup:
-
-set +e
-pathApp=github.com/frezadev/rezaSandbox
-mkdir -p $GOPATH/src/$pathApp/log/plugins
-cp $GOPATH/src/$pathApp/webConfig.dev.json $GOPATH/src/$pathApp/webConfig.json
-
-
-say "npm is installing"
-echo "npm is installing"
-cd $GOPATH/src/$pathApp/web/app
-npm install
-
-bash $GOPATH/src/$pathApp/bin/model_build
- 
-cd $GOPATH/src/$pathApp/bin
-chmod +x *
-
-cd $GOPATH/src/$pathApp/web/app/javascript  
-say "npm install is done, next compile production javascripts"
-echo "npm install is done, next compile production javascripts" 
-bash build.sh
-say "build shell script done"
-echo "build shell script done" 
-set -e
-
 GoCore
 - need to delete the buildXXXApp? and commit most likely because only me and dan could ever run the build tool with the private repo
 

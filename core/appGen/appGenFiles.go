@@ -258,7 +258,7 @@ func main() {
 		}
 	}()
 
-	err := app.Initialize("` + serverSettings.APP_LOCATION + `", "webConfig.json", "mywebsite.com")
+	err := app.Initialize("` + serverSettings.APP_LOCATION + `", "webConfig.json")
 	settings.Initialize()
 	br.Schedules.UpdateLinuxToGMT()
 

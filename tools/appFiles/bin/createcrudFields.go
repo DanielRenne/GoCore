@@ -48,7 +48,7 @@ func main() {
 	//vm.ButtonBar.Config.OtherTabSelected = append(vm.ButtonBar.Config.OtherTabSelected, viewModel.SETTINGS_CONST_ROLE)
 
 	//Manually set this if you want your table to include foreign keys as "fields" for import and widget lists
-	app.Initialize("src/github.com/DanielRenne/goCoreAppTemplate", "webConfig.json", "mywebsite.com")
+	app.Initialize("src/github.com/DanielRenne/goCoreAppTemplate", "webConfig.json")
 	settings.Initialize()
 	dbServices.Initialize()
 	allowIdFieldsToBeShown := false

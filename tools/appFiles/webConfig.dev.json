@@ -17,6 +17,7 @@
 		"serverFQDN": "0.0.0.0",
 		"httpPort": 80,
 		"httpsPort": 443,
+		"TalkDirty": true,
 		"releaseMode":"development",
 		"webServiceOnly":false,
 		"versionNumeric": 1,
