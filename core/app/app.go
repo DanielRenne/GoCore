@@ -146,7 +146,7 @@ var webSocketConnectionsMeta sync.Map
 var WebSocketCallbacks WebSocketCallbackSync
 var WebSocketRemovalCallback WebSocketRemoval
 
-func Initialize(path string, config string, cookieDomain string) (err error) {
+func Initialize(path string, config string) (err error) {
 	err = serverSettings.Initialize(path, config)
 	if err != nil {
 		return
@@ -157,9 +157,9 @@ func Initialize(path string, config string, cookieDomain string) (err error) {
 	serverSettings.WebConfigMutex.RUnlock()
 
 	if inRelease {
-		ginServer.Initialize(gin.ReleaseMode, cookieDomain)
+		ginServer.Initialize(gin.ReleaseMode, serverSettings.WebConfig.Application.CookieDomain)
 	} else {
-		ginServer.Initialize(gin.DebugMode, cookieDomain)
+		ginServer.Initialize(gin.DebugMode, serverSettings.WebConfig.Application.CookieDomain)
 	}
 	fileCache.Initialize()
 
