@@ -980,6 +980,8 @@ func genNoSQLFieldType(prefix string, schema NOSQLSchema, field NOSQLSchemaField
 	switch field.Type {
 	case "dateTime":
 		return "time.Time"
+	case "interface":
+		return "interface{}"
 	case "byteArray":
 		return "[]byte"
 	case "object":
@@ -1115,52 +1117,57 @@ func genNoSQLSchemaReflectByFieldName(collection NOSQLCollection) string {
 		}
 
 		val += "\tcase \"" + key + "\":\n"
-		if value.IsArray {
-			val += "xArray, _ := x.([]interface{})\n\n"
 
-			val += "arrayToSet := make(" + value.Value + ", len(xArray))\n"
-			val += "for i := range xArray {\n"
-			val += "	inf := xArray[i]\n"
-			if marshalJSON {
-				val += "data, _ := json.Marshal(inf)\n"
-				val += "var obj " + valueType + "\n"
-				val += "err = json.Unmarshal(data, &obj)\n"
-				val += "if err != nil {\n"
-				val += "return\n"
-				val += "}\n"
-				val += "	arrayToSet[i] = obj\n"
-			} else {
-				val += "var ok bool\n"
-				val += "	arrayToSet[i], ok = inf.(" + valueType + ")\n"
-				val += "if !ok {\n"
-				val += "err = errors.New(\"Failed to typecast interface.\")\n"
-				val += "return\n"
-				val += "}\n"
-			}
-
-			val += "}\n\n"
-
-			val += "value = reflect.ValueOf(arrayToSet)\n"
-		} else {
-			if marshalJSON {
-				val += "data, _ := json.Marshal(x)\n"
-				val += "var obj " + valueType + "\n"
-				val += "err = json.Unmarshal(data, &obj)\n"
-				val += "if err != nil {\n"
-				val += "return\n"
-				val += "}\n"
-			} else {
-				val += "\tobj, ok := x.(" + value.Value + ")\n"
-				val += "if !ok {\n"
-				val += "err = errors.New(\"Failed to typecast interface.\")\n"
-				val += "return\n"
-				val += "}\n"
-			}
-
-			val += "\tvalue = reflect.ValueOf(obj)\n"
+		if valueType == "interface{}" {
+			val += "\tvalue = reflect.ValueOf(x)\n"
 			val += "return\n"
-		}
+		} else {
+			if value.IsArray {
+				val += "xArray, _ := x.([]interface{})\n\n"
 
+				val += "arrayToSet := make(" + value.Value + ", len(xArray))\n"
+				val += "for i := range xArray {\n"
+				val += "	inf := xArray[i]\n"
+				if marshalJSON {
+					val += "data, _ := json.Marshal(inf)\n"
+					val += "var obj " + valueType + "\n"
+					val += "err = json.Unmarshal(data, &obj)\n"
+					val += "if err != nil {\n"
+					val += "return\n"
+					val += "}\n"
+					val += "	arrayToSet[i] = obj\n"
+				} else {
+					val += "var ok bool\n"
+					val += "	arrayToSet[i], ok = inf.(" + valueType + ")\n"
+					val += "if !ok {\n"
+					val += "err = errors.New(\"Failed to typecast interface.\")\n"
+					val += "return\n"
+					val += "}\n"
+				}
+
+				val += "}\n\n"
+
+				val += "value = reflect.ValueOf(arrayToSet)\n"
+			} else {
+				if marshalJSON {
+					val += "data, _ := json.Marshal(x)\n"
+					val += "var obj " + valueType + "\n"
+					val += "err = json.Unmarshal(data, &obj)\n"
+					val += "if err != nil {\n"
+					val += "return\n"
+					val += "}\n"
+				} else {
+					val += "\tobj, ok := x.(" + value.Value + ")\n"
+					val += "if !ok {\n"
+					val += "err = errors.New(\"Failed to typecast interface.\")\n"
+					val += "return\n"
+					val += "}\n"
+				}
+
+				val += "\tvalue = reflect.ValueOf(obj)\n"
+				val += "return\n"
+			}
+		}
 	}
 
 	val += "}\n"
@@ -1179,6 +1186,7 @@ func genNoSQLSchemaReflectBaseTypeByFieldName(collection NOSQLCollection) string
 	for key, value := range collection.FieldTypes {
 
 		valueType := strings.Replace(value.Value, "[]", "", -1)
+
 		marshalJSON := true
 		if valueType == "string" ||
 			valueType == "bool" ||
@@ -1191,36 +1199,39 @@ func genNoSQLSchemaReflectBaseTypeByFieldName(collection NOSQLCollection) string
 
 		val += "\tcase \"" + key + "\":\n"
 
-		if marshalJSON {
-			val += "if x == nil{\n"
-			val += "obj := " + valueType + "{}\n"
-			val += "\tvalue = reflect.ValueOf(&obj)\n"
+		if valueType == "interface{}" {
+			val += "\tvalue = reflect.ValueOf(x)\n"
 			val += "return\n"
-			val += "}\n\n"
-
-			val += "data, _ := json.Marshal(x)\n"
-			val += "var obj " + valueType + "\n"
-			val += "err = json.Unmarshal(data, &obj)\n"
-			val += "if err != nil {\n"
-			val += "return\n"
-			val += "}\n"
 		} else {
-			val += "if x == nil{\n"
-			val += "var obj " + valueType + "\n"
+			if marshalJSON {
+				val += "if x == nil{\n"
+				val += "obj := " + valueType + "{}\n"
+				val += "\tvalue = reflect.ValueOf(&obj)\n"
+				val += "return\n"
+				val += "}\n\n"
+
+				val += "data, _ := json.Marshal(x)\n"
+				val += "var obj " + valueType + "\n"
+				val += "err = json.Unmarshal(data, &obj)\n"
+				val += "if err != nil {\n"
+				val += "return\n"
+				val += "}\n"
+			} else {
+				val += "if x == nil{\n"
+				val += "var obj " + valueType + "\n"
+				val += "\tvalue = reflect.ValueOf(obj)\n"
+				val += "return\n"
+				val += "}\n\n"
+
+				val += "\tobj, ok := x.(" + valueType + ")\n"
+				val += "if !ok {\n"
+				val += "err = errors.New(\"Failed to typecast interface.\")\n"
+				val += "return\n"
+				val += "}\n"
+			}
 			val += "\tvalue = reflect.ValueOf(obj)\n"
 			val += "return\n"
-			val += "}\n\n"
-
-			val += "\tobj, ok := x.(" + valueType + ")\n"
-			val += "if !ok {\n"
-			val += "err = errors.New(\"Failed to typecast interface.\")\n"
-			val += "return\n"
-			val += "}\n"
 		}
-
-		val += "\tvalue = reflect.ValueOf(obj)\n"
-		val += "return\n"
-
 	}
 
 	val += "}\n"

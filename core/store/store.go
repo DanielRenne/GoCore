@@ -201,20 +201,24 @@ func Set(key string, id string, path string, x interface{}, logger func(string, 
 
 			if i+1 == depth {
 				if properties[i].CanSet() {
-
-					propType := reflect.TypeOf(properties[i].Interface()).String()
-					logger("PropType", propType)
-					if propType == "int" {
-						floatVal, ok := x.(float64)
-						if ok {
-							x = int(floatVal)
-						}
-					} else if propType == "float64" {
-						intVal, ok := x.(int)
-						if ok {
-							x = float64(intVal)
+					propInterface := properties[i].Interface()
+					if propInterface != nil {
+						propType := reflect.TypeOf(propInterface).String()
+						logger("PropType", propType)
+						if propType == "int" {
+							floatVal, ok := x.(float64)
+							if ok {
+								x = int(floatVal)
+							}
+						} else if propType == "float64" {
+							intVal, ok := x.(int)
+							if ok {
+								x = float64(intVal)
+							}
 						}
 					}
+
+					// logger("Trying to set", fmt.Sprintf("%+v", x))
 
 					valueToSet, err := collection.ReflectByFieldName(fieldName, x)
 					if err != nil {
