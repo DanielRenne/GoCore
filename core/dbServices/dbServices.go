@@ -105,7 +105,7 @@ func openBolt() error {
 	// (Create if not exist) open a database
 	var err error
 	DBMutex.Lock()
-	BoltDB, err = storm.Open(myDBDir, storm.AutoIncrement())
+	BoltDB, err = storm.Open(myDBDir)
 	DBMutex.Unlock()
 
 	if err != nil {
