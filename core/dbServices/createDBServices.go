@@ -1123,8 +1123,9 @@ func genNoSQLSchemaReflectByFieldName(collection NOSQLCollection) string {
 			val += "return\n"
 		} else {
 			if value.IsArray {
-				val += "xArray, _ := x.([]interface{})\n\n"
+				val += "xArray, ok := x.([]interface{})\n\n"
 
+				val += "if ok {"
 				val += "arrayToSet := make(" + value.Value + ", len(xArray))\n"
 				val += "for i := range xArray {\n"
 				val += "	inf := xArray[i]\n"
@@ -1148,6 +1149,16 @@ func genNoSQLSchemaReflectByFieldName(collection NOSQLCollection) string {
 				val += "}\n\n"
 
 				val += "value = reflect.ValueOf(arrayToSet)\n"
+				val += "}else {\n"
+				val += "data, _ := json.Marshal(x)\n"
+				val += "var obj " + valueType + "\n"
+				val += "err = json.Unmarshal(data, &obj)\n"
+				val += "if err != nil {\n"
+				val += "return\n"
+				val += "}\n"
+				val += "\tvalue = reflect.ValueOf(obj)\n"
+				val += "}\n\n"
+
 			} else {
 				if marshalJSON {
 					val += "data, _ := json.Marshal(x)\n"
