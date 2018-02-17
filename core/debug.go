@@ -307,6 +307,21 @@ func (self *core_debug) ThrowAndPrintError() (output string) {
 			output += "\n         ==> " + strings.TrimSpace(stack[8])
 			output += "\n         ==> " + strings.TrimSpace(stack[9])
 			output += "\n         ==> " + strings.TrimSpace(stack[10])
+			if len(stack) >= 12 {
+				output += "\n         ==> " + strings.TrimSpace(stack[11])
+			}
+			if len(stack) >= 13 {
+				output += "\n         ==> " + strings.TrimSpace(stack[12])
+			}
+			if len(stack) >= 14 {
+				output += "\n         ==> " + strings.TrimSpace(stack[13])
+			}
+			if len(stack) >= 15 {
+				output += "\n         ==> " + strings.TrimSpace(stack[14])
+			}
+			if len(stack) >= 16 {
+				output += "\n         ==> " + strings.TrimSpace(stack[15])
+			}
 			output += "\n---------------"
 			output += "\n"
 			output += "\n"
