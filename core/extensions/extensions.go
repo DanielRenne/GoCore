@@ -163,6 +163,10 @@ func IntToString(val int) string {
 	return strconv.Itoa(val)
 }
 
+func IntToBool(val int) bool {
+	return val != 0
+}
+
 func Int32ToString(val int32) string {
 	return strconv.Itoa(Int32ToInt(val))
 }
