@@ -124,6 +124,77 @@ func GetByPath(key string, id string, joins []string, path string) (x interface{
 	return
 }
 
+//Publish fetches the record / path and publishes out to all subscribers.
+func Publish(key string, id string, path string, logger func(string, string)) {
+
+	defer func() {
+		if r := recover(); r != nil {
+			logger("Recover", fmt.Sprintf("%+v", r))
+			if OnChange != nil {
+				OnChange(key, id, path, nil, fmt.Errorf("%+v", r))
+			}
+		}
+	}()
+
+	collection, ok := getRegistry(key)
+	if !ok {
+		return
+	}
+
+	obj, err := collection.ById(id, []string{})
+	if err != nil {
+		log.Printf("%s%s", "Error Getting Collection Object by id.  ", err.Error())
+		return
+	}
+
+	if path == "" {
+		if OnChange != nil {
+			OnChange(key, id, "", obj.Interface(), nil)
+		}
+	} else {
+		var x interface{}
+
+		objElem := obj.Elem()
+
+		fields := strings.Split(path, ".")
+		depth := len(fields)
+
+		properties := []reflect.Value{}
+
+		for i := range fields {
+			fieldName := fields[i]
+			arrayIndex := -1
+
+			if strings.Contains(fieldName, "[") {
+				arraySplit := strings.Split(fieldName, "[")
+				fieldName = arraySplit[0]
+				arrayIndex = extensions.StringToInt(strings.Replace(arraySplit[1], "]", "", -1))
+			}
+
+			var fieldValue reflect.Value
+
+			if i == 0 {
+				fieldValue = objElem.FieldByName(fieldName)
+			} else {
+				fieldValue = properties[i-1].FieldByName(fieldName)
+			}
+
+			if arrayIndex == -1 {
+				properties = append(properties, fieldValue)
+			} else {
+				properties = append(properties, fieldValue.Index(arrayIndex))
+			}
+
+			if i+1 == depth {
+				x = properties[i].Interface()
+			}
+		}
+		if OnChange != nil {
+			OnChange(key, id, path, x, nil)
+		}
+	}
+}
+
 //Set updates a collection by id, path.
 func Set(key string, id string, path string, x interface{}, logger func(string, string)) {
 
