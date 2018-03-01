@@ -16,7 +16,6 @@ func addEditAccountValidateCommon(context session_functions.RequestContext, vm *
 	return true, session_functions.ServerResponseStruct{}
 }
 
-
 func constructStatesMap(states []model.State, countries []model.Country) (result map[string][]model.State) {
 	result = map[string][]model.State{}
 	mapCountry := map[string]string{}
@@ -31,7 +30,6 @@ func constructStatesMap(states []model.State, countries []model.Country) (result
 	}
 	return
 }
-
 
 func vmAccountAddEditGetCommon(context session_functions.RequestContext, respond session_functions.ServerResponse, vm *viewModel.AccountModifyViewModel) bool {
 

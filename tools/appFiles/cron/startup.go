@@ -1,10 +1,10 @@
 package cron
 
 import (
-	"time"
 	"fmt"
-	"runtime/debug"
 	"github.com/DanielRenne/goCoreAppTemplate/sessionFunctions"
+	"runtime/debug"
+	"time"
 )
 
 func startup() {

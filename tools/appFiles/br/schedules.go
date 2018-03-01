@@ -3,7 +3,7 @@ package br
 // commented libraries are for schedules LoadDays
 import (
 	"fmt"
-	//"runtime"
+	"runtime"
 	"runtime/debug"
 	"sync"
 	"time"
@@ -35,6 +35,12 @@ func init() {
 	timeZone = "America/Los_Angeles"
 	scheduleEngine.SetScheduleDay(Schedules.LoadDay)
 	scheduleEngine.SetLocationCallback(Schedules.GetLocation)
+}
+
+func (self schedulesBr) UpdateLinuxToGMT() {
+	if runtime.GOOS == "linux" {
+		SetTimeZone("UTC")
+	}
 }
 
 func (self schedulesBr) LoadDay(t time.Time) {

@@ -2,19 +2,19 @@ package main
 
 import (
 	"bufio"
-	"strings"
 	"fmt"
-	"os"
-	"github.com/cloud-ignite/GoCore/core/utils"
-	"github.com/cloud-ignite/GoCore/core/logger"
-	"github.com/cloud-ignite/GoCore/core/extensions"
+	"github.com/DanielRenne/GoCore/core/extensions"
+	"github.com/DanielRenne/GoCore/core/logger"
+	"github.com/DanielRenne/GoCore/core/utils"
 	"github.com/davidrenne/heredoc"
+	"os"
 	"os/exec"
+	"strings"
 )
 
 func talk(msg string) {
 	utils.TalkDirty(msg)
-	logger.Message("Message: " + msg, logger.GREEN)
+	logger.Message("Message: "+msg, logger.GREEN)
 }
 
 func cdGoPath() {
@@ -25,13 +25,13 @@ func cdGoPath() {
 func errorOut(line string, err error, dontExit bool) {
 	if err != nil {
 		msg := "Errored out: " + err.Error()
-		logger.Message(msg + " " + line, logger.RED)
+		logger.Message(msg+" "+line, logger.RED)
 		utils.TalkDirty(msg)
 		if !dontExit {
 			os.Exit(2)
 		}
 	} else {
-		logger.Message("Success: " + line, logger.GREEN)
+		logger.Message("Success: "+line, logger.GREEN)
 	}
 }
 
@@ -42,7 +42,7 @@ func main() {
 
 	logger.Message("Welcome to the GoCore createApp tool!  Thank you for using GoCore.", logger.YELLOW)
 	logger.Message("We hold these below truths to be self-evident", logger.WHITE)
-	logger.Message(fmt.Sprintf("% x", []byte{100,97,118 ,105, 100, 32 ,114, 101, 110, 110 ,101, 32 ,105, 115 ,32 ,99 ,111 ,111, 108, 33, 10}), logger.MAGENTA)
+	logger.Message(fmt.Sprintf("% x", []byte{100, 97, 118, 105, 100, 32, 114, 101, 110, 110, 101, 32, 105, 115, 32, 99, 111, 111, 108, 33, 10}), logger.MAGENTA)
 
 	//also should ensure first char of appName is lower
 	for {
@@ -70,7 +70,7 @@ func main() {
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Print("Github.com Username: ")
 		username, _ = reader.ReadString('\n')
-		username = strings.Trim(appName, "\n")
+		username = strings.Trim(username, "\n")
 		ok := false
 		if strings.Index(username, " ") == -1 {
 			ok = true
@@ -87,13 +87,16 @@ func main() {
 	camelUpper := strings.ToTitle(string(appName[0])) + string(appName[1:])
 
 	err := extensions.WriteToFile(humanTitle, "/tmp/humanFile", 644)
-	errorOut("extensions.WriteToFile "+ humanTitle + " to /tmp/humanFile", err, false)
+	errorOut("extensions.WriteToFile "+humanTitle+" to /tmp/humanFile", err, false)
 
 	path := "src/github.com/" + username
 	err = os.MkdirAll(path, 0644)
-	errorOut("os.MkdirAll(" + path + ", 0644)", err, false)
+	errorOut("os.MkdirAll("+path+", 0644)", err, false)
 
+	fmt.Println("adsffdas name :", appName)
+	fmt.Println(path)
 	appPath := path + "/" + appName
+
 	_, err = os.Stat(appPath)
 	if err == nil {
 		err := extensions.RemoveDirectory(appPath)
@@ -101,24 +104,24 @@ func main() {
 	}
 
 	err = os.MkdirAll(appPath, 0644)
-	errorOut("os.MkdirAll(" + appPath + ", 0644)", err, false)
+	errorOut("os.MkdirAll("+appPath+", 0644)", err, false)
 
 	modelBuildPath := appPath + "/modelBuild" + camelUpper + "/"
 
 	err = os.MkdirAll(modelBuildPath, 0644)
-	errorOut("os.MkdirAll(" + modelBuildPath + ", 0644)", err, false)
+	errorOut("os.MkdirAll("+modelBuildPath+", 0644)", err, false)
 
 	buildPath := appPath + "/build" + camelUpper + "/"
 
 	err = os.MkdirAll(buildPath, 0644)
-	errorOut("os.MkdirAll(" + buildPath + ", 0644)", err, false)
+	errorOut("os.MkdirAll("+buildPath+", 0644)", err, false)
 
 	template := `
 package main
 
 import (
 	"flag"
-	"github.com/cloud-ignite/GoCore/%s"
+	"github.com/DanielRenne/GoCore/%s"
 )
 
 func main() {
@@ -130,22 +133,22 @@ func main() {
 
 `
 	buildGoFile := buildPath + "build" + camelUpper + ".go"
-	err = extensions.WriteAndGoFmt(heredoc.Docf(template, "buildCore", "buildCore"), buildGoFile, true, 644)
-	errorOut("extensions.WriteAndGoFormat "+ buildGoFile, err, false)
+	err = extensions.WriteAndGoFormat(heredoc.Docf(template, "buildCore", "buildCore"), buildGoFile)
+	errorOut("extensions.WriteAndGoFormat "+buildGoFile, err, false)
 
 	modelGoFile := modelBuildPath + "modelBuild" + camelUpper + ".go"
-	err = extensions.WriteAndGoFmt(heredoc.Docf(template, "modelBuild", "modelBuild"), modelGoFile, true, 644)
-	errorOut("extensions.WriteAndGoFormat " + modelGoFile, err, false)
+	err = extensions.WriteAndGoFormat(heredoc.Docf(template, "modelBuild", "modelBuild"), modelGoFile)
+	errorOut("extensions.WriteAndGoFormat "+modelGoFile, err, false)
 
 	talk("Copying app generation files")
 
 	cmd := exec.Command("go", "run", buildGoFile)
 	err = cmd.Run()
-	errorOut("running go run " + buildGoFile, err, false)
+	errorOut("running go run "+buildGoFile, err, false)
 
-	cmd = exec.Command("go", "run", appPath + "/install" + camelUpper + "/install" + camelUpper + ".go")
+	cmd = exec.Command("go", "run", appPath+"/install"+camelUpper+"/install"+camelUpper+".go")
 	err = cmd.Run()
-	errorOut("running " + appPath + "/install" + camelUpper , err, false)
+	errorOut("running "+appPath+"/install"+camelUpper, err, false)
 
 	cdGoPath()
 	err = os.Chdir(appPath + "/bin")
@@ -173,7 +176,7 @@ func main() {
 	err = cmd.Run()
 	errorOut("git commit", err, false)
 
-	cmd = exec.Command("git", "remote", "add", "origin", "https://github.com/" + username + "/" + appName + ".git")
+	cmd = exec.Command("git", "remote", "add", "origin", "https://github.com/"+username+"/"+appName+".git")
 	err = cmd.Run()
 	errorOut("git commit", err, false)
 
@@ -182,13 +185,8 @@ func main() {
 	err = cmd.Run()
 	errorOut("go install models", err, false)
 
-	cmd = exec.Command("bash", appPath + "/bin/model_build")
-	err = cmd.Run()
-	errorOut("bash " + appPath + "/bin/model_build", err, false)
-
-	cmd = exec.Command("bash", appPath + "/bin/start_app")
+	cmd = exec.Command("bash", appPath+"/bin/start_app")
 	err = cmd.Start()
 	errorOut("running gocore app server!", err, false)
 
 }
-

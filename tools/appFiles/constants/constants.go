@@ -11,26 +11,26 @@ const (
 	BANNER_COLOR_DEFAULT = "#607d8b"
 	BANNER_COLOR_OTHER   = "#404347"
 
-	MAX_COOKIE_AGE               = 315360000
-	COOKIE_AUTH_TOKEN            = "AuthToken"
-	COOKIE_AUTHED                = "Authorized"
-	COOKIE_AUTH_USER_ID          = "AuthUserId"
-	COOKIE_AUTH_ROLE_ID          = "AuthRoleId"
-	COOKIE_AUTH_ACCOUNTROLE_ID   = "AuthAccountRoleId"
-	COOKIE_AUTH_ACCOUNT_ID       = "AuthAccountId"
-	COOKIE_AUTH_REDIRECTION_URL  = "AuthRedirectionURL"
-	COOKIE_DATA_FORMAT           = "DataFormat"
-	COOKIE_DATE_CREATED          = "DateCreated"
-	MGO_RECORD_NOT_FOUND = "not found"
+	MAX_COOKIE_AGE              = 315360000
+	COOKIE_AUTH_TOKEN           = "AuthToken"
+	COOKIE_AUTHED               = "Authorized"
+	COOKIE_AUTH_USER_ID         = "AuthUserId"
+	COOKIE_AUTH_ROLE_ID         = "AuthRoleId"
+	COOKIE_AUTH_ACCOUNTROLE_ID  = "AuthAccountRoleId"
+	COOKIE_AUTH_ACCOUNT_ID      = "AuthAccountId"
+	COOKIE_AUTH_REDIRECTION_URL = "AuthRedirectionURL"
+	COOKIE_DATA_FORMAT          = "DataFormat"
+	COOKIE_DATE_CREATED         = "DateCreated"
+	MGO_RECORD_NOT_FOUND        = "not found"
 
 	BCRYPT_COST = 12
 
-	APP_CONSTANTS_INVALID_AUTH          = "InvalidAuth"
-	APP_CONSTANTS_ACCOUNT_LOCKED        = "LoginPageLockLimitReached"
-	APP_CONSTANTS_AUTHORIZED            = "Authorized"
-	APP_CONSTANTS_LOGGED_OUT            = "LoggedOut"
-	APP_CONSTANTS_USERS_ANONYMOUS_ID    = "57d9b383dcba0f51172f1f57"
-	APP_CONSTANTS_CRONJOB_ID            = "5835eb61e9f1283d495114c1"
+	APP_CONSTANTS_INVALID_AUTH       = "InvalidAuth"
+	APP_CONSTANTS_ACCOUNT_LOCKED     = "LoginPageLockLimitReached"
+	APP_CONSTANTS_AUTHORIZED         = "Authorized"
+	APP_CONSTANTS_LOGGED_OUT         = "LoggedOut"
+	APP_CONSTANTS_USERS_ANONYMOUS_ID = "57d9b383dcba0f51172f1f57"
+	APP_CONSTANTS_CRONJOB_ID         = "5835eb61e9f1283d495114c1"
 
 	VIEWMODEL_SNACKBAR_TRANSACTION = "SnackBarUndoTransactionId"
 	VIEWMODEL_SNACKBAR_MESSAGE     = "SnackbarMessage"

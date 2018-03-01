@@ -3,9 +3,9 @@ package settings
 
 import (
 	"encoding/json"
+	"github.com/DanielRenne/GoCore/core/serverSettings"
 	"io/ioutil"
 	"log"
-	"github.com/DanielRenne/GoCore/core/serverSettings"
 )
 
 const webRoot = "/web/app"

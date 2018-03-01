@@ -5,11 +5,11 @@ import (
 )
 
 type LoginViewModel struct {
-	AuthMessage       string     `json:"authMessage" js:"authMessage"`
-	Username          string     `json:"username" js:"username"`
-	Password          string     `json:"password" js:"password"`
-	UserNameError     string     `json:"UserNameError"`
-	PasswordError     string     `json:"PasswordError"`
+	AuthMessage   string `json:"authMessage" js:"authMessage"`
+	Username      string `json:"username" js:"username"`
+	Password      string `json:"password" js:"password"`
+	UserNameError string `json:"UserNameError"`
+	PasswordError string `json:"PasswordError"`
 }
 
 func (self *LoginViewModel) LoadDefaultState() {

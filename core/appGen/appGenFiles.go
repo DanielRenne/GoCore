@@ -3,13 +3,13 @@ package appGen
 import (
 	"github.com/DanielRenne/GoCore/core/extensions"
 	"github.com/DanielRenne/GoCore/core/logger"
-	"github.com/cloud-ignite/GoCore/core/serverSettings"
-	"os"
-	"strings"
-	"path/filepath"
-	"github.com/globalsign/mgo/bson"
+	"github.com/DanielRenne/GoCore/core/serverSettings"
 	"github.com/DanielRenne/GoCore/core/utils"
+	"github.com/globalsign/mgo/bson"
 	"log"
+	"os"
+	"path/filepath"
+	"strings"
 )
 
 func GenerateApp() {
@@ -20,7 +20,7 @@ func GenerateApp() {
 func createFile(path string, contents string) {
 	_, err := os.Stat(serverSettings.APP_LOCATION + path)
 	if err != nil {
-		extensions.WriteToFile(contents, serverSettings.APP_LOCATION + path, 0644)
+		extensions.WriteToFile(contents, serverSettings.APP_LOCATION+path, 0644)
 	}
 }
 
@@ -30,8 +30,8 @@ func copyFolder(path string) (wasCopied bool) {
 	if err != nil {
 		wasCopied = true
 		os.MkdirAll(serverSettings.APP_LOCATION+path, 0777)
-		extensions.CopyFolder(serverSettings.GOCORE_PATH+"/tools/appFiles" + path, serverSettings.APP_LOCATION + path)
-		logger.Message("Created " + path + " in Application.", logger.GREEN)
+		extensions.CopyFolder(serverSettings.GOCORE_PATH+"/tools/appFiles"+path, serverSettings.APP_LOCATION+path)
+		logger.Message("Created "+path+" in Application.", logger.GREEN)
 	}
 	return
 }
@@ -44,7 +44,7 @@ func replacePath(path string, newpath string, newGithubUser string, newProject s
 			utils.ReplaceTokenInFile(pth, "DanielRenneFolder", newGithubUser)
 			//Finally any straggler templates such as XXXX.go for main need to be replaced
 			utils.ReplaceTokenInFile(pth, "goCoreAppTemplate", newProject)
-			utils.ReplaceTokenInFile(pth, "goCoreUpperAppTemplate", strings.ToUpper(newProject[:1]) + newProject[1:])
+			utils.ReplaceTokenInFile(pth, "goCoreUpperAppTemplate", strings.ToUpper(newProject[:1])+newProject[1:])
 		}
 		return err
 	})
@@ -65,8 +65,8 @@ func moveAppFiles() {
 		log.Println("error reading humanTitle")
 	}
 	parts := strings.Split(serverSettings.APP_LOCATION, "/")
-	appName := parts[len(parts) - 1]
-	githubName := parts[len(parts) - 2]
+	appName := parts[len(parts)-1]
+	githubName := parts[len(parts)-2]
 	project := githubName + "/" + appName
 	//First check for the WebConfig.json file
 	_, errNoWebConfig := os.Stat(serverSettings.APP_LOCATION + "/webConfig.json")
@@ -90,22 +90,22 @@ func moveAppFiles() {
 	for _, v := range utils.Array("webConfig.prod.json", "webConfig.dev.json", "webConfig.json") {
 		id1 := bson.NewObjectId()
 		id2 := bson.NewObjectId()
-		utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/" + v, "goCoreProductName", appName + "BaseProduct")
-		utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/" + v, "goCoreCsrfSecret", id1.Hex())
-		utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/" + v, "goCoreSessionKey", id2.Hex())
+		utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/"+v, "goCoreProductName", appName+"BaseProduct")
+		utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/"+v, "goCoreCsrfSecret", id1.Hex())
+		utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/"+v, "goCoreSessionKey", id2.Hex())
 	}
 
 	_, err = os.Stat(serverSettings.APP_LOCATION + "/log")
 	if err != nil {
-		os.MkdirAll(serverSettings.APP_LOCATION + "/log/plugins", 0777)
+		os.MkdirAll(serverSettings.APP_LOCATION+"/log/plugins", 0777)
 	}
 	var wasCopied bool
 	wasCopied = copyFolder("/vendorPackages")
 	wasCopied = copyFolder("/keys")
 	wasCopied = copyFolder("/web")
 	if wasCopied {
-		utils.ReplaceTokenInFile(serverSettings.APP_LOCATION + "/web/app/watchFile.json", "DanielRenne/goCoreAppTemplate", project)
-		utils.ReplaceTokenInFile(serverSettings.APP_LOCATION + "/web/app/javascript/build-css.sh", "DanielRenne/goCoreAppTemplate", project)
+		utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/web/app/watchFile.json", "DanielRenne/goCoreAppTemplate", project)
+		utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/web/app/javascript/build-css.sh", "DanielRenne/goCoreAppTemplate", project)
 		replacePath("/web/app/javascript/pages/template", project, githubName, appName)
 		for _, v := range utils.Array("/web/app/manifests", "/web/app/globalization/translations", "/web/app/javascript/pages/logs", "/web/app/javascript/globals", "/web/app/markup/app") {
 			replaceAnything(v, "GoCoreAppHumanName", strings.TrimSpace(string(humanTitle)))
@@ -120,7 +120,7 @@ func moveAppFiles() {
 	if wasCopied {
 		replacePath("/controllers", project, githubName, appName)
 		utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/controllers/homeGetController.go", "goCoreProductName", appName)
-		utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/controllers/homeGetController.go", "-APPNAME", "-" + appName)
+		utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/controllers/homeGetController.go", "-APPNAME", "-"+appName)
 	}
 	wasCopied = copyFolder("/bin")
 	if wasCopied {
@@ -139,12 +139,12 @@ func moveAppFiles() {
 	if errNoWebConfig != nil {
 		copyFolder("/install")
 		replacePath("/install", project, githubName, appName)
-		err = os.Rename(serverSettings.APP_LOCATION + "/install/install.go", serverSettings.APP_LOCATION + "/install/install" + strings.Title(appName) + ".go")
+		err = os.Rename(serverSettings.APP_LOCATION+"/install/install.go", serverSettings.APP_LOCATION+"/install/install"+strings.Title(appName)+".go")
 		if err != nil {
 			log.Println("error renaming install")
 			os.Exit(1)
 		}
-		err = os.Rename(serverSettings.APP_LOCATION + "/install", serverSettings.APP_LOCATION + "/install" + strings.Title(appName))
+		err = os.Rename(serverSettings.APP_LOCATION+"/install", serverSettings.APP_LOCATION+"/install"+strings.Title(appName))
 		if err != nil {
 			log.Println("error renaming install folder")
 			os.Exit(1)
@@ -219,7 +219,7 @@ Legend:
 
 				-APPNAME`)
 
-	createFile("/" + appName + ".go", `
+	createFile("/"+appName+".go", `
 package main
 
 import (
@@ -237,12 +237,12 @@ import (
 	"github.com/DanielRenne/GoCore/core/app"
 	"github.com/DanielRenne/GoCore/core/ginServer"
 	"github.com/DanielRenne/GoCore/core/logger"
-	"` + strings.Replace(serverSettings.APP_LOCATION, "src/", "", -1) + `/br"
-	"` + strings.Replace(serverSettings.APP_LOCATION, "src/", "", -1) + `/controllers"
-	"` + strings.Replace(serverSettings.APP_LOCATION, "src/", "", -1) + `/cron"
-	_ "` + strings.Replace(serverSettings.APP_LOCATION, "src/", "", -1) + `/models/v1/model"
-	"` + strings.Replace(serverSettings.APP_LOCATION, "src/", "", -1) + `/sessionFunctions"
-	"` + strings.Replace(serverSettings.APP_LOCATION, "src/", "", -1) + `/settings"
+	"`+strings.Replace(serverSettings.APP_LOCATION, "src/", "", -1)+`/br"
+	"`+strings.Replace(serverSettings.APP_LOCATION, "src/", "", -1)+`/controllers"
+	"`+strings.Replace(serverSettings.APP_LOCATION, "src/", "", -1)+`/cron"
+	_ "`+strings.Replace(serverSettings.APP_LOCATION, "src/", "", -1)+`/models/v1/model"
+	"`+strings.Replace(serverSettings.APP_LOCATION, "src/", "", -1)+`/sessionFunctions"
+	"`+strings.Replace(serverSettings.APP_LOCATION, "src/", "", -1)+`/settings"
 	"github.com/gin-gonic/gin"
 	"github.com/globalsign/mgo"
 )
@@ -258,19 +258,19 @@ func main() {
 		}
 	}()
 
-	err := app.Initialize("` + serverSettings.APP_LOCATION + `", "webConfig.json")
+	err := app.Initialize("`+serverSettings.APP_LOCATION+`", "webConfig.json")
 	settings.Initialize()
 	br.Schedules.UpdateLinuxToGMT()
 
 	if err != nil {
 		//lastError := err.Error()
 		ginServer.Router.GET("/", func(c *gin.Context) {
-			c.String(http.StatusOK, "%v", "An error occurred and the ` + appName + ` app cannot run (most likely due to mongo database services being down).\n\nError description: "+err.Error())
+			c.String(http.StatusOK, "%v", "An error occurred and the `+appName+` app cannot run (most likely due to mongo database services being down).\n\nError description: "+err.Error())
 		})
 		app.Run()
 	} else {
 		if settings.AppSettings.DeveloperGoTrace {
-			f, err := os.Create("` + serverSettings.APP_LOCATION + `/log/trace.log")
+			f, err := os.Create("`+serverSettings.APP_LOCATION+`/log/trace.log")
 			if err != nil {
 				panic(err)
 			}
@@ -282,7 +282,7 @@ func main() {
 			}
 			mgo.SetDebug(true)
 
-			file, _ := os.OpenFile("` + serverSettings.APP_LOCATION + `/log/studioMongo.log", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0777)
+			file, _ := os.OpenFile("`+serverSettings.APP_LOCATION+`/log/studioMongo.log", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0777)
 
 			var aLogger *log.Logger
 			aLogger = log.New(file, "", log.LstdFlags)
@@ -322,5 +322,5 @@ webConfig.json
 docker/dist
 /updates/latest
 .DS_Store
-` + appName)
+`+appName)
 }

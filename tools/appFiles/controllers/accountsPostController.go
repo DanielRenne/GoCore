@@ -4,9 +4,9 @@ import (
 	_ "fmt"
 
 	"github.com/DanielRenne/goCoreAppTemplate/constants"
+	"github.com/DanielRenne/goCoreAppTemplate/models/v1/model"
 	"github.com/DanielRenne/goCoreAppTemplate/queries"
 	"github.com/DanielRenne/goCoreAppTemplate/sessionFunctions"
-	"github.com/DanielRenne/goCoreAppTemplate/models/v1/model"
 	"github.com/DanielRenne/goCoreAppTemplate/viewModel"
 )
 

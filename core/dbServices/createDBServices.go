@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/cloud-ignite/GoCore/core/extensions"
-	"github.com/cloud-ignite/GoCore/core/serverSettings"
+	"github.com/DanielRenne/GoCore/core/extensions"
+	"github.com/DanielRenne/GoCore/core/serverSettings"
 	// "fmt"
 	"encoding/base64"
 	"io/ioutil"

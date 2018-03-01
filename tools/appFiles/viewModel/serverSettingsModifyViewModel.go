@@ -2,20 +2,20 @@ package viewModel
 
 import (
 	"encoding/json"
-	"time"
 	"github.com/DanielRenne/goCoreAppTemplate/models/v1/model"
+	"time"
 )
 
 type ServerSettingsModifyViewModel struct {
 	// SettingsBar            SettingsButtonBarViewModel `json:"SettingsBar"`
-	SelectedTab            string                  `json:"SelectedTab"`
-	TimeZones   []model.Timezone    `json:"TimeZones"`
-	LockoutSettings        LockoutSettingsModel    `json:"LockoutSettings"`
-	TimeZone    model.ServerSetting `json:"TimeZone"`
-	CurrentDate string              `json:"CurrentDate"`
-	CurrentTime string              `json:"CurrentTime"`
-	DateToSet   time.Time           `json:"DateToSet"`
-	TimeToSet   time.Time           `json:"TimeToSet"`
+	SelectedTab     string               `json:"SelectedTab"`
+	TimeZones       []model.Timezone     `json:"TimeZones"`
+	LockoutSettings LockoutSettingsModel `json:"LockoutSettings"`
+	TimeZone        model.ServerSetting  `json:"TimeZone"`
+	CurrentDate     string               `json:"CurrentDate"`
+	CurrentTime     string               `json:"CurrentTime"`
+	DateToSet       time.Time            `json:"DateToSet"`
+	TimeToSet       time.Time            `json:"TimeToSet"`
 }
 
 type LockoutSettingsModel struct {

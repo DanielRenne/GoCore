@@ -8,6 +8,7 @@ const (
 )
 
 type queryServerSettings struct{}
+
 func (self queryServerSettings) QueryUserSettings() (q *model.Query, err error) {
 	q = model.ServerSettings.Query().In(model.Q(model.FIELD_SERVERSETTING_CATEGORY, SERVERSETTINGS_CATEGORY_USERS))
 	return

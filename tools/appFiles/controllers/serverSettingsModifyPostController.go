@@ -36,7 +36,6 @@ func (self *ServerSettingsModifyController) UpdateServerSettings(context session
 
 }
 
-
 func (self *ServerSettingsModifyController) UpdateGatewayTimeSettings(context session_functions.RequestContext, state string, respond session_functions.ServerResponse) {
 	var vm viewModel.ServerSettingsModifyViewModel
 	vm.Parse(state)
@@ -112,7 +111,6 @@ func (self *ServerSettingsModifyController) EnableNTPServer(context session_func
 	respond(PARAM_REDIRECT_RERENDER, constants.SERVER_SETTING_SAVE_SUCCESS, PARAM_SNACKBAR_TYPE_SUCCESS, nil, "", vm)
 }
 
-
 func (self *ServerSettingsModifyController) UpdateLockoutSettings(context session_functions.RequestContext, state string, respond session_functions.ServerResponse) {
 
 	var vm viewModel.ServerSettingsModifyViewModel
@@ -155,7 +153,6 @@ func (self *ServerSettingsModifyController) UpdateLockoutSettings(context sessio
 	respond(PARAM_REDIRECT_NONE, constants.SERVER_SETTING_SAVE_SUCCESS, PARAM_SNACKBAR_TYPE_SUCCESS, nil, t.Id.Hex(), vm)
 }
 
-
 func (self *ServerSettingsModifyController) RestartMachine(context session_functions.RequestContext, state string, respond session_functions.ServerResponse) {
 	var vm viewModel.ServerSettingsModifyViewModel
 	vm.Parse(state)
@@ -197,7 +194,6 @@ func (self *ServerSettingsModifyController) ShutdownMachine(context session_func
 
 	}, "serverSettingsModifyPostController.go->ShutdownMachine")
 }
-
 
 func (self *ServerSettingsModifyController) GetTimeZones(context session_functions.RequestContext, state string, respond session_functions.ServerResponse) {
 	var vm posts.TimeZoneVM

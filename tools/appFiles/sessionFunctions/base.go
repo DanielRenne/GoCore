@@ -430,7 +430,6 @@ func LogWithoutQuotes(uniqueId string, desc string, message string) {
 	return
 }
 
-
 func LogHex(uniqueId string, desc string, message string) {
 	logWithQuote(uniqueId, desc, message, true, false, true)
 	return

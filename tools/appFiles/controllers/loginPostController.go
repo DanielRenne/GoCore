@@ -146,7 +146,6 @@ func (self *LoginController) Logout(context session_functions.RequestContext, st
 	respond(PARAM_REDIRECT_REFRESH, PARAM_SNACKBAR_MESSAGE_NONE, PARAM_SNACKBAR_TYPE_SUCCESS, nil, PARAM_TRANSACTION_ID_NONE, vm)
 }
 
-
 func GetRequestorIp(context session_functions.RequestContext) (ip string) {
 	ip = context().Request.RemoteAddr
 	idx := strings.Index(ip, ":")

@@ -5,10 +5,10 @@ import (
 )
 
 type HomeViewModel struct {
-	ReleaseDescriptionLines []string `json:"ReleaseDescriptionLines"`
-	ReleaseNotes            string   `json:"ReleaseNotes"`
-	UserCount               int      `json:"UserCount"`
-	WebSocketConnectionsCount int `json:"WebSocketConnectionsCount"`
+	ReleaseDescriptionLines   []string `json:"ReleaseDescriptionLines"`
+	ReleaseNotes              string   `json:"ReleaseNotes"`
+	UserCount                 int      `json:"UserCount"`
+	WebSocketConnectionsCount int      `json:"WebSocketConnectionsCount"`
 }
 
 func (self *HomeViewModel) LoadDefaultState() {

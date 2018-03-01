@@ -8,7 +8,6 @@ import (
 
 	"github.com/DanielRenne/goCoreAppTemplate/constants"
 	"github.com/DanielRenne/goCoreAppTemplate/sessionFunctions"
-
 )
 
 func (self *ServerSettingsModifyController) Root(context session_functions.RequestContext, uriParams map[string]string, respond session_functions.ServerResponse) {
