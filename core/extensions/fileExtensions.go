@@ -254,21 +254,30 @@ func CopyFile(source string, dest string) (err error) {
 }
 
 func WriteAndGoFormat(value string, path string) error {
+	return WriteAndGoFmt(value, path, false, 0777)
+}
 
-	err := ioutil.WriteFile(path, []byte(value), 0777)
+func WriteAndGoFmt(value string, path string, quiet bool, perm os.FileMode) error {
+
+	err := ioutil.WriteFile(path, []byte(value), perm)
 	if err != nil {
-		log.Println("Error writing file " + path + ":  " + err.Error())
+		if !quiet {
+			log.Println("Error writing file " + path + ":  " + err.Error())
+		}
 		return err
 	}
 
 	cmd := exec.Command("gofmt", "-w", path)
 	err = cmd.Start()
 	if err != nil {
-		log.Println("Failed to gofmt on file " + path + ":  " + err.Error())
+		if !quiet {
+			log.Println("Failed to gofmt on file " + path + ":  " + err.Error())
+		}
 		return err
 	}
-
-	log.Println("Saved file " + path + " successfully.")
+	if !quiet {
+		log.Println("Saved file " + path + " successfully.")
+	}
 	return nil
 }
 
