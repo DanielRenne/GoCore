@@ -58,6 +58,7 @@ type Application struct {
 	ProductName           string        `json:"productName"`
 	HttpPort              int           `json:"httpPort"`
 	HttpsPort             int           `json:"httpsPort"`
+	CookieDomain          string        `json:"cookieDomain"`
 	ReleaseMode           string        `json:"releaseMode"`
 	WebServiceOnly        bool          `json:"webServiceOnly"`
 	Info                  info          `json:"info"`

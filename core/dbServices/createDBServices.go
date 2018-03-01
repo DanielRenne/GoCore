@@ -980,6 +980,8 @@ func genNoSQLFieldType(prefix string, schema NOSQLSchema, field NOSQLSchemaField
 	switch field.Type {
 	case "dateTime":
 		return "time.Time"
+	case "interface":
+		return "interface{}"
 	case "byteArray":
 		return "[]byte"
 	case "object":
@@ -1014,12 +1016,14 @@ func genNoSQLRuntime(collection NOSQLCollection, schema NOSQLSchema, driver stri
 	}
 
 	val += genById(collection, schema, driver)
+	val += genNewByReflection(collection, schema, driver)
 	val += genByFilter(collection, schema, driver)
 	val += genNOSQLQuery(collection, schema, driver)
 	val += genNoSQLSchemaIndex(collection, schema, driver)
 	val += genNoSQLBootstrap(collection, schema, driver)
 	val += genNoSQLSchemaRunTransaction(collection, schema, driver)
 	val += genNoSQLSchemaNew(collection, schema)
+	val += genNewId(collection, schema, driver)
 	val += genNoSQLSchemaSave(collection, schema, driver)
 	val += genNoSQLSchemaSaveByTran(collection, schema, driver)
 	val += genNoSQLValidate(collection, schema, driver)
@@ -1029,7 +1033,9 @@ func genNoSQLRuntime(collection NOSQLCollection, schema NOSQLSchema, driver stri
 	val += genNoSQLSchemaJoinFields(collection, schema, driver)
 	val += genNoSQLUnMarshal(collection, schema, driver)
 	val += genNoSQLSchemaJSONRuntime(schema)
+	val += genParseInterface(collection, schema, driver)
 	val += genNoSQLSchemaReflectByFieldName(collection)
+	val += genNoSQLSchemaReflectBaseTypeByFieldName(collection)
 
 	return val
 }
@@ -1105,39 +1111,116 @@ func genNoSQLSchemaReflectByFieldName(collection NOSQLCollection) string {
 			valueType == "bool" ||
 			valueType == "int" ||
 			valueType == "float64" ||
-			valueType == "time.Time" {
+			valueType == "time.Time" ||
+			valueType == "bson.ObjectId" {
 			marshalJSON = false
 		}
 
 		val += "\tcase \"" + key + "\":\n"
-		if value.IsArray {
-			val += "xArray, _ := x.([]interface{})\n\n"
 
-			val += "arrayToSet := make(" + value.Value + ", len(xArray))\n"
-			val += "for i := range xArray {\n"
-			val += "	inf := xArray[i]\n"
-			if marshalJSON {
-				val += "data, _ := json.Marshal(inf)\n"
+		if valueType == "interface{}" {
+			val += "\tvalue = reflect.ValueOf(x)\n"
+			val += "return\n"
+		} else {
+			if value.IsArray {
+				val += "xArray, ok := x.([]interface{})\n\n"
+
+				val += "if ok {"
+				val += "arrayToSet := make(" + value.Value + ", len(xArray))\n"
+				val += "for i := range xArray {\n"
+				val += "	inf := xArray[i]\n"
+				if marshalJSON {
+					val += "data, _ := json.Marshal(inf)\n"
+					val += "var obj " + valueType + "\n"
+					val += "err = json.Unmarshal(data, &obj)\n"
+					val += "if err != nil {\n"
+					val += "return\n"
+					val += "}\n"
+					val += "	arrayToSet[i] = obj\n"
+				} else {
+					val += "var ok bool\n"
+					val += "	arrayToSet[i], ok = inf.(" + valueType + ")\n"
+					val += "if !ok {\n"
+					val += "err = errors.New(\"Failed to typecast interface.\")\n"
+					val += "return\n"
+					val += "}\n"
+				}
+
+				val += "}\n\n"
+
+				val += "value = reflect.ValueOf(arrayToSet)\n"
+				val += "}else {\n"
+				val += "data, _ := json.Marshal(x)\n"
 				val += "var obj " + valueType + "\n"
 				val += "err = json.Unmarshal(data, &obj)\n"
 				val += "if err != nil {\n"
 				val += "return\n"
 				val += "}\n"
-				val += "	arrayToSet[i] = obj\n"
+				val += "\tvalue = reflect.ValueOf(obj)\n"
+				val += "}\n\n"
+
 			} else {
-				val += "var ok bool\n"
-				val += "	arrayToSet[i], ok = inf.(" + valueType + ")\n"
-				val += "if !ok {\n"
-				val += "err = errors.New(\"Failed to typecast interface.\")\n"
+				if marshalJSON {
+					val += "data, _ := json.Marshal(x)\n"
+					val += "var obj " + valueType + "\n"
+					val += "err = json.Unmarshal(data, &obj)\n"
+					val += "if err != nil {\n"
+					val += "return\n"
+					val += "}\n"
+				} else {
+					val += "\tobj, ok := x.(" + value.Value + ")\n"
+					val += "if !ok {\n"
+					val += "err = errors.New(\"Failed to typecast interface.\")\n"
+					val += "return\n"
+					val += "}\n"
+				}
+
+				val += "\tvalue = reflect.ValueOf(obj)\n"
 				val += "return\n"
-				val += "}\n"
 			}
+		}
+	}
 
-			val += "}\n\n"
+	val += "}\n"
+	val += "return\n"
+	val += "}\n\n"
 
-			val += "value = reflect.ValueOf(arrayToSet)\n"
+	return val
+}
+
+func genNoSQLSchemaReflectBaseTypeByFieldName(collection NOSQLCollection) string {
+	val := ""
+
+	val += "func (obj model" + strings.Title(collection.Name) + ") ReflectBaseTypeByFieldName(fieldName string, x interface{}) (value reflect.Value, err error){\n\n"
+	val += "switch fieldName{\n"
+
+	for key, value := range collection.FieldTypes {
+
+		valueType := strings.Replace(value.Value, "[]", "", -1)
+
+		marshalJSON := true
+		if valueType == "string" ||
+			valueType == "bool" ||
+			valueType == "int" ||
+			valueType == "float64" ||
+			valueType == "time.Time" ||
+			valueType == "bson.ObjectId" {
+			marshalJSON = false
+		}
+
+		val += "\tcase \"" + key + "\":\n"
+
+		if valueType == "interface{}" {
+			val += "\tvalue = reflect.ValueOf(x)\n"
+			val += "return\n"
 		} else {
 			if marshalJSON {
+				val += "if x == nil{\n"
+				val += "obj := " + valueType + "{}\n"
+				val += "\tvalue = reflect.ValueOf(&obj)\n"
+				val += "return\n"
+				val += "}\n\n"
+
 				val += "data, _ := json.Marshal(x)\n"
 				val += "var obj " + valueType + "\n"
 				val += "err = json.Unmarshal(data, &obj)\n"
@@ -1145,17 +1228,21 @@ func genNoSQLSchemaReflectByFieldName(collection NOSQLCollection) string {
 				val += "return\n"
 				val += "}\n"
 			} else {
-				val += "\tobj, ok := x.(" + value.Value + ")\n"
+				val += "if x == nil{\n"
+				val += "var obj " + valueType + "\n"
+				val += "\tvalue = reflect.ValueOf(obj)\n"
+				val += "return\n"
+				val += "}\n\n"
+
+				val += "\tobj, ok := x.(" + valueType + ")\n"
 				val += "if !ok {\n"
 				val += "err = errors.New(\"Failed to typecast interface.\")\n"
 				val += "return\n"
 				val += "}\n"
 			}
-
 			val += "\tvalue = reflect.ValueOf(obj)\n"
 			val += "return\n"
 		}
-
 	}
 
 	val += "}\n"
@@ -1182,6 +1269,9 @@ func genNoSQLSchemaSave(collection NOSQLCollection, schema NOSQLSchema, driver s
 		val += "if self.Id != \"\"{\n"
 		val += "objectId = self.Id\n"
 		val += "}\n"
+		val += "t := time.Now()\n"
+		val += "self.CreateDate = t\n"
+		val += "self.UpdateDate = t\n"
 		val += "changeInfo, err := collection.UpsertId(objectId, &self)\n"
 		val += "if err != nil {\n"
 		val += "log.Println(\"Failed to upsertId for " + strings.Title(schema.Name) + ":  \" + err.Error())\n"
@@ -1212,10 +1302,41 @@ func genById(collection NOSQLCollection, schema NOSQLSchema, driver string) stri
 	return val
 }
 
+func genNewByReflection(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
+	val := ""
+	val += "func (obj model" + strings.Title(collection.Name) + ") NewByReflection() (value reflect.Value) {\n"
+	val += "retObj := " + strings.Title(schema.Name) + "{}\n"
+	val += "value = reflect.ValueOf(&retObj)\n"
+	val += "return\n"
+	val += "}\n\n"
+	return val
+}
+
+func genParseInterface(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
+	val := ""
+	val += "func (obj *" + strings.Title(schema.Name) + ") ParseInterface(x interface{}) (err error) {\n"
+	val += "data, err := json.Marshal(x)\n"
+	val += "if err != nil {\n"
+	val += "	return\n"
+	val += "}\n"
+	val += "err = json.Unmarshal(data, obj)\n"
+	val += "return\n"
+	val += "}\n"
+	return val
+}
+
+func genNewId(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
+	val := ""
+	val += "func (obj *" + strings.Title(schema.Name) + ") NewId() {\n"
+	val += "obj.Id = bson.NewObjectId()\n"
+	val += "}\n\n"
+	return val
+}
+
 func genByFilter(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
 	val := ""
 	val += "func (obj model" + strings.Title(collection.Name) + ") ByFilter(filter map[string]interface{}, inFilter map[string]interface{}, excludeFilter map[string]interface{}, joins []string) (value reflect.Value, err error) {\n"
-	val += "var retObj " + strings.Title(schema.Name) + "\n"
+	val += "var retObj []" + strings.Title(schema.Name) + "\n"
 	val += "q := obj.Query().Filter(filter)\n"
 	val += "if len(inFilter) > 0 {\n"
 	val += "	q = q.In(inFilter)\n"

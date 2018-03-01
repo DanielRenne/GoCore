@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"math/rand"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -18,6 +19,16 @@ type Version struct {
 	MinorString    string
 	RevisionString string
 	Value          string
+}
+
+type FilePath struct {
+	Name string `json:"Name"`
+	Path string `json:"Path"`
+	Type string `json:"Type"`
+}
+
+func (obj *FilePath) ToString() (str string) {
+	return obj.Path + string(os.PathSeparator) + obj.Name + " | " + obj.Type
 }
 
 /*
@@ -89,7 +100,7 @@ func PrintMegaBytes(bytes int64) string {
 
 func IsPrintable(s string) bool {
 	for _, c := range s {
-		if (c < 32 || c > 126) && c != 10 && c != 13 {
+		if (c < 32 || c > 126) && c != 10 && c != 13 && c != 9 {
 			return false
 		}
 	}
@@ -150,6 +161,10 @@ func StringToUInt64(val string) uint64 {
 
 func IntToString(val int) string {
 	return strconv.Itoa(val)
+}
+
+func IntToBool(val int) bool {
+	return val != 0
 }
 
 func Int32ToString(val int32) string {

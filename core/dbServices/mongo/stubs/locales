@@ -21,8 +21,19 @@ var Locales = []Locale{
 	{"Romanian", "ro"},
 	{"Arabic", "ar"},
 	{"Korean", "ko"},
-	{"Japanese", "ja"},
-	{"Chinese", "zh"},
+	{"Japanese", "ja"}, 
+	{"Hebrew", "he"},
+	{"Turkish", "tr"},
+	{"Thai", "th"},
+	{"Polish", "pl"},
+	{"Hindi", "hi"},
+	{"Greek", "el"},
+	{"Croatian", "hr"},
+	{"Czech", "cs"},
+	{"Indonesian", "id"},
+	{"Danish", "da"},
+	{"Finnish", "fi"},
+	{"Norwegian", "no"},
 }
 
 func GetDefaultLocale(language string) string {

@@ -17,6 +17,7 @@ import (
 	"github.com/DanielRenne/GoCore/core/ginServer"
 	"github.com/DanielRenne/GoCore/core/logger"
 	"github.com/DanielRenne/GoCore/core/serverSettings"
+	"github.com/DanielRenne/GoCore/core/store"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 )
@@ -62,6 +63,19 @@ func (wscc *WebSocketConnectionCollection) Append(item *WebSocketConnection) {
 	wscc.Lock()
 	defer wscc.Unlock()
 	wscc.Connections = append(wscc.Connections, item)
+
+	if store.OnChange != nil {
+		go func() {
+			defer func() {
+				if recover := recover(); recover != nil {
+					log.Println("Panic Recovered at store.OnChange():  ", recover)
+					return
+				}
+			}()
+
+			store.OnChange(store.WebSocketStoreKey, "", store.PathAdd, nil, nil)
+		}()
+	}
 }
 
 func (wscc *WebSocketConnectionCollection) Iter() <-chan ConcurrentWebSocketConnectionItem {
@@ -132,7 +146,7 @@ var webSocketConnectionsMeta sync.Map
 var WebSocketCallbacks WebSocketCallbackSync
 var WebSocketRemovalCallback WebSocketRemoval
 
-func Initialize(path string, config string, cookieDomain string) (err error) {
+func Initialize(path string, config string) (err error) {
 	err = serverSettings.Initialize(path, config)
 	if err != nil {
 		return
@@ -143,9 +157,9 @@ func Initialize(path string, config string, cookieDomain string) (err error) {
 	serverSettings.WebConfigMutex.RUnlock()
 
 	if inRelease {
-		ginServer.Initialize(gin.ReleaseMode, cookieDomain)
+		ginServer.Initialize(gin.ReleaseMode, serverSettings.WebConfig.Application.CookieDomain)
 	} else {
-		ginServer.Initialize(gin.DebugMode, cookieDomain)
+		ginServer.Initialize(gin.DebugMode, serverSettings.WebConfig.Application.CookieDomain)
 	}
 	fileCache.Initialize()
 
@@ -290,6 +304,24 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context) {
 	}, "GoCore/app.go->webSocketHandler[Reader]")
 
 	WebSocketConnections.Append(wsConn)
+
+}
+
+func CloseAllSockets() {
+
+	items := []*WebSocketConnection{}
+
+	for item := range WebSocketConnections.Iter() {
+		wsConn := item.Conn
+		items = append(items, wsConn)
+	}
+
+	for i := range items {
+		connection := items[i]
+		connection.Connection.UnderlyingConn().Close()
+		// deleteWebSocket(connection)
+	}
+
 }
 
 func loadHTMLTemplates() {
@@ -596,6 +628,19 @@ func deleteWebSocket(c *WebSocketConnection) {
 			WebSocketConnections.Lock()
 			defer WebSocketConnections.Unlock()
 			WebSocketConnections.Connections = removeWebSocket(WebSocketConnections.Connections, index)
+
+			if store.OnChange != nil {
+				go func() {
+					defer func() {
+						if recover := recover(); recover != nil {
+							log.Println("Panic Recovered at store.OnChange():  ", recover)
+							return
+						}
+					}()
+
+					store.OnChange(store.WebSocketStoreKey, "", store.PathRemove, nil, nil)
+				}()
+			}
 
 			if WebSocketRemovalCallback != nil {
 				info, ok := GetWebSocketMeta(c.Id)

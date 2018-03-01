@@ -2,7 +2,6 @@ package extensions
 
 import (
 	"archive/tar"
-	"archive/zip"
 	"compress/gzip"
 	"crypto/md5"
 	"encoding/hex"
@@ -44,6 +43,78 @@ func GetAllFilesWithSearch(path string, fileSearch string) (files []os.FileInfo,
 			if !file.IsDir() {
 				if fileSearch == "" || strings.Index(file.Name(), fileSearch) != -1 {
 					files = append(files, file)
+				}
+			}
+		}
+	}
+	return files, err
+}
+
+func GetAllFolders(path string) (files []os.FileInfo, err error) {
+	return GetAllFoldersWithSearch(path, "")
+}
+
+func GetAllFoldersWithSearch(path string, fileSearch string) (files []os.FileInfo, err error) {
+	files = make([]os.FileInfo, 0)
+	filesAll, err := ioutil.ReadDir(path)
+	if err == nil {
+		for _, file := range filesAll {
+			if file.IsDir() {
+				if fileSearch == "" || strings.Index(file.Name(), fileSearch) != -1 {
+					files = append(files, file)
+				}
+			}
+		}
+	}
+	return files, err
+}
+
+func GetAllFilesDeepWithSearch(path string, fileSearch string) (files []os.FileInfo, err error) {
+	files = make([]os.FileInfo, 0)
+	filesAll, err := ioutil.ReadDir(path)
+	if err == nil {
+		for _, file := range filesAll {
+			if !file.IsDir() {
+				if fileSearch == "" || strings.Index(file.Name(), fileSearch) != -1 {
+					files = append(files, file)
+				}
+			} else {
+				subFiles, err := GetAllFilesDeepWithSearch(path+string(os.PathSeparator)+file.Name(), fileSearch)
+				files = append(files, subFiles...)
+				if err != nil {
+					return files, err
+				}
+			}
+		}
+	}
+	return files, err
+}
+
+func GetAllFilesSearchWithPath(path string, fileSearch string) (files []FilePath, err error) {
+	files = make([]FilePath, 0)
+	filesAll, err := ioutil.ReadDir(path)
+	if err == nil {
+		for _, file := range filesAll {
+			if !file.IsDir() {
+				if fileSearch == "" || strings.Index(file.Name(), fileSearch) != -1 {
+					split := strings.Split(file.Name(), ".")
+					fileType := ""
+					if len(split) > 1 {
+						fileType = split[len(split)-1]
+					}
+
+					fp := FilePath{
+						Name: file.Name(),
+						Path: path,
+						Type: fileType,
+					}
+					files = append(files, fp)
+				}
+			} else {
+				subFiles, err := GetAllFilesSearchWithPath(path+string(os.PathSeparator)+file.Name(), fileSearch)
+				files = append(files, subFiles...)
+				if err != nil {
+					return files, err
 				}
 			}
 		}
@@ -316,39 +387,6 @@ func GetFileSize(path string) (size int64, err error) {
 	}
 	size = fi.Size()
 	return
-}
-
-func UnZip(zipFile, target string) error {
-	reader, err := zip.OpenReader(zipFile)
-	if err != nil {
-		return err
-	}
-	defer reader.Close()
-
-	for _, f := range reader.File {
-		rc, err := f.Open()
-		if err != nil {
-			return err
-		}
-		defer rc.Close()
-
-		path := filepath.Join(target, f.Name)
-		if f.FileInfo().IsDir() {
-			os.MkdirAll(path, f.Mode())
-		} else {
-			f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
-			if err != nil {
-				return err
-			}
-			defer f.Close()
-
-			_, err = io.Copy(f, rc)
-			if err != nil {
-				return err
-			}
-		}
-	}
-	return err
 }
 
 func UnTar(tarball, target string) error {
