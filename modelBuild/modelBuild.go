@@ -1,8 +1,8 @@
 package modelBuild 
 
 import (
-	"github.com/DanielRenne/GoCore/core/dbServices"
-	"github.com/DanielRenne/GoCore/core/serverSettings"
+	"github.com/cloud-ignite/GoCore/core/dbServices"
+	"github.com/cloud-ignite/GoCore/core/serverSettings"
 )
 
 func Initialize(path string, fileName string) {

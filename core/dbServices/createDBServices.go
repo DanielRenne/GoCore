@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/DanielRenne/GoCore/core/extensions"
-	"github.com/DanielRenne/GoCore/core/serverSettings"
+	"github.com/cloud-ignite/GoCore/core/extensions"
+	"github.com/cloud-ignite/GoCore/core/serverSettings"
 	// "fmt"
 	"encoding/base64"
 	"io/ioutil"
@@ -1854,7 +1854,7 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 			var files [][]byte
 			var err error
 			var distDirectoryFound bool
-			err = fileCache.LoadCachedBootStrapFromKeyIntoMemory("%s")
+			err = fileCache.LoadCachedBootStrapFromKeyIntoMemory(serverSettings.WebConfig.Application.ProductName + "%s")
 			if err != nil {
 				obj.BootStrapComplete()
 				log.Println("Failed to bootstrap data for %s due to caching issue: " + err.Error())
@@ -1884,7 +1884,7 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 				hash := md5.Sum(file)
 				hexString := hex.EncodeToString(hash[:])
 				err = json.Unmarshal(file, &fileBootstrap)
-				if !fileCache.DoesHashExistInCache("%s", hexString) || cnt == 0 {
+				if !fileCache.DoesHashExistInCache(serverSettings.WebConfig.Application.ProductName + "%s", hexString) || cnt == 0 {
 					if err != nil {
 
 						logger.Message("Failed to bootstrap data for %s: " + err.Error(), logger.RED)
@@ -1892,7 +1892,7 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 						continue
 					}
 
-					fileCache.UpdateBootStrapMemoryCache("%s", hexString)
+					fileCache.UpdateBootStrapMemoryCache(serverSettings.WebConfig.Application.ProductName + "%s", hexString)
 
 					for i, _ := range fileBootstrap {
 						fb := fileBootstrap[i]
@@ -1900,7 +1900,7 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 					}
 				}
 			}
-			fileCache.WriteBootStrapCacheFile("%s")
+			fileCache.WriteBootStrapCacheFile(serverSettings.WebConfig.Application.ProductName + "%s")
 
 	`, strings.Title(collection.Name), strings.Title(collection.Name), extensions.MakeFirstLowerCase(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(schema.Name), strings.Title(schema.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name))
 

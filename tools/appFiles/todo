@@ -1,0 +1,24 @@
+go install github.com/DanielRenne/GoCore/getCore
+getCore
+
+GoCore
+- need to delete the buildXXXApp? and commit most likely because only me and dan could ever run the build tool with the private repo
+
+need to build npm hash and resolver for start_app
+
+-- have go watch write a hash on each file change.  write a .goCore file in root of app with local last change, write to this first so it matches or just dont automate the npm install with goWatch.
+
+- need to look at all the other dependencies like production build and run it if its never been run on start_app
+
+- in theory we can build a directory hash of vendorPackages and report on what is different and tell the user or possibly partially re-install folders which the hash is different
+
+pushGit="n"; appName="rezaSandbox"; username="frezadev"; humanTitle="Reza Sandbox"; echo "$humanTitle" > /tmp/humanTitle; cd $GOPATH/src/; mkdir -p $GOPATH/src/github.com/$username; cd $GOPATH/src/github.com/$username; set -e; curl https://gist.githubusercontent.com/davidrenne/b17fc61941f71f5b92921e97fb0c3652/raw/c797860907604fb0a2a4da9c57f8988dcc65c7fe/gocore_install > startApp; chmod +x startApp; ./startApp $appName $username $pushGit || rm startApp  || set +e
+
+
+echo -n "Push github (y or n)?>" && read pushGit; echo -n "GoCore App Name>"; read appName; echo -n "Enter github.com username>"; read username; echo -n "GoCore App Human Title>"; read humanTitle; echo "$humanTitle" > /tmp/humanTitle; cd $GOPATH/src/; mkdir -p $GOPATH/src/github.com/$username; cd $GOPATH/src/github.com/$username; set -e; curl https://gist.githubusercontent.com/davidrenne/b17fc61941f71f5b92921e97fb0c3652/raw/c797860907604fb0a2a4da9c57f8988dcc65c7fe/gocore_install > startApp; chmod +x startApp; ./startApp $appName $username $pushGit || rm startApp  || set +e
+
+
+
+pushGit="n"; appName="OhHell"; username="cloud-ignite"; humanTitle="Oh Hell - AKA Contract Whilst"; echo "$humanTitle" > /tmp/humanTitle; cd $GOPATH/src/; mkdir -p $GOPATH/src/github.com/$username; cd $GOPATH/src/github.com/$username; set -e; curl https://gist.githubusercontent.com/davidrenne/b17fc61941f71f5b92921e97fb0c3652/raw/c797860907604fb0a2a4da9c57f8988dcc65c7fe/gocore_install > startApp; chmod +x startApp; ./startApp $appName $username $pushGit || rm startApp  || set +e
+
+
