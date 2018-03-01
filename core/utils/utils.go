@@ -51,6 +51,10 @@ func TalkDirtyToMe(sayWhat string) {
 	}
 }
 
+func TalkDirty(sayWhat string) {
+	exec.Command("say", sayWhat).Output()
+}
+
 func InArray(a string, list []string) bool {
 	for _, b := range list {
 		if b == a {
