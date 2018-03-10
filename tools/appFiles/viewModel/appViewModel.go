@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"time"
 
-	"xojoc.pw/useragent"
 	"github.com/DanielRenne/goCoreAppTemplate/models/v1/model"
+	"xojoc.pw/useragent"
 )
+
 type AppViewModel struct {
 	Routes                             RoutesViewModel         `json:"routes" js:"routes"`
 	DisplayVersion                     string                  `json:"displayVersion" js:"displayVersion"`
@@ -21,7 +22,7 @@ type AppViewModel struct {
 	AccountUsername                    string                  `json:"AccountUsername" js:"AccountUsername"`
 	AccountRoleId                      string                  `json:"AccountRoleId" js:"AccountRoleId"`
 	IsSystemAccount                    bool                    `json:"IsSystemAccount" js:"IsSystemAccount"`
-	UserAgent                          *useragent.UserAgent      `json:"UserAgent" js:"UserAgent"`
+	UserAgent                          *useragent.UserAgent    `json:"UserAgent" js:"UserAgent"`
 	UserInitials                       string                  `json:"UserInitials" js:"UserInitials"`
 	UserFirst                          string                  `json:"UserFirst" js:"UserFirst"`
 	UserLast                           string                  `json:"UserLast" js:"UserLast"`

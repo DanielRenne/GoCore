@@ -49,7 +49,12 @@ func (self *HomeController) Root(context session_functions.RequestContext, uriPa
 		startIdx := strings.Index(startOfVersion, "\n")
 		versionNotes := startOfVersion[startIdx:]
 		idxPreviousVersion := strings.Index(versionNotes, title)
-		currentVersionNotes := versionNotes[:idxPreviousVersion]
+		var currentVersionNotes string
+		if idxPreviousVersion != -1 {
+			currentVersionNotes = versionNotes[:idxPreviousVersion]
+		} else {
+			currentVersionNotes = versionNotes
+		}
 		currentVersionNotes = strings.Replace(strings.TrimSpace(currentVersionNotes), "\t", "", -1)
 		versionLineItems := strings.Split(currentVersionNotes, "\n")
 		if strings.Index(currentVersionNotes, "[d]") != -1 {
@@ -63,18 +68,17 @@ func (self *HomeController) Root(context session_functions.RequestContext, uriPa
 				if strings.Index(line, "[d]") == -1 {
 					typeFeature := ""
 
-					if strings.Index(line, "[*]") == -1 {
+					if strings.Index(line, "[*]") != -1 {
 						typeFeature = "Bug Fix:"
-					} else if strings.Index(line, "[+]") == -1 {
+					} else if strings.Index(line, "[+]") != -1 {
 						typeFeature = "New Feature:"
-					} else if strings.Index(line, "[-]") == -1 {
+					} else if strings.Index(line, "[-]") != -1 {
 						typeFeature = "Removed Function:"
 					}
 					vm.ReleaseDescriptionLines = append(vm.ReleaseDescriptionLines, typeFeature+" "+line[4:])
 				}
 			}
 		}
-		vm.ReleaseNotes = notes
 	}
 
 	respond(PARAM_REDIRECT_NONE, PARAM_SNACKBAR_MESSAGE_NONE, SNACKBAR_TYPE_SUCCESS, nil, PARAM_TRANSACTION_ID_NONE, vm)
