@@ -59,19 +59,19 @@ type html struct {
 	HotReloadJs  jsStruct  `json:"hotReloadJs" xml:"hotReloadJs"`
 }
 
-type head struct {
-	Content string `xml:",innerxml"`
-}
-
-type body struct {
-	Content string `xml:",innerxml"`
-}
-
 type jsStruct struct {
 	Content string `xml:",innerxml"`
 }
 
 type cssStruct struct {
+	Content string `xml:",innerxml"`
+}
+
+type head struct {
+	Content string `xml:",innerxml"`
+}
+
+type body struct {
 	Content string `xml:",innerxml"`
 }
 
@@ -484,9 +484,6 @@ func AppIndex(c *gin.Context) (htmlContent string) {
 	htm.Head.Content += "<script type=\"text/javascript\">window.appContent = JSON.parse(window.atob(\"" + base64.StdEncoding.EncodeToString(contentData) + "\"));</script>"
 	htm.Body.Content = strings.Replace(htm.Body.Content, "//RedirectPage", redirectPage, -1)
 
-	hotReloadJs := ""
-	hotReloadCss := ""
-
 	if settings.AppSettings.DeveloperMode {
 		var domain string
 		if settings.ServerSettings.ServerFQDN != "127.0.0.1" && settings.ServerSettings.ServerFQDN != "localhost" && settings.ServerSettings.ServerFQDN != "0.0.0.0" && settings.ServerSettings.ServerFQDN != "" {
@@ -494,31 +491,14 @@ func AppIndex(c *gin.Context) (htmlContent string) {
 		} else {
 			domain = settings.ServerSettings.Domain
 		}
-		hotReloadJs = "<script src=\"http://" + domain + ":3000/dist/javascript/go-core-app.js\" type=\"text/javascript\"></script>"
-		hotReloadCss = "<link rel=\"stylesheet\" href=\"http://" + domain + ":3000/dist/css/go-core-app.css\"/>"
-	} else {
-		hotReloadJs = "<script src=\"/dist/javascript/go-core-app.js.gz\" type=\"text/javascript\"></script>"
-		hotReloadCss = "<link rel=\"stylesheet\" href=\"/dist/css/go-core-app.css.gz\"/>"
-		cssEndString := "<!--OptionalRemarkCSSDevEnd-->"
-		jsEndString := "<!--OptionalRemarkDevEnd-->"
-		devRemarkCSSStartIndex := strings.Index(htm.Head.Content, "<!--OptionalRemarkCSSDevStart-->")
-		devRemarkCSSEndIndex := strings.Index(htm.Head.Content, cssEndString)
-		devRemarkStartIndex := strings.Index(htm.Body.Content, "<!--OptionalRemarkDevStart-->")
-		devRemarkEndIndex := strings.Index(htm.Body.Content, jsEndString)
-		htm.Head.Content = htm.Head.Content[0:devRemarkCSSStartIndex] + htm.Head.Content[devRemarkCSSEndIndex+len(cssEndString):]
-		htm.Body.Content = htm.Body.Content[0:devRemarkStartIndex] + htm.Body.Content[devRemarkEndIndex+len(jsEndString):]
-	}
 
-	cssStartString := "<hotReloadCss>"
-	jsStartString := "<hotReloadJs>"
-	cssEndString := "</hotReloadCss>"
-	jsEndString := "</hotReloadJs>"
-	devCSSStartIndex := strings.Index(htm.Head.Content, cssStartString)
-	devCSSEndIndex := strings.Index(htm.Head.Content, cssEndString)
-	devStartIndex := strings.Index(htm.Body.Content, jsStartString)
-	devEndIndex := strings.Index(htm.Body.Content, jsEndString)
-	htm.Head.Content = htm.Head.Content[0:devCSSStartIndex] + hotReloadCss + htm.Head.Content[devCSSEndIndex+len(cssEndString):]
-	htm.Body.Content = htm.Body.Content[0:devStartIndex] + hotReloadJs + htm.Body.Content[devEndIndex+len(jsEndString):]
+		htm.HotReloadJs.Content = "<script src=\"http://" + domain + ":3000/dist/javascript/go-core-app.js\" type=\"text/javascript\"></script>"
+		htm.HotReloadCss.Content = "<link rel=\"stylesheet\" href=\"http://" + domain + ":3000/dist/css/go-core-app.css\"/>"
+	} else {
+		htm.HotReloadJs.Content = "<script src=\"/dist/javascript/go-core-app.js.gz\" type=\"text/javascript\"></script>"
+		htm.HotReloadCss.Content = "<link rel=\"stylesheet\" href=\"/dist/css/go-core-app.css.gz\"/>"
+
+	}
 
 	if reloadPage {
 		reloadScript := "<script type=\"text/javascript\">location.reload();</script>"
@@ -531,7 +511,7 @@ func AppIndex(c *gin.Context) (htmlContent string) {
 		return
 	}
 
-	htmlContent = strings.Replace(string(data[:]), "<html>", "<!DOCTYPE html><html>", 1)
+	htmlContent = strings.Replace(string(data[:]), "<html>", "<!DOCTYPE html>", 1)
 	return
 }
 
