@@ -78,6 +78,9 @@ class WSocket {
         setInterval(() => {
           this.checkConnection(onOpen, onMessage, onClose, onError);
         }, 3000);
+        setInterval(() => {
+          this.sendPollMessage();
+        }, 30000);
       }
       this.hasConnected = true;
 
@@ -85,6 +88,12 @@ class WSocket {
     catch(ex){
       console.error("Failed at connect:", ex);
       onError.call(ex);
+    }
+  }
+
+  sendPollMessage() {
+    if (this.socket.readyState == 1) { //Send a message for socket timeouts
+      this.send({});
     }
   }
 

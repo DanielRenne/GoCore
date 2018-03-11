@@ -1,0 +1,16 @@
+{
+    "AddRoleFeature": "Dodaj novi RoleFeature", 
+    "AreYouSure": "Jeste li sigurni da \u017eelite ukloniti {total} roleFeatures?", 
+    "AreYouSureInline": "Jeste li sigurni da \u017eelite ukloniti ovaj roleFeature?", 
+    "ConfirmDeleteMessage": "Jeste li sigurni da \u017eelite ukloniti ovaj roleFeature? Ovu akciju nije mogu\u0107e poni\u0161titi.", 
+    "CopyRoleFeature": "Kopija roleFeature", 
+    "DeleteRoleFeature": "Ukloniti roleFeature", 
+    "EditRoleFeature": "Ure\u0111ivanje roleFeature", 
+    "RoleFeatureListHeaderLastUpdateId": "Posljednja obnova EID", 
+    "RoleFeatureListHeaderUpdateDate": "Datum a\u017euriranja", 
+    "RoleFeatureListToolTipLastUpdateId": "Posljednja obnova EID", 
+    "RoleFeatureListToolTipUpdateDate": "Datum a\u017euriranja", 
+    "ShowingAllRoleFeatures": "Prikazuje Sve RoleFeatures", 
+    "objectName": "roleFeatureList", 
+    "welcomeExample": "Dobrodo\u0161li na {page} stranice!"
+}

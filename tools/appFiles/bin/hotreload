@@ -1,3 +1,4 @@
+whoami=$(whoami)
 if [[ "$whoami" == "root" ]]; then
     ps -ax | grep webpack-dev-server | awk '{print $1}' | xargs kill > /dev/null 2>&1
 else

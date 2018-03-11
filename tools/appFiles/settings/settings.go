@@ -6,6 +6,7 @@ import (
 	"github.com/DanielRenne/GoCore/core/serverSettings"
 	"io/ioutil"
 	"log"
+	"sync"
 )
 
 const webRoot = "/web/app"
@@ -103,6 +104,8 @@ var WebUI string
 var AppSettings appSettings
 var ServerSettings serverSettings.Application
 
+var AppSettingsSync sync.RWMutex
+
 func Initialize() {
 	log.Println("Settings Initialized.")
 	if serverSettings.APP_LOCATION == "" {
@@ -127,5 +130,7 @@ func Initialize() {
 		return
 	}
 
+	AppSettingsSync.Lock()
 	AppSettings = config.AppSettings
+	AppSettingsSync.Unlock()
 }

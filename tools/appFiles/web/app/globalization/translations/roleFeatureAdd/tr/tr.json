@@ -1,0 +1,11 @@
+{
+    "CreateRoleFeature": "RoleFeature olu\u015fturun ", 
+    "RoleFeatureAddBootstrapMeta": "Bootstrap meta", 
+    "RoleFeatureAddCreateDate": "Tarih olu\u015fturmak ", 
+    "RoleFeatureAddFeatureId": "\u00d6zellik kimli\u011fi", 
+    "RoleFeatureAddLastUpdateId": "Son g\u00fcncelleme kimli\u011fi", 
+    "RoleFeatureAddRoleId": "Rol kimli\u011fi", 
+    "RoleFeatureAddUpdateDate": "Tarih g\u00fcncelleme ", 
+    "objectName": "roleFeatureAdd", 
+    "welcomeExample": "{page} sayfas\u0131na ho\u015f geldiniz!"
+}

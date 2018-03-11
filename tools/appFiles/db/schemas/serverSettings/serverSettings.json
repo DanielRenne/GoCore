@@ -28,6 +28,10 @@
 					{
 						"name":"value",
 						"type":"string"
+					},
+					{
+						"name":"Any",
+						"type":"interface"
 					}
 				]
 			}

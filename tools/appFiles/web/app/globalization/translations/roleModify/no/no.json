@@ -1,0 +1,11 @@
+{
+    "RoleModifyAccountId": "Konto-id", 
+    "RoleModifyCanDelete": "Kan slette", 
+    "RoleModifyCreateDate": "Opprette dato", 
+    "RoleModifyLastUpdateId": "Siste oppdatering id", 
+    "RoleModifyName": "Navn", 
+    "RoleModifyShortName": "Kort navn", 
+    "RoleModifyUpdateDate": "Du vil oppdatere dato", 
+    "objectName": "roleModify", 
+    "welcomeExample": "Velkommen til {page} side!"
+}

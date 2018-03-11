@@ -1,0 +1,18 @@
+{
+    "AddFeatureGroup": "Lis\u00e4\u00e4 uusi FeatureGroup", 
+    "AreYouSure": "Oletko varma, ett\u00e4 haluat poistaa {total} featureGroups?", 
+    "AreYouSureInline": "Oletko varma, ett\u00e4 haluat poistaa t\u00e4m\u00e4n featureGroup?", 
+    "ConfirmDeleteMessage": "Oletko varma, ett\u00e4 haluat poistaa t\u00e4m\u00e4n featureGroup? T\u00e4t\u00e4 toimintoa ei voi perua.", 
+    "CopyFeatureGroup": "Kopioi featureGroup", 
+    "DeleteFeatureGroup": "Poista featureGroup", 
+    "EditFeatureGroup": "Muokkaa featureGroup", 
+    "FeatureGroupListHeaderLastUpdateId": "Viimeisin p\u00e4ivitys id", 
+    "FeatureGroupListHeaderName": "Nimi", 
+    "FeatureGroupListHeaderUpdateDate": "P\u00e4ivitys p\u00e4iv\u00e4m\u00e4\u00e4r\u00e4", 
+    "FeatureGroupListToolTipLastUpdateId": "Viimeisin p\u00e4ivitys id", 
+    "FeatureGroupListToolTipName": "Nimi", 
+    "FeatureGroupListToolTipUpdateDate": "P\u00e4ivitys p\u00e4iv\u00e4m\u00e4\u00e4r\u00e4", 
+    "ShowingAllFeatureGroups": "Osoittaa Kaikki FeatureGroups", 
+    "objectName": "featureGroupList", 
+    "welcomeExample": "Tervetuloa {page} - sivulla!"
+}

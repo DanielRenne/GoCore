@@ -1,0 +1,13 @@
+{
+    "CreateFeature": "Vytvo\u0159it funkce", 
+    "FeatureAddBootstrapMeta": "Bootstrap meta", 
+    "FeatureAddCreateDate": "Datum vytvo\u0159en\u00ed", 
+    "FeatureAddDescription": "Popis", 
+    "FeatureAddFeatureGroupId": "Funkce id skupiny", 
+    "FeatureAddKey": "Kl\u00ed\u010d", 
+    "FeatureAddLastUpdateId": "Posledn\u00ed aktualizace id", 
+    "FeatureAddName": "Jm\u00e9no", 
+    "FeatureAddUpdateDate": "Datum aktualizace", 
+    "objectName": "featureAdd", 
+    "welcomeExample": "V\u00edtejte na {page} str\u00e1nka!"
+}

@@ -222,7 +222,6 @@ func main() {
 	post := serverSettings.APP_LOCATION + "/controllers/" + capCamelPlural + "PostController.go"
 	vm := serverSettings.APP_LOCATION + "/viewModel/" + capCamelPlural + "ImportViewModel.go"
 	list := serverSettings.APP_LOCATION + "/web/app/javascript/pages/" + lowerCamel + "List/" + lowerCamel + "ListComponents.js"
-	add := serverSettings.APP_LOCATION + "/web/app/javascript/pages/" + lowerCamel + "Add/" + lowerCamel + "AddComponents.js"
 	modify := serverSettings.APP_LOCATION + "/web/app/javascript/pages/" + lowerCamel + "Modify/" + lowerCamel + "ModifyComponents.js"
 	br := serverSettings.APP_LOCATION + "/controllers/" + lowerCamel + ".go"
 
@@ -263,6 +262,13 @@ func main() {
 		}
 		os.Setenv("TMP_CONTROLLER", lowerCamel+"Modify")
 		os.Setenv("TMP_TRANSLATIONKEY", capCamel+"Modify"+inputFields[i].Name)
+		os.Setenv("TMP_TRANSLATION", inputFields[i].Label)
+		_, err = exec.Command("bash", "-c", "add_env_translation").Output()
+		if err != nil {
+			log.Fatal(err)
+		}
+		os.Setenv("TMP_CONTROLLER", lowerCamel+"Add")
+		os.Setenv("TMP_TRANSLATIONKEY", capCamel+"Add"+inputFields[i].Name)
 		os.Setenv("TMP_TRANSLATION", inputFields[i].Label)
 		_, err = exec.Command("bash", "-c", "add_env_translation").Output()
 		if err != nil {

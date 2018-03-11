@@ -10,10 +10,10 @@ else
     GREEN="\[$(tput setaf 2)\]"
     NC='\033[0m' # No Color
 
-    camelUpper="${1^}"
-    camelSingularUpper="${2^}"
-    UPPER_PARAMS="${camelUpper^^}"
-    UPPER_PARAMS2="${camelSingularUpper^^}"
+    camelUpper=$(echo $1 | python -c "data=raw_input();print data[:1].title() + data[1:]")
+    camelSingularUpper=$(echo $2 | python -c "data=raw_input();print data[:1].title() + data[1:]")
+    UPPER_PARAMS=$(tr '[:lower:]' '[:upper:]' <<< "$camelUpper")
+    UPPER_PARAMS2=$(tr '[:lower:]' '[:upper:]' <<< "$camelSingularUpper")
 
     bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/create_page_base "$1" "crud_base" "$1" "$2" "$3"
     bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/create_page_base "${2}Modify" "crud" "$1" "$2" "$3"

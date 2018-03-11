@@ -1,0 +1,13 @@
+{
+    "AppErrorModifyAccountId": "Tilin tunnus", 
+    "AppErrorModifyClientSide": "Asiakkaan puolella", 
+    "AppErrorModifyCreateDate": "Luo p\u00e4iv\u00e4m\u00e4\u00e4r\u00e4", 
+    "AppErrorModifyLastUpdateId": "Viimeisin p\u00e4ivitys id", 
+    "AppErrorModifyMessage": "Viesti", 
+    "AppErrorModifyStackShown": "Pino n\u00e4kyy", 
+    "AppErrorModifyUpdateDate": "P\u00e4ivitys p\u00e4iv\u00e4m\u00e4\u00e4r\u00e4", 
+    "AppErrorModifyUrl": "Url", 
+    "AppErrorModifyUserId": "K\u00e4ytt\u00e4j\u00e4 tunnus", 
+    "objectName": "appErrorModify", 
+    "welcomeExample": "Tervetuloa {page} - sivulla!"
+}

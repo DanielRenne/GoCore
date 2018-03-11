@@ -4,6 +4,7 @@ bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/kill_golang
 
 whoami=$(whoami)
 if [[ "$whoami" == "root" ]]; then
+    pkill compile
     ps -ax | grep webpack-dev-server | awk '{print $1}' | xargs kill > /dev/null 2>&1
 
     # Kill gulp and goCoreAppTemplate log process
@@ -15,6 +16,7 @@ if [[ "$whoami" == "root" ]]; then
     # Kill clear_npmlogs_and_check_errors
     ps -ax | grep clear_npmlogs_and_check_errors | awk '{print $1}' | xargs kill > /dev/null 2>&1
 else
+    sudo pkill compile
     ps -ax | grep webpack-dev-server | awk '{print $1}' | xargs sudo kill > /dev/null 2>&1
 
     # Kill gulp and goCoreAppTemplate log process

@@ -1,0 +1,13 @@
+{
+    "CreateFeature": "Napraviti funkciju", 
+    "FeatureAddBootstrapMeta": "\u041f\u0440\u0438\u0445\u043b\u043e\u043f Meta", 
+    "FeatureAddCreateDate": "Datum osnivanja", 
+    "FeatureAddDescription": "Opis", 
+    "FeatureAddFeatureGroupId": "Funkcija ID grupe", 
+    "FeatureAddKey": "Klju\u010d", 
+    "FeatureAddLastUpdateId": "Posljednja obnova EID", 
+    "FeatureAddName": "Naziv", 
+    "FeatureAddUpdateDate": "Datum a\u017euriranja", 
+    "objectName": "featureAdd", 
+    "welcomeExample": "Dobrodo\u0161li na {page} stranice!"
+}

@@ -1,0 +1,13 @@
+{
+    "AppErrorModifyAccountId": "Id de compte", 
+    "AppErrorModifyClientSide": "C\u00f4t\u00e9 Client", 
+    "AppErrorModifyCreateDate": "Date de cr\u00e9ation", 
+    "AppErrorModifyLastUpdateId": "Derni\u00e8re mise \u00e0 jour de l'id", 
+    "AppErrorModifyMessage": "Message", 
+    "AppErrorModifyStackShown": "Pile de montre", 
+    "AppErrorModifyUpdateDate": "Date de mise \u00e0 jour", 
+    "AppErrorModifyUrl": "Url", 
+    "AppErrorModifyUserId": "Id utilisateur", 
+    "objectName": "appErrorModify", 
+    "welcomeExample": "Bienvenue \u00e0 la {page} page!"
+}

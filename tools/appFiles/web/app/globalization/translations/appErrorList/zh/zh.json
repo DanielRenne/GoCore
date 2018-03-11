@@ -1,0 +1,23 @@
+{
+    "AddAppError": "\u6dfb\u52a0\u4e00\u4e2a\u65b0\u7684AppError", 
+    "AppErrorListHeaderClientSide": "\u5ba2\u6237\u7684\u4fa7", 
+    "AppErrorListHeaderLastUpdateId": "\u6700\u540e\u66f4\u65b0id", 
+    "AppErrorListHeaderMessage": "\u6d88\u606f", 
+    "AppErrorListHeaderStackShown": "\u5806\u793a", 
+    "AppErrorListHeaderUpdateDate": "\u66f4\u65b0\u7684\u65e5\u671f", 
+    "AppErrorListHeaderUrl": "Url", 
+    "AppErrorListToolTipClientSide": "\u5ba2\u6237\u7684\u4fa7", 
+    "AppErrorListToolTipLastUpdateId": "\u6700\u540e\u66f4\u65b0id", 
+    "AppErrorListToolTipMessage": "\u6d88\u606f", 
+    "AppErrorListToolTipStackShown": "\u5806\u793a", 
+    "AppErrorListToolTipUpdateDate": "\u66f4\u65b0\u7684\u65e5\u671f", 
+    "AppErrorListToolTipUrl": "Url", 
+    "AreYouSure": "\u4f60\u786e\u5b9a\u8981\u5220\u9664\u7684{total}appErrors?", 
+    "AreYouSureInline": "\u4f60\u786e\u5b9a\u8981\u5220\u9664\u8fd9\u4e2aappError?", 
+    "ConfirmDeleteMessage": "\u4f60\u786e\u5b9a\u8981\u5220\u9664\u8fd9\u4e2aappError? \u8fd9\u79cd\u884c\u52a8\u4e0d\u80fd\u88ab\u64a4\u9500\u3002", 
+    "DeleteAppError": "\u5220\u9664appError", 
+    "EditAppError": "\u7f16\u8f91appError", 
+    "ShowingAllAppErrors": "\u8868\u793a\u6240\u6709AppErrors", 
+    "objectName": "appErrorList", 
+    "welcomeExample": "\u6b22\u8fce\u6765\u5230{page}\u9875\uff01"
+}

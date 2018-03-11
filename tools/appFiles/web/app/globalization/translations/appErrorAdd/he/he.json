@@ -1,0 +1,14 @@
+{
+    "AppErrorAddAccountId": "\u05d0\u05ea \u05de\u05d6\u05d4\u05d4 \u05d7\u05e9\u05d1\u05d5\u05df", 
+    "AppErrorAddClientSide": "\u05d1\u05e6\u05d3 \u05d4\u05dc\u05e7\u05d5\u05d7", 
+    "AppErrorAddCreateDate": "\u05ea\u05d0\u05e8\u05d9\u05da \u05d9\u05e6\u05d9\u05e8\u05d4", 
+    "AppErrorAddLastUpdateId": "\u05e2\u05d3\u05db\u05d5\u05df \u05d0\u05d7\u05e8\u05d5\u05df id", 
+    "AppErrorAddMessage": "\u05d4\u05d5\u05d3\u05e2\u05d4", 
+    "AppErrorAddStackShown": "\u05de\u05d7\u05e1\u05e0\u05d9\u05ea \u05e9\u05de\u05d5\u05e6\u05d2", 
+    "AppErrorAddUpdateDate": "\u05ea\u05d0\u05e8\u05d9\u05da \u05e2\u05d3\u05db\u05d5\u05df", 
+    "AppErrorAddUrl": "\u05db\u05ea\u05d5\u05d1\u05ea", 
+    "AppErrorAddUserId": "\u05de\u05d6\u05d4\u05d4 \u05d4\u05de\u05e9\u05ea\u05de\u05e9", 
+    "CreateAppError": "\u05dc\u05d9\u05e6\u05d5\u05e8 appError", 
+    "objectName": "appErrorAdd", 
+    "welcomeExample": "\u05d1\u05e8\u05d5\u05db\u05d9\u05dd \u05d4\u05d1\u05d0\u05d9\u05dd {page} \u05d3\u05e3!"
+}

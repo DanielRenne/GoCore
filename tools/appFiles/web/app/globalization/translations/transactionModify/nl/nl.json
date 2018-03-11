@@ -1,0 +1,16 @@
+{
+    "TransactionModifyCollections": "Collecties", 
+    "TransactionModifyCommitted": "Gepleegd", 
+    "TransactionModifyCompleteDate": "Volledige datum", 
+    "TransactionModifyCreateDate": "Datum aanmaken", 
+    "TransactionModifyDetails": "Details", 
+    "TransactionModifyError": "Fout", 
+    "TransactionModifyLastUpdate": "Laatste update", 
+    "TransactionModifyRollbackDate": "Rollback-datum", 
+    "TransactionModifyRollbackReason": "Rollback reden", 
+    "TransactionModifyRolledBack": "Rolde terug", 
+    "TransactionModifyRolledBackBy": "Hersteld door", 
+    "TransactionModifyUserId": "Gebruikers-id", 
+    "objectName": "transactionModify", 
+    "welcomeExample": "Welkom op de {page} pagina!"
+}

@@ -1,15 +1,16 @@
 package appGen
 
 import (
+	"log"
+	"os"
+	"path/filepath"
+	"strings"
+
 	"github.com/DanielRenne/GoCore/core/extensions"
 	"github.com/DanielRenne/GoCore/core/logger"
 	"github.com/DanielRenne/GoCore/core/serverSettings"
 	"github.com/DanielRenne/GoCore/core/utils"
 	"github.com/globalsign/mgo/bson"
-	"log"
-	"os"
-	"path/filepath"
-	"strings"
 )
 
 func GenerateApp() {
@@ -184,6 +185,10 @@ func moveAppFiles() {
 	if wasCopied {
 		replacePath("/errors", project, githubName, appName)
 	}
+	wasCopied = copyFolder("/networks")
+	if wasCopied {
+		replacePath("/networks", project, githubName, appName)
+	}
 
 	_, err = os.Stat(serverSettings.APP_LOCATION + "/db")
 
@@ -237,6 +242,7 @@ import (
 	"github.com/DanielRenne/GoCore/core/app"
 	"github.com/DanielRenne/GoCore/core/ginServer"
 	"github.com/DanielRenne/GoCore/core/logger"
+	_ "`+strings.Replace(serverSettings.APP_LOCATION, "src/", "", -1)+`/controllerRegistry"
 	"`+strings.Replace(serverSettings.APP_LOCATION, "src/", "", -1)+`/br"
 	"`+strings.Replace(serverSettings.APP_LOCATION, "src/", "", -1)+`/controllers"
 	"`+strings.Replace(serverSettings.APP_LOCATION, "src/", "", -1)+`/cron"
@@ -322,5 +328,7 @@ webConfig.json
 docker/dist
 /updates/latest
 .DS_Store
+.history
+*.vscode
 `+appName)
 }

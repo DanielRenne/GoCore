@@ -1,0 +1,16 @@
+{
+    "TransactionModifyCollections": "Koleksi", 
+    "TransactionModifyCommitted": "Penting", 
+    "TransactionModifyCompleteDate": "Tanggal lengkap", 
+    "TransactionModifyCreateDate": "Membuat tanggal", 
+    "TransactionModifyDetails": "Detail", 
+    "TransactionModifyError": "Kesalahan", 
+    "TransactionModifyLastUpdate": "Last update", 
+    "TransactionModifyRollbackDate": "Rollback tanggal", 
+    "TransactionModifyRollbackReason": "Rollback alasan", 
+    "TransactionModifyRolledBack": "Digulung kembali", 
+    "TransactionModifyRolledBackBy": "Kembali digulirkan oleh", 
+    "TransactionModifyUserId": "User id", 
+    "objectName": "transactionModify", 
+    "welcomeExample": "Selamat datang {page} halaman!"
+}

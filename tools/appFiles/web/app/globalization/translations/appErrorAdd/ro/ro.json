@@ -1,0 +1,14 @@
+{
+    "AppErrorAddAccountId": "Id-ul contului", 
+    "AppErrorAddClientSide": "Partea de Client", 
+    "AppErrorAddCreateDate": "Data cre\u0103rii", 
+    "AppErrorAddLastUpdateId": "Ultima actualizare id", 
+    "AppErrorAddMessage": "Mesaj", 
+    "AppErrorAddStackShown": "Stiva ar\u0103tat", 
+    "AppErrorAddUpdateDate": "Data actualizare", 
+    "AppErrorAddUrl": "Url", 
+    "AppErrorAddUserId": "Id-ul de utilizator", 
+    "CreateAppError": "Crea appError", 
+    "objectName": "appErrorAdd", 
+    "welcomeExample": "Bine a\u021bi venit la {page} pagina!"
+}

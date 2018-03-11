@@ -1,0 +1,14 @@
+{
+    "AppErrorAddAccountId": "Akun id", 
+    "AppErrorAddClientSide": "Sisi klien", 
+    "AppErrorAddCreateDate": "Membuat tanggal", 
+    "AppErrorAddLastUpdateId": "Last update id", 
+    "AppErrorAddMessage": "Pesan", 
+    "AppErrorAddStackShown": "Tumpukan ditampilkan", 
+    "AppErrorAddUpdateDate": "Tanggal Update", 
+    "AppErrorAddUrl": "Url", 
+    "AppErrorAddUserId": "User id", 
+    "CreateAppError": "Membuat appError", 
+    "objectName": "appErrorAdd", 
+    "welcomeExample": "Selamat datang {page} halaman!"
+}

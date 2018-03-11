@@ -1,0 +1,15 @@
+{
+    "FileObjectModifyAccountId": "Identyfikator konta", 
+    "FileObjectModifyContent": "Spis tre\u015bci", 
+    "FileObjectModifyCreateDate": "Data utworzenia", 
+    "FileObjectModifyLastUpdateId": "Ostatnia aktualizacja ID", 
+    "FileObjectModifyMD5": "MD 5", 
+    "FileObjectModifyModified": "Zmieniony", 
+    "FileObjectModifyModifiedUnix": "Zmieniony w Unix", 
+    "FileObjectModifyName": "Nazwa", 
+    "FileObjectModifySize": "Rozmiar", 
+    "FileObjectModifyType": "Typ", 
+    "FileObjectModifyUpdateDate": "Data aktualizacji", 
+    "objectName": "fileObjectModify", 
+    "welcomeExample": "Zapraszamy do {page} strony!"
+}

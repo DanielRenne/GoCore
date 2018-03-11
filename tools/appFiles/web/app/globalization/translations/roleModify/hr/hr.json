@@ -1,0 +1,11 @@
+{
+    "RoleModifyAccountId": "Identifikator ra\u010duna", 
+    "RoleModifyCanDelete": "Mo\u017eete ukloniti", 
+    "RoleModifyCreateDate": "Datum osnivanja", 
+    "RoleModifyLastUpdateId": "Posljednja obnova EID", 
+    "RoleModifyName": "Naziv", 
+    "RoleModifyShortName": "Skra\u0107eni naziv", 
+    "RoleModifyUpdateDate": "Datum a\u017euriranja", 
+    "objectName": "roleModify", 
+    "welcomeExample": "Dobrodo\u0161li na {page} stranice!"
+}

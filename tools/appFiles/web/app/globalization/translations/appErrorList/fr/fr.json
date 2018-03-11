@@ -1,0 +1,23 @@
+{
+    "AddAppError": "Ajouter un nouveau AppError", 
+    "AppErrorListHeaderClientSide": "C\u00f4t\u00e9 Client", 
+    "AppErrorListHeaderLastUpdateId": "Derni\u00e8re mise \u00e0 jour de l'id", 
+    "AppErrorListHeaderMessage": "Message", 
+    "AppErrorListHeaderStackShown": "Pile de montre", 
+    "AppErrorListHeaderUpdateDate": "Date de mise \u00e0 jour", 
+    "AppErrorListHeaderUrl": "Url", 
+    "AppErrorListToolTipClientSide": "C\u00f4t\u00e9 Client", 
+    "AppErrorListToolTipLastUpdateId": "Derni\u00e8re mise \u00e0 jour de l'id", 
+    "AppErrorListToolTipMessage": "Message", 
+    "AppErrorListToolTipStackShown": "Pile de montre", 
+    "AppErrorListToolTipUpdateDate": "Date de mise \u00e0 jour", 
+    "AppErrorListToolTipUrl": "Url", 
+    "AreYouSure": "\u00cates-vous s\u00fbr de vouloir supprimer {total} appErrors?", 
+    "AreYouSureInline": "\u00cates-vous s\u00fbr de vouloir supprimer ce appError?", 
+    "ConfirmDeleteMessage": "\u00cates-vous s\u00fbr que vous voulez supprimer cette appError? Cette action ne peut \u00eatre annul\u00e9e.", 
+    "DeleteAppError": "Supprimer appError", 
+    "EditAppError": "Edit appError", 
+    "ShowingAllAppErrors": "Montrer Tous AppErrors", 
+    "objectName": "appErrorList", 
+    "welcomeExample": "Bienvenue \u00e0 la {page} page!"
+}

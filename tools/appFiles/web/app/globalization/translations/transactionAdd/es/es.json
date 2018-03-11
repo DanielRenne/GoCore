@@ -1,0 +1,17 @@
+{
+    "CreateTransaction": "Crear transacci\u00f3n", 
+    "TransactionAddCollections": "Colecciones", 
+    "TransactionAddCommitted": "Comprometidos", 
+    "TransactionAddCompleteDate": "La fecha completa", 
+    "TransactionAddCreateDate": "Fecha de creaci\u00f3n", 
+    "TransactionAddDetails": "Detalles", 
+    "TransactionAddError": "Error", 
+    "TransactionAddLastUpdate": "\u00daltima actualizaci\u00f3n", 
+    "TransactionAddRollbackDate": "Reversi\u00f3n de la fecha", 
+    "TransactionAddRollbackReason": "Reversi\u00f3n de la raz\u00f3n", 
+    "TransactionAddRolledBack": "Revierte", 
+    "TransactionAddRolledBackBy": "Revierte", 
+    "TransactionAddUserId": "Id de usuario", 
+    "objectName": "transactionAdd", 
+    "welcomeExample": "Bienvenidos a la {page} p\u00e1gina!"
+}

@@ -23,7 +23,7 @@ func BroadcastTime(x time.Time) {
 		return
 	}
 	t := x.In(loc)
-	session_functions.BroadcastTime(fmt.Sprintf("%+v", t.Format("1-2-2006")), fmt.Sprintf("%+v", t.Format("03:04:05 PM")))
+	session_functions.BroadcastTime(fmt.Sprintf("%+v", t.Format("1-2-2006")), fmt.Sprintf("%+v", t.Format("03:04:05 PM")), t)
 }
 
 func FlushLogs(x time.Time) {

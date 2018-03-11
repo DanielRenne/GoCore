@@ -1,0 +1,10 @@
+{
+    "CreateFeatureGroup": "Stvoriti featureGroup", 
+    "FeatureGroupAddBootstrapMeta": "\u041f\u0440\u0438\u0445\u043b\u043e\u043f Meta", 
+    "FeatureGroupAddCreateDate": "Datum osnivanja", 
+    "FeatureGroupAddLastUpdateId": "Posljednja obnova EID", 
+    "FeatureGroupAddName": "Naziv", 
+    "FeatureGroupAddUpdateDate": "Datum a\u017euriranja", 
+    "objectName": "featureGroupAdd", 
+    "welcomeExample": "Dobrodo\u0161li na {page} stranice!"
+}

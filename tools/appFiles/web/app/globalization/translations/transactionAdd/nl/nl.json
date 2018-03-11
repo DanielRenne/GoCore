@@ -1,0 +1,17 @@
+{
+    "CreateTransaction": "Maak transactie", 
+    "TransactionAddCollections": "Collecties", 
+    "TransactionAddCommitted": "Gepleegd", 
+    "TransactionAddCompleteDate": "Volledige datum", 
+    "TransactionAddCreateDate": "Datum aanmaken", 
+    "TransactionAddDetails": "Details", 
+    "TransactionAddError": "Fout", 
+    "TransactionAddLastUpdate": "Laatste update", 
+    "TransactionAddRollbackDate": "Rollback-datum", 
+    "TransactionAddRollbackReason": "Rollback reden", 
+    "TransactionAddRolledBack": "Rolde terug", 
+    "TransactionAddRolledBackBy": "Hersteld door", 
+    "TransactionAddUserId": "Gebruikers-id", 
+    "objectName": "transactionAdd", 
+    "welcomeExample": "Welkom op de {page} pagina!"
+}

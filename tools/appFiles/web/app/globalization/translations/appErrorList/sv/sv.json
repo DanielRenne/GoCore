@@ -1,0 +1,23 @@
+{
+    "AddAppError": "L\u00e4gga till en ny AppError", 
+    "AppErrorListHeaderClientSide": "Klientsidan", 
+    "AppErrorListHeaderLastUpdateId": "Senaste uppdatering id", 
+    "AppErrorListHeaderMessage": "Meddelande", 
+    "AppErrorListHeaderStackShown": "Stack visas", 
+    "AppErrorListHeaderUpdateDate": "Uppdatera datum", 
+    "AppErrorListHeaderUrl": "Url", 
+    "AppErrorListToolTipClientSide": "Klientsidan", 
+    "AppErrorListToolTipLastUpdateId": "Senaste uppdatering id", 
+    "AppErrorListToolTipMessage": "Meddelande", 
+    "AppErrorListToolTipStackShown": "Stack visas", 
+    "AppErrorListToolTipUpdateDate": "Uppdatera datum", 
+    "AppErrorListToolTipUrl": "Url", 
+    "AreYouSure": "\u00c4r du s\u00e4ker p\u00e5 att du vill ta bort {total} appErrors?", 
+    "AreYouSureInline": "\u00c4r du s\u00e4ker p\u00e5 att du vill radera detta appError?", 
+    "ConfirmDeleteMessage": "\u00c4r du s\u00e4ker p\u00e5 att du vill radera detta appError? Denna \u00e5tg\u00e4rd kan inte \u00e5ngras.", 
+    "DeleteAppError": "Ta bort appError", 
+    "EditAppError": "Redigera appError", 
+    "ShowingAllAppErrors": "Visar Alla AppErrors", 
+    "objectName": "appErrorList", 
+    "welcomeExample": "V\u00e4lkommen till {page} sida!"
+}

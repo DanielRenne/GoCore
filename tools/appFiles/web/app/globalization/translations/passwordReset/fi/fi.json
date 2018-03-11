@@ -1,0 +1,13 @@
+{
+    "ConfirmPassword": "Vahvista Salasana", 
+    "ErrorPasswordNotValid": "Salasanan on oltava v\u00e4hint\u00e4\u00e4n 8 merkki\u00e4. Sis\u00e4lt\u00e4\u00e4 1 m\u00e4\u00e4r\u00e4, 1 iso.", 
+    "FieldRequired": "Pakollinen Kentt\u00e4.", 
+    "NewPassword": "Uusi Salasana", 
+    "OriginalPassword": "Alkuper\u00e4inen Salasana", 
+    "PasswordResetHeader": "Salasanan {Email}.", 
+    "PasswordResetMessage": "On salasanan {Email} on pyydetty. Klikkaa {Link} nollata salasanasi. \n\nT\u00e4m\u00e4 nollaa p\u00e4\u00e4ttyy 48 tuntia.", 
+    "PasswordResetTitle": "GoCoreAppHumanName Salasanan", 
+    "PasswordsNoMatch": "Salasanat eiv\u00e4t t\u00e4sm\u00e4\u00e4.", 
+    "ResetCompleted": "T\u00e4m\u00e4 pyynt\u00f6 on saatu p\u00e4\u00e4t\u00f6kseen. Voit pyyt\u00e4\u00e4 uuden salasanan.", 
+    "Title": "Salasanan"
+}

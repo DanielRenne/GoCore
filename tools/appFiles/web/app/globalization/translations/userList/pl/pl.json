@@ -1,0 +1,13 @@
+{
+    "AddUserTooltip": "Dodaj U\u017cytkownika", 
+    "ErrorUserListFailedParse": "Nie uda\u0142o si\u0119 przeanalizowa\u0107 rol\u0119 konto dla po\u0142\u0105cze\u0144.", 
+    "ErrorUserListFailedRevoke": "Zapomnia\u0142em wy\u0142\u0105czy\u0107 u\u017cytkownik\u00f3w z kontem.", 
+    "UserAddEditCompanyName": "Nazwa Firmy ", 
+    "UserListLastNameFirstName": "Nazwisko, Imi\u0119, Drugie Imi\u0119", 
+    "UserListPhoneNumber": "Numer Telefonu ", 
+    "UserListResendInvitationEmail": "Wy\u015blij Zaproszenie Poczt\u0105 E-Mail", 
+    "UserListRevokeUser": "Anulowa\u0107 ten u\u017cytkownik z konta.", 
+    "UserListRevokedUser": "Z powodzeniem odwo\u0142any u\u017cytkownika z konta.", 
+    "UserListRole": "Rola", 
+    "UserListShowingAllUsers": "Pokazuje Wszystkich U\u017cytkownik\u00f3w"
+}

@@ -1,0 +1,13 @@
+{
+    "AppErrorModifyAccountId": "Fi\u00f3k azonos\u00edt\u00f3", 
+    "AppErrorModifyClientSide": "Kliens oldalon", 
+    "AppErrorModifyCreateDate": "L\u00e9trehoz\u00e1s d\u00e1tuma", 
+    "AppErrorModifyLastUpdateId": "Utols\u00f3 friss\u00edt\u00e9s id", 
+    "AppErrorModifyMessage": "\u00dczenet", 
+    "AppErrorModifyStackShown": "Stack l\u00e1that\u00f3", 
+    "AppErrorModifyUpdateDate": "Friss\u00edt\u00e9s d\u00e1tuma", 
+    "AppErrorModifyUrl": "Url", 
+    "AppErrorModifyUserId": "Felhaszn\u00e1l\u00f3i azonos\u00edt\u00f3", 
+    "objectName": "appErrorModify", 
+    "welcomeExample": "\u00dcdv\u00f6z\u00f6lj\u00fck a {page} oldalt!"
+}

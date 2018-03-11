@@ -1,0 +1,23 @@
+{
+    "AddAppError": "Hinzuf\u00fcgen eines neuen AppError", 
+    "AppErrorListHeaderClientSide": "Client-Seite", 
+    "AppErrorListHeaderLastUpdateId": "Letztes update-id", 
+    "AppErrorListHeaderMessage": "Nachricht", 
+    "AppErrorListHeaderStackShown": "Stack gezeigt", 
+    "AppErrorListHeaderUpdateDate": "Update-Datum", 
+    "AppErrorListHeaderUrl": "Url", 
+    "AppErrorListToolTipClientSide": "Client-Seite", 
+    "AppErrorListToolTipLastUpdateId": "Letztes update-id", 
+    "AppErrorListToolTipMessage": "Nachricht", 
+    "AppErrorListToolTipStackShown": "Stack gezeigt", 
+    "AppErrorListToolTipUpdateDate": "Update-Datum", 
+    "AppErrorListToolTipUrl": "Url", 
+    "AreYouSure": "Sind Sie sicher, dass Sie l\u00f6schen m\u00f6chten {total} appErrors?", 
+    "AreYouSureInline": "Sind Sie sicher, dass Sie m\u00f6chten, l\u00f6schen Sie diese appError?", 
+    "ConfirmDeleteMessage": "Sind Sie sicher, dass Sie m\u00f6chten, l\u00f6schen Sie diese appError? Diese Aktion kann nicht r\u00fcckg\u00e4ngig gemacht werden.", 
+    "DeleteAppError": "L\u00f6schen appError", 
+    "EditAppError": "Edit appError", 
+    "ShowingAllAppErrors": "Zeigt Alle AppErrors", 
+    "objectName": "appErrorList", 
+    "welcomeExample": "Willkommen auf {page} Seite!"
+}

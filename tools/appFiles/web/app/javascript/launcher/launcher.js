@@ -11,7 +11,7 @@ class Launcher {
     this.currentPage = "";
 
     this.deadConnectionCount;
-
+    this.reactPerf = (window.appState.DeveloperMode ? "&react_perf=1" : "");
     var router = new CoreRouter();
     var port = (window.location.protocol == "https:") ? 443 : window.appState.HTTPPort;
     if (port == undefined || port == "" || port == 0) {
@@ -22,11 +22,11 @@ class Launcher {
     var websocketDataCallback = (jsonObj, pub) => {
       this.webSocketCallbacks.forEach((item) => {
         if (item.sub == "" && pub == "*") {
-          item.callback(jsonObj);
+          item.callback(jsonObj, pub);
           return;
         }
         if (item.sub == pub || item.sub == "*") {
-          item.callback(jsonObj);
+          item.callback(jsonObj, pub);
           return;
         }
       });
@@ -63,6 +63,9 @@ class Launcher {
   }
 
   onStartRequest(typeRequest, information) {
+    if ((window.location.href).indexOf("/#/home") == -1) {
+      localStorage.setItem("uriRedirect", "~"+window.location.hash.substring(2));
+    }
     let startSpinner = true;
     startSpinner &= window.location.href.indexOf("roomControl") == -1 && window.location.href.indexOf("roomModifyDevices") == -1;
     if (typeRequest == "post") {
@@ -127,6 +130,7 @@ class Launcher {
       this.resizeContent();
       window.LoadSiteFooter();
       window.LoadSiteNotifications();
+      window.store.init();
   }
 
 
@@ -148,14 +152,14 @@ class Launcher {
   }
 
   handleWriteSocket(param) {
-    var objToSend = {};
+    let objToSend = {};
         objToSend.action = param.action;
         objToSend.state = JSON.stringify(param.state);
         objToSend.controller = param.controller;
 
-      var response = (data) => {
+      let response = (data) => {
 
-        var jsonObj = {};
+        let jsonObj = {};
         try{
           jsonObj = JSON.parse(data.State);
         }catch(e){
@@ -163,8 +167,8 @@ class Launcher {
           return;
         }
 
-        var Redirect = data.Redirect;
-        var renderFooter = () => {
+        let Redirect = data.Redirect;
+        let renderFooter = () => {
           this.renderFooterControls(data.GlobalMessage, data.Trace, data.GlobalMessageType, data.TransactionId, param.error);
         };
 
@@ -180,7 +184,7 @@ class Launcher {
           window.history.back();
         } else if (Redirect == "homeRefresh") {
           renderFooter();
-          var customGet = window.location.origin + "/#/home";
+          var customGet = window.location.origin + "/#/home" + this.reactPerf;
           window.location.assign(customGet);
           window.location.reload();
           callback();
@@ -193,19 +197,24 @@ class Launcher {
           return;
         } else if (Redirect != "") {
           if (this.contains(Redirect,"~")) {
+            $('body').css({display: "none"});
             renderFooter();
-            var customGet = window.location.origin + "/#/" + this.replaceAll(Redirect, "~", "");
+            var customGet = window.location.origin + "/#/" + this.replaceAll(Redirect, "~", "") + this.reactPerf;
             window.location.assign(customGet);
             window.location.reload();
+            callback();
+            return;
+          } else if(this.contains(Redirect, "http") && this.contains(Redirect, "/web/custom")) {
+            window.location.assign(Redirect + this.reactPerf);
             callback();
             return;
           }
           renderFooter();
 
           if (this.contains(Redirect, "http")) {
-            window.open(Redirect);
+            window.open(Redirect + this.reactPerf);
           } else {
-            var customGet = window.location.origin + "/#/" + Redirect;
+            var customGet = window.location.origin + "/#/" + Redirect + this.reactPerf;
             window.location.assign(customGet);
           }
           callback();
@@ -320,7 +329,7 @@ class Launcher {
     } else if (Redirect == "back") {
       window.history.back();
     } else if (Redirect == "homeRefresh") {
-      var customGet = window.location.origin + "/#/home";
+      var customGet = window.location.origin + "/#/home" + (window.appState.DeveloperMode ? "?react_perf=1" : "");
       window.location.assign(customGet);
       window.location.reload();
       this.currentPage = "";
@@ -328,7 +337,8 @@ class Launcher {
       this.coreRouter.handlePartialPageLoad();
     } else if (Redirect != "") {
       if (this.contains(Redirect,"~")) {
-        var baseUrl = this.replaceAll(Redirect, "~", "");
+        $('body').css({display:"none"});
+        var baseUrl = this.replaceAll(Redirect, "~", "") + this.reactPerf;
 
         var partialPath = "";
         if (baseUrl.indexOf("/#/") == -1) {
@@ -338,10 +348,14 @@ class Launcher {
         var customGet = window.location.origin + partialPath + baseUrl;
         window.location.assign(customGet);
         window.location.reload();
+      } else if(this.contains(Redirect, "http") && this.contains(Redirect, "/web/custom")) {
+        window.location.assign(Redirect + this.reactPerf);
+        callback();
+        return;
       }
       renderFooter();
 
-      var baseUrl = Redirect;
+      var baseUrl = Redirect + this.reactPerf;
 
       var partialPath = "";
       if (baseUrl.indexOf("/#/") == -1) {
@@ -349,7 +363,7 @@ class Launcher {
       }
 
       if (this.contains(Redirect, "http")) {
-        window.open(Redirect);
+        window.open(Redirect + this.reactPerf);
       } else {
         var customGet = window.location.origin + partialPath + baseUrl;
         window.location.assign(customGet);
@@ -395,7 +409,7 @@ class Launcher {
       window.history.back();
     } else if (Redirect == "homeRefresh") {
       renderFooter();
-      var customGet = window.location.origin + "/#/home";
+      var customGet = window.location.origin + "/#/home" + (window.appState.DeveloperMode ? "?react_perf=1" : "");
       window.location.assign(customGet);
       window.location.reload();
       callback();
@@ -408,18 +422,23 @@ class Launcher {
       return;
     } else if (Redirect != "") {
       if (this.contains(Redirect, "~")) {
+        $('body').css({display: "none"});
         renderFooter();
-        var customGet = window.location.origin + "/#/" + this.replaceAll(Redirect, "~", "");
+        var customGet = window.location.origin + "/#/" + this.replaceAll(Redirect, "~", "") + this.reactPerf;
         window.location.assign(customGet);
         window.location.reload();
+        callback();
+        return;
+      } else if(this.contains(Redirect, "http") && this.contains(Redirect, "/web/custom")) {
+        window.location.assign(Redirect + this.reactPerf);
         callback();
         return;
       }
       renderFooter();
       if (this.contains(Redirect, "http")) {
-        window.open(Redirect);
+        window.open(Redirect + this.reactPerf);
       } else {
-        var customGet = window.location.origin + "/#/" + Redirect;
+        var customGet = window.location.origin + "/#/" + Redirect + this.reactPerf;
         window.location.assign(customGet);
       }
       callback();

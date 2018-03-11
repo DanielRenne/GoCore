@@ -1,0 +1,13 @@
+{
+    "AddUserTooltip": "Menambahkan User", 
+    "ErrorUserListFailedParse": "Gagal mengurai akun peran untuk memohon.", 
+    "ErrorUserListFailedRevoke": "Gagal untuk Mencabut pengguna dari akun.", 
+    "UserAddEditCompanyName": "Nama Perusahaan", 
+    "UserListLastNameFirstName": "Nama Akhir, Nama Pertama", 
+    "UserListPhoneNumber": "Nomor Telepon", 
+    "UserListResendInvitationEmail": "Kirim Ulang Email Undangan", 
+    "UserListRevokeUser": "Mencabut pengguna ini dari akun.", 
+    "UserListRevokedUser": "Berhasil Dicabut pengguna dari akun.", 
+    "UserListRole": "Peran", 
+    "UserListShowingAllUsers": "Menampilkan Semua Pengguna"
+}

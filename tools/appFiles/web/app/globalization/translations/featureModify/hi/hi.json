@@ -1,0 +1,12 @@
+{
+    "FeatureModifyBootstrapMeta": "\u092c\u0942\u091f\u0938\u094d\u091f\u094d\u0930\u0948\u092a \u092e\u0947\u091f\u093e", 
+    "FeatureModifyCreateDate": "\u0924\u093f\u0925\u093f \u092c\u0928\u093e\u090f\u0901", 
+    "FeatureModifyDescription": "\u0935\u093f\u0935\u0930\u0923", 
+    "FeatureModifyFeatureGroupId": "\u0938\u0941\u0935\u093f\u0927\u093e \u0938\u092e\u0942\u0939 \u0906\u0908\u0921\u0940", 
+    "FeatureModifyKey": "\u0915\u0941\u0902\u091c\u0940", 
+    "FeatureModifyLastUpdateId": "\u0905\u0902\u0924\u093f\u092e \u0905\u0926\u094d\u092f\u0924\u0928 \u0906\u0908\u0921\u0940", 
+    "FeatureModifyName": "\u0928\u093e\u092e", 
+    "FeatureModifyUpdateDate": "\u0905\u0926\u094d\u092f\u0924\u0928 \u0924\u093f\u0925\u093f", 
+    "objectName": "featureModify", 
+    "welcomeExample": "\u092e\u0947\u0902 \u0906\u092a\u0915\u093e \u0938\u094d\u0935\u093e\u0917\u0924 \u0939\u0948 {page} \u092a\u0943\u0937\u094d\u0920!"
+}

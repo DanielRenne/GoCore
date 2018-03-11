@@ -369,83 +369,90 @@ class CoreRouter {
   }
 
   download(param) {
-
     var controller = param.controller;
-    if (controller == undefined || controller == "") {
-      var partials = window.location.href.split("#/");
-      controller = "home";
-      if (partials.length > 1) {
-        var paramIndex = partials[1].indexOf("?");
 
-        if (paramIndex != -1) {
-          controller = partials[1].substring(0, paramIndex);
-        } else {
-          controller = partials[1];
+    if (window.URL==null){
+      alert(window.appContent.ErrorDownload);
+      if (this.onEndRequestCallback != undefined) {
+        this.onEndRequestCallback();
+      }
+    }else{
+      if (controller == undefined || controller == "") {
+        var partials = window.location.href.split("#/");
+        controller = "home";
+        if (partials.length > 1) {
+          var paramIndex = partials[1].indexOf("?");
+
+          if (paramIndex != -1) {
+            controller = partials[1].substring(0, paramIndex);
+          } else {
+            controller = partials[1];
+          }
         }
       }
-    }
 
-    this.clientSide = false;
-    var apiPayload = {};
-    apiPayload.action = param.action;
-    apiPayload.state = JSON.stringify(param.state);
-    var apiPayloadString = JSON.stringify(apiPayload);
+      this.clientSide = false;
+      var apiPayload = {};
+      apiPayload.action = param.action;
+      apiPayload.state = JSON.stringify(param.state);
+      var apiPayloadString = JSON.stringify(apiPayload);
 
-    if (param.fileObjectId != undefined) {
+      if (param.fileObjectId != undefined) {
 
-      var downloadLink = document.createElement("a");
-      downloadLink.download = param.fileName;
-      downloadLink.innerHTML = "Download File";
-      if (window.URL != null) {
-          // Chrome allows the link to be clicked
-          // without actually adding it to the DOM.
-          downloadLink.href = "/fileObject/" + param.fileObjectId;
-      }
-      else {
-          // Firefox requires the link to be added to the DOM
-          // before it can be clicked.
-          downloadLink.href = "/fileObject/" + param.fileObjectId;
-          downloadLink.onclick = this.destroyClickedElement;
-          downloadLink.style.display = "none";
-          document.body.appendChild(downloadLink);
-      }
+        var downloadLink = document.createElement("a");
+        downloadLink.download = param.fileName;
+        downloadLink.innerHTML = "Download File";
+        if (window.appState.UserAgent.Name != "Firefox") {
+            // Chrome allows the link to be clicked
+            // without actually adding it to the DOM.
+            downloadLink.href = "/fileObject/" + param.fileObjectId;
+        }
+        else {
+            // Firefox requires the link to be added to the DOM
+            // before it can be clicked.
+            downloadLink.href = "/fileObject/" + param.fileObjectId;
+            downloadLink.onclick = this.destroyClickedElement;
+            downloadLink.style.display = "none";
+            document.body.appendChild(downloadLink);
+        }
 
-      downloadLink.click();
+        downloadLink.click();
 
-    } else {
-      if (this.onStartRequestCallback != undefined) {
-        this.onStartRequestCallback("download", {controller: controller, state: param.state, action: param.action});
-      }
-      $.ajax({
-          url: "/api?path=" + controller,
-          type: 'POST',
-          data: apiPayloadString,
-          success: (data, status, xhr) => {
+      } else {
+        if (this.onStartRequestCallback != undefined) {
+          this.onStartRequestCallback("download", {controller: controller, state: param.state, action: param.action});
+        }
+        $.ajax({
+            url: "/api?path=" + controller,
+            type: 'POST',
+            data: apiPayloadString,
+            success: (data, status, xhr) => {
 
-            var blob = this.b64toBlob(data);
-            var downloadLink = document.createElement("a");
-            downloadLink.download = param.fileName;
-            downloadLink.innerHTML = "Download File";
-            if (window.URL != null) {
-                // Chrome allows the link to be clicked
-                // without actually adding it to the DOM.
-                downloadLink.href = window.URL.createObjectURL(blob);
+              var blob = this.b64toBlob(data);
+              var downloadLink = document.createElement("a");
+              downloadLink.download = param.fileName;
+              downloadLink.innerHTML = "Download File";
+              if (window.URL != null) {
+                  // Chrome allows the link to be clicked
+                  // without actually adding it to the DOM.
+                  downloadLink.href = window.URL.createObjectURL(blob);
+              }
+              else {
+                  // Firefox requires the link to be added to the DOM
+                  // before it can be clicked.
+                  downloadLink.href = window.URL.createObjectURL(blob);
+                  downloadLink.onclick = this.destroyClickedElement;
+                  downloadLink.style.display = "none";
+                  document.body.appendChild(downloadLink);
+              }
+
+              downloadLink.click();
+              if (this.onEndRequestCallback != undefined) {
+                this.onEndRequestCallback();
+              }
             }
-            else {
-                // Firefox requires the link to be added to the DOM
-                // before it can be clicked.
-                downloadLink.href = window.URL.createObjectURL(blob);
-                downloadLink.onclick = this.destroyClickedElement;
-                downloadLink.style.display = "none";
-                document.body.appendChild(downloadLink);
-            }
-
-            downloadLink.click();
-            if (this.onEndRequestCallback != undefined) {
-              this.onEndRequestCallback();
-            }
-          }
-      });
+        });
+      }
     }
   }
 
@@ -518,7 +525,10 @@ class CoreRouter {
       partialPath = "/#/";
     }
 
-    var customGet = window.location.origin + partialPath + controller + "?action=" + action + "&uriParams=" + encodeURIComponent(uriParams);
+    //fullMount basically passes a unique token so that the entire react tree is rebuilt and you lose all of local this and replace with whatever the state of the server returns to the page/request
+
+    //(window.appState.DeveloperMode ? "&react_perf=1" : "") +
+    var customGet = window.location.origin + partialPath + controller + "?action=" + action + "&uriParams=" + encodeURIComponent(uriParams) + ((param.hasOwnProperty("fullMount") && param.fullMount) ? "&token=" + window.globals.guid() : "");
     this.getCallback = param.callback;
 
     console.log("URI Params:  ", param.uriParams);

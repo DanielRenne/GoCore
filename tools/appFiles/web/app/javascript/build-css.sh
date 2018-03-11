@@ -6,6 +6,9 @@ if [ $# -lt 1 ]; then
   gulp css
   cd $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/
   webpack -p --config webpack-production.config.js
+  set +e
+  say "webpack for flex box complete"
+  set -e
 fi
 
 cd $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript
@@ -20,3 +23,8 @@ cp css/RemarkExperimental.css dist/css/remark-experimental.css
 cd dist/css/
 gzip -f remark-core.css
 gzip -f remark-experimental.css
+
+set +e
+say "css dist done"
+set -e
+

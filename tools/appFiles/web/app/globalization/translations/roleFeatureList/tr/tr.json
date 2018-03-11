@@ -1,0 +1,16 @@
+{
+    "AddRoleFeature": "Yeni bir RoleFeature Ekle ", 
+    "AreYouSure": "{total} roleFeatures silmek istedi\u011finizden emin misiniz?", 
+    "AreYouSureInline": "Bu roleFeature silmek istedi\u011finizden emin misiniz?", 
+    "ConfirmDeleteMessage": "Bu roleFeature silmek istiyor musunuz? Bu i\u015flem geri al\u0131namaz.", 
+    "CopyRoleFeature": "Kopya roleFeature", 
+    "DeleteRoleFeature": "Sil roleFeature", 
+    "EditRoleFeature": "Edit roleFeature", 
+    "RoleFeatureListHeaderLastUpdateId": "Son g\u00fcncelleme kimli\u011fi", 
+    "RoleFeatureListHeaderUpdateDate": "Tarih g\u00fcncelleme ", 
+    "RoleFeatureListToolTipLastUpdateId": "Son g\u00fcncelleme kimli\u011fi", 
+    "RoleFeatureListToolTipUpdateDate": "Tarih g\u00fcncelleme ", 
+    "ShowingAllRoleFeatures": "T\u00fcm RoleFeatures G\u00f6steriliyor ", 
+    "objectName": "roleFeatureList", 
+    "welcomeExample": "{page} sayfas\u0131na ho\u015f geldiniz!"
+}

@@ -3,10 +3,13 @@ package br
 import (
 	"fmt"
 	"os/exec"
+	"runtime"
+	"strings"
 	"sync"
 	"time"
 
 	"github.com/DanielRenne/GoCore/core"
+	"github.com/DanielRenne/GoCore/core/extensions"
 	"github.com/DanielRenne/goCoreAppTemplate/sessionFunctions"
 	sigar "github.com/cloudfoundry/gosigar"
 	"github.com/pkg/errors"
@@ -161,4 +164,27 @@ func (self Server_Br) TotalMemory() uint64 {
 func (self Server_Br) UsedMemeory() uint64 {
 	self.mem.Get()
 	return self.formatSize(self.mem.Total)
+}
+
+//GetOSVersion Returns the OS Version
+func GetOSVersion() (version string) {
+
+	if runtime.GOOS == "linux" {
+		out, err := extensions.ReadFile("/etc/lsb-release")
+
+		if err != nil {
+			session_functions.Log("Error->br->serverTools->GetOSVersion", err.Error())
+			return
+		}
+
+		lines := strings.Split(string(out), "\n")
+		for i := range lines {
+			line := lines[i]
+			if strings.Contains(line, "DISTRIB_RELEASE") {
+				version = strings.Replace(line, "DISTRIB_RELEASE=", "", -1)
+				return
+			}
+		}
+	}
+	return
 }

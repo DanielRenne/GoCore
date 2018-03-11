@@ -1,0 +1,13 @@
+{
+    "AppErrorModifyAccountId": "Id-ul contului", 
+    "AppErrorModifyClientSide": "Partea de Client", 
+    "AppErrorModifyCreateDate": "Data cre\u0103rii", 
+    "AppErrorModifyLastUpdateId": "Ultima actualizare id", 
+    "AppErrorModifyMessage": "Mesaj", 
+    "AppErrorModifyStackShown": "Stiva ar\u0103tat", 
+    "AppErrorModifyUpdateDate": "Data actualizare", 
+    "AppErrorModifyUrl": "Url", 
+    "AppErrorModifyUserId": "Id-ul de utilizator", 
+    "objectName": "appErrorModify", 
+    "welcomeExample": "Bine a\u021bi venit la {page} pagina!"
+}

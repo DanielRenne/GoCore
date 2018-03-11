@@ -1,0 +1,16 @@
+{
+    "TransactionModifyCollections": "Kolekcji", 
+    "TransactionModifyCommitted": "Doskona\u0142e", 
+    "TransactionModifyCompleteDate": "Pe\u0142na Data", 
+    "TransactionModifyCreateDate": "Data utworzenia", 
+    "TransactionModifyDetails": "Szczeg\u00f3\u0142y", 
+    "TransactionModifyError": "B\u0142\u0105d", 
+    "TransactionModifyLastUpdate": "Ostatnia aktualizacja", 
+    "TransactionModifyRollbackDate": "Data wycofa\u0107 ", 
+    "TransactionModifyRollbackReason": "Przyczyna wycofywania", 
+    "TransactionModifyRolledBack": "Wycofywanie", 
+    "TransactionModifyRolledBackBy": "Wycofywanie", 
+    "TransactionModifyUserId": "ID u\u017cytkownika ", 
+    "objectName": "transactionModify", 
+    "welcomeExample": "Zapraszamy do {page} strony!"
+}

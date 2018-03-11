@@ -1,0 +1,13 @@
+{
+    "CreateFeature": "\u00d6zellik olu\u015fturma ", 
+    "FeatureAddBootstrapMeta": "Bootstrap meta", 
+    "FeatureAddCreateDate": "Tarih olu\u015fturmak ", 
+    "FeatureAddDescription": "A\u00e7\u0131klama", 
+    "FeatureAddFeatureGroupId": "\u00d6zellik Grup kimli\u011fi", 
+    "FeatureAddKey": "Anahtar", 
+    "FeatureAddLastUpdateId": "Son g\u00fcncelleme kimli\u011fi", 
+    "FeatureAddName": "Ad\u0131", 
+    "FeatureAddUpdateDate": "Tarih g\u00fcncelleme ", 
+    "objectName": "featureAdd", 
+    "welcomeExample": "{page} sayfas\u0131na ho\u015f geldiniz!"
+}

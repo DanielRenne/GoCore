@@ -1,0 +1,13 @@
+{
+    "AppErrorModifyAccountId": "\u30a2\u30ab\u30a6\u30f3\u30c8id", 
+    "AppErrorModifyClientSide": "\u30af\u30e9\u30a4\u30a2\u30f3\u30c8\u5074", 
+    "AppErrorModifyCreateDate": "\u4f5c\u6210\u65e5", 
+    "AppErrorModifyLastUpdateId": "\u6700\u7d42\u66f4\u65b0id", 
+    "AppErrorModifyMessage": "\u30e1\u30c3\u30bb\u30fc\u30b8", 
+    "AppErrorModifyStackShown": "\u30b9\u30bf\u30c3\u30af\u8868\u793a", 
+    "AppErrorModifyUpdateDate": "\u66f4\u65b0\u65e5", 
+    "AppErrorModifyUrl": "Url", 
+    "AppErrorModifyUserId": "\u30e6\u30fc\u30b6\u306eid", 
+    "objectName": "appErrorModify", 
+    "welcomeExample": "\u304a{page}\u306e\u30da\u30fc\u30b8\u3067\u3059\uff01"
+}

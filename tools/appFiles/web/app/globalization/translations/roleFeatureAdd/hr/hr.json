@@ -1,0 +1,11 @@
+{
+    "CreateRoleFeature": "Stvoriti roleFeature", 
+    "RoleFeatureAddBootstrapMeta": "\u041f\u0440\u0438\u0445\u043b\u043e\u043f Meta", 
+    "RoleFeatureAddCreateDate": "Datum osnivanja", 
+    "RoleFeatureAddFeatureId": "ID objekta ", 
+    "RoleFeatureAddLastUpdateId": "Posljednja obnova EID", 
+    "RoleFeatureAddRoleId": "Id uloge ", 
+    "RoleFeatureAddUpdateDate": "Datum a\u017euriranja", 
+    "objectName": "roleFeatureAdd", 
+    "welcomeExample": "Dobrodo\u0161li na {page} stranice!"
+}

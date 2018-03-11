@@ -1,0 +1,17 @@
+{
+    "CreateTransaction": "Erstellen Transaktion", 
+    "TransactionAddCollections": "Sammlungen", 
+    "TransactionAddCommitted": "Begangen", 
+    "TransactionAddCompleteDate": "Das vollst\u00e4ndige Datum", 
+    "TransactionAddCreateDate": "Datum erstellen", 
+    "TransactionAddDetails": "Details", 
+    "TransactionAddError": "Fehler", 
+    "TransactionAddLastUpdate": "Letztes update", 
+    "TransactionAddRollbackDate": "Rollback Datum", 
+    "TransactionAddRollbackReason": "Rollback Grund", 
+    "TransactionAddRolledBack": "Rollback", 
+    "TransactionAddRolledBackBy": "Rollback", 
+    "TransactionAddUserId": "Benutzer-id", 
+    "objectName": "transactionAdd", 
+    "welcomeExample": "Willkommen auf {page} Seite!"
+}

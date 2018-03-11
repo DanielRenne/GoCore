@@ -1,0 +1,16 @@
+{
+    "TransactionModifyCollections": "Zbirke", 
+    "TransactionModifyCommitted": "Po\u010dinio", 
+    "TransactionModifyCompleteDate": "Potpuna Datum", 
+    "TransactionModifyCreateDate": "Datum osnivanja", 
+    "TransactionModifyDetails": "Detalji", 
+    "TransactionModifyError": "Gre\u0161ka", 
+    "TransactionModifyLastUpdate": "Posljednja promjena", 
+    "TransactionModifyRollbackDate": "Datum poni\u0161ti ", 
+    "TransactionModifyRollbackReason": "Razlog staro", 
+    "TransactionModifyRolledBack": "Vratit", 
+    "TransactionModifyRolledBackBy": "Vratit", 
+    "TransactionModifyUserId": "ID korisnika ", 
+    "objectName": "transactionModify", 
+    "welcomeExample": "Dobrodo\u0161li na {page} stranice!"
+}

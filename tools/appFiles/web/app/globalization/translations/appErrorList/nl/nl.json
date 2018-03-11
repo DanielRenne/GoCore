@@ -1,0 +1,23 @@
+{
+    "AddAppError": "Voeg een nieuwe AppError", 
+    "AppErrorListHeaderClientSide": "De kant van de Client", 
+    "AppErrorListHeaderLastUpdateId": "Laatste update id", 
+    "AppErrorListHeaderMessage": "Bericht", 
+    "AppErrorListHeaderStackShown": "Stapel weergegeven", 
+    "AppErrorListHeaderUpdateDate": "Update datum", 
+    "AppErrorListHeaderUrl": "Url", 
+    "AppErrorListToolTipClientSide": "De kant van de Client", 
+    "AppErrorListToolTipLastUpdateId": "Laatste update id", 
+    "AppErrorListToolTipMessage": "Bericht", 
+    "AppErrorListToolTipStackShown": "Stapel weergegeven", 
+    "AppErrorListToolTipUpdateDate": "Update datum", 
+    "AppErrorListToolTipUrl": "Url", 
+    "AreYouSure": "Weet u zeker dat u wilt verwijderen {total} appErrors?", 
+    "AreYouSureInline": "Weet u zeker dat u wilt verwijderen dit appError?", 
+    "ConfirmDeleteMessage": "Bent u zeker dat u wilt verwijderen in dit appError? Deze actie kan niet ongedaan worden gemaakt.", 
+    "DeleteAppError": "Verwijderen appError", 
+    "EditAppError": "Bewerken appError", 
+    "ShowingAllAppErrors": "Met Alle AppErrors", 
+    "objectName": "appErrorList", 
+    "welcomeExample": "Welkom op de {page} pagina!"
+}

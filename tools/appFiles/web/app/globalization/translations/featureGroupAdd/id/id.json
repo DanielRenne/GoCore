@@ -1,0 +1,10 @@
+{
+    "CreateFeatureGroup": "Membuat featureGroup", 
+    "FeatureGroupAddBootstrapMeta": "Bootstrap meta", 
+    "FeatureGroupAddCreateDate": "Membuat tanggal", 
+    "FeatureGroupAddLastUpdateId": "Last update id", 
+    "FeatureGroupAddName": "Nama", 
+    "FeatureGroupAddUpdateDate": "Tanggal Update", 
+    "objectName": "featureGroupAdd", 
+    "welcomeExample": "Selamat datang {page} halaman!"
+}

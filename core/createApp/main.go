@@ -3,13 +3,14 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"os"
+	"os/exec"
+	"strings"
+
 	"github.com/DanielRenne/GoCore/core/extensions"
 	"github.com/DanielRenne/GoCore/core/logger"
 	"github.com/DanielRenne/GoCore/core/utils"
 	"github.com/davidrenne/heredoc"
-	"os"
-	"os/exec"
-	"strings"
 )
 
 func talk(msg string) {
@@ -86,8 +87,8 @@ func main() {
 
 	camelUpper := strings.ToTitle(string(appName[0])) + string(appName[1:])
 
-	err := extensions.WriteToFile(humanTitle, "/tmp/humanFile", 644)
-	errorOut("extensions.WriteToFile "+humanTitle+" to /tmp/humanFile", err, false)
+	err := extensions.WriteToFile(humanTitle, "/tmp/humanTitle", 644)
+	errorOut("extensions.WriteToFile "+humanTitle+" to /tmp/humanTitle", err, false)
 
 	path := "src/github.com/" + username
 	err = os.MkdirAll(path, 0644)

@@ -1,3 +1,4 @@
+import "babel-polyfill";
 import injectTapEventPlugin from "react-tap-event-plugin";
 import ReactDom from "react-dom";
 import {
@@ -196,7 +197,8 @@ import {
 //import Users from './pages/users/users'
 //import Notifications from './pages/notifications/notifications'
 import Launcher from "./launcher/launcher";
-require('es6-object-assign').polyfill();
+import Store from "./components/store/store";
+import BaseLogger from "./components/baseLogger";
 
 
 window.materialColors = {
@@ -323,6 +325,8 @@ window.onerror = (msg, url, line, col, error) => {
 };
 
 window.launcher = new Launcher();
+window.store = new Store();
+window.baseLogger = new BaseLogger();
 
 // Needed for onTouchTap
 // http://stackoverflow.com/a/34015469/988941
@@ -372,3 +376,4 @@ import FileObjectModify from './pages/fileObjectModify/fileObjectModify'
 import FileObjectList from './pages/fileObjectList/fileObjectList'
 import FileObjectAdd from './pages/fileObjectAdd/fileObjectAdd'
 import Logs from './pages/logs/logs'
+import ServerSettingsModify from './pages/serverSettingsModify/serverSettingsModify'

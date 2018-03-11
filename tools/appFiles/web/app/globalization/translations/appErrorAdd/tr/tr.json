@@ -1,0 +1,14 @@
+{
+    "AppErrorAddAccountId": "Id hesab\u0131 ", 
+    "AppErrorAddClientSide": "\u0130stemci taraf\u0131", 
+    "AppErrorAddCreateDate": "Tarih olu\u015fturmak ", 
+    "AppErrorAddLastUpdateId": "Son g\u00fcncelleme kimli\u011fi", 
+    "AppErrorAddMessage": "Mesaj", 
+    "AppErrorAddStackShown": "Y\u0131\u011f\u0131n g\u00f6sterilir", 
+    "AppErrorAddUpdateDate": "Tarih g\u00fcncelleme ", 
+    "AppErrorAddUrl": "Url", 
+    "AppErrorAddUserId": "Kullan\u0131c\u0131 kimli\u011fi", 
+    "CreateAppError": "AppError olu\u015fturun ", 
+    "objectName": "appErrorAdd", 
+    "welcomeExample": "{page} sayfas\u0131na ho\u015f geldiniz!"
+}

@@ -1,0 +1,11 @@
+{
+    "RoleModifyAccountId": "Id hesab\u0131 ", 
+    "RoleModifyCanDelete": "Sil ", 
+    "RoleModifyCreateDate": "Tarih olu\u015fturmak ", 
+    "RoleModifyLastUpdateId": "Son g\u00fcncelleme kimli\u011fi", 
+    "RoleModifyName": "Ad\u0131", 
+    "RoleModifyShortName": "K\u0131sa ad\u0131", 
+    "RoleModifyUpdateDate": "Tarih g\u00fcncelleme ", 
+    "objectName": "roleModify", 
+    "welcomeExample": "{page} sayfas\u0131na ho\u015f geldiniz!"
+}

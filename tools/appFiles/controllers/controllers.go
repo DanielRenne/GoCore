@@ -8,11 +8,15 @@ import (
 	"net/http"
 	"net/url"
 	"reflect"
+	"sync"
 
 	"github.com/DanielRenne/goCoreAppTemplate/sessionFunctions"
 	"github.com/DanielRenne/goCoreAppTemplate/viewModel"
+
 	"github.com/gin-gonic/gin"
 )
+
+var registry sync.Map
 
 func init() {
 	gob.Register(GinContextPayload{})
@@ -28,6 +32,11 @@ type responseWriter struct {
 }
 
 func getController(key string) reflect.Value {
+
+	controller, ok := getControllerRegistry(key)
+	if ok {
+		return controller
+	}
 
 	switch key {
 	case CONTROLLER_LOGIN:
@@ -216,4 +225,30 @@ func (self *meta) Stringify() (value string, err error) {
 	data, err := json.Marshal(self)
 	value = string(data)
 	return
+}
+
+func RegisterController(controller interface{}) {
+	registry.Store(getType(controller), reflect.ValueOf(controller))
+}
+
+func RegisterControllerByKey(key string, controller interface{}) {
+	registry.Store(key, reflect.ValueOf(controller))
+}
+
+func getControllerRegistry(key string) (controller reflect.Value, ok bool) {
+
+	obj, ok := registry.Load(key)
+	if ok {
+		controller = obj.(reflect.Value)
+	}
+	return
+}
+
+func getType(myvar interface{}) string {
+
+	if t := reflect.TypeOf(myvar); t.Kind() == reflect.Ptr {
+		return t.Elem().Name()
+	} else {
+		return t.Name()
+	}
 }

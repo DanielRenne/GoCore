@@ -25,6 +25,7 @@ import {
   DeleteIcon,
   List
 } from "../../globals/icons";
+import TextFieldStore from "../../components/store/textField";
 import DatePicker from "material-ui/DatePicker";
 import TimePicker from "material-ui/TimePicker";
 import {DatabaseIcon} from "../../icons/icons";
@@ -99,6 +100,28 @@ class ServerSettingsModify extends BasePageComponent {
     };
   }
 
+  componentDidMount() {
+    this.registerSubscriptions([
+      this.store.dbRegister("ServerSettings", "597e315460e657d9b70563aa", "Any", (response) => {
+        // if you wanted to validate min max range you would have to uncomment store.IpAddress.go logic
+        //, MinIP: "225.0.0.1", MaxIP: "239.255.255.254", MinIP2: "225.0.0.1", MaxIP2: "239.255.255.254"
+        this.store.appSet("IPAddress.ValidateIPV4", {UserId: window.appState.UserId, IpAddress: response}, (errors) => {
+          if (!errors.Valid) {
+            // Revert IP address back to original since the store doesnt offer and will always set the value when you call set.
+            this.store.set("ServerSettings", "597e315460e657d9b70563aa", "Any", "127.0.0.1", () => {
+              this.globs.PopupWindow(errors.Message);
+            });
+          } else {
+            this.base.setState((s) => {
+              s.TimeZone.Any = response;
+              return s
+            });
+          }
+        });
+      }, true),
+    ]);
+  }
+
   render() {
     var lockoutItems = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
     var lockoutMap = lockoutItems.map(function(i) {
@@ -145,6 +168,16 @@ class ServerSettingsModify extends BasePageComponent {
     var settingsTab = (
       <div>
       <CenteredPaperGrid>
+        <TextFieldStore
+            changeOnBlur={true}
+            collection={"ServerSettings"}
+            id={"597e315460e657d9b70563aa"}
+            path={"Any"}
+            value={this.state.TimeZone.Any}
+            floatingLabelText={"* Example Store with IP Address"}
+            hintText={"* Example Store with IP Address"}
+            fullWidth={true}
+        />
         <div style={{fontWeight:"Bold"}}>{window.pageContent.TimeSettings}</div>
         <br/>
         <CurrentTime/>

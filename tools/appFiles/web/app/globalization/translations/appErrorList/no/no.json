@@ -1,0 +1,23 @@
+{
+    "AddAppError": "Legge til en ny AppError", 
+    "AppErrorListHeaderClientSide": "Klient-side", 
+    "AppErrorListHeaderLastUpdateId": "Siste oppdatering id", 
+    "AppErrorListHeaderMessage": "Melding", 
+    "AppErrorListHeaderStackShown": "Stabel vist", 
+    "AppErrorListHeaderUpdateDate": "Du vil oppdatere dato", 
+    "AppErrorListHeaderUrl": "Url", 
+    "AppErrorListToolTipClientSide": "Klient-side", 
+    "AppErrorListToolTipLastUpdateId": "Siste oppdatering id", 
+    "AppErrorListToolTipMessage": "Melding", 
+    "AppErrorListToolTipStackShown": "Stabel vist", 
+    "AppErrorListToolTipUpdateDate": "Du vil oppdatere dato", 
+    "AppErrorListToolTipUrl": "Url", 
+    "AreYouSure": "Er du sikker p\u00e5 at du \u00f8nsker \u00e5 slette {total} appErrors?", 
+    "AreYouSureInline": "Er du sikker p\u00e5 at du vil slette dette appError?", 
+    "ConfirmDeleteMessage": "Er du sikker p\u00e5 at du vil slette dette appError? Denne handlingen kan ikke gj\u00f8res om.", 
+    "DeleteAppError": "Slett appError", 
+    "EditAppError": "Rediger appError", 
+    "ShowingAllAppErrors": "Viser Alle AppErrors", 
+    "objectName": "appErrorList", 
+    "welcomeExample": "Velkommen til {page} side!"
+}

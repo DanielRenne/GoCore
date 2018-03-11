@@ -1,0 +1,12 @@
+{
+    "CreateRole": "Opret rolle", 
+    "RoleAddAccountId": "Konto-id ' et", 
+    "RoleAddCanDelete": "Kan slet", 
+    "RoleAddCreateDate": "Opret dato", 
+    "RoleAddLastUpdateId": "Sidste opdatering id", 
+    "RoleAddName": "Navn", 
+    "RoleAddShortName": "Kort navn", 
+    "RoleAddUpdateDate": "Update dato", 
+    "objectName": "roleAdd", 
+    "welcomeExample": "Velkommen til {page} side!"
+}

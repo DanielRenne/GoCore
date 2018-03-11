@@ -8,10 +8,10 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
+	"log"
 	"os"
 	"time"
 
-	"log"
 	"sync"
 
 	"runtime/debug"
@@ -34,12 +34,12 @@ import (
 //Logger.STANDARD_LEVELS = [ 'all', 'trace', 'debug', 'info', 'warn', 'error', 'fatal' ];
 //Logger.DEFAULT_LEVEL = 'info';
 
-type logBuffer struct {
-	sync.RWMutex
-	buffers map[string]string
-}
+// type logBuffer struct {
+// 	sync.RWMutex
+// 	buffers map[string]string
+// }
 
-var logBuffers logBuffer
+var logBuffers sync.Map
 
 type ServerResponseStruct struct {
 	CompletedSuccessfully bool
@@ -53,9 +53,7 @@ type ServerResponseStruct struct {
 }
 
 func init() {
-	logBuffers = logBuffer{
-		buffers: make(map[string]string, 0),
-	}
+	app.CustomLog = Log
 }
 
 func ServerResponseToStruct(completedSuccessfully bool, context RequestContext, redirect string, globalMessage string, globalMessageType string, trace error, transactionId string, viewModel interface{}) ServerResponseStruct {
@@ -527,13 +525,17 @@ func logWithQuote(uniqueId string, desc string, message string, includeQuotes bo
 		if settings.AppSettings.DeveloperMode {
 			WriteLog(uniqueId, desc)
 		} else {
-			logBuffers.Lock()
-			_, ok := logBuffers.buffers[uniqueId]
-			if !ok {
-				logBuffers.buffers[uniqueId] = ""
+			currentValue, ok := logBuffers.Load(uniqueId)
+			if ok {
+				val, parsed := currentValue.(string)
+				if parsed {
+					logBuffers.Store(uniqueId, val+desc)
+				} else {
+					logBuffers.Store(uniqueId, desc)
+				}
+			} else {
+				logBuffers.Store(uniqueId, desc)
 			}
-			logBuffers.buffers[uniqueId] += desc
-			logBuffers.Unlock()
 		}
 
 		if uniqueId == "" {
@@ -556,24 +558,37 @@ func Print(logInfo string) {
 }
 
 func FlushAllLogs() (err error) {
-	logBuffers.Lock()
-	for logId, contents := range logBuffers.buffers {
-		err = WriteLog(logId, contents)
-		logBuffers.buffers[logId] = ""
+
+	keys := []string{}
+	logBuffers.Range(func(key interface{}, value interface{}) bool {
+		keyString, okKey := key.(string)
+		valString, okVal := value.(string)
+		if okKey && okVal {
+			err = WriteLog(keyString, valString)
+			keys = append(keys, keyString)
+		}
+		return true
+	})
+
+	for i := range keys {
+		key := keys[i]
+		logBuffers.Store(key, "")
 	}
-	logBuffers.Unlock()
+
 	return
 }
 
-func FlushLog(uniqueId string) (err error) {
-	logBuffers.Lock()
-	val, ok := logBuffers.buffers[uniqueId]
-	if !ok {
-		return
+func FlushLog(deviceId string) (err error) {
+
+	val, ok := logBuffers.Load(deviceId)
+	if ok {
+		valString, parsed := val.(string)
+		if parsed {
+			err = WriteLog(deviceId, valString)
+		}
 	}
-	err = WriteLog(uniqueId, val)
-	logBuffers.buffers[uniqueId] = ""
-	logBuffers.Unlock()
+
+	logBuffers.Store(deviceId, "")
 	return
 }
 
@@ -609,59 +624,50 @@ func BroadcastLog(id string, data string) {
 	jsonResponse.Id = id
 	jsonResponse.Data = data
 
-	var connections []*app.WebSocketConnection
-	app.WebSocketConnections.RLock()
-	for i := range app.WebSocketConnections.Connections {
-		c := app.WebSocketConnections.Connections[i]
-		connections = append(connections, c)
-	}
+	app.GetAllWebSocketMeta().Range(func(key interface{}, value interface{}) bool {
+		meta, ok := value.(app.WebSocketConnectionMeta)
+		if ok {
 
-	app.WebSocketConnections.RUnlock()
-
-	for i := range connections {
-		conn := connections[i]
-		conn.RLock()
-		value, ok := ParseSocketClientStatus(conn)
-		conn.RUnlock()
-		if ok == true && (value.Page == "logs" || value.Page == "\"logs\"") {
-			app.ReplyToWebSocketPubSub(conn, "LogData", jsonResponse)
+			value, ok := ParseSocketClientStatus(meta)
+			if ok == true && strings.Contains(value.Page, "logs") {
+				app.ReplyToWebSocketPubSub(meta.Conn, "LogData", jsonResponse)
+			}
 		}
-	}
+		return true
+	})
+
 }
 
-func BroadcastTime(date string, time string) {
+func BroadcastTime(date string, timeString string, t time.Time) { //DON'T Log to Standard Out.  Infinite Loop. just log to WriteLog("tmp-dbg", "log") to see where things are at and write to a file
+
 	type timeData struct {
-		Date string `json:"Date"`
-		Time string `json:"Time"`
+		Date      string    `json:"Date"`
+		Time      string    `json:"Time"`
+		TimeStamp time.Time `json:"TimeStamp"`
 	}
 	var jsonResponse timeData
-	jsonResponse.Time = time
+	jsonResponse.Time = timeString
 	jsonResponse.Date = date
+	jsonResponse.TimeStamp = t
 
-	var connections []*app.WebSocketConnection
-	app.WebSocketConnections.RLock()
-	for i := range app.WebSocketConnections.Connections {
-		c := app.WebSocketConnections.Connections[i]
-		connections = append(connections, c)
-	}
+	app.GetAllWebSocketMeta().Range(func(key interface{}, value interface{}) bool {
+		meta, ok := value.(app.WebSocketConnectionMeta)
+		if ok {
 
-	app.WebSocketConnections.RUnlock()
-
-	for i := range connections {
-		conn := connections[i]
-		conn.RLock()
-		value, ok := ParseSocketClientStatus(conn)
-		conn.RUnlock()
-		if ok == true && (value.Page == "serverSettingsModify" || value.Page == "\"serverSettingsModify\"") {
-			app.ReplyToWebSocketPubSub(conn, "Clock", jsonResponse)
+			value, ok := ParseSocketClientStatus(meta)
+			if ok == true && (strings.Contains(value.Page, "serverSettingsModify")) {
+				app.ReplyToWebSocketPubSub(meta.Conn, "Clock", jsonResponse)
+			}
 		}
-	}
+		return true
+	})
 }
 
-func ParseSocketClientStatus(conn *app.WebSocketConnection) (value socketViews.ClientStatus, ok bool) {
-	if conn.ContextType == "ClientStatus" {
+func ParseSocketClientStatus(meta app.WebSocketConnectionMeta) (value socketViews.ClientStatus, ok bool) {
+
+	if meta.ContextType == "ClientStatus" {
 		ok = true
-		value.Parse(conn.ContextString)
+		value.Parse(meta.ContextString)
 		return
 	}
 	return

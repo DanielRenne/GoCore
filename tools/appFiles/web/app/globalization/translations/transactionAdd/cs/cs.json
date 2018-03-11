@@ -1,0 +1,17 @@
+{
+    "CreateTransaction": "Vytvo\u0159en\u00ed transakce", 
+    "TransactionAddCollections": "Sb\u00edrky", 
+    "TransactionAddCommitted": "Zav\u00e1zali", 
+    "TransactionAddCompleteDate": "Kompletn\u00ed datum", 
+    "TransactionAddCreateDate": "Datum vytvo\u0159en\u00ed", 
+    "TransactionAddDetails": "Podrobnosti", 
+    "TransactionAddError": "Chyba", 
+    "TransactionAddLastUpdate": "Posledn\u00ed aktualizace", 
+    "TransactionAddRollbackDate": "Rollback data", 
+    "TransactionAddRollbackReason": "D\u016fvod vr\u00e1cen\u00ed", 
+    "TransactionAddRolledBack": "Vr\u00e1cena zp\u011bt", 
+    "TransactionAddRolledBackBy": "Vr\u00e1cena zp\u011bt do", 
+    "TransactionAddUserId": "Id u\u017eivatele", 
+    "objectName": "transactionAdd", 
+    "welcomeExample": "V\u00edtejte na {page} str\u00e1nka!"
+}

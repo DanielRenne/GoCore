@@ -1,0 +1,16 @@
+{
+    "TransactionModifyCollections": "Collections", 
+    "TransactionModifyCommitted": "Engag\u00e9", 
+    "TransactionModifyCompleteDate": "Date compl\u00e8te", 
+    "TransactionModifyCreateDate": "Date de cr\u00e9ation", 
+    "TransactionModifyDetails": "D\u00e9tails", 
+    "TransactionModifyError": "Erreur", 
+    "TransactionModifyLastUpdate": "Derni\u00e8re mise \u00e0 jour", 
+    "TransactionModifyRollbackDate": "La restauration de la date", 
+    "TransactionModifyRollbackReason": "Restauration raison", 
+    "TransactionModifyRolledBack": "Restaur\u00e9e", 
+    "TransactionModifyRolledBackBy": "Restaur\u00e9e par", 
+    "TransactionModifyUserId": "Id utilisateur", 
+    "objectName": "transactionModify", 
+    "welcomeExample": "Bienvenue \u00e0 la {page} page!"
+}
