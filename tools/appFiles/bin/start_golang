@@ -7,13 +7,13 @@ VERSION=$(bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/get_vers
 PRODUCTNAME=$(bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/get_product_name_local)
 port=$(bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/get_port_local)
 if [[ "$port" != "80" ]]; then
-    nohup go run -ldflags "-s -X github.com/DanielRenne/goCoreAppTemplate/settings.Version=${VERSION} -X github.com/DanielRenne/goCoreAppTemplate/settings.ProductName=${PRODUCTNAME}" src/github.com/DanielRenne/goCoreAppTemplate/goCoreAppTemplate.go > $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/app.log 2>&1 &
+    nohup /usr/local/go/bin/go run -ldflags "-s -X github.com/DanielRenne/goCoreAppTemplate/settings.Version=${VERSION} -X github.com/DanielRenne/goCoreAppTemplate/settings.ProductName=${PRODUCTNAME}" src/github.com/DanielRenne/goCoreAppTemplate/goCoreAppTemplate.go > $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/app.log 2>&1 &
 else
     whoami=$(whoami)
     if [[ "$whoami" == "root" ]]; then
-        nohup go run -ldflags "-s -X github.com/DanielRenne/goCoreAppTemplate/settings.Version=${VERSION} -X github.com/DanielRenne/goCoreAppTemplate/settings.ProductName=${PRODUCTNAME}" src/github.com/DanielRenne/goCoreAppTemplate/goCoreAppTemplate.go > $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/app.log 2>&1 &
+        nohup /usr/local/go/bin/go run -ldflags "-s -X github.com/DanielRenne/goCoreAppTemplate/settings.Version=${VERSION} -X github.com/DanielRenne/goCoreAppTemplate/settings.ProductName=${PRODUCTNAME}" src/github.com/DanielRenne/goCoreAppTemplate/goCoreAppTemplate.go > $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/app.log 2>&1 &
     else
-        nohup sudo go run -ldflags "-s -X github.com/DanielRenne/goCoreAppTemplate/settings.Version=${VERSION} -X github.com/DanielRenne/goCoreAppTemplate/settings.ProductName=${PRODUCTNAME}" src/github.com/DanielRenne/goCoreAppTemplate/goCoreAppTemplate.go > $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/app.log 2>&1 &
+        nohup sudo /usr/local/go/bin/go run -ldflags "-s -X github.com/DanielRenne/goCoreAppTemplate/settings.Version=${VERSION} -X github.com/DanielRenne/goCoreAppTemplate/settings.ProductName=${PRODUCTNAME}" src/github.com/DanielRenne/goCoreAppTemplate/goCoreAppTemplate.go > $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/app.log 2>&1 &
     fi
 fi
 bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/check_golang_errors &

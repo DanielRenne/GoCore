@@ -189,6 +189,10 @@ func moveAppFiles() {
 	if wasCopied {
 		replacePath("/networks", project, githubName, appName)
 	}
+	wasCopied = copyFolder("/controllerRegistry")
+	if wasCopied {
+		replacePath("/controllerRegistry", project, githubName, appName)
+	}
 
 	_, err = os.Stat(serverSettings.APP_LOCATION + "/db")
 

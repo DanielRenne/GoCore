@@ -11,7 +11,8 @@ import (
 	"github.com/davidrenne/reflections"
 )
 
-type AppContentJson struct {	InInvalidIP                          string `json:"InInvalidIP"`
+type AppContentJson struct {
+	InInvalidIP                          string `json:"InInvalidIP"`
 	StartIPHigher                        string `json:"StartIPHigher"`
 	EndIPHigher                          string `json:"EndIPHigher"`
 	IPAddressInRangeOf                   string `json:"IPAddressInRangeOf"`

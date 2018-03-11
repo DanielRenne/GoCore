@@ -35,7 +35,7 @@
                      "../../models/v1/model/transaction.go",
                      "../../models/v1/model/query.go",
                      "../../models/v1/model/model.go",
-                     "../../models/v1/model/transaction.go"],],
+                     "../../models/v1/model/transaction.go"],
       "tasks":["../../bin/kill_golang", "../../bin/start_golang"],
       "extensions":[".go", ".json"]
     },

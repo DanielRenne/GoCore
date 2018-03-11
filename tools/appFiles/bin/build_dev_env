@@ -90,7 +90,7 @@ sudo git clone https://github.com/DanielRenne/goCoreAppTemplate ~/go/src/github.
 sudo chown -R $USER ~/go/src
 
 #Install app's Dependencies
-go install github.com/DanielRenne/goCoreAppTemplate/install_goCoreAppTemplate
+/usr/local/go/bin/go install github.com/DanielRenne/goCoreAppTemplate/install_goCoreAppTemplate
 
 cd ~/go/bin
 ./install_goCoreAppTemplate
@@ -132,8 +132,8 @@ apm install joefitzgerald/autocomplete-go
 cd ~/go/src/github.com/DanielRenne/goCoreAppTemplate
 atom . &
 
-go get github.com/DanielRenne/goWatch
-go install github.com/DanielRenne/goWatch
+/usr/local/go/bin/go get github.com/DanielRenne/goWatch
+/usr/local/go/bin/go install github.com/DanielRenne/goWatch
 git config --global alias.up 'pull --rebase --autostash'
 
 bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/start_gocore
