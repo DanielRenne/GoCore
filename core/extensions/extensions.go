@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 	"unicode"
 )
@@ -291,4 +292,22 @@ func Between(value string, a string, b string) string {
 		return ""
 	}
 	return value[posFirstAdjusted:posLast]
+}
+
+//SyncMapAny will return true if there are any items in the sync.Map
+func SyncMapAny(x *sync.Map) (ok bool) {
+	x.Range(func(key interface{}, value interface{}) bool {
+		ok = true
+		return false
+	})
+	return
+}
+
+//SyncMapLength will return true the length of items in the sync.Map
+func SyncMapLength(x *sync.Map) (length int) {
+	x.Range(func(key interface{}, value interface{}) bool {
+		length = length + 1
+		return true
+	})
+	return
 }
