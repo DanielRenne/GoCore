@@ -1,0 +1,23 @@
+{
+    "AddAppError": "Lis\u00e4\u00e4 uusi AppError", 
+    "AppErrorListHeaderClientSide": "Asiakkaan puolella", 
+    "AppErrorListHeaderLastUpdateId": "Viimeisin p\u00e4ivitys id", 
+    "AppErrorListHeaderMessage": "Viesti", 
+    "AppErrorListHeaderStackShown": "Pino n\u00e4kyy", 
+    "AppErrorListHeaderUpdateDate": "P\u00e4ivitys p\u00e4iv\u00e4m\u00e4\u00e4r\u00e4", 
+    "AppErrorListHeaderUrl": "Url", 
+    "AppErrorListToolTipClientSide": "Asiakkaan puolella", 
+    "AppErrorListToolTipLastUpdateId": "Viimeisin p\u00e4ivitys id", 
+    "AppErrorListToolTipMessage": "Viesti", 
+    "AppErrorListToolTipStackShown": "Pino n\u00e4kyy", 
+    "AppErrorListToolTipUpdateDate": "P\u00e4ivitys p\u00e4iv\u00e4m\u00e4\u00e4r\u00e4", 
+    "AppErrorListToolTipUrl": "Url", 
+    "AreYouSure": "Oletko varma, ett\u00e4 haluat poistaa {total} appErrors?", 
+    "AreYouSureInline": "Oletko varma, ett\u00e4 haluat poistaa t\u00e4m\u00e4n appError?", 
+    "ConfirmDeleteMessage": "Oletko varma, ett\u00e4 haluat poistaa t\u00e4m\u00e4n appError? T\u00e4t\u00e4 toimintoa ei voi perua.", 
+    "DeleteAppError": "Poista appError", 
+    "EditAppError": "Muokkaa appError", 
+    "ShowingAllAppErrors": "Osoittaa Kaikki AppErrors", 
+    "objectName": "appErrorList", 
+    "welcomeExample": "Tervetuloa {page} - sivulla!"
+}

@@ -1,0 +1,13 @@
+{
+    "CreateFeature": "Skapa funktionen", 
+    "FeatureAddBootstrapMeta": "Bootstrap-meta", 
+    "FeatureAddCreateDate": "Skapa dagen", 
+    "FeatureAddDescription": "Beskrivning", 
+    "FeatureAddFeatureGroupId": "Funktionen grupp-id", 
+    "FeatureAddKey": "Nyckel", 
+    "FeatureAddLastUpdateId": "Senaste uppdatering id", 
+    "FeatureAddName": "Namn", 
+    "FeatureAddUpdateDate": "Uppdatera datum", 
+    "objectName": "featureAdd", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

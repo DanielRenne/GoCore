@@ -1,0 +1,12 @@
+{
+    "FeatureModifyBootstrapMeta": "Bootstrap-meta", 
+    "FeatureModifyCreateDate": "Datum erstellen", 
+    "FeatureModifyDescription": "Beschreibung", 
+    "FeatureModifyFeatureGroupId": "Merkmal Gruppen-id", 
+    "FeatureModifyKey": "Schl\u00fcssel", 
+    "FeatureModifyLastUpdateId": "Letztes update-id", 
+    "FeatureModifyName": "Name", 
+    "FeatureModifyUpdateDate": "Update-Datum", 
+    "objectName": "featureModify", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

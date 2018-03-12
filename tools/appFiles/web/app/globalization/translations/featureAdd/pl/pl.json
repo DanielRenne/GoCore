@@ -1,0 +1,13 @@
+{
+    "CreateFeature": "Utworzy\u0107 funkcj\u0119", 
+    "FeatureAddBootstrapMeta": "Rzemyk Meta", 
+    "FeatureAddCreateDate": "Data utworzenia", 
+    "FeatureAddDescription": "Opis", 
+    "FeatureAddFeatureGroupId": "Funkcja ID grupy", 
+    "FeatureAddKey": "Klucz", 
+    "FeatureAddLastUpdateId": "Ostatnia aktualizacja ID", 
+    "FeatureAddName": "Nazwa", 
+    "FeatureAddUpdateDate": "Data aktualizacji", 
+    "objectName": "featureAdd", 
+    "welcomeExample": "Zapraszamy do {page} strony!"
+}

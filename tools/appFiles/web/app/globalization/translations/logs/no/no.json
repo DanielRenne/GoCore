@@ -1,0 +1,12 @@
+{
+    "AutoPaused": "Auto pause nye logger seg p\u00e5 grunn av bla.", 
+    "AutoPausedNewData": "{dataByte} ny loggene er klar til \u00e5 vise, klikker du bare p\u00e5 play-knappen.", 
+    "ClearingLog": "T\u00f8mme Loggen i {sec} sekunder", 
+    "LogClear2": "Logg data p\u00e5 denne skjermen vil klart i {sec} sekunder", 
+    "LogClear3": "Vennligst vent, {sec} sekunder, og det vil klart automatisk", 
+    "MemUsage": "Bruk Av Minne:", 
+    "Pause": "Pause", 
+    "Resume": "Fortsett", 
+    "objectName": "logger", 
+    "welcomeExample": "Velkommen til {page} side!"
+}

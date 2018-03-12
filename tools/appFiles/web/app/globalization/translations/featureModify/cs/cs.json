@@ -1,0 +1,12 @@
+{
+    "FeatureModifyBootstrapMeta": "Bootstrap meta", 
+    "FeatureModifyCreateDate": "Datum vytvo\u0159en\u00ed", 
+    "FeatureModifyDescription": "Popis", 
+    "FeatureModifyFeatureGroupId": "Funkce id skupiny", 
+    "FeatureModifyKey": "Kl\u00ed\u010d", 
+    "FeatureModifyLastUpdateId": "Posledn\u00ed aktualizace id", 
+    "FeatureModifyName": "Jm\u00e9no", 
+    "FeatureModifyUpdateDate": "Datum aktualizace", 
+    "objectName": "featureModify", 
+    "welcomeExample": "V\u00edtejte na {page} str\u00e1nka!"
+}

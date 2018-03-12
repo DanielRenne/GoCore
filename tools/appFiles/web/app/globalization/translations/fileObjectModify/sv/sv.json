@@ -1,0 +1,15 @@
+{
+    "FileObjectModifyAccountId": "Konto-id", 
+    "FileObjectModifyContent": "Inneh\u00e5ll", 
+    "FileObjectModifyCreateDate": "Skapa dagen", 
+    "FileObjectModifyLastUpdateId": "Senaste uppdatering id", 
+    "FileObjectModifyMD5": "MD 5", 
+    "FileObjectModifyModified": "Modifierad", 
+    "FileObjectModifyModifiedUnix": "Modifierad unix", 
+    "FileObjectModifyName": "Namn", 
+    "FileObjectModifySize": "Storlek", 
+    "FileObjectModifyType": "Typ", 
+    "FileObjectModifyUpdateDate": "Uppdatera datum", 
+    "objectName": "fileObjectModify", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

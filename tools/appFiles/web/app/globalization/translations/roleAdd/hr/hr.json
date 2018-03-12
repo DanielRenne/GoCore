@@ -1,0 +1,12 @@
+{
+    "CreateRole": "Stvoriti ulogu", 
+    "RoleAddAccountId": "Identifikator ra\u010duna", 
+    "RoleAddCanDelete": "Mo\u017eete ukloniti", 
+    "RoleAddCreateDate": "Datum osnivanja", 
+    "RoleAddLastUpdateId": "Posljednja obnova EID", 
+    "RoleAddName": "Naziv", 
+    "RoleAddShortName": "Skra\u0107eni naziv", 
+    "RoleAddUpdateDate": "Datum a\u017euriranja", 
+    "objectName": "roleAdd", 
+    "welcomeExample": "Dobrodo\u0161li na {page} stranice!"
+}

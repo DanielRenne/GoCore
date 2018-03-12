@@ -1,0 +1,10 @@
+{
+    "RoleFeatureModifyBootstrapMeta": "Bootstrap meta", 
+    "RoleFeatureModifyCreateDate": "Opprette dato", 
+    "RoleFeatureModifyFeatureId": "Har id-en", 
+    "RoleFeatureModifyLastUpdateId": "Siste oppdatering id", 
+    "RoleFeatureModifyRoleId": "Rolle-id", 
+    "RoleFeatureModifyUpdateDate": "Du vil oppdatere dato", 
+    "objectName": "roleFeatureModify", 
+    "welcomeExample": "Velkommen til {page} side!"
+}

@@ -1,0 +1,114 @@
+[
+	{
+		"Id": "5845c2d51d41c80a409cce2c",
+		"Name": "Account Related",
+		"AccountType": "",
+		"CreateDate": "2016-12-05T14:41:09.174-05:00",
+		"UpdateDate": "2016-12-05T17:55:59.333-05:00",
+		"LastUpdateId": "57d9b383dcba0f51172f1f57",
+		"BootstrapMeta": {
+			"Version": 0,
+			"Domain": "",
+			"ReleaseMode": "",
+			"ProductName": "",
+			"Domains": null,
+			"ProductNames": null,
+			"DeleteRow": false,
+			"AlwaysUpdate": true
+		},
+		"Errors": {
+			"Id": "",
+			"Name": "",
+			"AccountType": ""
+		},
+		"Views": {
+			"UpdateDate": "",
+			"UpdateFromNow": ""
+		},
+		"Joins": {}
+	},
+	{
+		"Id": "5848388c1d41c827b4e14dd6",
+		"Name": "User Related",
+		"AccountType": "",
+		"CreateDate": "2016-12-07T11:27:56.939-05:00",
+		"UpdateDate": "2016-12-07T11:49:08.561-05:00",
+		"LastUpdateId": "57d9b383dcba0f51172f1f57",
+		"BootstrapMeta": {
+			"Version": 0,
+			"Domain": "",
+			"ReleaseMode": "",
+			"ProductName": "",
+			"Domains": null,
+			"ProductNames": null,
+			"DeleteRow": false,
+			"AlwaysUpdate": true
+		},
+		"Errors": {
+			"Id": "",
+			"Name": "",
+			"AccountType": ""
+		},
+		"Views": {
+			"UpdateDate": "",
+			"UpdateFromNow": ""
+		},
+		"Joins": {}
+	},
+	{
+		"Id": "5848388c1d41c827b4e14ddd",
+		"Name": "Server Setting Related",
+		"AccountType": "",
+		"CreateDate": "2016-12-07T11:27:56.94-05:00",
+		"UpdateDate": "2016-12-07T11:27:56.94-05:00",
+		"LastUpdateId": "57d9b383dcba0f51172f1f57",
+		"BootstrapMeta": {
+			"Version": 0,
+			"Domain": "",
+			"ReleaseMode": "",
+			"ProductName": "",
+			"Domains": null,
+			"ProductNames": null,
+			"DeleteRow": false,
+			"AlwaysUpdate": true
+		},
+		"Errors": {
+			"Id": "",
+			"Name": "",
+			"AccountType": ""
+		},
+		"Views": {
+			"UpdateDate": "",
+			"UpdateFromNow": ""
+		},
+		"Joins": {}
+	},
+	{
+		"Id": "5849ae4f1d41c86a83d6efb6",
+		"Name": "Role Related",
+		"AccountType": "",
+		"CreateDate": "2016-12-08T14:02:39.748-05:00",
+		"UpdateDate": "2016-12-08T14:02:39.748-05:00",
+		"LastUpdateId": "57d9b383dcba0f51172f1f57",
+		"BootstrapMeta": {
+			"Version": 0,
+			"Domain": "",
+			"ReleaseMode": "",
+			"ProductName": "",
+			"Domains": null,
+			"ProductNames": null,
+			"DeleteRow": false,
+			"AlwaysUpdate": true
+		},
+		"Errors": {
+			"Id": "",
+			"Name": "",
+			"AccountType": ""
+		},
+		"Views": {
+			"UpdateDate": "",
+			"UpdateFromNow": ""
+		},
+		"Joins": {}
+	}
+]

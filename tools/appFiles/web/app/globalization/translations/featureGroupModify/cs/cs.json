@@ -1,0 +1,9 @@
+{
+    "FeatureGroupModifyBootstrapMeta": "Bootstrap meta", 
+    "FeatureGroupModifyCreateDate": "Datum vytvo\u0159en\u00ed", 
+    "FeatureGroupModifyLastUpdateId": "Posledn\u00ed aktualizace id", 
+    "FeatureGroupModifyName": "Jm\u00e9no", 
+    "FeatureGroupModifyUpdateDate": "Datum aktualizace", 
+    "objectName": "featureGroupModify", 
+    "welcomeExample": "V\u00edtejte na {page} str\u00e1nka!"
+}

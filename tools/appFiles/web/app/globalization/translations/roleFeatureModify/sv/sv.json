@@ -1,0 +1,10 @@
+{
+    "RoleFeatureModifyBootstrapMeta": "Bootstrap-meta", 
+    "RoleFeatureModifyCreateDate": "Skapa dagen", 
+    "RoleFeatureModifyFeatureId": "Har id", 
+    "RoleFeatureModifyLastUpdateId": "Senaste uppdatering id", 
+    "RoleFeatureModifyRoleId": "Roll-id", 
+    "RoleFeatureModifyUpdateDate": "Uppdatera datum", 
+    "objectName": "roleFeatureModify", 
+    "welcomeExample": "V\u00e4lkommen till {page} sida!"
+}

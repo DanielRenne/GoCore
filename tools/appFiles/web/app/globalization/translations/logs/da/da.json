@@ -1,0 +1,12 @@
+{
+    "AutoPaused": "Auto pause nye logfiler p\u00e5 grund rul.", 
+    "AutoPausedNewData": "{dataByte} nye logs er klar til at se, skal du blot klikke p\u00e5 play-knappen.", 
+    "ClearingLog": "Clearing Logge p\u00e5 {sec} sekunder", 
+    "LogClear2": "Log data p\u00e5 sk\u00e6rmen, vil det klart, at i {sec} sekunder", 
+    "LogClear3": "Vent venligst, {sec} sekunder, og det vil klart automatisk", 
+    "MemUsage": "Hukommelse:", 
+    "Pause": "Pause", 
+    "Resume": "Cv", 
+    "objectName": "logs", 
+    "welcomeExample": "Velkommen til {page} side!"
+}

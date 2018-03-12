@@ -1,0 +1,12 @@
+{
+    "FeatureModifyBootstrapMeta": "Bootstrap meta", 
+    "FeatureModifyCreateDate": "Luo p\u00e4iv\u00e4m\u00e4\u00e4r\u00e4", 
+    "FeatureModifyDescription": "Kuvaus", 
+    "FeatureModifyFeatureGroupId": "Ominaisuus-ryhm\u00e4n tunnus", 
+    "FeatureModifyKey": "Avain", 
+    "FeatureModifyLastUpdateId": "Viimeisin p\u00e4ivitys id", 
+    "FeatureModifyName": "Nimi", 
+    "FeatureModifyUpdateDate": "P\u00e4ivitys p\u00e4iv\u00e4m\u00e4\u00e4r\u00e4", 
+    "objectName": "featureModify", 
+    "welcomeExample": "Tervetuloa {page} - sivulla!"
+}

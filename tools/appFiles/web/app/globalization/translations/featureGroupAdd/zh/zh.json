@@ -1,0 +1,10 @@
+{
+    "CreateFeatureGroup": "!zh!Create featureGroup", 
+    "FeatureGroupAddBootstrapMeta": "!zh!Bootstrap meta", 
+    "FeatureGroupAddCreateDate": "!zh!Create date", 
+    "FeatureGroupAddLastUpdateId": "!zh!Last update id", 
+    "FeatureGroupAddName": "!zh!Name", 
+    "FeatureGroupAddUpdateDate": "!zh!Update date", 
+    "objectName": "!zh!featureGroupAdd", 
+    "welcomeExample": "!zh!Welcome to the {page} page!"
+}

@@ -1,0 +1,12 @@
+{
+    "CreateRole": "Luo rooli", 
+    "RoleAddAccountId": "Tilin tunnus", 
+    "RoleAddCanDelete": "Voi poistaa", 
+    "RoleAddCreateDate": "Luo p\u00e4iv\u00e4m\u00e4\u00e4r\u00e4", 
+    "RoleAddLastUpdateId": "Viimeisin p\u00e4ivitys id", 
+    "RoleAddName": "Nimi", 
+    "RoleAddShortName": "Lyhyt nimi", 
+    "RoleAddUpdateDate": "P\u00e4ivitys p\u00e4iv\u00e4m\u00e4\u00e4r\u00e4", 
+    "objectName": "roleAdd", 
+    "welcomeExample": "Tervetuloa {page} - sivulla!"
+}

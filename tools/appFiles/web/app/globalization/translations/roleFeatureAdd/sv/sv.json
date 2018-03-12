@@ -1,0 +1,11 @@
+{
+    "CreateRoleFeature": "Skapa roleFeature", 
+    "RoleFeatureAddBootstrapMeta": "Bootstrap-meta", 
+    "RoleFeatureAddCreateDate": "Skapa dagen", 
+    "RoleFeatureAddFeatureId": "Har id", 
+    "RoleFeatureAddLastUpdateId": "Senaste uppdatering id", 
+    "RoleFeatureAddRoleId": "Roll-id", 
+    "RoleFeatureAddUpdateDate": "Uppdatera datum", 
+    "objectName": "roleFeatureAdd", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

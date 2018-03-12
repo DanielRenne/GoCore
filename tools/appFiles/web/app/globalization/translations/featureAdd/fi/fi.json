@@ -1,0 +1,13 @@
+{
+    "CreateFeature": "Luoda ominaisuus", 
+    "FeatureAddBootstrapMeta": "Bootstrap meta", 
+    "FeatureAddCreateDate": "Luo p\u00e4iv\u00e4m\u00e4\u00e4r\u00e4", 
+    "FeatureAddDescription": "Kuvaus", 
+    "FeatureAddFeatureGroupId": "Ominaisuus-ryhm\u00e4n tunnus", 
+    "FeatureAddKey": "Avain", 
+    "FeatureAddLastUpdateId": "Viimeisin p\u00e4ivitys id", 
+    "FeatureAddName": "Nimi", 
+    "FeatureAddUpdateDate": "P\u00e4ivitys p\u00e4iv\u00e4m\u00e4\u00e4r\u00e4", 
+    "objectName": "featureAdd", 
+    "welcomeExample": "Tervetuloa {page} - sivulla!"
+}

@@ -1,0 +1,13 @@
+{
+    "AddUserTooltip": "Aggiungi Utente", 
+    "ErrorUserListFailedParse": "Impossibile analizzare il ruolo di account per richiamare.", 
+    "ErrorUserListFailedRevoke": "Non \u00e8 riuscito a Revocare utente dal tuo conto.", 
+    "UserAddEditCompanyName": "Nome Dell'Azienda", 
+    "UserListLastNameFirstName": "Cognome, Nome", 
+    "UserListPhoneNumber": "Il Numero Di Telefono", 
+    "UserListResendInvitationEmail": "Rispedisci Email Di Invito", 
+    "UserListRevokeUser": "Di revocare l'utente dal conto.", 
+    "UserListRevokedUser": "Revocato correttamente user account.", 
+    "UserListRole": "Ruolo", 
+    "UserListShowingAllUsers": "Mostra Tutti Gli Utenti"
+}

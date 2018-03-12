@@ -1,0 +1,12 @@
+{
+    "AutoPaused": "Auto berhenti log baru karena gulir.", 
+    "AutoPausedNewData": "{dataByte} log baru siap untuk melihat, klik tombol play.", 
+    "ClearingLog": "Membersihkan Log in {sec} detik", 
+    "LogClear2": "Data Log pada layar ini akan jelas pada {sec} detik", 
+    "LogClear3": "Mohon tunggu, {sec} detik dan itu akan menghapus secara otomatis", 
+    "MemUsage": "Penggunaan Memori:", 
+    "Pause": "Jeda", 
+    "Resume": "Resume", 
+    "objectName": "log", 
+    "welcomeExample": "Selamat datang {page} halaman!"
+}

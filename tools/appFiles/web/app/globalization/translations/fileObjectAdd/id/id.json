@@ -1,0 +1,16 @@
+{
+    "CreateFileObject": "Membuat fileObject", 
+    "FileObjectAddAccountId": "Akun id", 
+    "FileObjectAddContent": "Kandungan", 
+    "FileObjectAddCreateDate": "Membuat tanggal", 
+    "FileObjectAddLastUpdateId": "Last update id", 
+    "FileObjectAddMD5": "MD 5", 
+    "FileObjectAddModified": "Modifikasi", 
+    "FileObjectAddModifiedUnix": "Modifikasi unix", 
+    "FileObjectAddName": "Nama", 
+    "FileObjectAddSize": "Ukuran", 
+    "FileObjectAddType": "Jenis", 
+    "FileObjectAddUpdateDate": "Tanggal Update", 
+    "objectName": "fileObjectAdd", 
+    "welcomeExample": "Selamat datang {page} halaman!"
+}

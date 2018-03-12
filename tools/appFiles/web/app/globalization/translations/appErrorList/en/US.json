@@ -1,0 +1,23 @@
+{
+    "AddAppError": "Add a new AppError", 
+    "AppErrorListHeaderClientSide": "Client side", 
+    "AppErrorListHeaderLastUpdateId": "Last update id", 
+    "AppErrorListHeaderMessage": "Message", 
+    "AppErrorListHeaderStackShown": "Stack shown", 
+    "AppErrorListHeaderUpdateDate": "Update date", 
+    "AppErrorListHeaderUrl": "Url", 
+    "AppErrorListToolTipClientSide": "Client side", 
+    "AppErrorListToolTipLastUpdateId": "Last update id", 
+    "AppErrorListToolTipMessage": "Message", 
+    "AppErrorListToolTipStackShown": "Stack shown", 
+    "AppErrorListToolTipUpdateDate": "Update date", 
+    "AppErrorListToolTipUrl": "Url", 
+    "AreYouSure": "Are you sure you wish to delete {total} appErrors?", 
+    "AreYouSureInline": "Are you sure you wish to delete this appError?", 
+    "ConfirmDeleteMessage": "Are you sure you would like to delete this appError? This action cannot be undone.", 
+    "DeleteAppError": "Delete appError", 
+    "EditAppError": "Edit appError", 
+    "ShowingAllAppErrors": "Showing All AppErrors", 
+    "objectName": "appErrorList", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

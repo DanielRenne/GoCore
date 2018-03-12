@@ -1,0 +1,16 @@
+{
+    "AddRoleFeature": "Hinzuf\u00fcgen eines neuen RoleFeature", 
+    "AreYouSure": "Are you sure you wish to delete {total} roleFeatures?", 
+    "AreYouSureInline": "Sind Sie sicher, dass Sie m\u00f6chten, l\u00f6schen Sie diese roleFeature?", 
+    "ConfirmDeleteMessage": "Sind Sie sicher, dass Sie m\u00f6chten, l\u00f6schen Sie diese roleFeature? Diese Aktion kann nicht r\u00fcckg\u00e4ngig gemacht werden.", 
+    "CopyRoleFeature": "Kopieren roleFeature", 
+    "DeleteRoleFeature": "L\u00f6schen roleFeature", 
+    "EditRoleFeature": "Edit roleFeature", 
+    "RoleFeatureListHeaderLastUpdateId": "Letztes update-id", 
+    "RoleFeatureListHeaderUpdateDate": "Update-Datum", 
+    "RoleFeatureListToolTipLastUpdateId": "Letztes update-id", 
+    "RoleFeatureListToolTipUpdateDate": "Update-Datum", 
+    "ShowingAllRoleFeatures": "Zeigt Alle RoleFeatures", 
+    "objectName": "roleFeatureList", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

@@ -1,0 +1,514 @@
+[
+	{
+		"Id": "5803c4a3ab8390f7e0a7bcc4",
+		"Key": "ACCOUNT_ADD",
+		"Name": "Add Account",
+		"Description": "Ability to add a new account to the system.",
+		"FeatureGroupId": "5845c2d51d41c80a409cce2c",
+		"CreateDate": "2016-08-26T10:49:04.63-04:00",
+		"UpdateDate": "2016-08-26T10:49:04.63-04:00",
+		"LastUpdateId": "57d9b383dcba0f51172f1f57",
+		"BootstrapMeta": {
+			"Version": 0,
+			"Domain": "",
+			"ReleaseMode": "",
+			"ProductName": "",
+			"Domains": null,
+			"ProductNames": null,
+			"DeleteRow": false,
+			"AlwaysUpdate": true
+		},
+		"Errors": {
+			"Id": "",
+			"Key": "",
+			"Name": "",
+			"Description": "",
+			"FeatureGroupId": ""
+		},
+		"Views": {
+			"UpdateDate": "",
+			"UpdateFromNow": ""
+		},
+		"Joins": {}
+	},
+	{
+		"Id": "58042701d1130dfc3402c35b",
+		"Key": "ACCOUNT_VIEW",
+		"Name": "View Accounts",
+		"Description": "Ability to view accounts.",
+		"FeatureGroupId": "5845c2d51d41c80a409cce2c",
+		"CreateDate": "2016-08-26T10:49:04.63-04:00",
+		"UpdateDate": "2016-12-05T17:19:43.341-05:00",
+		"LastUpdateId": "57d9b383dcba0f51172f1f57",
+		"BootstrapMeta": {
+			"Version": 0,
+			"Domain": "",
+			"ReleaseMode": "",
+			"ProductName": "",
+			"Domains": null,
+			"ProductNames": null,
+			"DeleteRow": false,
+			"AlwaysUpdate": true
+		},
+		"Errors": {
+			"Id": "",
+			"Key": "",
+			"Name": "",
+			"Description": "",
+			"FeatureGroupId": ""
+		},
+		"Views": {
+			"UpdateDate": "",
+			"UpdateFromNow": ""
+		},
+		"Joins": {}
+	},
+	{
+		"Id": "5845dd8e1d41c86192086041",
+		"Key": "ACCOUNT_MODIFY",
+		"Name": "Modify Accounts",
+		"Description": "Ability to modify accounts",
+		"FeatureGroupId": "5845c2d51d41c80a409cce2c",
+		"CreateDate": "2016-12-05T16:35:10.219-05:00",
+		"UpdateDate": "2016-12-05T16:47:32.69-05:00",
+		"LastUpdateId": "57d9b383dcba0f51172f1f57",
+		"BootstrapMeta": {
+			"Version": 0,
+			"Domain": "",
+			"ReleaseMode": "",
+			"ProductName": "",
+			"Domains": null,
+			"ProductNames": null,
+			"DeleteRow": false,
+			"AlwaysUpdate": true
+		},
+		"Errors": {
+			"Id": "",
+			"Key": "",
+			"Name": "",
+			"Description": "",
+			"FeatureGroupId": ""
+		},
+		"Views": {
+			"UpdateDate": "",
+			"UpdateFromNow": ""
+		},
+		"Joins": {}
+	},
+	{
+		"Id": "5845dd8e1d41c86192086042",
+		"Key": "ACCOUNT_DELETE",
+		"Name": "Delete Accounts",
+		"Description": "Ability to delete accounts",
+		"FeatureGroupId": "5845c2d51d41c80a409cce2c",
+		"CreateDate": "2016-12-05T16:35:10.219-05:00",
+		"UpdateDate": "2016-12-05T17:29:55.284-05:00",
+		"LastUpdateId": "57d9b383dcba0f51172f1f57",
+		"BootstrapMeta": {
+			"Version": 0,
+			"Domain": "",
+			"ReleaseMode": "",
+			"ProductName": "",
+			"Domains": null,
+			"ProductNames": null,
+			"DeleteRow": false,
+			"AlwaysUpdate": true
+		},
+		"Errors": {
+			"Id": "",
+			"Key": "",
+			"Name": "",
+			"Description": "",
+			"FeatureGroupId": ""
+		},
+		"Views": {
+			"UpdateDate": "",
+			"UpdateFromNow": ""
+		},
+		"Joins": {}
+	},
+	{
+		"Id": "5845dd8e1d41c86192086044",
+		"Key": "ACCOUNT_EXPORT",
+		"Name": "Export Accounts",
+		"Description": "Ability to export accounts",
+		"FeatureGroupId": "5845c2d51d41c80a409cce2c",
+		"CreateDate": "2016-12-05T16:35:10.219-05:00",
+		"UpdateDate": "2016-12-05T16:49:38.098-05:00",
+		"LastUpdateId": "57d9b383dcba0f51172f1f57",
+		"BootstrapMeta": {
+			"Version": 0,
+			"Domain": "",
+			"ReleaseMode": "",
+			"ProductName": "",
+			"Domains": null,
+			"ProductNames": null,
+			"DeleteRow": false,
+			"AlwaysUpdate": true
+		},
+		"Errors": {
+			"Id": "",
+			"Key": "",
+			"Name": "",
+			"Description": "",
+			"FeatureGroupId": ""
+		},
+		"Views": {
+			"UpdateDate": "",
+			"UpdateFromNow": ""
+		},
+		"Joins": {}
+	},
+	{
+		"Id": "5847376d1d41c83ea7d2eb47",
+		"Key": "ACCOUNT_INVITE",
+		"Name": "Account Invite",
+		"Description": "Invite others to this account",
+		"FeatureGroupId": "5845c2d51d41c80a409cce2c",
+		"CreateDate": "2016-12-06T17:10:53.56-05:00",
+		"UpdateDate": "2016-12-06T17:10:53.56-05:00",
+		"LastUpdateId": "57d9b383dcba0f51172f1f57",
+		"BootstrapMeta": {
+			"Version": 0,
+			"Domain": "",
+			"ReleaseMode": "",
+			"ProductName": "",
+			"Domains": null,
+			"ProductNames": null,
+			"DeleteRow": false,
+			"AlwaysUpdate": true
+		},
+		"Errors": {
+			"Id": "",
+			"Key": "",
+			"Name": "",
+			"Description": "",
+			"FeatureGroupId": ""
+		},
+		"Views": {
+			"UpdateDate": "",
+			"UpdateFromNow": ""
+		},
+		"Joins": {}
+	},
+	{
+		"Id": "58483e8e1d41c835f3368d63",
+		"Key": "USER_ADD",
+		"Name": "Add user",
+		"Description": "Ability to add a new  user.",
+		"FeatureGroupId": "5848388c1d41c827b4e14dd6",
+		"CreateDate": "2016-12-07T11:53:34.234-05:00",
+		"UpdateDate": "2016-12-07T11:53:34.234-05:00",
+		"LastUpdateId": "57d9b383dcba0f51172f1f57",
+		"BootstrapMeta": {
+			"Version": 0,
+			"Domain": "",
+			"ReleaseMode": "",
+			"ProductName": "",
+			"Domains": null,
+			"ProductNames": null,
+			"DeleteRow": false,
+			"AlwaysUpdate": true
+		},
+		"Errors": {
+			"Id": "",
+			"Key": "",
+			"Name": "",
+			"Description": "",
+			"FeatureGroupId": ""
+		},
+		"Views": {
+			"UpdateDate": "",
+			"UpdateFromNow": ""
+		},
+		"Joins": {}
+	},
+	{
+		"Id": "58483e8e1d41c835f3368d64",
+		"Key": "USER_VIEW",
+		"Name": "View users",
+		"Description": "Ability to view  users.",
+		"FeatureGroupId": "5848388c1d41c827b4e14dd6",
+		"CreateDate": "2016-12-07T11:53:34.234-05:00",
+		"UpdateDate": "2016-12-07T11:53:34.234-05:00",
+		"LastUpdateId": "57d9b383dcba0f51172f1f57",
+		"BootstrapMeta": {
+			"Version": 0,
+			"Domain": "",
+			"ReleaseMode": "",
+			"ProductName": "",
+			"Domains": null,
+			"ProductNames": null,
+			"DeleteRow": false,
+			"AlwaysUpdate": true
+		},
+		"Errors": {
+			"Id": "",
+			"Key": "",
+			"Name": "",
+			"Description": "",
+			"FeatureGroupId": ""
+		},
+		"Views": {
+			"UpdateDate": "",
+			"UpdateFromNow": ""
+		},
+		"Joins": {}
+	},
+	{
+		"Id": "58483e8e1d41c835f3368d65",
+		"Key": "USER_MODIFY",
+		"Name": "Modify users",
+		"Description": "Ability to modify  users",
+		"FeatureGroupId": "5848388c1d41c827b4e14dd6",
+		"CreateDate": "2016-12-07T11:53:34.234-05:00",
+		"UpdateDate": "2016-12-07T11:53:34.234-05:00",
+		"LastUpdateId": "57d9b383dcba0f51172f1f57",
+		"BootstrapMeta": {
+			"Version": 0,
+			"Domain": "",
+			"ReleaseMode": "",
+			"ProductName": "",
+			"Domains": null,
+			"ProductNames": null,
+			"DeleteRow": false,
+			"AlwaysUpdate": true
+		},
+		"Errors": {
+			"Id": "",
+			"Key": "",
+			"Name": "",
+			"Description": "",
+			"FeatureGroupId": ""
+		},
+		"Views": {
+			"UpdateDate": "",
+			"UpdateFromNow": ""
+		},
+		"Joins": {}
+	},
+	{
+		"Id": "58483e8e1d41c835f3368d66",
+		"Key": "SERVER_SETTING_MODIFY",
+		"Name": "Modify server settings",
+		"Description": "Ability to modify  server settings",
+		"FeatureGroupId": "5848388c1d41c827b4e14ddd",
+		"CreateDate": "2016-12-07T11:53:34.234-05:00",
+		"UpdateDate": "2016-12-07T11:58:48.295-05:00",
+		"LastUpdateId": "57d9b383dcba0f51172f1f57",
+		"BootstrapMeta": {
+			"Version": 0,
+			"Domain": "",
+			"ReleaseMode": "",
+			"ProductName": "",
+			"Domains": null,
+			"ProductNames": null,
+			"DeleteRow": false,
+			"AlwaysUpdate": true
+		},
+		"Errors": {
+			"Id": "",
+			"Key": "",
+			"Name": "",
+			"Description": "",
+			"FeatureGroupId": ""
+		},
+		"Views": {
+			"UpdateDate": "",
+			"UpdateFromNow": ""
+		},
+		"Joins": {}
+	},
+	{
+		"Id": "584854161d41c86e3f7e1ca0",
+		"Key": "USER_CHANGE_ROLE",
+		"Name": "Change any user role",
+		"Description": "Allow the ability to change roles for anyone in your company",
+		"FeatureGroupId": "5848388c1d41c827b4e14dd6",
+		"CreateDate": "2016-12-07T13:25:26.314-05:00",
+		"UpdateDate": "2016-12-07T13:25:26.314-05:00",
+		"LastUpdateId": "57d9b383dcba0f51172f1f57",
+		"BootstrapMeta": {
+			"Version": 0,
+			"Domain": "",
+			"ReleaseMode": "",
+			"ProductName": "",
+			"Domains": null,
+			"ProductNames": null,
+			"DeleteRow": false,
+			"AlwaysUpdate": true
+		},
+		"Errors": {
+			"Id": "",
+			"Key": "",
+			"Name": "",
+			"Description": "",
+			"FeatureGroupId": ""
+		},
+		"Views": {
+			"UpdateDate": "",
+			"UpdateFromNow": ""
+		},
+		"Joins": {}
+	},
+	{
+		"Id": "5849ae4f1d41c86a83d6efb7",
+		"Key": "ROLE_VIEW",
+		"Name": "View roles",
+		"Description": "Ability to view roles",
+		"FeatureGroupId": "5849ae4f1d41c86a83d6efb6",
+		"CreateDate": "2016-12-08T14:02:39.751-05:00",
+		"UpdateDate": "2016-12-08T14:02:39.751-05:00",
+		"LastUpdateId": "57d9b383dcba0f51172f1f57",
+		"BootstrapMeta": {
+			"Version": 0,
+			"Domain": "",
+			"ReleaseMode": "",
+			"ProductName": "",
+			"Domains": null,
+			"ProductNames": null,
+			"DeleteRow": false,
+			"AlwaysUpdate": true
+		},
+		"Errors": {
+			"Id": "",
+			"Key": "",
+			"Name": "",
+			"Description": "",
+			"FeatureGroupId": ""
+		},
+		"Views": {
+			"UpdateDate": "",
+			"UpdateFromNow": ""
+		},
+		"Joins": {}
+	},
+	{
+		"Id": "5849ae4f1d41c86a83d6efb8",
+		"Key": "ROLE_ADD",
+		"Name": "Add roles",
+		"Description": "Ability to add roles",
+		"FeatureGroupId": "5849ae4f1d41c86a83d6efb6",
+		"CreateDate": "2016-12-08T14:02:39.751-05:00",
+		"UpdateDate": "2016-12-08T14:02:39.751-05:00",
+		"LastUpdateId": "57d9b383dcba0f51172f1f57",
+		"BootstrapMeta": {
+			"Version": 0,
+			"Domain": "",
+			"ReleaseMode": "",
+			"ProductName": "",
+			"Domains": null,
+			"ProductNames": null,
+			"DeleteRow": false,
+			"AlwaysUpdate": true
+		},
+		"Errors": {
+			"Id": "",
+			"Key": "",
+			"Name": "",
+			"Description": "",
+			"FeatureGroupId": ""
+		},
+		"Views": {
+			"UpdateDate": "",
+			"UpdateFromNow": ""
+		},
+		"Joins": {}
+	},
+	{
+		"Id": "5849ae4f1d41c86a83d6efb9",
+		"Key": "ROLE_MODIFY",
+		"Name": "Modify roles",
+		"Description": "Ability to modify roles",
+		"FeatureGroupId": "5849ae4f1d41c86a83d6efb6",
+		"CreateDate": "2016-12-08T14:02:39.751-05:00",
+		"UpdateDate": "2016-12-08T14:02:39.751-05:00",
+		"LastUpdateId": "57d9b383dcba0f51172f1f57",
+		"BootstrapMeta": {
+			"Version": 0,
+			"Domain": "",
+			"ReleaseMode": "",
+			"ProductName": "",
+			"Domains": null,
+			"ProductNames": null,
+			"DeleteRow": false,
+			"AlwaysUpdate": true
+		},
+		"Errors": {
+			"Id": "",
+			"Key": "",
+			"Name": "",
+			"Description": "",
+			"FeatureGroupId": ""
+		},
+		"Views": {
+			"UpdateDate": "",
+			"UpdateFromNow": ""
+		},
+		"Joins": {}
+	},
+	{
+		"Id": "5849ae4f1d41c86a83d6efba",
+		"Key": "ROLE_DELETE",
+		"Name": "Delete roles",
+		"Description": "Ability to delete roles",
+		"FeatureGroupId": "5849ae4f1d41c86a83d6efb6",
+		"CreateDate": "2016-12-08T14:02:39.751-05:00",
+		"UpdateDate": "2016-12-08T14:02:39.751-05:00",
+		"LastUpdateId": "57d9b383dcba0f51172f1f57",
+		"BootstrapMeta": {
+			"Version": 0,
+			"Domain": "",
+			"ReleaseMode": "",
+			"ProductName": "",
+			"Domains": null,
+			"ProductNames": null,
+			"DeleteRow": false,
+			"AlwaysUpdate": true
+		},
+		"Errors": {
+			"Id": "",
+			"Key": "",
+			"Name": "",
+			"Description": "",
+			"FeatureGroupId": ""
+		},
+		"Views": {
+			"UpdateDate": "",
+			"UpdateFromNow": ""
+		},
+		"Joins": {}
+	},
+	{
+		"Id": "5849ae4f1d41c86a83d6efbc",
+		"Key": "ROLE_COPY",
+		"Name": "Copy role",
+		"Description": "Ability to copy a role",
+		"FeatureGroupId": "5849ae4f1d41c86a83d6efb6",
+		"CreateDate": "2016-12-08T14:02:39.751-05:00",
+		"UpdateDate": "2016-12-08T14:02:39.751-05:00",
+		"LastUpdateId": "57d9b383dcba0f51172f1f57",
+		"BootstrapMeta": {
+			"Version": 0,
+			"Domain": "",
+			"ReleaseMode": "",
+			"ProductName": "",
+			"Domains": null,
+			"ProductNames": null,
+			"DeleteRow": false,
+			"AlwaysUpdate": true
+		},
+		"Errors": {
+			"Id": "",
+			"Key": "",
+			"Name": "",
+			"Description": "",
+			"FeatureGroupId": ""
+		},
+		"Views": {
+			"UpdateDate": "",
+			"UpdateFromNow": ""
+		},
+		"Joins": {}
+	}
+]

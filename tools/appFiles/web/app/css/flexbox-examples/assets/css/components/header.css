@@ -1,0 +1,132 @@
+.Header {
+  padding: 1.5em;
+  background-color: rgba(147, 128, 108, 0.1);
+  text-align: center;
+}
+@media (--break-lg) {
+  .Header {
+    padding: 3em 1.5em;
+  }
+}
+
+.Header-title {
+  margin: 0 0 0.15em;
+  font-size: 1.8em;
+  font-weight: 600;
+  line-height: 1;
+  word-spacing: 0.08em;
+}
+.Header-title i {
+  font-family: serif;
+  font-style: italic;
+  font-weight: 400;
+}
+.Header-title a {
+  border: 0;
+  color: inherit;
+  font-weight: inherit;
+}
+.Header-title a:focus, .Header-title a:hover, .Header-title a:active {
+  text-decoration: none;
+}
+
+.Header-bar {
+  background-color: #e8e8e8;
+  height: 62px;
+  margin-right:0px !important; /* flex grid row uses -.5rem which causes a scrollbar on us*/
+  -webkit-box-shadow:0px 1px 1px #90A4AE;
+  -moz-box-shadow:0px 1px 1px #90A4AE;
+  box-shadow:0px 1px 1px #90A4AE;
+}
+
+.Header-logo {
+    width: 86%;
+    margin-top: 16px;
+    margin-left: 24px;
+}
+
+.Header-icon {
+    width: 41px;
+    margin-top: 7px;
+    margin-left: 24px;
+}
+
+.Header-text {
+  color:black;
+  font-size: 1.5em;
+  margin-top: 4px;
+  margin-left: 10px;
+}
+
+@media (--break-lg) {
+  .Header-title {
+    font-size: 4em;
+  }
+}
+
+.Header-subTitle {
+  margin: 0 0 1.5em;
+  font-size: 0.8em;
+  font-weight: 300;
+  white-space: nowrap;
+}
+@media (--break-lg) {
+  .Header-subTitle {
+    margin: 1em 0 1.75em;
+    font-size: 1.1em;
+  }
+}
+
+.Header-actions {
+  display: flex;
+  align-items: stretch;
+  flex-direction: column;
+  font-size: 0.9em;
+}
+@media (--break-sm) {
+  .Header-actions {
+    align-items: center;
+    flex-direction: row;
+    justify-content: center;
+  }
+}
+@media (--break-lg) {
+  .Header-actions {
+    font-size: 1.1em;
+  }
+}
+
+.Header-button:first-child {
+  margin: 0 0 1em;
+}
+@media (--break-sm) {
+  .Header-button:first-child {
+    margin: 0 1em 0 0;
+  }
+}
+
+@media (--break-lg) {
+  .Header--cozy {
+    display: flex;
+    padding: 1.5em;
+    align-items: center;
+  }
+  .Header--cozy .Header-titles {
+    display: flex;
+    align-items: baseline;
+  }
+  .Header--cozy .Header-title {
+    font-size: 1.5em;
+  }
+  .Header--cozy .Header-subTitle {
+    margin: 0 0 0 1em;
+    font-size: 0.8em;
+    font-weight: 300;
+    color: gray;
+  }
+  .Header--cozy .Header-actions {
+    flex: 1;
+    justify-content: flex-end;
+    font-size: 0.9em;
+  }
+}

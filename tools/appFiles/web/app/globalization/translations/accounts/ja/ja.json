@@ -1,0 +1,5 @@
+{
+    "ErrorAccountNotFound": "!ja!Failed to find account.", 
+    "objectName": "!ja!accounts", 
+    "welcomeExample": "!ja!Welcome to the {page} page!"
+}

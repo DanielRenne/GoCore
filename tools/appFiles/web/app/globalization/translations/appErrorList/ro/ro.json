@@ -1,0 +1,23 @@
+{
+    "AddAppError": "Adauga un nou AppError", 
+    "AppErrorListHeaderClientSide": "Partea de Client", 
+    "AppErrorListHeaderLastUpdateId": "Ultima actualizare id", 
+    "AppErrorListHeaderMessage": "Mesaj", 
+    "AppErrorListHeaderStackShown": "Stiva ar\u0103tat", 
+    "AppErrorListHeaderUpdateDate": "Data actualizare", 
+    "AppErrorListHeaderUrl": "Url", 
+    "AppErrorListToolTipClientSide": "Partea de Client", 
+    "AppErrorListToolTipLastUpdateId": "Ultima actualizare id", 
+    "AppErrorListToolTipMessage": "Mesaj", 
+    "AppErrorListToolTipStackShown": "Stiva ar\u0103tat", 
+    "AppErrorListToolTipUpdateDate": "Data actualizare", 
+    "AppErrorListToolTipUrl": "Url", 
+    "AreYouSure": "E\u0219ti sigur c\u0103 dori\u021bi s\u0103 \u0219terge\u021bi {total} appErrors?", 
+    "AreYouSureInline": "E\u0219ti sigur c\u0103 dori\u021bi s\u0103 \u0219terge\u021bi acest appError?", 
+    "ConfirmDeleteMessage": "E\u0219ti sigur c\u0103 dori\u021bi s\u0103 \u0219terge\u021bi acest appError? Aceast\u0103 ac\u021biune nu poate fi anulat\u0103.", 
+    "DeleteAppError": "\u0218terge appError", 
+    "EditAppError": "Edit appError", 
+    "ShowingAllAppErrors": "Arat\u0103 Toate AppErrors", 
+    "objectName": "appErrorList", 
+    "welcomeExample": "Bine a\u021bi venit la {page} pagina!"
+}

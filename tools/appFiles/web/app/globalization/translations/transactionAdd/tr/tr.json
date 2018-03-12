@@ -1,0 +1,17 @@
+{
+    "CreateTransaction": "\u0130\u015flem olu\u015fturma ", 
+    "TransactionAddCollections": "Koleksiyonlar\u0131", 
+    "TransactionAddCommitted": "Taahh\u00fct", 
+    "TransactionAddCompleteDate": "Tam tarih", 
+    "TransactionAddCreateDate": "Tarih olu\u015fturmak ", 
+    "TransactionAddDetails": "Ayr\u0131nt\u0131lar\u0131", 
+    "TransactionAddError": "Hata", 
+    "TransactionAddLastUpdate": "Son g\u00fcncelleme", 
+    "TransactionAddRollbackDate": "Geri alma tarihi", 
+    "TransactionAddRollbackReason": "Geri alma sebebi", 
+    "TransactionAddRolledBack": "Geri", 
+    "TransactionAddRolledBackBy": "Tekrar geri d\u00f6nm\u00fc\u015f ", 
+    "TransactionAddUserId": "Kullan\u0131c\u0131 kimli\u011fi", 
+    "objectName": "transactionAdd", 
+    "welcomeExample": "{page} sayfas\u0131na ho\u015f geldiniz!"
+}

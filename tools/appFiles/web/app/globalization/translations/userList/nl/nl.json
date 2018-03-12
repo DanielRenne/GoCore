@@ -1,0 +1,13 @@
+{
+    "AddUserTooltip": "Gebruiker Toevoegen", 
+    "ErrorUserListFailedParse": "Failed to parse account rol te kunnen beroepen.", 
+    "ErrorUserListFailedRevoke": "Mislukt in te Trekken gebruiker van de account.", 
+    "UserAddEditCompanyName": "Naam Bedrijf", 
+    "UserListLastNameFirstName": "Achternaam, Voornaam", 
+    "UserListPhoneNumber": "Telefoonnummer", 
+    "UserListResendInvitationEmail": "Verzenden Uitnodiging Per E-Mail", 
+    "UserListRevokeUser": "Intrekken van deze gebruiker van de account.", 
+    "UserListRevokedUser": "Met succes Ingetrokken gebruiker van de account.", 
+    "UserListRole": "Rol", 
+    "UserListShowingAllUsers": "Het Tonen Van Alle Gebruikers"
+}

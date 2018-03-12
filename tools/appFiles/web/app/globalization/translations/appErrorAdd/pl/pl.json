@@ -1,0 +1,14 @@
+{
+    "AppErrorAddAccountId": "Identyfikator konta", 
+    "AppErrorAddClientSide": "Na stronie klienta", 
+    "AppErrorAddCreateDate": "Data utworzenia", 
+    "AppErrorAddLastUpdateId": "Ostatnia aktualizacja ID", 
+    "AppErrorAddMessage": "Komunikat", 
+    "AppErrorAddStackShown": "Stos pokazano", 
+    "AppErrorAddUpdateDate": "Data aktualizacji", 
+    "AppErrorAddUrl": "Adres URL", 
+    "AppErrorAddUserId": "ID u\u017cytkownika ", 
+    "CreateAppError": "Utworzy\u0107 appError", 
+    "objectName": "appErrorAdd", 
+    "welcomeExample": "Zapraszamy do {page} strony!"
+}

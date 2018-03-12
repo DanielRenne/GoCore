@@ -1,0 +1,17 @@
+{
+    "CreateTransaction": "\u05d9\u05e6\u05d9\u05e8\u05ea \u05d4\u05e2\u05e1\u05e7\u05d4", 
+    "TransactionAddCollections": "\u05d0\u05d5\u05e1\u05e4\u05d9\u05dd", 
+    "TransactionAddCommitted": "\u05d1\u05d9\u05e6\u05e2", 
+    "TransactionAddCompleteDate": "\u05ea\u05d0\u05e8\u05d9\u05da \u05dc\u05e1\u05d9\u05d5\u05dd", 
+    "TransactionAddCreateDate": "\u05ea\u05d0\u05e8\u05d9\u05da \u05d9\u05e6\u05d9\u05e8\u05d4", 
+    "TransactionAddDetails": "\u05e4\u05e8\u05d8\u05d9\u05dd", 
+    "TransactionAddError": "\u05e9\u05d2\u05d9\u05d0\u05d4", 
+    "TransactionAddLastUpdate": "\u05e2\u05d3\u05db\u05d5\u05df \u05d0\u05d7\u05e8\u05d5\u05df", 
+    "TransactionAddRollbackDate": "\u05ea\u05d0\u05e8\u05d9\u05da \u05d4\u05d7\u05d6\u05e8\u05d4.", 
+    "TransactionAddRollbackReason": "\u05d4\u05d7\u05d6\u05e8\u05d4 \u05e1\u05d9\u05d1\u05d4", 
+    "TransactionAddRolledBack": "\u05d4\u05ea\u05d2\u05dc\u05d2\u05dc \u05d1\u05d7\u05d6\u05e8\u05d4", 
+    "TransactionAddRolledBackBy": "\u05d4\u05ea\u05d2\u05dc\u05d2\u05dc \u05d1\u05d7\u05d6\u05e8\u05d4 \u05e2\u05dc \u05d9\u05d3\u05d9", 
+    "TransactionAddUserId": "\u05de\u05d6\u05d4\u05d4 \u05d4\u05de\u05e9\u05ea\u05de\u05e9", 
+    "objectName": "transactionAdd", 
+    "welcomeExample": "\u05d1\u05e8\u05d5\u05db\u05d9\u05dd \u05d4\u05d1\u05d0\u05d9\u05dd {page} \u05d3\u05e3!"
+}

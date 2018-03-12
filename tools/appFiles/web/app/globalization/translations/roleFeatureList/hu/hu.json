@@ -1,0 +1,16 @@
+{
+    "AddRoleFeature": "Adjunk hozz\u00e1 egy \u00faj RoleFeature", 
+    "AreYouSure": "Are you sure you wish to delete {total} roleFeatures?", 
+    "AreYouSureInline": "Biztos, hogy t\u00f6r\u00f6lni szeretn\u00e9 ezt a roleFeature?", 
+    "ConfirmDeleteMessage": "Biztos, hogy t\u00f6r\u00f6lni szeretn\u00e9 ezt a roleFeature? Ez a m\u0171velet nem vonhat\u00f3 vissza.", 
+    "CopyRoleFeature": "M\u00e1sol\u00e1s roleFeature", 
+    "DeleteRoleFeature": "T\u00f6rl\u00e9s roleFeature", 
+    "EditRoleFeature": "Szerkeszt\u00e9s roleFeature", 
+    "RoleFeatureListHeaderLastUpdateId": "Utols\u00f3 friss\u00edt\u00e9s id", 
+    "RoleFeatureListHeaderUpdateDate": "Friss\u00edt\u00e9s d\u00e1tuma", 
+    "RoleFeatureListToolTipLastUpdateId": "Utols\u00f3 friss\u00edt\u00e9s id", 
+    "RoleFeatureListToolTipUpdateDate": "Friss\u00edt\u00e9s d\u00e1tuma", 
+    "ShowingAllRoleFeatures": "Mutatja Az \u00d6sszes RoleFeatures", 
+    "objectName": "roleFeatureList", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

@@ -1,0 +1,13 @@
+{
+    "AliasDeviceLabel": "* Nadimak ure\u0111aja", 
+    "Cancel": "Poni\u0161ti", 
+    "EnterAlias": "Unesite nadimak za povezani ure\u0111aj", 
+    "ErrorNoAlias": "Molimo vas, upi\u0161ite nije prazan nadimak", 
+    "ErrorNoBuildings": "Nema raspolo\u017eivih objekata", 
+    "ErrorNoSites": "Nema mjesta", 
+    "ResetPass": "Vra\u0107anje Izvorne Lozinke", 
+    "RoomSync": "Sinkronizacija Broj ", 
+    "Synchronizing": "Sinkronizacija", 
+    "UserCanceled": "Korisnik ukinuo akciju za sinkronizaciju ovaj broj, molimo vas, poku\u0161ajte ponovno.", 
+    "Waiting": "\u010cekam odobrenje..."
+}

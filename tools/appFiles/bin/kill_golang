@@ -1,0 +1,9 @@
+#!/bin/bash
+whoami=$(whoami)
+if [[ "$whoami" == "root" ]]; then
+    pkill compile
+    ps -ax | grep "exe/goCoreAppTemplate" | awk '{print $1}' | xargs sudo kill  > /dev/null 2>&1
+else
+    sudo pkill compile
+    ps -ax | grep "exe/goCoreAppTemplate" | awk '{print $1}' | xargs sudo kill  > /dev/null 2>&1
+fi

@@ -1,0 +1,13 @@
+{
+    "AddUserTooltip": "Dodaj Korisnika", 
+    "ErrorUserListFailedParse": "Ne mogu analizirati ulogu ra\u010dun za poziv.", 
+    "ErrorUserListFailedRevoke": "Zaboravio isklju\u010diti korisnika iz ra\u010duna.", 
+    "UserAddEditCompanyName": "Naziv Tvrtke ", 
+    "UserListLastNameFirstName": "Prezime, Ime", 
+    "UserListPhoneNumber": "Broj Telefona ", 
+    "UserListResendInvitationEmail": "Slanje Poziva E-Po\u0161tom", 
+    "UserListRevokeUser": "Otkazati ovaj korisnik je sa ra\u010duna.", 
+    "UserListRevokedUser": "Uspje\u0161no razrije\u0161en korisnika iz ra\u010duna.", 
+    "UserListRole": "Uloga", 
+    "UserListShowingAllUsers": "Prikazuje Sve Korisnike"
+}

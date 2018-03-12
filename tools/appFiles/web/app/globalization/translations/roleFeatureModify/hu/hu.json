@@ -1,0 +1,10 @@
+{
+    "RoleFeatureModifyBootstrapMeta": "Bootstrap meta", 
+    "RoleFeatureModifyCreateDate": "L\u00e9trehoz\u00e1s d\u00e1tuma", 
+    "RoleFeatureModifyFeatureId": "A szolg\u00e1ltat\u00e1s azonos\u00edt\u00f3ja", 
+    "RoleFeatureModifyLastUpdateId": "Utols\u00f3 friss\u00edt\u00e9s id", 
+    "RoleFeatureModifyRoleId": "Role id", 
+    "RoleFeatureModifyUpdateDate": "Friss\u00edt\u00e9s d\u00e1tuma", 
+    "objectName": "roleFeatureModify", 
+    "welcomeExample": "\u00dcdv\u00f6z\u00f6lj\u00fck a {page} oldalt!"
+}

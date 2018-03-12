@@ -1,0 +1,10 @@
+{
+    "CreateFeatureGroup": "Vytvo\u0159it featureGroup", 
+    "FeatureGroupAddBootstrapMeta": "Bootstrap meta", 
+    "FeatureGroupAddCreateDate": "Datum vytvo\u0159en\u00ed", 
+    "FeatureGroupAddLastUpdateId": "Posledn\u00ed aktualizace id", 
+    "FeatureGroupAddName": "Jm\u00e9no", 
+    "FeatureGroupAddUpdateDate": "Datum aktualizace", 
+    "objectName": "featureGroupAdd", 
+    "welcomeExample": "V\u00edtejte na {page} str\u00e1nka!"
+}

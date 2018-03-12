@@ -1,0 +1,23 @@
+[
+	{
+		"Id":"57c07ef3dcba0f7a0be338b8",
+		"Name":"Account Administrator",
+		"AccountId":"",
+		"CanDelete":false,
+		"CreateDate":"2016-08-26T10:49:04.630536446-04:00",
+		"UpdateDate":"2016-08-26T10:49:04.630536446-04:00",
+		"AccountType":"cust",
+		"BootstrapMeta": {
+			"Version": 0,
+			"Domain": "",
+			"ReleaseMode": "",
+			"ProductName": "",
+			"Domains": null,
+			"ProductNames": null,
+			"DeleteRow": false,
+			"AlwaysUpdate": true
+		},
+		"ShortName":"ADMIN",
+		"LastUpdateId":"57d9b383dcba0f51172f1f57"
+	}
+]

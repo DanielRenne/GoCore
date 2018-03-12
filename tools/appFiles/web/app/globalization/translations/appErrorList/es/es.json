@@ -1,0 +1,23 @@
+{
+    "AddAppError": "A\u00f1adir un nuevo AppError", 
+    "AppErrorListHeaderClientSide": "Lado del cliente", 
+    "AppErrorListHeaderLastUpdateId": "\u00daltima actualizaci\u00f3n de identificaci\u00f3n", 
+    "AppErrorListHeaderMessage": "Mensaje", 
+    "AppErrorListHeaderStackShown": "La pila se muestra", 
+    "AppErrorListHeaderUpdateDate": "Fecha de actualizaci\u00f3n", 
+    "AppErrorListHeaderUrl": "Url", 
+    "AppErrorListToolTipClientSide": "Lado del cliente", 
+    "AppErrorListToolTipLastUpdateId": "\u00daltima actualizaci\u00f3n de identificaci\u00f3n", 
+    "AppErrorListToolTipMessage": "Mensaje", 
+    "AppErrorListToolTipStackShown": "La pila se muestra", 
+    "AppErrorListToolTipUpdateDate": "Fecha de actualizaci\u00f3n", 
+    "AppErrorListToolTipUrl": "Url", 
+    "AreYouSure": "Est\u00e1 usted seguro de que desea eliminar {total} appErrors?", 
+    "AreYouSureInline": "Est\u00e1 usted seguro de que desea eliminar este appError?", 
+    "ConfirmDeleteMessage": "Est\u00e1 usted seguro de que quiere borrar este appError? Esta acci\u00f3n no se puede deshacer.", 
+    "DeleteAppError": "Eliminar appError", 
+    "EditAppError": "Editar appError", 
+    "ShowingAllAppErrors": "Mostrando Todos Los AppErrors", 
+    "objectName": "appErrorList", 
+    "welcomeExample": "Bienvenidos a la {page} p\u00e1gina!"
+}

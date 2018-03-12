@@ -1,0 +1,16 @@
+{
+    "AddRoleFeature": "Tambahkan baru RoleFeature", 
+    "AreYouSure": "Apakah anda yakin anda ingin menghapus {total} roleFeatures?", 
+    "AreYouSureInline": "Apakah anda yakin anda ingin menghapus ini roleFeature?", 
+    "ConfirmDeleteMessage": "Apakah anda yakin anda ingin menghapus ini roleFeature? Tindakan ini tidak dapat dibatalkan.", 
+    "CopyRoleFeature": "Copy roleFeature", 
+    "DeleteRoleFeature": "Menghapus roleFeature", 
+    "EditRoleFeature": "Edit roleFeature", 
+    "RoleFeatureListHeaderLastUpdateId": "Last update id", 
+    "RoleFeatureListHeaderUpdateDate": "Tanggal Update", 
+    "RoleFeatureListToolTipLastUpdateId": "Last update id", 
+    "RoleFeatureListToolTipUpdateDate": "Tanggal Update", 
+    "ShowingAllRoleFeatures": "Menampilkan Semua RoleFeatures", 
+    "objectName": "roleFeatureList", 
+    "welcomeExample": "Selamat datang {page} halaman!"
+}

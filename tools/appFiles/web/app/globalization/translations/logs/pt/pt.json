@@ -1,0 +1,12 @@
+{
+    "AutoPaused": "Autom\u00e1tico em pausa novos logs devido ao deslocamento.", 
+    "AutoPausedNewData": "{dataByte} new logs are ready to view, just click the play button.", 
+    "ClearingLog": "Clearing Log in {sec} seconds", 
+    "LogClear2": "Log data on this screen will clear in {sec} seconds", 
+    "LogClear3": "Please wait, {sec} seconds and it will clear automatically", 
+    "MemUsage": "Utiliza\u00e7\u00e3o De Mem\u00f3ria:", 
+    "Pause": "Pausa", 
+    "Resume": "Continuar", 
+    "objectName": "registos de", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

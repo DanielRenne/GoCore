@@ -1,0 +1,16 @@
+{
+    "TransactionModifyCollections": "Kokoelmat", 
+    "TransactionModifyCommitted": "Sitoutunut", 
+    "TransactionModifyCompleteDate": "T\u00e4ydellinen p\u00e4iv\u00e4m\u00e4\u00e4r\u00e4", 
+    "TransactionModifyCreateDate": "Luo p\u00e4iv\u00e4m\u00e4\u00e4r\u00e4", 
+    "TransactionModifyDetails": "Tiedot", 
+    "TransactionModifyError": "Virhe", 
+    "TransactionModifyLastUpdate": "Viimeisin p\u00e4ivitys", 
+    "TransactionModifyRollbackDate": "Palautus p\u00e4iv\u00e4m\u00e4\u00e4r\u00e4", 
+    "TransactionModifyRollbackReason": "Palautus syy", 
+    "TransactionModifyRolledBack": "Rullattu takaisin", 
+    "TransactionModifyRolledBackBy": "Rullattu takaisin", 
+    "TransactionModifyUserId": "K\u00e4ytt\u00e4j\u00e4 tunnus", 
+    "objectName": "transactionModify", 
+    "welcomeExample": "Tervetuloa {page} - sivulla!"
+}

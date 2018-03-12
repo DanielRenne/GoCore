@@ -1,0 +1,18 @@
+{
+    "AddFeatureGroup": "Dodaj novi FeatureGroup", 
+    "AreYouSure": "Jeste li sigurni da \u017eelite ukloniti {total} featureGroups?", 
+    "AreYouSureInline": "Jeste li sigurni da \u017eelite ukloniti ovaj featureGroup?", 
+    "ConfirmDeleteMessage": "Jeste li sigurni da \u017eelite ukloniti ovaj featureGroup? Ovu akciju nije mogu\u0107e poni\u0161titi.", 
+    "CopyFeatureGroup": "Kopija featureGroup", 
+    "DeleteFeatureGroup": "Ukloniti featureGroup", 
+    "EditFeatureGroup": "Ure\u0111ivanje featureGroup", 
+    "FeatureGroupListHeaderLastUpdateId": "Posljednja obnova EID", 
+    "FeatureGroupListHeaderName": "Naziv", 
+    "FeatureGroupListHeaderUpdateDate": "Datum a\u017euriranja", 
+    "FeatureGroupListToolTipLastUpdateId": "Posljednja obnova EID", 
+    "FeatureGroupListToolTipName": "Naziv", 
+    "FeatureGroupListToolTipUpdateDate": "Datum a\u017euriranja", 
+    "ShowingAllFeatureGroups": "Prikazuje Sve FeatureGroups", 
+    "objectName": "featureGroupList", 
+    "welcomeExample": "Dobrodo\u0161li na {page} stranice!"
+}

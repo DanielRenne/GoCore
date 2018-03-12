@@ -1,0 +1,12 @@
+{
+    "FeatureModifyBootstrapMeta": "Bootstrap meta", 
+    "FeatureModifyCreateDate": "Tarih olu\u015fturmak ", 
+    "FeatureModifyDescription": "A\u00e7\u0131klama", 
+    "FeatureModifyFeatureGroupId": "\u00d6zellik Grup kimli\u011fi", 
+    "FeatureModifyKey": "Anahtar", 
+    "FeatureModifyLastUpdateId": "Son g\u00fcncelleme kimli\u011fi", 
+    "FeatureModifyName": "Ad\u0131", 
+    "FeatureModifyUpdateDate": "Tarih g\u00fcncelleme ", 
+    "objectName": "featureModify", 
+    "welcomeExample": "{page} sayfas\u0131na ho\u015f geldiniz!"
+}

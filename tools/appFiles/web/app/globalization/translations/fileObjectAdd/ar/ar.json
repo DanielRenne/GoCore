@@ -1,0 +1,16 @@
+{
+    "CreateFileObject": "!ar!Create fileObject", 
+    "FileObjectAddAccountId": "!ar!Account id", 
+    "FileObjectAddContent": "!ar!Content", 
+    "FileObjectAddCreateDate": "!ar!Create date", 
+    "FileObjectAddLastUpdateId": "!ar!Last update id", 
+    "FileObjectAddMD5": "!ar!MD 5", 
+    "FileObjectAddModified": "!ar!Modified", 
+    "FileObjectAddModifiedUnix": "!ar!Modified unix", 
+    "FileObjectAddName": "!ar!Name", 
+    "FileObjectAddSize": "!ar!Size", 
+    "FileObjectAddType": "!ar!Type", 
+    "FileObjectAddUpdateDate": "!ar!Update date", 
+    "objectName": "!ar!fileObjectAdd", 
+    "welcomeExample": "!ar!Welcome to the {page} page!"
+}

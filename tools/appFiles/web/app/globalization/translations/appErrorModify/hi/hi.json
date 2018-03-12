@@ -1,0 +1,13 @@
+{
+    "AppErrorModifyAccountId": "\u0916\u093e\u0924\u093e \u0906\u0908\u0921\u0940", 
+    "AppErrorModifyClientSide": "\u0917\u094d\u0930\u093e\u0939\u0915 \u0915\u0940 \u0913\u0930", 
+    "AppErrorModifyCreateDate": "\u0924\u093f\u0925\u093f \u092c\u0928\u093e\u090f\u0901", 
+    "AppErrorModifyLastUpdateId": "\u0905\u0902\u0924\u093f\u092e \u0905\u0926\u094d\u092f\u0924\u0928 \u0906\u0908\u0921\u0940", 
+    "AppErrorModifyMessage": "\u0938\u0902\u0926\u0947\u0936", 
+    "AppErrorModifyStackShown": "\u0922\u0947\u0930 \u0926\u093f\u0916\u093e\u092f\u093e", 
+    "AppErrorModifyUpdateDate": "\u0905\u0926\u094d\u092f\u0924\u0928 \u0924\u093f\u0925\u093f", 
+    "AppErrorModifyUrl": "Url", 
+    "AppErrorModifyUserId": "\u0909\u092a\u092f\u094b\u0917\u0915\u0930\u094d\u0924\u093e \u0906\u0908\u0921\u0940", 
+    "objectName": "appErrorModify", 
+    "welcomeExample": "\u092e\u0947\u0902 \u0906\u092a\u0915\u093e \u0938\u094d\u0935\u093e\u0917\u0924 \u0939\u0948 {page} \u092a\u0943\u0937\u094d\u0920!"
+}

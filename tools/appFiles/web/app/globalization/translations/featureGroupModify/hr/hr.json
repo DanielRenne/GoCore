@@ -1,0 +1,9 @@
+{
+    "FeatureGroupModifyBootstrapMeta": "\u041f\u0440\u0438\u0445\u043b\u043e\u043f Meta", 
+    "FeatureGroupModifyCreateDate": "Datum osnivanja", 
+    "FeatureGroupModifyLastUpdateId": "Posljednja obnova EID", 
+    "FeatureGroupModifyName": "Naziv", 
+    "FeatureGroupModifyUpdateDate": "Datum a\u017euriranja", 
+    "objectName": "featureGroupModify", 
+    "welcomeExample": "Dobrodo\u0161li na {page} stranice!"
+}

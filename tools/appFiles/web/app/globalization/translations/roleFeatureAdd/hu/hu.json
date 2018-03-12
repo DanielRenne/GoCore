@@ -1,0 +1,11 @@
+{
+    "CreateRoleFeature": "Hozzon l\u00e9tre roleFeature", 
+    "RoleFeatureAddBootstrapMeta": "Bootstrap meta", 
+    "RoleFeatureAddCreateDate": "L\u00e9trehoz\u00e1s d\u00e1tuma", 
+    "RoleFeatureAddFeatureId": "A szolg\u00e1ltat\u00e1s azonos\u00edt\u00f3ja", 
+    "RoleFeatureAddLastUpdateId": "Utols\u00f3 friss\u00edt\u00e9s id", 
+    "RoleFeatureAddRoleId": "Szerepet id", 
+    "RoleFeatureAddUpdateDate": "Friss\u00edt\u00e9s d\u00e1tuma", 
+    "objectName": "roleFeatureAdd", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

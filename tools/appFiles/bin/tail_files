@@ -1,0 +1,2 @@
+sudo rm $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/plugins/*
+tail -f $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/app.log $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/db.log /tmp/go_watch.log $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/plugins/*.log | grep -v '97;42m 200'

@@ -1,0 +1,13 @@
+{
+    "AliasDeviceLabel": "* Alias de Dispositivo", 
+    "Cancel": "Cancelar", 
+    "EnterAlias": "Por favor, escriba un alias para este dispositivo conectado", 
+    "ErrorNoAlias": "Por favor, escriba un no en blanco alias", 
+    "ErrorNoBuildings": "Los edificios No disponible", 
+    "ErrorNoSites": "No hay sitios disponibles", 
+    "ResetPass": "Para Restablecer La Contrase\u00f1a", 
+    "RoomSync": "Sala De Sincronizaci\u00f3n", 
+    "Synchronizing": "La sincronizaci\u00f3n de", 
+    "UserCanceled": "El usuario cancela la acci\u00f3n para sincronizar esta sala, por favor, int\u00e9ntelo de nuevo.", 
+    "Waiting": "En espera de la Aprobaci\u00f3n..."
+}

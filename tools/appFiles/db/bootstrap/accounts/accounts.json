@@ -1,0 +1,39 @@
+ [
+	{
+		"Id": "58405718f94c671b05350857",
+		"AccountName": "My Company",
+		"Address1": "My Company Drive",
+		"Address2" : "",
+		"Region": "Unknown",
+		"IsSystemAccount": true,
+		"IsDefaultAccount": true,
+		"City": "Unknown",
+		"PostCode":"00000",
+		"CountryId":"57fe5936ed0727d89406d058",
+		"PrimaryPhone": {
+			"Value": "+1 000-000-000",
+			"Numeric": "1000000000",
+			"DialCode": "1",
+			"CountryISO": "us"
+		},
+		"SecondaryPhone": {
+			"Value": "+1 000-000-000",
+			"Numeric": "1000000000",
+			"DialCode": "1",
+			"CountryISO": "us"
+		},
+		"Email":"root@root-company.com",
+		"BillingInfo":
+		{
+			"VaultRefId":""
+		},
+		"AccountTypeShort":"",
+		"AccountTypeLong":"",
+		"DisabledFeatures":[],
+		"RelatedAcctId":"",
+		"CreateDate":"2016-08-26T10:49:04.630536446-04:00",
+		"UpdateDate":"2016-08-26T10:49:04.630536446-04:00",
+		"BootstrapMeta": {
+		}
+	}
+]

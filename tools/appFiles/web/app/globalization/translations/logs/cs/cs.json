@@ -1,0 +1,12 @@
+{
+    "AutoPaused": "Auto se odml\u010del nov\u00e9 protokoly vzhledem k scroll.", 
+    "AutoPausedNewData": "{dataByte} nov\u00e9 protokoly jsou p\u0159ipraveny k zobrazen\u00ed, sta\u010d\u00ed kliknout na tla\u010d\u00edtko play.", 
+    "ClearingLog": "Vymaz\u00e1n\u00ed Protokolu v {sec} sekund", 
+    "LogClear2": "Log data na t\u00e9to obrazovce bude jasn\u00e9 v {sec} sekund", 
+    "LogClear3": "\u010cekejte pros\u00edm, {sec} sekund, a to bude automaticky jasn\u00e9", 
+    "MemUsage": "Vyu\u017eit\u00ed Pam\u011bti:", 
+    "Pause": "Pauza", 
+    "Resume": "\u017divotopis", 
+    "objectName": "protokoly", 
+    "welcomeExample": "V\u00edtejte na {page} str\u00e1nka!"
+}

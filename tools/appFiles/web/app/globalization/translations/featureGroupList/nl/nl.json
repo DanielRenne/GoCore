@@ -1,0 +1,18 @@
+{
+    "AddFeatureGroup": "Voeg een nieuwe FeatureGroup", 
+    "AreYouSure": "Weet u zeker dat u wilt verwijderen {totaal} featureGroups?", 
+    "AreYouSureInline": "Weet u zeker dat u wilt verwijderen dit featureGroup?", 
+    "ConfirmDeleteMessage": "Bent u zeker dat u wilt verwijderen in dit featureGroup? Deze actie kan niet ongedaan worden gemaakt.", 
+    "CopyFeatureGroup": "Kopieer featureGroup", 
+    "DeleteFeatureGroup": "Verwijderen featureGroup", 
+    "EditFeatureGroup": "Bewerken featureGroup", 
+    "FeatureGroupListHeaderLastUpdateId": "Laatste update id", 
+    "FeatureGroupListHeaderName": "Naam", 
+    "FeatureGroupListHeaderUpdateDate": "Update datum", 
+    "FeatureGroupListToolTipLastUpdateId": "Laatste update id", 
+    "FeatureGroupListToolTipName": "Naam", 
+    "FeatureGroupListToolTipUpdateDate": "Update datum", 
+    "ShowingAllFeatureGroups": "Met Alle FeatureGroups", 
+    "objectName": "featureGroupList", 
+    "welcomeExample": "Welkom op de {pagina} pagina!"
+}

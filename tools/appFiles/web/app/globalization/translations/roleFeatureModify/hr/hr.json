@@ -1,0 +1,10 @@
+{
+    "RoleFeatureModifyBootstrapMeta": "", 
+    "RoleFeatureModifyCreateDate": "Datum osnivanja", 
+    "RoleFeatureModifyFeatureId": "ID objekta ", 
+    "RoleFeatureModifyLastUpdateId": "Posljednja obnova EID", 
+    "RoleFeatureModifyRoleId": "Id uloge ", 
+    "RoleFeatureModifyUpdateDate": "Datum a\u017euriranja", 
+    "objectName": "roleFeatureModify", 
+    "welcomeExample": "Dobrodo\u0161li na {page} stranice!"
+}

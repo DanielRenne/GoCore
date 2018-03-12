@@ -1,0 +1,16 @@
+{
+    "CreateFileObject": "\u0421\u043e\u0437\u0434\u0430\u0442\u044c \u043f\u043e\u0442\u043e\u043c\u043e\u043a fileobject", 
+    "FileObjectAddAccountId": "\u0418\u0434\u0435\u043d\u0442\u0438\u0444\u0438\u043a\u0430\u0442\u043e\u0440 \u0443\u0447\u0435\u0442\u043d\u043e\u0439 \u0437\u0430\u043f\u0438\u0441\u0438", 
+    "FileObjectAddContent": "\u0421\u043e\u0434\u0435\u0440\u0436\u0430\u043d\u0438\u0435", 
+    "FileObjectAddCreateDate": "\u0414\u0430\u0442\u0430 \u0441\u043e\u0437\u0434\u0430\u043d\u0438\u044f", 
+    "FileObjectAddLastUpdateId": "\u041f\u043e\u0441\u043b\u0435\u0434\u043d\u0435\u0435 \u043e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u0435 \u0418\u0414", 
+    "FileObjectAddMD5": "\u041c\u0414 5", 
+    "FileObjectAddModified": "\u0418\u0437\u043c\u0435\u043d\u0435\u043d", 
+    "FileObjectAddModifiedUnix": "\u0418\u0437\u043c\u0435\u043d\u0435\u043d \u0432 Unix", 
+    "FileObjectAddName": "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435", 
+    "FileObjectAddSize": "\u0420\u0430\u0437\u043c\u0435\u0440", 
+    "FileObjectAddType": "\u0422\u0438\u043f", 
+    "FileObjectAddUpdateDate": "\u0414\u0430\u0442\u0430 \u043e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u044f", 
+    "objectName": "fileObjectAdd", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

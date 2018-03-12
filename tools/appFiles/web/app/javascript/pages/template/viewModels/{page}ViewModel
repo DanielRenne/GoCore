@@ -1,0 +1,19 @@
+package viewModel
+
+import (
+	"encoding/json"
+)
+
+type -CAPCAMEL-ViewModel struct {
+	Constants struct {
+	} `json:"constants"`
+	//AdditionalConstructs
+}
+
+func (this *-CAPCAMEL-ViewModel) LoadDefaultState() {
+	setConstants(this, "-CAPITALIZED-_CONST")
+}
+
+func (self *-CAPCAMEL-ViewModel) Parse(data string) {
+	json.Unmarshal([]byte(data), &self)
+}

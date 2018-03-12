@@ -1,0 +1,12 @@
+{
+    "AutoPaused": "Auto jest zawieszone nowe logi z powodu przewijania.", 
+    "AutoPausedNewData": "{dataByte} nowe dzienniki s\u0105 gotowe, wystarczy nacisn\u0105\u0107 przycisk odtwarzania.", 
+    "ClearingLog": "Czyszczenie historii w {sec} s.", 
+    "LogClear2": "Dane z dziennika na ten ekran zostanie wyczyszczony w {sec} s.", 
+    "LogClear3": "Prosz\u0119 czeka\u0107, {sec} s i automatycznie jasne ", 
+    "MemUsage": "Korzystanie Z Pami\u0119ci:", 
+    "Pause": "Przerwa", 
+    "Resume": "Podsumowanie", 
+    "objectName": "dzienniki", 
+    "welcomeExample": "Zapraszamy do {page} strony!"
+}

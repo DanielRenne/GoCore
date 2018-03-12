@@ -1,0 +1,23 @@
+{
+    "AddAppError": "Dodaj novi AppError", 
+    "AppErrorListHeaderClientSide": "Na strani klijenta", 
+    "AppErrorListHeaderLastUpdateId": "Posljednja obnova EID", 
+    "AppErrorListHeaderMessage": "Poruka", 
+    "AppErrorListHeaderStackShown": "Stog \u0161to je prikazano", 
+    "AppErrorListHeaderUpdateDate": "Datum a\u017euriranja", 
+    "AppErrorListHeaderUrl": "URL adresa", 
+    "AppErrorListToolTipClientSide": "Na strani klijenta", 
+    "AppErrorListToolTipLastUpdateId": "Posljednja obnova EID", 
+    "AppErrorListToolTipMessage": "Poruka", 
+    "AppErrorListToolTipStackShown": "Stog \u0161to je prikazano", 
+    "AppErrorListToolTipUpdateDate": "Datum a\u017euriranja", 
+    "AppErrorListToolTipUrl": "URL adresa", 
+    "AreYouSure": "Jeste li sigurni da \u017eelite ukloniti {total} appErrors?", 
+    "AreYouSureInline": "Jeste li sigurni da \u017eelite ukloniti ovaj appError?", 
+    "ConfirmDeleteMessage": "Jeste li sigurni da \u017eelite ukloniti ovaj appError? Ovu akciju nije mogu\u0107e poni\u0161titi.", 
+    "DeleteAppError": "Ukloniti appError", 
+    "EditAppError": "Ure\u0111ivanje appError", 
+    "ShowingAllAppErrors": "Prikazuje Sve AppErrors", 
+    "objectName": "appErrorList", 
+    "welcomeExample": "Dobrodo\u0161li na {page} stranice!"
+}

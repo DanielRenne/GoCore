@@ -1,0 +1,15 @@
+{
+    "FileObjectModifyAccountId": "Tilin tunnus", 
+    "FileObjectModifyContent": "Sis\u00e4lt\u00f6\u00e4", 
+    "FileObjectModifyCreateDate": "Luo p\u00e4iv\u00e4m\u00e4\u00e4r\u00e4", 
+    "FileObjectModifyLastUpdateId": "Viimeisin p\u00e4ivitys id", 
+    "FileObjectModifyMD5": "MD-5", 
+    "FileObjectModifyModified": "Muutettu", 
+    "FileObjectModifyModifiedUnix": "Muokattu unix", 
+    "FileObjectModifyName": "Nimi", 
+    "FileObjectModifySize": "Koko", 
+    "FileObjectModifyType": "Tyyppi", 
+    "FileObjectModifyUpdateDate": "P\u00e4ivitys p\u00e4iv\u00e4m\u00e4\u00e4r\u00e4", 
+    "objectName": "fileObjectModify", 
+    "welcomeExample": "Tervetuloa {page} - sivulla!"
+}

@@ -1,0 +1,13 @@
+{
+    "AliasDeviceLabel": " Cihaz\u0131n * di\u011fer ", 
+    "Cancel": "\u0130ptal", 
+    "EnterAlias": "L\u00fctfen bu bir ba\u011fl\u0131 ayg\u0131t i\u00e7in bir ad girin ", 
+    "ErrorNoAlias": "L\u00fctfen bo\u015f olmayan bir takma ad girin ", 
+    "ErrorNoBuildings": "Hay\u0131r binalar mevcut", 
+    "ErrorNoSites": "Hi\u00e7bir site mevcut", 
+    "ResetPass": "Parola S\u0131f\u0131rlama ", 
+    "RoomSync": "Oda E\u015fitleme", 
+    "Synchronizing": "E\u015fitleme", 
+    "UserCanceled": "Bir kullan\u0131c\u0131 bu oda e\u015fitlemek i\u00e7in, l\u00fctfen tekrar deneyin eylemi iptal edildi.", 
+    "Waiting": "Onay i\u00e7in bekliyor..."
+}

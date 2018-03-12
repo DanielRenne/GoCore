@@ -1,0 +1,5 @@
+{
+    "ErrorAccountNotFound": "Falha ao localizar a conta.", 
+    "objectName": "contas", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

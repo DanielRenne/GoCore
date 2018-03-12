@@ -1,0 +1,11 @@
+{
+    "CreateRoleFeature": "Opret roleFeature", 
+    "RoleFeatureAddBootstrapMeta": "Bootstrap meta", 
+    "RoleFeatureAddCreateDate": "Opret dato", 
+    "RoleFeatureAddFeatureId": "Feature id", 
+    "RoleFeatureAddLastUpdateId": "Sidste opdatering id", 
+    "RoleFeatureAddRoleId": "Rolle-id", 
+    "RoleFeatureAddUpdateDate": "Update dato", 
+    "objectName": "roleFeatureAdd", 
+    "welcomeExample": "Velkommen til {page} side!"
+}

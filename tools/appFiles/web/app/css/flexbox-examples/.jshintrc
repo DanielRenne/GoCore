@@ -1,0 +1,8 @@
+{
+  "browser": true,
+  "boss": true,
+  "esnext": true,
+  "expr": true,
+  "node": true,
+  "quotmark": "single"
+}

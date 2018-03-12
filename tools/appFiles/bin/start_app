@@ -1,0 +1,45 @@
+
+whoami=$(whoami)
+if [[ "$whoami" == "root" ]]; then
+    rm -rf /tmp/go-build* > /dev/null 2>&1
+else
+    sudo rm -rf /tmp/go-build* > /dev/null 2>&1
+fi
+bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/kill_go_watch
+
+if [ ! -f "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/webConfig.json" ]; then
+    say "Copying web config and npm install for first time development process"
+    mkdir -p $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/plugins
+    cp $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/webConfig.dev.json $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/webConfig.json
+    cd $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin
+    chmod +x *
+fi
+
+if [ ! -d "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/node_modules" ]; then
+    say "npm install starting"
+    cd $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app
+    #https://github.com/sass/node-sass/issues/1847
+    #node-sass needs unsafe-perm
+    npm install --unsafe-perm
+    say "npm install ended"
+fi
+
+if [ ! -f "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/dist/javascript/go-core-app.js.gz" ]; then
+    say "copy dist tar balls starting"
+    cd $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript
+    bash build.sh
+    say "copy dist tar balls ending"
+fi
+
+
+echo "" > $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/app.log
+echo "" > $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/db.log
+echo "" > /tmp/go_watch.log
+echo "" > $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log
+
+if [[ "$whoami" == "root" ]]; then
+    rm $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/mongo.log
+else
+    sudo rm $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/mongo.log
+fi
+bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/dev

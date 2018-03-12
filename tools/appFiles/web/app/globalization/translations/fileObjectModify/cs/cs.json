@@ -1,0 +1,15 @@
+{
+    "FileObjectModifyAccountId": "Id \u00fa\u010dtu", 
+    "FileObjectModifyContent": "Obsah", 
+    "FileObjectModifyCreateDate": "Datum vytvo\u0159en\u00ed", 
+    "FileObjectModifyLastUpdateId": "Posledn\u00ed aktualizace id", 
+    "FileObjectModifyMD5": "MD 5", 
+    "FileObjectModifyModified": "Modifikovan\u00e9", 
+    "FileObjectModifyModifiedUnix": "Upraven\u00fd unix", 
+    "FileObjectModifyName": "Jm\u00e9no", 
+    "FileObjectModifySize": "Velikost", 
+    "FileObjectModifyType": "Typ", 
+    "FileObjectModifyUpdateDate": "Datum aktualizace", 
+    "objectName": "fileObjectModify", 
+    "welcomeExample": "V\u00edtejte na {page} str\u00e1nka!"
+}

@@ -1,0 +1,9 @@
+{
+    "FeatureGroupModifyBootstrapMeta": "Rzemyk Meta", 
+    "FeatureGroupModifyCreateDate": "Data utworzenia", 
+    "FeatureGroupModifyLastUpdateId": "Ostatnia aktualizacja ID", 
+    "FeatureGroupModifyName": "Nazwa", 
+    "FeatureGroupModifyUpdateDate": "Data aktualizacji", 
+    "objectName": "featureGroupModify", 
+    "welcomeExample": "Zapraszamy do {page} strony!"
+}

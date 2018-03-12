@@ -1,0 +1,17 @@
+{
+    "CreateTransaction": "Voit luoda tapahtuman", 
+    "TransactionAddCollections": "Kokoelmat", 
+    "TransactionAddCommitted": "Sitoutunut", 
+    "TransactionAddCompleteDate": "T\u00e4ydellinen p\u00e4iv\u00e4m\u00e4\u00e4r\u00e4", 
+    "TransactionAddCreateDate": "Luo p\u00e4iv\u00e4m\u00e4\u00e4r\u00e4", 
+    "TransactionAddDetails": "Tiedot", 
+    "TransactionAddError": "Virhe", 
+    "TransactionAddLastUpdate": "Viimeisin p\u00e4ivitys", 
+    "TransactionAddRollbackDate": "Palautus p\u00e4iv\u00e4m\u00e4\u00e4r\u00e4", 
+    "TransactionAddRollbackReason": "Palautus syy", 
+    "TransactionAddRolledBack": "Rullattu takaisin", 
+    "TransactionAddRolledBackBy": "Rullattu takaisin", 
+    "TransactionAddUserId": "K\u00e4ytt\u00e4j\u00e4 tunnus", 
+    "objectName": "transactionAdd", 
+    "welcomeExample": "Tervetuloa {page} - sivulla!"
+}

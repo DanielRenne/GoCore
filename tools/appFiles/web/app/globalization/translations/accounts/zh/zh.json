@@ -1,0 +1,5 @@
+{
+    "ErrorAccountNotFound": "!zh!Failed to find account.", 
+    "objectName": "!zh!accounts", 
+    "welcomeExample": "!zh!Welcome to the {page} page!"
+}

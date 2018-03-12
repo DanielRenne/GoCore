@@ -1,0 +1,14 @@
+package constants
+
+
+const (
+	ERRORS_-CAPITALIZED-_SAVE           = "Error-CAPCAMEL-Save"
+	ERRORS_-CAPITALIZED-_DELETE         = "Error-CAPCAMEL-Delete"
+	-CAPITALIZED-_SAVE_SUCCESS          = "-CAPCAMEL-SaveSuccess"
+	-CAPITALIZED-_DELETE_SUCCESSFUL     = "-CAPCAMEL-DeleteSuccessful"
+	ERRORS_-CAPITALIZED-_NOT_FOUND      = "Error-CAPCAMEL-NotFound"
+	ERRORS_-CAPITALIZED-_NO_ID          = "Error-CAPCAMEL-NoId"
+	-CAPITALIZED-_MANY_DELETE           = "-CAPCAMEL-DeleteMany"
+	ERRORS_-CAPITALIZED-_COPY       = "Error-CAPCAMEL-Copy"
+	-CAPITALIZED-_COPY_SUCCESSFUL   = "-CAPCAMEL-CopySuccessful"
+)

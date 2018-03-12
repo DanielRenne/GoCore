@@ -1,0 +1,13 @@
+{
+    "AddUserTooltip": "Tilf\u00f8je Bruger", 
+    "ErrorUserListFailedParse": "Undladt at parse konto rolle at p\u00e5ber\u00e5be sig.", 
+    "ErrorUserListFailedRevoke": "Undladt at Tilbagekalde bruger fra-konto.", 
+    "UserAddEditCompanyName": "Firma Navn", 
+    "UserListLastNameFirstName": "Efternavn, Fornavn", 
+    "UserListPhoneNumber": "Telefon Nummer", 
+    "UserListResendInvitationEmail": "Send Invitation Via E-Mail", 
+    "UserListRevokeUser": "Tilbagekalde denne bruger fra den konto.", 
+    "UserListRevokedUser": "Med succes Inddraget brugeren fra konto.", 
+    "UserListRole": "Rolle", 
+    "UserListShowingAllUsers": "Viser Alle Brugere"
+}

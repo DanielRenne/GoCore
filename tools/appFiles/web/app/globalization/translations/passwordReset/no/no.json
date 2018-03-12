@@ -1,0 +1,13 @@
+{
+    "ConfirmPassword": "Bekreft Passord", 
+    "ErrorPasswordNotValid": "Passordet m\u00e5 v\u00e6re p\u00e5 minst 8 tegn. Inkluderer 1 antall, 1 stor bokstav.", 
+    "FieldRequired": "N\u00f8dvendige Felt.", 
+    "NewPassword": "Nytt Passord", 
+    "OriginalPassword": "Opprinnelige Passord", 
+    "PasswordResetHeader": "For \u00e5 tilbakestille passord til {Email}.", 
+    "PasswordResetMessage": "En tilbakestilling av passord til {Email} har blitt bedt om. Vennligst klikk {Link} for \u00e5 tilbakestille ditt passord. \n\nDette tilbakestille er gyldige i 48 timer.", 
+    "PasswordResetTitle": "GoCoreAppHumanName For \u00c5 Tilbakestille Passord", 
+    "PasswordsNoMatch": "Passordene er ikke identiske.", 
+    "ResetCompleted": "Denne foresp\u00f8rselen har blitt fullf\u00f8rt. Vennligst be om nytt passord.", 
+    "Title": "For \u00c5 Tilbakestille Passord"
+}

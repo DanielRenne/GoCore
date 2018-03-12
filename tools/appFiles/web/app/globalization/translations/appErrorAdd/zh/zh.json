@@ -1,0 +1,14 @@
+{
+    "AppErrorAddAccountId": "\u5e10\u53f7", 
+    "AppErrorAddClientSide": "\u5ba2\u6237\u7684\u4fa7", 
+    "AppErrorAddCreateDate": "\u521b\u5efa\u65e5\u671f", 
+    "AppErrorAddLastUpdateId": "\u6700\u540e\u66f4\u65b0id", 
+    "AppErrorAddMessage": "\u6d88\u606f", 
+    "AppErrorAddStackShown": "\u5806\u793a", 
+    "AppErrorAddUpdateDate": "\u66f4\u65b0\u7684\u65e5\u671f", 
+    "AppErrorAddUrl": "Url", 
+    "AppErrorAddUserId": "User id", 
+    "CreateAppError": "\u521b\u5efaappError", 
+    "objectName": "appErrorAdd", 
+    "welcomeExample": "\u6b22\u8fce\u6765\u5230{page}\u9875\uff01"
+}

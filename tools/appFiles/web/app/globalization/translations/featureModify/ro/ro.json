@@ -1,0 +1,12 @@
+{
+    "FeatureModifyBootstrapMeta": "!ro!Bootstrap meta", 
+    "FeatureModifyCreateDate": "!ro!Create date", 
+    "FeatureModifyDescription": "!ro!Description", 
+    "FeatureModifyFeatureGroupId": "!ro!Feature group id", 
+    "FeatureModifyKey": "!ro!Key", 
+    "FeatureModifyLastUpdateId": "!ro!Last update id", 
+    "FeatureModifyName": "!ro!Name", 
+    "FeatureModifyUpdateDate": "!ro!Update date", 
+    "objectName": "!ro!featureModify", 
+    "welcomeExample": "!ro!Welcome to the {page} page!"
+}

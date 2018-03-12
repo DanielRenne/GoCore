@@ -1,0 +1,16 @@
+{
+    "TransactionModifyCollections": "Samlingar", 
+    "TransactionModifyCommitted": "Engagerade", 
+    "TransactionModifyCompleteDate": "Fullst\u00e4ndigt datum", 
+    "TransactionModifyCreateDate": "Skapa dagen", 
+    "TransactionModifyDetails": "Detaljer", 
+    "TransactionModifyError": "Fel", 
+    "TransactionModifyLastUpdate": "Senaste uppdateringen", 
+    "TransactionModifyRollbackDate": "Rollback datum", 
+    "TransactionModifyRollbackReason": "Rollback anledning", 
+    "TransactionModifyRolledBack": "Rullade tillbaka", 
+    "TransactionModifyRolledBackBy": "Rullade tillbaka", 
+    "TransactionModifyUserId": "Anv\u00e4ndar-id", 
+    "objectName": "transactionModify", 
+    "welcomeExample": "V\u00e4lkommen till {page} sida!"
+}

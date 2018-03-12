@@ -1,0 +1,13 @@
+{
+    "CreateFeature": "Opret funktion", 
+    "FeatureAddBootstrapMeta": "Bootstrap meta", 
+    "FeatureAddCreateDate": "Opret dato", 
+    "FeatureAddDescription": "Beskrivelse", 
+    "FeatureAddFeatureGroupId": "Har gruppe-id ' et", 
+    "FeatureAddKey": "N\u00f8gle", 
+    "FeatureAddLastUpdateId": "Sidste opdatering id", 
+    "FeatureAddName": "Navn", 
+    "FeatureAddUpdateDate": "Update dato", 
+    "objectName": "featureAdd", 
+    "welcomeExample": "Velkommen til {page} side!"
+}

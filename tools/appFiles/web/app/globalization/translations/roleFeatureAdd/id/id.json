@@ -1,0 +1,11 @@
+{
+    "CreateRoleFeature": "Membuat roleFeature", 
+    "RoleFeatureAddBootstrapMeta": "Bootstrap meta", 
+    "RoleFeatureAddCreateDate": "Membuat tanggal", 
+    "RoleFeatureAddFeatureId": "Fitur id", 
+    "RoleFeatureAddLastUpdateId": "Last update id", 
+    "RoleFeatureAddRoleId": "Peran id", 
+    "RoleFeatureAddUpdateDate": "Tanggal Update", 
+    "objectName": "roleFeatureAdd", 
+    "welcomeExample": "Selamat datang {page} halaman!"
+}

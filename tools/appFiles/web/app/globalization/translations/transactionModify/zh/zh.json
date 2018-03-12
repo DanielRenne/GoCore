@@ -1,0 +1,16 @@
+{
+    "TransactionModifyCollections": "\u96c6\u5408", 
+    "TransactionModifyCommitted": "\u81f4\u529b\u4e8e", 
+    "TransactionModifyCompleteDate": "\u5b8c\u6574\u7684\u65e5\u671f", 
+    "TransactionModifyCreateDate": "\u521b\u5efa\u65e5\u671f", 
+    "TransactionModifyDetails": "\u8be6\u7ec6\u4fe1\u606f", 
+    "TransactionModifyError": "\u9519\u8bef", 
+    "TransactionModifyLastUpdate": "\u6700\u540e\u66f4\u65b0", 
+    "TransactionModifyRollbackDate": "Rollback\u65e5\u671f", 
+    "TransactionModifyRollbackReason": "\u56de\u9000\u7684\u539f\u56e0", 
+    "TransactionModifyRolledBack": "\u6eda\u56de\u6765", 
+    "TransactionModifyRolledBackBy": "\u6eda\u56de\u6765", 
+    "TransactionModifyUserId": "User id", 
+    "objectName": "transactionModify", 
+    "welcomeExample": "\u6b22\u8fce\u6765\u5230{page}\u9875\uff01"
+}

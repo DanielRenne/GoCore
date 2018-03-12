@@ -1,0 +1,1 @@
+languages = ["es", "ru", "fr", "de", "it", "sv", "pt", "hu", "nl", "ro", "ar", "ko", "ja", "zh", "he", "tr", "th", "pl", "hi", "el", "hr", "cs", "id", "da", "fi", "no"]

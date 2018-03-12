@@ -1,0 +1,216 @@
+﻿<html>
+<head>
+  <title>GoCoreAppHumanName</title>
+  <meta charset="utf-8"/>
+  <!--[if IE]> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <![endif]-->
+
+  <!--Mobile Desktop Icon Setup -->
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <link rel="manifest" href="/web/app/manifests/appManifest.json"/>
+  <link rel="icon" sizes="192x192" href="/web/app/images/desktopIcons/Icon192.png"/>
+  <link rel="apple-touch-icon" href="/web/app/images/desktopIcons/Icon192.png"/>
+  <link rel="apple-touch-startup-image" href="/web/app/images/desktopIcons/splash1920.png"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
+  <script src="/dist/javascript/json.js" type="text/javascript"></script>
+  <link href="/web/app/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+  <link href="/web/app/favicon.ico" rel="icon" type="image/ico" />
+
+
+  <style>
+    .GoCore-components{
+      visibility: hidden;
+    }
+    @font-face {
+      font-family: 'Roboto';
+      font-weight: 300;
+      font-style: normal;
+      src: url('/web/app/fonts/Roboto-300/Roboto-300.eot');
+      src: url('/web/app/fonts/Roboto-300/Roboto-300.eot?#iefix') format('embedded-opentype'),
+           local('Roboto Light'),
+           local('Roboto-300'),
+           url('/web/app/fonts/Roboto-300/Roboto-300.woff2') format('woff2'),
+           url('/web/app/fonts/Roboto-300/Roboto-300.woff') format('woff'),
+           url('/web/app/fonts/Roboto-300/Roboto-300.ttf') format('truetype'),
+           url('/web/app/fonts/Roboto-300/Roboto-300.svg#Roboto') format('svg');
+    }
+
+    @font-face {
+      font-family: 'Roboto';
+      font-weight: 400;
+      font-style: normal;
+      src: url('/web/app/fonts/Roboto-regular/Roboto-regular.eot');
+      src: url('/web/app/fonts/Roboto-regular/Roboto-regular.eot?#iefix') format('embedded-opentype'),
+           local('Roboto'),
+           local('Roboto-regular'),
+           url('/web/app/fonts/Roboto-regular/Roboto-regular.woff2') format('woff2'),
+           url('/web/app/fonts/Roboto-regular/Roboto-regular.woff') format('woff'),
+           url('/web/app/fonts/Roboto-regular/Roboto-regular.ttf') format('truetype'),
+           url('/web/app/fonts/Roboto-regular/Roboto-regular.svg#Roboto') format('svg');
+    }
+
+    @font-face {
+      font-family: 'Roboto';
+      font-weight: 500;
+      font-style: normal;
+      src: url('/web/app/fonts/Roboto-500/Roboto-500.eot');
+      src: url('/web/app/fonts/Roboto-500/Roboto-500.eot?#iefix') format('embedded-opentype'),
+           local('Roboto Medium'),
+           local('Roboto-500'),
+           url('/web/app/fonts/Roboto-500/Roboto-500.woff2') format('woff2'),
+           url('/web/app/fonts/Roboto-500/Roboto-500.woff') format('woff'),
+           url('/web/app/fonts/Roboto-500/Roboto-500.ttf') format('truetype'),
+           url('/web/app/fonts/Roboto-500/Roboto-500.svg#Roboto') format('svg');
+    }
+
+    @font-face {
+      font-family: 'Roboto';
+      font-weight: 300;
+      font-style: italic;
+      src: url('/web/app/fonts/Roboto-300italic/Roboto-300italic.eot');
+      src: url('/web/app/fonts/Roboto-300italic/Roboto-300italic.eot?#iefix') format('embedded-opentype'),
+           local('Roboto Light Italic'),
+           local('Roboto-300italic'),
+           url('/web/app/fonts/Roboto-300italic/Roboto-300italic.woff2') format('woff2'),
+           url('/web/app/fonts/Roboto-300italic/Roboto-300italic.woff') format('woff'),
+           url('/web/app/fonts/Roboto-300italic/Roboto-300italic.ttf') format('truetype'),
+           url('/web/app/fonts/Roboto-300italic/Roboto-300italic.svg#Roboto') format('svg');
+    }
+
+
+    @font-face {
+      font-family: 'Material Icons';
+      font-style: normal;
+      font-weight: 400;
+      src: url(/web/app/fonts/MaterialIcons-Regular.eot); /* For IE6-8 */
+      src: local('Material Icons'),
+           local('MaterialIcons-Regular'),
+           url(/web/app/fonts/MaterialIcons-Regular.woff2) format('woff2'),
+           url(/web/app/fonts/MaterialIcons-Regular.woff) format('woff'),
+           url(/web/app/fonts/MaterialIcons-Regular.ttf) format('truetype');
+    }
+
+    .material-icons {
+      font-family: 'Material Icons';
+      font-weight: normal;
+      font-style: normal;
+      font-size: 24px;  /* Preferred icon size */
+      display: inline-block;
+      line-height: 1;
+      text-transform: none;
+      letter-spacing: normal;
+      word-wrap: normal;
+      white-space: nowrap;
+      direction: ltr;
+
+      /* Support for all WebKit browsers. */
+      -webkit-font-smoothing: antialiased;
+      /* Support for Safari and Chrome. */
+      text-rendering: optimizeLegibility;
+
+      /* Support for Firefox. */
+      -moz-osx-font-smoothing: grayscale;
+
+      /* Support for IE. */
+      font-feature-settings: 'liga';
+    }
+
+
+
+
+  </style>
+
+  <hotReloadCss></hotReloadCss>
+
+  <link rel="stylesheet" href="/dist/css/core.css.gz"/>
+
+  <!-- Core Fonts -->
+  <link rel="stylesheet" href="/dist/javascript/material-design.min.css.gz.js"/>
+  <link rel="stylesheet" href="/dist/javascript/brand-icons.min.css.gz.js"/>
+
+  <!--[if lt IE 10]>
+  <script src="/dist/javascript/media.match.min.js.gz.js"></script>
+  <script src="/dist/javascript/respond.min.js.gz.js"></script>
+  <![endif]-->
+
+  <!-- Scripts -->
+  <script src="/dist/javascript/polyfills.js"></script>
+  <script src="/dist/javascript/modernizr.min.js"></script>
+  <script src="/dist/javascript/breakpoints.min.js.gz.js"></script>
+  <script>
+    Breakpoints();
+  </script>
+</head>
+<body class="GoCore">
+  <div id="GoCore-banner"></div>
+  <div id="GoCore-sidebarMenu"></div>
+
+  <div class="GoCore-body">
+    <main class="GoCore-content" onclick="window.collapseBannerComponents()">
+      <div id="pagecontent"></div>
+      <div id="GoCore-notifications"></div>
+    </main>
+  </div>
+  <div id="GoCore-loader" onclick="if (window.SpinnerTimedout) { window.global.functions.quickSpinner(false); }"></div>
+  <footer class="GoCore-components">
+    <div id="GoCore-footer"></div>
+  </footer>
+  <script type="text/javascript">window.goCore = {};</script>
+  <hotReloadJs> </hotReloadJs>
+
+  <!-- Core Dependencies -->
+  <script src="/dist/javascript/jquery.min.js.gz.js"></script>
+  <script src="/dist/javascript/bootstrap.min.js"></script>
+  <script src="/dist/javascript/animsition.min.js.gz.js"></script>
+  <script src="/dist/javascript/jquery-asScroll.min.js.gz.js"></script>
+  <script src="/dist/javascript/jquery.mousewheel.min.js.gz.js"></script>
+  <script src="/dist/javascript/jquery.asScrollable.all.min.js.gz.js"></script>
+  <script src="/dist/javascript/jquery-asHoverScroll.min.js.gz.js"></script>
+  <!-- Core Plugins -->
+
+  <script src="/dist/javascript/waves.min.js.gz.js"></script>
+  <script src="/dist/javascript/switchery.min.js.gz.js"></script>
+  <script src="/dist/javascript/intro.min.js.gz.js"></script>
+  <script src="/dist/javascript/jquery-slidePanel.min.js.gz.js"></script>
+  <script src="/dist/javascript/screenfull.min.js.gz.js"></script>
+
+  <!-- Core Scripts -->
+  <script src="/dist/javascript/core.min.js.gz.js"></script>
+  <script src="/dist/javascript/site.min.js.gz.js"></script>
+  <script src="/dist/javascript/menu.min.js.gz.js"></script>
+  <script src="/dist/javascript/menubar.min.js.gz.js"></script>
+  <script src="/dist/javascript/sidebar.min.js.gz.js"></script>
+  <script src="/dist/javascript/config-colors.min.js.gz.js"></script>
+  <script src="/dist/javascript/config-tour.min.js.gz.js"></script>
+  <script src="/dist/javascript/moment.min.js.gz.js"></script>
+  <script src="/dist/javascript/moment-timezone.js.gz.js"></script>
+
+  <!--[if lt IE 9]>
+  <script src="/dist/javascript/html5shiv.min.js.gz.js"></script>
+  <![endif]-->
+
+  <script>
+    (function(document, window, $){
+      'use strict';
+      $(document).ready(function(){
+        if (window.appState.DeveloperMode) {
+          $(document).click(function() {
+            if (performance) {
+              console.log("Click", performance.now());
+            }
+          });
+          $(document).keypress(function() {
+            if (performance) {
+              console.log("Key", performance.now());
+            }
+          });
+        }
+        var Site = window.Site;
+        Site.run();
+      });
+    })(document, window, jQuery);
+  </script>
+
+</body>
+</html>

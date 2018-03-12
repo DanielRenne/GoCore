@@ -1,0 +1,13 @@
+{
+    "AddUserTooltip": "P\u0159idat U\u017eivatele", 
+    "ErrorUserListFailedParse": "Nepoda\u0159ilo se zpracovat \u00favahu roli uplatnit.", 
+    "ErrorUserListFailedRevoke": "Nepoda\u0159ilo se Zru\u0161it u\u017eivateli \u00fa\u010det.", 
+    "UserAddEditCompanyName": "N\u00e1zev Spole\u010dnosti", 
+    "UserListLastNameFirstName": "P\u0159\u00edjmen\u00ed, Jm\u00e9no", 
+    "UserListPhoneNumber": "Telefonn\u00ed \u010c\u00edslo", 
+    "UserListResendInvitationEmail": "Odesl\u00e1n\u00ed E-Mailu S Pozv\u00e1nkou", 
+    "UserListRevokeUser": "Zru\u0161it tohoto u\u017eivatele z \u00fa\u010dtu.", 
+    "UserListRevokedUser": "\u00dasp\u011b\u0161n\u011b Zru\u0161it u\u017eivateli \u00fa\u010det.", 
+    "UserListRole": "Roli", 
+    "UserListShowingAllUsers": "Zobrazuji V\u0161echny U\u017eivatele"
+}

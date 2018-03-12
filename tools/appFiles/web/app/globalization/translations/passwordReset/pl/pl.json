@@ -1,0 +1,13 @@
+{
+    "ConfirmPassword": "Potwierdzenie Has\u0142a", 
+    "ErrorPasswordNotValid": "Has\u0142o musi mie\u0107 co najmniej 8 znak\u00f3w. Sk\u0142ada si\u0119 z 1 Pok\u00f3j, 1 kapita\u0142owym.", 
+    "FieldRequired": "Pole Wymagane.", 
+    "NewPassword": "Nowe Has\u0142o", 
+    "OriginalPassword": "Oryginalny Has\u0142o", 
+    "PasswordResetHeader": "Resetowanie has\u0142a {Email}.", 
+    "PasswordResetMessage": "Resetowanie has\u0142a {Email} zaproponowano. Prosz\u0119, naci\u015bnij {Link}, aby zresetowa\u0107 has\u0142o. \n\nTen reset wygasa w ci\u0105gu 48 godzin.", 
+    "PasswordResetTitle": "Has\u0142o GoCoreAppHumanName Zresetowa\u0107", 
+    "PasswordsNoMatch": "Has\u0142a nie s\u0105 takie same.", 
+    "ResetCompleted": "Ten wniosek zosta\u0142 zako\u0144czony. Prosz\u0119 \u017c\u0105danie resetowania has\u0142a.", 
+    "Title": "Resetowanie Has\u0142a"
+}

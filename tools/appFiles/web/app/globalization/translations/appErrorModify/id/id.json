@@ -1,0 +1,13 @@
+{
+    "AppErrorModifyAccountId": "Akun id", 
+    "AppErrorModifyClientSide": "Sisi klien", 
+    "AppErrorModifyCreateDate": "Membuat tanggal", 
+    "AppErrorModifyLastUpdateId": "Last update id", 
+    "AppErrorModifyMessage": "Pesan", 
+    "AppErrorModifyStackShown": "Tumpukan ditampilkan", 
+    "AppErrorModifyUpdateDate": "Tanggal Update", 
+    "AppErrorModifyUrl": "Url", 
+    "AppErrorModifyUserId": "User id", 
+    "objectName": "appErrorModify", 
+    "welcomeExample": "Selamat datang {page} halaman!"
+}

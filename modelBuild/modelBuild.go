@@ -1,4 +1,4 @@
-package modelBuild 
+package modelBuild
 
 import (
 	"github.com/DanielRenne/GoCore/core/dbServices"

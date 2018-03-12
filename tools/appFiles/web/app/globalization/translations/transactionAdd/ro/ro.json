@@ -1,0 +1,17 @@
+{
+    "CreateTransaction": "Crea tranzac\u021bie", 
+    "TransactionAddCollections": "Colec\u021bii", 
+    "TransactionAddCommitted": "Angajat", 
+    "TransactionAddCompleteDate": "Data complet\u0103", 
+    "TransactionAddCreateDate": "Data cre\u0103rii", 
+    "TransactionAddDetails": "Detalii", 
+    "TransactionAddError": "Eroare", 
+    "TransactionAddLastUpdate": "Ultima actualizare", 
+    "TransactionAddRollbackDate": "Rollback data", 
+    "TransactionAddRollbackReason": "Rollback motiv", 
+    "TransactionAddRolledBack": "Laminate \u00eenapoi", 
+    "TransactionAddRolledBackBy": "Revenit de", 
+    "TransactionAddUserId": "Id-ul de utilizator", 
+    "objectName": "transactionAdd", 
+    "welcomeExample": "Bine a\u021bi venit la {page} pagina!"
+}

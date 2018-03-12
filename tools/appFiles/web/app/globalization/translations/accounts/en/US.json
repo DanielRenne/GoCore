@@ -1,0 +1,6 @@
+{
+  "objectName": "accounts",
+  "welcomeExample": "Welcome to the {page} page!",
+
+  "ErrorAccountNotFound":"Failed to find account."
+}

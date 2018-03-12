@@ -1,0 +1,12 @@
+{
+    "AutoPaused": "!ja!Auto paused new logs due to scroll.", 
+    "AutoPausedNewData": "!ja!{dataByte} new logs are ready to view, just click the play button.", 
+    "ClearingLog": "!ja!Clearing Log in {sec} seconds", 
+    "LogClear2": "!ja!Log data on this screen will clear in {sec} seconds", 
+    "LogClear3": "!ja!Please wait, {sec} seconds and it will clear automatically", 
+    "MemUsage": "!ja!Memory Usage:", 
+    "Pause": "!ja!Pause", 
+    "Resume": "!ja!Resume", 
+    "objectName": "!ja!logs", 
+    "welcomeExample": "!ja!Welcome to the {page} page!"
+}

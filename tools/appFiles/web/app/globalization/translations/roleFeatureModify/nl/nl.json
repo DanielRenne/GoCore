@@ -1,0 +1,10 @@
+{
+    "RoleFeatureModifyBootstrapMeta": "Bootstrap meta", 
+    "RoleFeatureModifyCreateDate": "Datum aanmaken", 
+    "RoleFeatureModifyFeatureId": "Functie-id", 
+    "RoleFeatureModifyLastUpdateId": "Laatste update id", 
+    "RoleFeatureModifyRoleId": "Rol-id", 
+    "RoleFeatureModifyUpdateDate": "Update datum", 
+    "objectName": "roleFeatureModify", 
+    "welcomeExample": "Welkom op de {pagina} pagina!"
+}

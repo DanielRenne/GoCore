@@ -1,0 +1,12 @@
+{
+    "AutoPaused": "Auto je zaustavljen novi \u010dasopisi iz-za pomicanje.", 
+    "AutoPausedNewData": "{dataByte} novi \u010dasopisi su spremni, samo kliknite na gumb za reprodukciju.", 
+    "ClearingLog": "Brisanje povijesti u {sec} sec.", 
+    "LogClear2": "Podaci iz zapisnika na ovaj ekran \u0107e se o\u010distiti u {sec} sec.", 
+    "LogClear3": "Molimo pri\u010dekajte {sec} sec i to automatski podrazumijeva ", 
+    "MemUsage": "Kori\u0161tenje Memorije:", 
+    "Pause": "Stanka", 
+    "Resume": "Sa\u017eetak", 
+    "objectName": "\u010dasopisi", 
+    "welcomeExample": "Dobrodo\u0161li na {page} stranice!"
+}

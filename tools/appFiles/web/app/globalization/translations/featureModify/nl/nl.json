@@ -1,0 +1,12 @@
+{
+    "FeatureModifyBootstrapMeta": "Bootstrap meta", 
+    "FeatureModifyCreateDate": "Datum aanmaken", 
+    "FeatureModifyDescription": "Beschrijving", 
+    "FeatureModifyFeatureGroupId": "Functie groep id", 
+    "FeatureModifyKey": "Sleutel", 
+    "FeatureModifyLastUpdateId": "Laatste update id", 
+    "FeatureModifyName": "Naam", 
+    "FeatureModifyUpdateDate": "Update datum", 
+    "objectName": "featureModify", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

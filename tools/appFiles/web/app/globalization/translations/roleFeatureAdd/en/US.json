@@ -1,0 +1,11 @@
+{
+    "CreateRoleFeature": "Create roleFeature", 
+    "RoleFeatureAddBootstrapMeta": "Bootstrap meta", 
+    "RoleFeatureAddCreateDate": "Create date", 
+    "RoleFeatureAddFeatureId": "Feature id", 
+    "RoleFeatureAddLastUpdateId": "Last update id", 
+    "RoleFeatureAddRoleId": "Role id", 
+    "RoleFeatureAddUpdateDate": "Update date", 
+    "objectName": "roleFeatureAdd", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

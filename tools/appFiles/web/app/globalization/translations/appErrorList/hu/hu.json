@@ -1,0 +1,23 @@
+{
+    "AddAppError": "Adjunk hozz\u00e1 egy \u00faj AppError", 
+    "AppErrorListHeaderClientSide": "Kliens oldalon", 
+    "AppErrorListHeaderLastUpdateId": "Utols\u00f3 friss\u00edt\u00e9s id", 
+    "AppErrorListHeaderMessage": "\u00dczenet", 
+    "AppErrorListHeaderStackShown": "Stack l\u00e1that\u00f3", 
+    "AppErrorListHeaderUpdateDate": "Friss\u00edt\u00e9s d\u00e1tuma", 
+    "AppErrorListHeaderUrl": "Url", 
+    "AppErrorListToolTipClientSide": "Kliens oldalon", 
+    "AppErrorListToolTipLastUpdateId": "Utols\u00f3 friss\u00edt\u00e9s id", 
+    "AppErrorListToolTipMessage": "\u00dczenet", 
+    "AppErrorListToolTipStackShown": "Stack l\u00e1that\u00f3", 
+    "AppErrorListToolTipUpdateDate": "Friss\u00edt\u00e9s d\u00e1tuma", 
+    "AppErrorListToolTipUrl": "Url", 
+    "AreYouSure": "Biztos, hogy t\u00f6r\u00f6lni k\u00edv\u00e1nt {total} appErrors?", 
+    "AreYouSureInline": "Biztos, hogy t\u00f6r\u00f6lni szeretn\u00e9 ezt a appError?", 
+    "ConfirmDeleteMessage": "Biztos, hogy t\u00f6r\u00f6lni szeretn\u00e9 ezt a appError? Ez a m\u0171velet nem vonhat\u00f3 vissza.", 
+    "DeleteAppError": "T\u00f6rl\u00e9s appError", 
+    "EditAppError": "Szerkeszt\u00e9s appError", 
+    "ShowingAllAppErrors": "Mutatja Az \u00d6sszes AppErrors", 
+    "objectName": "appErrorList", 
+    "welcomeExample": "\u00dcdv\u00f6z\u00f6lj\u00fck a {page} oldalt!"
+}

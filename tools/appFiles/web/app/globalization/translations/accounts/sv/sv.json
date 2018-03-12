@@ -1,0 +1,5 @@
+{
+    "ErrorAccountNotFound": "Det gick inte att hitta kontot.", 
+    "objectName": "konton", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

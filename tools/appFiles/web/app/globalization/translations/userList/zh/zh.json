@@ -1,0 +1,13 @@
+{
+    "AddUserTooltip": "!zh!Add User", 
+    "ErrorUserListFailedParse": "!zh!Failed to parse account role to invoke.", 
+    "ErrorUserListFailedRevoke": "!zh!Failed to Revoke user from account.", 
+    "UserAddEditCompanyName": "!zh!Company Name", 
+    "UserListLastNameFirstName": "!zh!Last Name, First Name", 
+    "UserListPhoneNumber": "!zh!Phone Number", 
+    "UserListResendInvitationEmail": "!zh!Resend Invitation Email", 
+    "UserListRevokeUser": "!zh!Revoke this user from the account.", 
+    "UserListRevokedUser": "!zh!Successfully Revoked user from account.", 
+    "UserListRole": "!zh!Role", 
+    "UserListShowingAllUsers": "!zh!Showing All Users"
+}

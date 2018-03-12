@@ -1,0 +1,13 @@
+{
+    "AddUserTooltip": "Legg Til Bruker", 
+    "ErrorUserListFailedParse": "Klarte ikke \u00e5 analysere konto rolle til \u00e5 p\u00e5berope seg.", 
+    "ErrorUserListFailedRevoke": "Klarte ikke \u00e5 Tilbakekalle brukeren din fra din konto.", 
+    "UserAddEditCompanyName": "Selskapets Navn", 
+    "UserListLastNameFirstName": "Etternavn, Fornavn", 
+    "UserListPhoneNumber": "Telefonnummer", 
+    "UserListResendInvitationEmail": "Send E-Post Invitasjon", 
+    "UserListRevokeUser": "Tilbakekalle denne brukeren fra kontoen.", 
+    "UserListRevokedUser": "Hell Opphevet brukeren din fra din konto.", 
+    "UserListRole": "Rolle", 
+    "UserListShowingAllUsers": "Viser Alle Brukere"
+}

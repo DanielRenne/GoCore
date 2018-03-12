@@ -1,0 +1,11 @@
+{
+    "CreateRoleFeature": "Utworzy\u0107 roleFeature", 
+    "RoleFeatureAddBootstrapMeta": "Rzemyk Meta", 
+    "RoleFeatureAddCreateDate": "Data utworzenia", 
+    "RoleFeatureAddFeatureId": "ID obiektu ", 
+    "RoleFeatureAddLastUpdateId": "Ostatnia aktualizacja ID", 
+    "RoleFeatureAddRoleId": "Identyfikator roli ", 
+    "RoleFeatureAddUpdateDate": "Data aktualizacji", 
+    "objectName": "roleFeatureAdd", 
+    "welcomeExample": "Zapraszamy do {page} strony!"
+}

@@ -1,0 +1,12 @@
+{
+    "CreateRole": "Skapa roll", 
+    "RoleAddAccountId": "Konto-id", 
+    "RoleAddCanDelete": "Kan ta bort", 
+    "RoleAddCreateDate": "Skapa dagen", 
+    "RoleAddLastUpdateId": "Senaste uppdatering id", 
+    "RoleAddName": "Namn", 
+    "RoleAddShortName": "Kort namn", 
+    "RoleAddUpdateDate": "Uppdatera datum", 
+    "objectName": "roleAdd", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

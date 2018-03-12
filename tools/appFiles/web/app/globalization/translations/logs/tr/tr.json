@@ -1,0 +1,12 @@
+{
+    "AutoPaused": "Otomatik kayd\u0131rma nedeniyle yeni g\u00fcnl\u00fckleri duraklad\u0131.", 
+    "AutoPausedNewData": "{dataByte} yeni g\u00fcnl\u00fcklerini g\u00f6r\u00fcnt\u00fclemek i\u00e7in haz\u0131r, sadece oynat d\u00fc\u011fmesine t\u0131klay\u0131n.", 
+    "ClearingLog": "{sec} takas G\u00fcnl\u00fc\u011f\u00fc saniye", 
+    "LogClear2": "Bu ekranda g\u00fcnl\u00fck veri {sec} temizler saniye", 
+    "LogClear3": "L\u00fctfen bekleyin, {sec} saniye ve otomatik olarak temizler. ", 
+    "MemUsage": "Bellek Kullan\u0131m\u0131:", 
+    "Pause": "Duraklama", 
+    "Resume": "\u00d6zge\u00e7mi\u015f", 
+    "objectName": "g\u00fcnl\u00fckleri", 
+    "welcomeExample": "{page} sayfas\u0131na ho\u015f geldiniz!"
+}

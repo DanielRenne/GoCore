@@ -1,0 +1,10 @@
+whoami=$(whoami)
+if [[ "$whoami" == "root" ]]; then
+    ps -ax | grep webpack-dev-server | awk '{print $1}' | xargs kill > /dev/null 2>&1
+else
+    ps -ax | grep webpack-dev-server | awk '{print $1}' | xargs sudo kill > /dev/null 2>&1
+fi
+cd $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app
+bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/start_go_watch_only
+nohup npm start > $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log 2>&1 &
+bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/clear_npmlogs_and_check_errors &

@@ -1,0 +1,13 @@
+{
+    "ConfirmPassword": "Confirmar Senha", 
+    "ErrorPasswordNotValid": "A senha deve ter pelo menos 8 caracteres. Incluem: 1 n\u00famero de 1 letras mai\u00fasculas.", 
+    "FieldRequired": "Campo Obrigat\u00f3rio.", 
+    "NewPassword": "Nova Senha", 
+    "OriginalPassword": "Palavra-Passe Original", 
+    "PasswordResetHeader": "Password reset for {Email}.", 
+    "PasswordResetMessage": "An password reset for {Email} has been requested. Please click {Link} to reset your password.  \n\nThis reset will expire in 48 hours.", 
+    "PasswordResetTitle": "GoCoreAppHumanName De Redefini\u00e7\u00e3o De Senha", 
+    "PasswordsNoMatch": "As senhas n\u00e3o coincidem.", 
+    "ResetCompleted": "Este pedido foi conclu\u00eddo. Por favor, outro pedido de redefini\u00e7\u00e3o de senha.", 
+    "Title": "Redefini\u00e7\u00e3o De Senha"
+}

@@ -1,0 +1,13 @@
+{
+    "AppErrorModifyAccountId": "Account-id", 
+    "AppErrorModifyClientSide": "De kant van de Client", 
+    "AppErrorModifyCreateDate": "Datum aanmaken", 
+    "AppErrorModifyLastUpdateId": "Laatste update id", 
+    "AppErrorModifyMessage": "Bericht", 
+    "AppErrorModifyStackShown": "Stapel weergegeven", 
+    "AppErrorModifyUpdateDate": "Update datum", 
+    "AppErrorModifyUrl": "Url", 
+    "AppErrorModifyUserId": "Gebruikers-id", 
+    "objectName": "appErrorModify", 
+    "welcomeExample": "Welkom op de {page} pagina!"
+}

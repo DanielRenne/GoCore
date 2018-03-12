@@ -1,0 +1,13 @@
+{
+    "AddUserTooltip": "Add User",
+    "UserListLastNameFirstName": "Last Name, First Name",
+    "UserListPhoneNumber": "Phone Number",
+    "UserAddEditCompanyName": "Company Name",
+    "UserListResendInvitationEmail": "Resend Invitation Email",
+    "UserListRole": "Role",
+    "UserListShowingAllUsers": "Showing All Users",
+    "UserListRevokeUser": "Revoke this user from the account.",
+    "ErrorUserListFailedParse":"Failed to parse account role to invoke.",
+    "ErrorUserListFailedRevoke":"Failed to Revoke user from account.",
+    "UserListRevokedUser":"Successfully Revoked user from account."
+}

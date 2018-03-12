@@ -1,0 +1,18 @@
+{
+    "AddFeatureGroup": "Legge til en ny FeatureGroup", 
+    "AreYouSure": "Er du sikker p\u00e5 at du \u00f8nsker \u00e5 slette {total} featureGroups?", 
+    "AreYouSureInline": "Er du sikker p\u00e5 at du vil slette dette featureGroup?", 
+    "ConfirmDeleteMessage": "Er du sikker p\u00e5 at du vil slette dette featureGroup? Denne handlingen kan ikke gj\u00f8res om.", 
+    "CopyFeatureGroup": "Kopier featureGroup", 
+    "DeleteFeatureGroup": "Slett featureGroup", 
+    "EditFeatureGroup": "Rediger featureGroup", 
+    "FeatureGroupListHeaderLastUpdateId": "Siste oppdatering id", 
+    "FeatureGroupListHeaderName": "Navn", 
+    "FeatureGroupListHeaderUpdateDate": "Du vil oppdatere dato", 
+    "FeatureGroupListToolTipLastUpdateId": "Siste oppdatering id", 
+    "FeatureGroupListToolTipName": "Navn", 
+    "FeatureGroupListToolTipUpdateDate": "Du vil oppdatere dato", 
+    "ShowingAllFeatureGroups": "Viser Alle FeatureGroups", 
+    "objectName": "featureGroupList", 
+    "welcomeExample": "Velkommen til {page} side!"
+}

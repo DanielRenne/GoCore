@@ -1,0 +1,23 @@
+{
+    "AddAppError": "P\u0159idat nov\u00fd AppError", 
+    "AppErrorListHeaderClientSide": "Na stran\u011b klienta", 
+    "AppErrorListHeaderLastUpdateId": "Posledn\u00ed aktualizace id", 
+    "AppErrorListHeaderMessage": "Zpr\u00e1va", 
+    "AppErrorListHeaderStackShown": "Z\u00e1sobn\u00edk je zn\u00e1zorn\u011bno", 
+    "AppErrorListHeaderUpdateDate": "Datum aktualizace", 
+    "AppErrorListHeaderUrl": "Url", 
+    "AppErrorListToolTipClientSide": "Na stran\u011b klienta", 
+    "AppErrorListToolTipLastUpdateId": "Posledn\u00ed aktualizace id", 
+    "AppErrorListToolTipMessage": "Zpr\u00e1va", 
+    "AppErrorListToolTipStackShown": "Z\u00e1sobn\u00edk je zn\u00e1zorn\u011bno", 
+    "AppErrorListToolTipUpdateDate": "Datum aktualizace", 
+    "AppErrorListToolTipUrl": "Url", 
+    "AreYouSure": "Jsou si jisti, \u017ee chcete smazat {total} appErrors?", 
+    "AreYouSureInline": "Jsou si jisti, \u017ee chcete smazat tento appError?", 
+    "ConfirmDeleteMessage": "Jste si jisti, \u017ee chcete smazat tento appError? Tuto akci nelze vr\u00e1tit zp\u011bt.", 
+    "DeleteAppError": "Odstranit appError", 
+    "EditAppError": "Edit appError", 
+    "ShowingAllAppErrors": "Zobrazuji V\u0161echny AppErrors", 
+    "objectName": "appErrorList", 
+    "welcomeExample": "V\u00edtejte na {page} str\u00e1nka!"
+}

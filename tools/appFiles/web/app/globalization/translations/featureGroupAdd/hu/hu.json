@@ -1,0 +1,10 @@
+{
+    "CreateFeatureGroup": "Hozzon l\u00e9tre featureGroup", 
+    "FeatureGroupAddBootstrapMeta": "Bootstrap meta", 
+    "FeatureGroupAddCreateDate": "L\u00e9trehoz\u00e1s d\u00e1tuma", 
+    "FeatureGroupAddLastUpdateId": "Utols\u00f3 friss\u00edt\u00e9s id", 
+    "FeatureGroupAddName": "N\u00e9v", 
+    "FeatureGroupAddUpdateDate": "Friss\u00edt\u00e9s d\u00e1tuma", 
+    "objectName": "featureGroupAdd", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

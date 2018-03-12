@@ -1,0 +1,9 @@
+{
+    "FeatureGroupModifyBootstrapMeta": "Bootstrap meta", 
+    "FeatureGroupModifyCreateDate": "Luo p\u00e4iv\u00e4m\u00e4\u00e4r\u00e4", 
+    "FeatureGroupModifyLastUpdateId": "Viimeisin p\u00e4ivitys id", 
+    "FeatureGroupModifyName": "Nimi", 
+    "FeatureGroupModifyUpdateDate": "P\u00e4ivitys p\u00e4iv\u00e4m\u00e4\u00e4r\u00e4", 
+    "objectName": "featureGroupModify", 
+    "welcomeExample": "Tervetuloa {page} - sivulla!"
+}

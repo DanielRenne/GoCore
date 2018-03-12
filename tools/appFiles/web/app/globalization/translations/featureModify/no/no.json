@@ -1,0 +1,12 @@
+{
+    "FeatureModifyBootstrapMeta": "Bootstrap meta", 
+    "FeatureModifyCreateDate": "Opprette dato", 
+    "FeatureModifyDescription": "Beskrivelse", 
+    "FeatureModifyFeatureGroupId": "Gruppe-id-funksjonen", 
+    "FeatureModifyKey": "N\u00f8kkel", 
+    "FeatureModifyLastUpdateId": "Siste oppdatering id", 
+    "FeatureModifyName": "Navn", 
+    "FeatureModifyUpdateDate": "Du vil oppdatere dato", 
+    "objectName": "featureModify", 
+    "welcomeExample": "Velkommen til {page} side!"
+}

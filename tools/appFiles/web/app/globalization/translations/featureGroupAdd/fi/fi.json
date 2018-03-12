@@ -1,0 +1,10 @@
+{
+    "CreateFeatureGroup": "Luo featureGroup", 
+    "FeatureGroupAddBootstrapMeta": "Bootstrap meta", 
+    "FeatureGroupAddCreateDate": "Luo p\u00e4iv\u00e4m\u00e4\u00e4r\u00e4", 
+    "FeatureGroupAddLastUpdateId": "Viimeisin p\u00e4ivitys id", 
+    "FeatureGroupAddName": "Nimi", 
+    "FeatureGroupAddUpdateDate": "P\u00e4ivitys p\u00e4iv\u00e4m\u00e4\u00e4r\u00e4", 
+    "objectName": "featureGroupAdd", 
+    "welcomeExample": "Tervetuloa {page} - sivulla!"
+}

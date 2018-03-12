@@ -1,0 +1,13 @@
+{
+    "AliasDeviceLabel": "* Alias del Dispositivo", 
+    "Cancel": "Annulla", 
+    "EnterAlias": "Si prega di inserire un alias per questo dispositivo collegato", 
+    "ErrorNoAlias": "Si prega di inserire un non vuoto alias", 
+    "ErrorNoBuildings": "Edifici disponibili", 
+    "ErrorNoSites": "Nei siti non disponibile", 
+    "ResetPass": "Reset Password", 
+    "RoomSync": "Camera Di Sincronizzazione", 
+    "Synchronizing": "La sincronizzazione", 
+    "UserCanceled": "Un utente ha annullato l'azione per sincronizzare questa camera, si prega di riprovare.", 
+    "Waiting": "In attesa di Approvazione..."
+}

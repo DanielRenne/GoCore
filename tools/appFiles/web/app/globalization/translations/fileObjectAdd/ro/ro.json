@@ -1,0 +1,16 @@
+{
+    "CreateFileObject": "!ro!Create fileObject", 
+    "FileObjectAddAccountId": "!ro!Account id", 
+    "FileObjectAddContent": "!ro!Content", 
+    "FileObjectAddCreateDate": "!ro!Create date", 
+    "FileObjectAddLastUpdateId": "!ro!Last update id", 
+    "FileObjectAddMD5": "!ro!MD 5", 
+    "FileObjectAddModified": "!ro!Modified", 
+    "FileObjectAddModifiedUnix": "!ro!Modified unix", 
+    "FileObjectAddName": "!ro!Name", 
+    "FileObjectAddSize": "!ro!Size", 
+    "FileObjectAddType": "!ro!Type", 
+    "FileObjectAddUpdateDate": "!ro!Update date", 
+    "objectName": "!ro!fileObjectAdd", 
+    "welcomeExample": "!ro!Welcome to the {page} page!"
+}

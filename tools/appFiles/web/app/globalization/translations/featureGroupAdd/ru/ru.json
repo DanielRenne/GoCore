@@ -1,0 +1,10 @@
+{
+    "CreateFeatureGroup": "\u0421\u043e\u0437\u0434\u0430\u0442\u044c featureGroup", 
+    "FeatureGroupAddBootstrapMeta": "\u041f\u0440\u0438\u0445\u043b\u043e\u043f \u041c\u0435\u0442\u0430", 
+    "FeatureGroupAddCreateDate": "\u0414\u0430\u0442\u0430 \u0441\u043e\u0437\u0434\u0430\u043d\u0438\u044f", 
+    "FeatureGroupAddLastUpdateId": "\u041f\u043e\u0441\u043b\u0435\u0434\u043d\u0435\u0435 \u043e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u0435 \u0418\u0414", 
+    "FeatureGroupAddName": "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435", 
+    "FeatureGroupAddUpdateDate": "\u0414\u0430\u0442\u0430 \u043e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u044f", 
+    "objectName": "featureGroupAdd", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

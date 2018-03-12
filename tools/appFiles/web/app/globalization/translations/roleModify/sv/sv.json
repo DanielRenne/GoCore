@@ -1,0 +1,11 @@
+{
+    "RoleModifyAccountId": "Konto-id", 
+    "RoleModifyCanDelete": "Kan ta bort", 
+    "RoleModifyCreateDate": "Skapa dagen", 
+    "RoleModifyLastUpdateId": "Senaste uppdatering id", 
+    "RoleModifyName": "Namn", 
+    "RoleModifyShortName": "Kort namn", 
+    "RoleModifyUpdateDate": "Uppdatera datum", 
+    "objectName": "roleModify", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

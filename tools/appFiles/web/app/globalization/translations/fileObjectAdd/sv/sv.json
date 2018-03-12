@@ -1,0 +1,16 @@
+{
+    "CreateFileObject": "Skapa fileObject", 
+    "FileObjectAddAccountId": "Konto-id", 
+    "FileObjectAddContent": "Inneh\u00e5ll", 
+    "FileObjectAddCreateDate": "Skapa dagen", 
+    "FileObjectAddLastUpdateId": "Senaste uppdatering id", 
+    "FileObjectAddMD5": "MD 5", 
+    "FileObjectAddModified": "Modifierad", 
+    "FileObjectAddModifiedUnix": "Modifierad unix", 
+    "FileObjectAddName": "Namn", 
+    "FileObjectAddSize": "Storlek", 
+    "FileObjectAddType": "Typ", 
+    "FileObjectAddUpdateDate": "Uppdatera datum", 
+    "objectName": "fileObjectAdd", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

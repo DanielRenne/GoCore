@@ -1,0 +1,17 @@
+{
+    "CreateTransaction": "\u521b\u5efa\u4e8b\u52a1", 
+    "TransactionAddCollections": "\u96c6\u5408", 
+    "TransactionAddCommitted": "\u81f4\u529b\u4e8e", 
+    "TransactionAddCompleteDate": "\u5b8c\u6574\u7684\u65e5\u671f", 
+    "TransactionAddCreateDate": "\u521b\u5efa\u65e5\u671f", 
+    "TransactionAddDetails": "\u8be6\u7ec6\u4fe1\u606f", 
+    "TransactionAddError": "\u9519\u8bef", 
+    "TransactionAddLastUpdate": "\u6700\u540e\u66f4\u65b0", 
+    "TransactionAddRollbackDate": "Rollback\u65e5\u671f", 
+    "TransactionAddRollbackReason": "\u56de\u9000\u7684\u539f\u56e0", 
+    "TransactionAddRolledBack": "\u6eda\u56de\u6765", 
+    "TransactionAddRolledBackBy": "\u6eda\u56de\u6765", 
+    "TransactionAddUserId": "User id", 
+    "objectName": "transactionAdd", 
+    "welcomeExample": "\u6b22\u8fce\u6765\u5230{page}\u9875\uff01"
+}

@@ -1,0 +1,12 @@
+{
+    "AutoPaused": "Auto pause nouveaux journaux en raison de d\u00e9filement.", 
+    "AutoPausedNewData": "{dataByte} new logs are ready to view, just click the play button.", 
+    "ClearingLog": "Clearing Log in {sec} seconds", 
+    "LogClear2": "Log data on this screen will clear in {sec} seconds", 
+    "LogClear3": "Please wait, {sec} seconds and it will clear automatically", 
+    "MemUsage": "L'Utilisation De La M\u00e9moire:", 
+    "Pause": "Pause", 
+    "Resume": "Reprendre", 
+    "objectName": "les journaux", 
+    "welcomeExample": "Welcome to the {page} page!"
+}
