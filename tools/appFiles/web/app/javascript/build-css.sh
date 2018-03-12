@@ -18,11 +18,11 @@ mv -f dist/css/go-core-app.css* ../dist/css/
 rm -rf dist/
 
 cd $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app
-cp css/RemarkCore.css dist/css/remark-core.css
-cp css/RemarkExperimental.css dist/css/remark-experimental.css
+cp css/Core.css dist/css/core.css
+cp css/Experimental.css dist/css/experimental.css
 cd dist/css/
-gzip -f remark-core.css
-gzip -f remark-experimental.css
+gzip -f core.css
+gzip -f experimental.css
 
 set +e
 say "css dist done"

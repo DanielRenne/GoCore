@@ -1,7 +1,6 @@
 import React, { PropTypes, Component } from 'react';
-import IntlTelInput from 'react-intl-tel-input';
-import '../../node_modules/react-intl-tel-input/dist/main.css';
 import BaseComponent from './base';
+import TextField from 'material-ui/TextField';
 
 class PhoneInput extends BaseComponent {
     constructor(props, context) {
@@ -33,38 +32,29 @@ class PhoneInput extends BaseComponent {
     return this.intlInput;
   }
 
-  onChange(event, phoneWithoutDialCode, countryData, numberFormatted) {
-      var state = {
-        Value: numberFormatted,
-        Numeric: (countryData.hasOwnProperty("dialCode") ? numberFormatted.replace("+" + countryData.dialCode + " ", "").replace(/[^0-9]/g, ""): numberFormatted),
-        DialCode: (countryData.hasOwnProperty("dialCode") ? countryData.dialCode: null),
-        CountryISO: (countryData.hasOwnProperty("iso2") ? countryData.iso2: null),
-      };
-      this.setComponentState(state);
-      this.props.OnChange(state);
-  }
-
   render() {
     try {
       this.logRender();
       return (
         <div>
-          <label htmlFor={this.Id} style={{height: 35, paddingTop: 10, fontSize: 12, display: 'block', cursor: 'text', color: 'rgba(0, 0, 0, 0.498039)'}}>{this.props.Label}</label>
-          <IntlTelInput
+          <TextField
             ref={(c) => this.intlInput = c}
-            id={this.Id}
-            style={{border: (this.props.ErrorText) ? "1px solid rgb(244, 67, 54)": "none"}}
-            defaultCountry={this.state.DefaultCountry}
-            value={this.state.Value}
-            disabled={this.props.Disabled}
-            separateDialCode={false}
-            nationalMode={false}
-            autoHideDialCode={false}
-            css={['intl-tel-input', 'form-control']}
-            utilsScript={'/dist/javascript/libphonenumber.js.gz'}
-            onPhoneNumberChange={(...params) => this.onChange(...params)}
+            floatingLabelText={this.props.Label}
+            hintText={this.props.Label}
+            defaultValue={this.state.Value}
+            fullWidth={true}
+            errorText={this.props.ErrorText}
+            onChange={(event) => {
+              let state = {
+                Value: event.target.value,
+                Numeric: event.target.value,
+                DialCode: null,
+                CountryISO: null
+              };
+              this.setComponentState(state);
+              this.props.OnChange(state);
+            }}
           />
-          {(this.props.ErrorText) ? <div style={{height: 35, paddingTop: 10, fontSize: 12, display: 'block', cursor: 'text', color: 'rgb(244, 67, 54)'}}>{this.props.ErrorText}</div>: null}
         </div>
       );
     } catch(e) {

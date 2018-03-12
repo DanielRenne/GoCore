@@ -226,63 +226,52 @@ func loadRoutes() {
 	ginServer.Router.GET("/dist/javascript/polyfills.js", handlePolyfills)
 	ginServer.Router.GET("/dist/markup", handleMarkupMiddleWare)
 
-	//remark
+	ginServer.Router.GET("/dist/css/core.css.gz", handleCssCoreGzip)
+	ginServer.Router.GET("/dist/css/experimental.css.gz", handleExperimentalGzip2)
 
-	ginServer.Router.GET("/dist/css/remark-core.css.gz", handleRemarkGzip)
-	ginServer.Router.GET("/dist/css/remark-experimental.css.gz", handleRemarkGzip2)
-
-	ginServer.Router.GET("/dist/javascript/jquery.min.js.gz.js", handleRemarkJsGzipMin)
+	ginServer.Router.GET("/dist/javascript/jquery.min.js.gz.js", handleGzipMin)
 
 	// this is busted between linux and mac somehow.  prod will just use the min
-	ginServer.Router.GET("/dist/javascript/bootstrap.min.js.gz.js", handleRemarkJsGzipBootstrap)
-	ginServer.Router.GET("/dist/javascript/bootstrap.min.js", handleRemarkJsBootstrap)
-	ginServer.Router.GET("/dist/javascript/animsition.min.js.gz.js", handleRemarkJsGzipAnimsition)
-	ginServer.Router.GET("/dist/javascript/jquery-asScroll.min.js.gz.js", handleRemarkJsGzipJqueryAsscroll)
-	ginServer.Router.GET("/dist/javascript/jquery.mousewheel.min.js.gz.js", handleRemarkJsGzipMousewheel)
-	ginServer.Router.GET("/dist/javascript/jquery.asScrollable.all.min.js.gz.js", handleRemarkJsGzipAsscrollable)
-	ginServer.Router.GET("/dist/javascript/jquery-asHoverScroll.min.js.gz.js", handleRemarkJsGzipJqueryAshoverscroll)
-	ginServer.Router.GET("/dist/javascript/waves.min.js.gz.js", handleRemarkJsGzipWaves)
-	ginServer.Router.GET("/dist/javascript/switchery.min.js.gz.js", handleRemarkJsGzipSwitchery)
-	ginServer.Router.GET("/dist/javascript/intro.min.js.gz.js", handleRemarkJsGzipIntro)
-	ginServer.Router.GET("/dist/javascript/screenfull.min.js.gz.js", handleRemarkJsGzipScreenfull)
-	ginServer.Router.GET("/dist/javascript/jquery-slidePanel.min.js.gz.js", handleRemarkJsGzipJquerySlidepanel)
-	ginServer.Router.GET("/dist/javascript/menu.min.js.gz.js", handleRemarkJsGzipMenu)
-	ginServer.Router.GET("/dist/javascript/menubar.min.js.gz.js", handleRemarkJsGzipMenubar)
-	ginServer.Router.GET("/dist/javascript/sidebar.min.js.gz.js", handleRemarkJsGzipSidebar)
-	ginServer.Router.GET("/dist/javascript/config-colors.min.js.gz.js", handleRemarkJsGzipConfigColors)
-	ginServer.Router.GET("/dist/javascript/config-tour.min.js.gz.js", handleRemarkJsGzipConfigTour)
-	ginServer.Router.GET("/dist/javascript/asscrollable.min.js.Component.gz.js", handleRemarkJsGzipAsscrollableComponent)
-	ginServer.Router.GET("/dist/javascript/animsition.min.js.Component.gz.js", handleRemarkJsGzipAnimsitionComponent)
-	ginServer.Router.GET("/dist/javascript/slidepanel.min.js.Component.gz.js", handleRemarkJsGzipSlidepanelComponent)
-	ginServer.Router.GET("/dist/javascript/switchery.min.js.Component.gz.js", handleRemarkJsGzipSwitcheryComponent)
-	ginServer.Router.GET("/dist/javascript/tabs.min.js.Component.gz.js", handleRemarkJsGzipTabsComponent)
-	ginServer.Router.GET("/dist/javascript/material-design.min.css.gz.js", handleRemarkJsGzipMaterialDesign)
-	ginServer.Router.GET("/dist/javascript/brand-icons.min.css.gz.js", handleRemarkJsGzipBrandIcons)
-	ginServer.Router.GET("/dist/javascript/html5shiv.min.js.gz.js", handleRemarkJsGzipHtml5shiv)
-	ginServer.Router.GET("/dist/javascript/media.match.min.js.gz.js", handleRemarkJsGzipMedia)
-	ginServer.Router.GET("/dist/javascript/respond.min.js.gz.js", handleRemarkJsGzipRespond)
-	ginServer.Router.GET("/dist/javascript/breakpoints.min.js.gz.js", handleRemarkJsGzipBreakpoints)
-	ginServer.Router.GET("/dist/javascript/asscrollable.min.js.jsComponent.gz.js", handleRemarkJsGzipAsscrollableComponent)
-	ginServer.Router.GET("/dist/javascript/animsition.min.js.jsComponent.gz.js", handleRemarkJsGzipAnimsitionComponent)
-	ginServer.Router.GET("/dist/javascript/slidepanel.min.js.jsComponent.gz.js", handleRemarkJsGzipSlidepanelComponent)
-	ginServer.Router.GET("/dist/javascript/tabs.min.js.jsComponent.gz.js", handleRemarkJsGzipTabsComponent)
-	ginServer.Router.GET("/dist/javascript/modernizr.min.js", handleRemarkJsModernizr)
+	ginServer.Router.GET("/dist/javascript/bootstrap.min.js.gz.js", handleGzipBootstrap)
+	ginServer.Router.GET("/dist/javascript/bootstrap.min.js", handleBootstrap)
+	ginServer.Router.GET("/dist/javascript/animsition.min.js.gz.js", handleGzipAnimsition)
+	ginServer.Router.GET("/dist/javascript/jquery-asScroll.min.js.gz.js", handleGzipJqueryAsscroll)
+	ginServer.Router.GET("/dist/javascript/jquery.mousewheel.min.js.gz.js", handleGzipMousewheel)
+	ginServer.Router.GET("/dist/javascript/jquery.asScrollable.all.min.js.gz.js", handleGzipAsscrollable)
+	ginServer.Router.GET("/dist/javascript/jquery-asHoverScroll.min.js.gz.js", handleGzipJqueryAshoverscroll)
+	ginServer.Router.GET("/dist/javascript/waves.min.js.gz.js", handleGzipWaves)
+	ginServer.Router.GET("/dist/javascript/switchery.min.js.gz.js", handleGzipSwitchery)
+	ginServer.Router.GET("/dist/javascript/intro.min.js.gz.js", handleGzipIntro)
+	ginServer.Router.GET("/dist/javascript/screenfull.min.js.gz.js", handleGzipScreenfull)
+	ginServer.Router.GET("/dist/javascript/jquery-slidePanel.min.js.gz.js", handleGzipJquerySlidepanel)
+	ginServer.Router.GET("/dist/javascript/menu.min.js.gz.js", handleGzipMenu)
+	ginServer.Router.GET("/dist/javascript/menubar.min.js.gz.js", handleGzipMenubar)
+	ginServer.Router.GET("/dist/javascript/sidebar.min.js.gz.js", handleGzipSidebar)
+	ginServer.Router.GET("/dist/javascript/config-colors.min.js.gz.js", handleGzipConfigColors)
+	ginServer.Router.GET("/dist/javascript/config-tour.min.js.gz.js", handleGzipConfigTour)
+	ginServer.Router.GET("/dist/javascript/material-design.min.css.gz.js", handleGzipMaterialDesign)
+	ginServer.Router.GET("/dist/javascript/brand-icons.min.css.gz.js", handleGzipBrandIcons)
+	ginServer.Router.GET("/dist/javascript/html5shiv.min.js.gz.js", handleGzipHtml5shiv)
+	ginServer.Router.GET("/dist/javascript/media.match.min.js.gz.js", handleGzipMedia)
+	ginServer.Router.GET("/dist/javascript/respond.min.js.gz.js", handleGzipRespond)
+	ginServer.Router.GET("/dist/javascript/breakpoints.min.js.gz.js", handleGzipBreakpoints)
+	ginServer.Router.GET("/dist/javascript/modernizr.min.js", handleModernizr)
 
 	// this is busted between linux and mac somehow.  prod will just use the min
-	ginServer.Router.GET("/dist/javascript/modernizr.min.js.gz.js", handleRemarkJsGzipModernizr)
-	ginServer.Router.GET("/dist/javascript/core.min.js.gz.js", handleRemarkJsGzipCore)
-	ginServer.Router.GET("/dist/javascript/site.min.js.gz.js", handleRemarkJsGzipSite)
-	ginServer.Router.GET("/dist/javascript/moment.min.js.gz.js", handleRemarkJsGzipMoment)
-	ginServer.Router.GET("/dist/javascript/moment-timezone.js.gz.js", handleRemarkJsGzipMomentTimeZone)
-	ginServer.Router.GET("/dist/javascript/Material-Design-Iconic-Font.eot", handleRemarkJsMaterialDesignIconicFontEot)
-	ginServer.Router.GET("/dist/javascript/Material-Design-Iconic-Font.svg", handleRemarkJsMaterialDesignIconicFontSvg)
-	ginServer.Router.GET("/dist/javascript/Material-Design-Iconic-Font.ttf", handleRemarkJsMaterialDesignIconicFontTtf)
-	ginServer.Router.GET("/dist/javascript/Material-Design-Iconic-Font.woff", handleRemarkJsMaterialDesignIconicFontWoff)
-	ginServer.Router.GET("/dist/javascript/Material-Design-Iconic-Font.woff2", handleRemarkJsMaterialDesignIconicFontWoff2)
-	ginServer.Router.GET("/dist/javascript/brand-icons.svg", handleRemarkJsBrandIconsSvg)
-	ginServer.Router.GET("/dist/javascript/brand-icons.ttf", handleRemarkJsBrandIconsTtf)
-	ginServer.Router.GET("/dist/javascript/brand-icons.woff", handleRemarkJsBrandIconsWoff)
-	ginServer.Router.GET("/dist/javascript/brand-icons.woff2", handleRemarkJsBrandIconsWoff2)
+	ginServer.Router.GET("/dist/javascript/modernizr.min.js.gz.js", handleGzipModernizr)
+	ginServer.Router.GET("/dist/javascript/core.min.js.gz.js", handleGzipCore)
+	ginServer.Router.GET("/dist/javascript/site.min.js.gz.js", handleGzipSite)
+	ginServer.Router.GET("/dist/javascript/moment.min.js.gz.js", handleGzipMoment)
+	ginServer.Router.GET("/dist/javascript/moment-timezone.js.gz.js", handleGzipMomentTimeZone)
+	ginServer.Router.GET("/dist/javascript/Material-Design-Iconic-Font.eot", handleMaterialDesignIconicFontEot)
+	ginServer.Router.GET("/dist/javascript/Material-Design-Iconic-Font.svg", handleMaterialDesignIconicFontSvg)
+	ginServer.Router.GET("/dist/javascript/Material-Design-Iconic-Font.ttf", handleMaterialDesignIconicFontTtf)
+	ginServer.Router.GET("/dist/javascript/Material-Design-Iconic-Font.woff", handleMaterialDesignIconicFontWoff)
+	ginServer.Router.GET("/dist/javascript/Material-Design-Iconic-Font.woff2", handleMaterialDesignIconicFontWoff2)
+	ginServer.Router.GET("/dist/javascript/brand-icons.svg", handleBrandIconsSvg)
+	ginServer.Router.GET("/dist/javascript/brand-icons.ttf", handleBrandIconsTtf)
+	ginServer.Router.GET("/dist/javascript/brand-icons.woff", handleBrandIconsWoff)
+	ginServer.Router.GET("/dist/javascript/brand-icons.woff2", handleBrandIconsWoff2)
 	ginServer.Router.GET("/fileObject/:Id", handleFileObject)
 	app.RegisterWebSocketDataCallback(handleWebSocketData)
 
@@ -649,192 +638,170 @@ func callState(controller string, action string, state string, c *gin.Context, r
 
 }
 
-// Remark
-
-func handleRemarkJsGzipMin(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/global/vendor/jquery/jquery.min.js.gz.js")
+func handleGzipMin(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/jquery.min.js.gz.js")
 	ginServer.RespondGzipJSFile(data, modTime, c)
 }
-func handleRemarkJsGzipBootstrap(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/global/vendor/bootstrap/bootstrap.min.js.gz.js")
+func handleGzipBootstrap(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/bootstrap.min.js.gz.js")
 	ginServer.RespondGzipJSFile(data, modTime, c)
 }
-func handleRemarkJsBootstrap(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/global/vendor/bootstrap/bootstrap.min.js")
+func handleBootstrap(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/bootstrap.min.js")
 	ginServer.RespondJSFile(data, modTime, c)
 }
-func handleRemarkJsGzipAnimsition(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/global/vendor/animsition/animsition.min.js.gz.js")
+func handleGzipAnimsition(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/animsition.min.js.gz.js")
 	ginServer.RespondGzipJSFile(data, modTime, c)
 }
-func handleRemarkJsGzipJqueryAsscroll(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/global/vendor/asscroll/jquery-asScroll.min.js.gz.js")
+func handleGzipJqueryAsscroll(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/jquery-asScroll.min.js.gz.js")
 	ginServer.RespondGzipJSFile(data, modTime, c)
 }
-func handleRemarkJsGzipMousewheel(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/global/vendor/mousewheel/jquery.mousewheel.min.js.gz.js")
+func handleGzipMousewheel(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/jquery.mousewheel.min.js.gz.js")
 	ginServer.RespondGzipJSFile(data, modTime, c)
 }
-func handleRemarkJsGzipAsscrollable(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/global/vendor/asscrollable/jquery.asScrollable.all.min.js.gz.js")
+func handleGzipAsscrollable(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/jquery.asScrollable.all.min.js.gz.js")
 	ginServer.RespondGzipJSFile(data, modTime, c)
 }
-func handleRemarkJsGzipJqueryAshoverscroll(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/global/vendor/ashoverscroll/jquery-asHoverScroll.min.js.gz.js")
+func handleGzipJqueryAshoverscroll(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/jquery-asHoverScroll.min.js.gz.js")
 	ginServer.RespondGzipJSFile(data, modTime, c)
 }
-func handleRemarkJsGzipWaves(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/global/vendor/waves/waves.min.js.gz.js")
+func handleGzipWaves(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/waves.min.js.gz.js")
 	ginServer.RespondGzipJSFile(data, modTime, c)
 }
-func handleRemarkJsGzipSwitchery(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/global/vendor/switchery/switchery.min.js.gz.js")
+func handleGzipSwitchery(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/switchery.min.js.gz.js")
 	ginServer.RespondGzipJSFile(data, modTime, c)
 }
-func handleRemarkJsGzipIntro(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/global/vendor/intro-js/intro.min.js.gz.js")
+func handleGzipIntro(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/intro.min.js.gz.js")
 	ginServer.RespondGzipJSFile(data, modTime, c)
 }
-func handleRemarkJsGzipScreenfull(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/global/vendor/screenfull/screenfull.min.js.gz.js")
+func handleGzipScreenfull(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/screenfull.min.js.gz.js")
 	ginServer.RespondGzipJSFile(data, modTime, c)
 }
-func handleRemarkJsGzipJquerySlidepanel(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/global/vendor/slidepanel/jquery-slidePanel.min.js.gz.js")
+func handleGzipJquerySlidepanel(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/jquery-slidePanel.min.js.gz.js")
 	ginServer.RespondGzipJSFile(data, modTime, c)
 }
-func handleRemarkJsGzipMenu(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/center/assets/js/sections/menu.min.js.gz.js")
+func handleGzipMenu(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/sections/menu.min.js.gz.js")
 	ginServer.RespondGzipJSFile(data, modTime, c)
 }
-func handleRemarkJsGzipMenubar(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/center/assets/js/sections/menubar.min.js.gz.js")
+func handleGzipMenubar(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/menubar.min.js.gz.js")
 	ginServer.RespondGzipJSFile(data, modTime, c)
 }
-func handleRemarkJsGzipSidebar(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/center/assets/js/sections/sidebar.min.js.gz.js")
+func handleGzipSidebar(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/sidebar.min.js.gz.js")
 	ginServer.RespondGzipJSFile(data, modTime, c)
 }
-func handleRemarkJsGzipConfigColors(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/global/js/configs/config-colors.min.js.gz.js")
+func handleGzipConfigColors(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/config-colors.min.js.gz.js")
 	ginServer.RespondGzipJSFile(data, modTime, c)
 }
-func handleRemarkJsGzipConfigTour(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/center/assets/js/configs/config-tour.min.js.gz.js")
+func handleGzipConfigTour(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/config-tour.min.js.gz.js")
 	ginServer.RespondGzipJSFile(data, modTime, c)
 }
-func handleRemarkJsGzipAsscrollableComponent(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/global/js/components/asscrollable.min.jsComponent.gz.js")
-	ginServer.RespondGzipJSFile(data, modTime, c)
-}
-func handleRemarkJsGzipAnimsitionComponent(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/global/js/components/animsition.min.jsComponent.gz.js")
-	ginServer.RespondGzipJSFile(data, modTime, c)
-}
-func handleRemarkJsGzipSlidepanelComponent(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/global/js/components/slidepanel.min.jsComponent.gz.js")
-	ginServer.RespondGzipJSFile(data, modTime, c)
-}
-func handleRemarkJsGzipSwitcheryComponent(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/global/js/components/switchery.min.jsComponent.gz.js")
-	ginServer.RespondGzipJSFile(data, modTime, c)
-}
-func handleRemarkJsGzipTabsComponent(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/global/js/components/tabs.min.jsComponent.gz.js")
-	ginServer.RespondGzipJSFile(data, modTime, c)
-}
-func handleRemarkJsGzipMaterialDesign(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/global/fonts/material-design/material-design.min.css.gz.js")
+func handleGzipMaterialDesign(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/material-design.min.css.gz.js")
 	ginServer.RespondGzipCSSFile(data, modTime, c)
 }
-func handleRemarkJsGzipBrandIcons(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/global/fonts/brand-icons/brand-icons.min.css.gz.js")
+func handleGzipBrandIcons(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/brand-icons.min.css.gz.js")
 	ginServer.RespondGzipCSSFile(data, modTime, c)
 }
-func handleRemarkJsGzipHtml5shiv(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/global/vendor/html5shiv/html5shiv.min.js.gz.js")
+func handleGzipHtml5shiv(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/html5shiv.min.js.gz.js")
 	ginServer.RespondGzipJSFile(data, modTime, c)
 }
-func handleRemarkJsGzipMedia(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/global/vendor/media-match/media.match.min.js.gz.js")
+func handleGzipMedia(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/media.match.min.js.gz.js")
 	ginServer.RespondGzipJSFile(data, modTime, c)
 }
-func handleRemarkJsGzipRespond(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/global/vendor/respond/respond.min.js.gz.js")
+func handleGzipRespond(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/respond.min.js.gz.js")
 	ginServer.RespondGzipJSFile(data, modTime, c)
 }
-func handleRemarkJsGzipBreakpoints(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/global/vendor/breakpoints/breakpoints.min.js.gz.js")
+func handleGzipBreakpoints(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/breakpoints.min.js.gz.js")
 	ginServer.RespondGzipJSFile(data, modTime, c)
 }
-func handleRemarkJsModernizr(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/global/vendor/modernizr/modernizr.min.js")
+func handleModernizr(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/modernizr.min.js")
 	ginServer.RespondJSFile(data, modTime, c)
 }
-func handleRemarkJsGzipModernizr(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/global/vendor/modernizr/modernizr.min.js.gz.js")
+func handleGzipModernizr(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/modernizr.min.js.gz.js")
 	ginServer.RespondGzipJSFile(data, modTime, c)
 }
-func handleRemarkJsGzipCore(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/global/js/core.min.js.gz.js")
+func handleGzipCore(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/core.min.js.gz.js")
 	ginServer.RespondGzipJSFile(data, modTime, c)
 }
-func handleRemarkJsGzipSite(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/center/assets/js/site.min.js.gz.js")
+func handleGzipSite(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/site.min.js.gz.js")
 	ginServer.RespondGzipJSFile(data, modTime, c)
 }
-func handleRemarkJsGzipMoment(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/global/vendor/moment/moment.min.js.gz.js")
+func handleGzipMoment(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/moment.min.js.gz.js")
 	ginServer.RespondGzipJSFile(data, modTime, c)
 }
-func handleRemarkJsGzipMomentTimeZone(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/global/vendor/moment/moment-timezone.js.gz.js")
+func handleGzipMomentTimeZone(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/moment-timezone.js.gz.js")
 	ginServer.RespondGzipJSFile(data, modTime, c)
 }
 
 // fonts
-func handleRemarkJsMaterialDesignIconicFontEot(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/global/fonts/material-design/Material-Design-Iconic-Font.eot")
+func handleMaterialDesignIconicFontEot(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/Material-Design-Iconic-Font.eot")
 	ginServer.RespondEotFile(data, modTime, c)
 }
 
-func handleRemarkJsMaterialDesignIconicFontSvg(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/global/fonts/material-design/Material-Design-Iconic-Font.svg")
+func handleMaterialDesignIconicFontSvg(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/Material-Design-Iconic-Font.svg")
 	ginServer.RespondSvgFile(data, modTime, c)
 }
 
-func handleRemarkJsMaterialDesignIconicFontTtf(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/global/fonts/material-design/Material-Design-Iconic-Font.ttf")
+func handleMaterialDesignIconicFontTtf(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/Material-Design-Iconic-Font.ttf")
 	ginServer.RespondTtfFile(data, modTime, c)
 }
 
-func handleRemarkJsMaterialDesignIconicFontWoff(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/global/fonts/material-design/Material-Design-Iconic-Font.woff")
+func handleMaterialDesignIconicFontWoff(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/Material-Design-Iconic-Font.woff")
 	ginServer.RespondWoffFile(data, modTime, c)
 }
 
-func handleRemarkJsMaterialDesignIconicFontWoff2(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/global/fonts/material-design/Material-Design-Iconic-Font.woff2")
+func handleMaterialDesignIconicFontWoff2(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/Material-Design-Iconic-Font.woff2")
 	ginServer.RespondWoff2File(data, modTime, c)
 }
 
-func handleRemarkJsBrandIconsSvg(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/global/fonts/brand-icons/brand-icons.svg")
+func handleBrandIconsSvg(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/brand-icons.svg")
 	ginServer.RespondSvgFile(data, modTime, c)
 }
 
-func handleRemarkJsBrandIconsTtf(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/global/fonts/brand-icons/brand-icons.ttf")
+func handleBrandIconsTtf(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/brand-icons.ttf")
 	ginServer.RespondTtfFile(data, modTime, c)
 }
 
-func handleRemarkJsBrandIconsWoff(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/global/fonts/brand-icons/brand-icons.woff")
+func handleBrandIconsWoff(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/brand-icons.woff")
 	ginServer.RespondWoffFile(data, modTime, c)
 }
 
-func handleRemarkJsBrandIconsWoff2(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/remark/material/global/fonts/brand-icons/brand-icons.woff2")
+func handleBrandIconsWoff2(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/brand-icons.woff2")
 	ginServer.RespondWoff2File(data, modTime, c)
 }
 
@@ -940,13 +907,13 @@ func handleGzip(c *gin.Context) {
 	ginServer.RespondGzipJSFile(data, modTime, c)
 }
 
-func handleRemarkGzip(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/dist/css/remark-core.css.gz")
+func handleCssCoreGzip(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/dist/css/core.css.gz")
 	ginServer.RespondGzipCSSFile(data, modTime, c)
 }
 
-func handleRemarkGzip2(c *gin.Context) {
-	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/dist/css/remark-experimental.css.gz")
+func handleExperimentalGzip2(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/dist/css/experimental.css.gz")
 	ginServer.RespondGzipCSSFile(data, modTime, c)
 }
 

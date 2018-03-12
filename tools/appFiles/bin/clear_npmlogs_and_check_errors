@@ -50,7 +50,7 @@ while true; do
          #fi
        else
          if [[ "$REACTCOMPILING" -eq 1 ]]; then
-           cp $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npmSuccess.lo
+           cp $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npmSuccess.log
            say "React compiled"  > /dev/null 2>&1
            if [[ "$GOWATCHRUNNING" -eq 0 ]]; then
              GOWATCHRUNNING=1

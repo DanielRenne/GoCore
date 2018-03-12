@@ -175,37 +175,37 @@ class Banner extends BaseComponent {
                             <ul className="blocks-3">
                               <li>
                                 <a className="thumbnail margin-0" href="javascript:void(0)">
-                                  <img className="width-full" src="/web/app/remark/material/global/photos/placeholder.png" alt="..."
+                                  <img className="width-full" src="/web/app/images/placeholder.png" alt="..."
                                   />
                                 </a>
                               </li>
                               <li>
                                 <a className="thumbnail margin-0" href="javascript:void(0)">
-                                  <img className="width-full" src="/web/app/remark/material/global/photos/placeholder.png" alt="..."
+                                  <img className="width-full" src="/web/app/images/placeholder.png" alt="..."
                                   />
                                 </a>
                               </li>
                               <li>
                                 <a className="thumbnail margin-0" href="javascript:void(0)">
-                                  <img className="width-full" src="/web/app/remark/material/global/photos/placeholder.png" alt="..."
+                                  <img className="width-full" src="/web/app/images/placeholder.png" alt="..."
                                   />
                                 </a>
                               </li>
                               <li>
                                 <a className="thumbnail margin-0" href="javascript:void(0)">
-                                  <img className="width-full" src="/web/app/remark/material/global/photos/placeholder.png" alt="..."
+                                  <img className="width-full" src="/web/app/images/placeholder.png" alt="..."
                                   />
                                 </a>
                               </li>
                               <li>
                                 <a className="thumbnail margin-0" href="javascript:void(0)">
-                                  <img className="width-full" src="/web/app/remark/material/global/photos/placeholder.png" alt="..."
+                                  <img className="width-full" src="/web/app/images/placeholder.png" alt="..."
                                   />
                                 </a>
                               </li>
                               <li>
                                 <a className="thumbnail margin-0" href="javascript:void(0)">
-                                  <img className="width-full" src="/web/app/remark/material/global/photos/placeholder.png" alt="..."
+                                  <img className="width-full" src="/web/app/images/placeholder.png" alt="..."
                                   />
                                 </a>
                               </li>

@@ -22,8 +22,8 @@ class SideBarMenu extends BaseComponent {
       alert("Dude, you haven't implemented the sidebar viewModel!\n\n#devfail");
     }
 
-    var sidebarMapping = (this.state.Items == null) ? console.error("No sidebar items passed in viewModel!") : 
-      (window.appState.AccountTypeShort != "cust" ? 
+    var sidebarMapping = (this.state.Items == null) ? console.error("No sidebar items passed in viewModel!") :
+      (window.appState.AccountTypeShort != "cust" ?
         (this.state.Items.map((item, k) => {
               if (item.Title != "SitesTitle") {
                 return <SideBarMenuItem key={k}
@@ -59,7 +59,7 @@ class SideBarMenu extends BaseComponent {
       <div className="site-menubar" style={{overflowY:"auto"}}>
         <div className="site-menubar-header">
           <div className="cover overlay">
-            <img className="cover-image" src="/web/app/remark/material/center/assets/examples/images/dashboard-header.jpg"
+            <img className="cover-image" src="/web/app/images/dashboard-header.jpg"
               alt="..."/>
             <div className="overlay-panel vertical-align overlay-background">
               <div className="vertical-align-middle">

@@ -98,7 +98,7 @@ class Home extends BasePageComponent {
                 }}>({window.pageContent.ViewDocumentation})</a></span>
               </div>
             </div>
-            <div style={{textAlign: "left", maxHeight: 169, overflowY: "scroll", borderTop: "1px solid " + window.materialColors["grey200"]}}> 
+            <div style={{textAlign: "left", maxHeight: 169, overflowY: "scroll", borderTop: "1px solid " + window.materialColors["grey200"]}}>
             </div>
           </div>
         </div>
@@ -218,7 +218,7 @@ class Home extends BasePageComponent {
                 <h3 style={{marginTop: "1.5em", color:  window.materialColors["blueGrey700"]}}>{accountUserRoomDesc}</h3>
                 <div className="widget" id="widgetUserList" style={{backgroundColor: "white", minHeight: 500}}>
                   <div className="widget-header cover overlay">
-                    <img className="cover-image height-200" src="/web/app/remark/material/center/assets//examples/images/dashboard-header.jpg" alt="..." />
+                    <img className="cover-image height-200" src="/web/app/images/dashboard-header.jpg" alt="..." />
                     <div className="overlay-panel vertical-align overlay-background">
                       <div className="vertical-align-middle">
                         <a className="avatar avatar-100 pull-left margin-right-20" href="javascript:void(0)">
