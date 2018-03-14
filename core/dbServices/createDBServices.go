@@ -25,6 +25,8 @@ Bolt todo:
 
 Bootstrap logic
 Transactions within bold using save with tran
+WhiteList/Blacklist seems unsupported completely with storm
+
 
 */
 

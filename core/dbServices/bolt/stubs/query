@@ -69,7 +69,6 @@ type view struct {
 }
 
 type Query struct {
-	q           *mgo.Query
 	m           bson.M
 	o           []bson.M
 	ao          map[string][]map[string][]bson.M
@@ -77,7 +76,7 @@ type Query struct {
 	limit       int
 	skip        int
 	sort        []string
-	collection  *mgo.Collection
+	collection  string
 	entityName  string
 	e           error
 	joins       map[string]joinType
@@ -255,7 +254,7 @@ func (self *Query) Or(criteria map[string]interface{}) *Query {
 
 		for key, val := range criteria {
 			if key != "" {
-				self.o = append(self.o, Q(key, self.CheckForObjectId(val)))
+				self.o = append(self.o, Q(key, val))
 			}
 		}
 
@@ -491,10 +490,10 @@ func (self *Query) andOrInNot(index int, criteria map[string]interface{}, queryT
 				values := reflect.ValueOf(value)
 				for i := 0; i < values.Len(); i++ {
 					val := values.Index(i).Interface()
-					valuesToQuery = append(valuesToQuery, self.CheckForObjectId(val))
+					valuesToQuery = append(valuesToQuery, val)
 				}
 			} else {
-				valuesToQuery = append(valuesToQuery, self.CheckForObjectId(value))
+				valuesToQuery = append(valuesToQuery, value)
 			}
 			self.ao["$and"][index][andorType] = append(self.ao["$and"][index][andorType], Q(key, bson.M{queryType: valuesToQuery}))
 		}
@@ -555,7 +554,7 @@ func (self *Query) Filter(criteria map[string]interface{}) *Query {
 
 		for key, val := range criteria {
 			if key != "" {
-				self.m[key] = self.CheckForObjectId(val)
+				self.m[key] = val
 			}
 		}
 
@@ -635,11 +634,11 @@ func (self *Query) inNot(criteria map[string]interface{}, queryType string) {
 				values := reflect.ValueOf(value)
 				for i := 0; i < values.Len(); i++ {
 					val := values.Index(i).Interface()
-					valuesToQuery = append(valuesToQuery, self.CheckForObjectId(val))
+					valuesToQuery = append(valuesToQuery, val)
 				}
 
 			} else {
-				valuesToQuery = append(valuesToQuery, self.CheckForObjectId(value))
+				valuesToQuery = append(valuesToQuery, value)
 			}
 
 			self.m[key] = bson.M{queryType: valuesToQuery}
@@ -1004,7 +1003,7 @@ func (self *Query) processJoins(x interface{}) (err error) {
 			for i := 0; i < source.Len(); i++ {
 				s := source.Index(i)
 				for _, j := range joins {
-					id := reflect.ValueOf(self.CheckForObjectId(s.FieldByName(j.joinFieldRefName).Interface())).String()
+					id := reflect.ValueOf(s.FieldByName(j.joinFieldRefName).Interface()).String()
 					joinsField := s.FieldByName("Joins")
 					setField := joinsField.FieldByName(j.joinFieldName)
 
@@ -1031,7 +1030,7 @@ func (self *Query) processJoins(x interface{}) (err error) {
 
 			s := source
 			for _, j := range joins {
-				id := reflect.ValueOf(self.CheckForObjectId(s.FieldByName(j.joinFieldRefName).Interface())).String()
+				id := reflect.ValueOf(s.FieldByName(j.joinFieldRefName).Interface()).String()
 				joinsField := s.FieldByName("Joins")
 				setField := joinsField.FieldByName(j.joinFieldName)
 
@@ -1548,20 +1547,7 @@ func (self *Query) Iter() (qi *QueryIterator) {
 
 func (self *Query) generateQuery() *mgo.Query {
 
-	q := self.collection.Find(bson.M{})
-
-	if self.q != nil {
-		q = self.q
-	}
-
-	if self.ao != nil {
-		core.Debug.Dump(self.ao)
-		q = self.collection.Find(self.ao)
-	} else if self.m != nil {
-		q = self.collection.Find(self.m)
-	} else if self.o != nil {
-		q = self.collection.Find(bson.M{"$or": self.o})
-	}
+	var q storm.Query
 
 	if self.limit > 0 {
 		q = q.Limit(self.limit)
@@ -1571,20 +1557,20 @@ func (self *Query) generateQuery() *mgo.Query {
 		q = q.Skip(self.skip)
 	}
 
-	if len(self.sort) > 0 {
-		q = q.Sort(self.sort...)
-	}
+	//if len(self.sort) > 0 {
+	//	q = q.Sort(self.sort...)
+	//}
 
 	//Add WhiteList Fields
-	for i := range self.whiteListed {
-		wl := &self.whiteListed[i]
-		if wl.CollectionName == self.entityName {
-			q = q.Select(whiteList(wl.Fields))
-		}
-	}
+	//for i := range self.whiteListed {
+	//	wl := &self.whiteListed[i]
+	//	if wl.CollectionName == self.entityName {
+	//		q = q.Select(whiteList(wl.Fields))
+	//	}
+	//}
 
 	//Add Blacklist Fields
-	for i := range self.blackListed {
+	/*for i := range self.blackListed {
 		bl := &self.blackListed[i]
 		if bl.CollectionName == self.entityName {
 
@@ -1612,7 +1598,19 @@ func (self *Query) generateQuery() *mgo.Query {
 
 			q = q.Select(whiteList(whiteListFields))
 		}
-	}
+	}*/
+
+
+	//if self.ao != nil {
+		// todo self.ao
+	//	q = q.Find()
+	///} else if self.m != nil {
+
+		//dbServices.BoltDB.
+		//q = self.collection.Find(self.m)
+	//} else if self.o != nil {
+	//	q = self.collection.Find(bson.M{"$or": self.o})
+	//}
 
 	return q
 }
@@ -1637,19 +1635,6 @@ func (self *Query) getIdHex(val interface{}) (bson.ObjectId, error) {
 		return bson.ObjectIdHex(myIdInstanceHex.Call([]reflect.Value{})[0].String()), nil
 	} else {
 		return bson.NewObjectId(), errors.New(ERROR_INVALID_ID_VALUE)
-	}
-}
-
-func (self *Query) CheckForObjectId(val interface{}) interface{} {
-
-	myIdType := reflect.TypeOf(val)
-	myIdInstance := reflect.ValueOf(val)
-	myIdInstanceHex := myIdInstance.MethodByName("Hex")
-
-	if myIdType.Name() == "ObjectId" && myIdType.Kind() == reflect.String {
-		return myIdInstanceHex.Call([]reflect.Value{})[0].String()
-	} else {
-		return val
 	}
 }
 
