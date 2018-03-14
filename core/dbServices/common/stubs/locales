@@ -21,7 +21,7 @@ var Locales = []Locale{
 	{"Romanian", "ro"},
 	{"Arabic", "ar"},
 	{"Korean", "ko"},
-	{"Japanese", "ja"}, 
+	{"Japanese", "ja"},
 	{"Hebrew", "he"},
 	{"Turkish", "tr"},
 	{"Thai", "th"},
@@ -81,6 +81,45 @@ func GetDefaultLocale(language string) string {
 	}
 	if strings.Contains(language, "zh") {
 		return "zh"
+	}
+	if strings.Contains(language, "he") {
+		return "he"
+	}
+	if strings.Contains(language, "tr") {
+		return "tr"
+	}
+	if strings.Contains(language, "th") {
+		return "th"
+	}
+	if strings.Contains(language, "pl") {
+		return "pl"
+	}
+	if strings.Contains(language, "hi") {
+		return "hi"
+	}
+	if strings.Contains(language, "el") {
+		return "el"
+	}
+	if strings.Contains(language, "hr") {
+		return "hr"
+	}
+	if strings.Contains(language, "cs") {
+		return "cs"
+	}
+	if strings.Contains(language, "id") {
+		return "id"
+	}
+	if strings.Contains(language, "cs") {
+		return "cs"
+	}
+	if strings.Contains(language, "da") {
+		return "da"
+	}
+	if strings.Contains(language, "fi") {
+		return "fi"
+	}
+	if strings.Contains(language, "no") {
+		return "no"
 	}
 	return "en"
 }
