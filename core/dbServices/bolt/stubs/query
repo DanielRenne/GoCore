@@ -21,8 +21,10 @@ import (
 	"github.com/DanielRenne/GoCore/core/extensions"
 	"github.com/DanielRenne/GoCore/core/logger"
 	dateformatter "github.com/altipla-consulting/i18n-dateformatter"
+	querySet "github.com/asdine/storm/q"
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
+	"github.com/asdine/storm"
 )
 
 const (
@@ -76,7 +78,6 @@ type Query struct {
 	limit       int
 	skip        int
 	sort        []string
-	collection  string
 	entityName  string
 	e           error
 	joins       map[string]joinType
@@ -154,11 +155,7 @@ func (self *Query) ById(objectId interface{}, modelInstance interface{}) error {
 		return err
 	}
 
-	if !serverSettings.WebConfig.Application.LogQueries && serverSettings.WebConfig.Application.LogQueryTimes {
-		defer func() {
-			log.Println(logger.TimeTrackQuery(time.Now(), "q.ById("+objId.Hex()+")", self.collection, self.m, self.q))
-		}()
-	} else if serverSettings.WebConfig.Application.LogQueries {
+	if serverSettings.WebConfig.Application.LogQueries {
 		defer func() {
 			log.Println(logger.TimeTrack(time.Now(), "q.ById("+objId.Hex()+")"))
 		}()
@@ -167,14 +164,13 @@ func (self *Query) ById(objectId interface{}, modelInstance interface{}) error {
 	if !self.stopLog && serverSettings.WebConfig.Application.LogQueries {
 		self.LogQuery("q.ById(" + objId.Hex() + ")")
 	}
-	q := self.collection.FindId(objId)
 
-	err = q.One(modelInstance)
+	err =  dbServices.BoltDB.One("Id", objId, modelInstance)
 
 	if err != nil {
 		// This callback is used for if the Ethernet port is unplugged
 		callback := func() error {
-			err = q.One(modelInstance)
+			err = dbServices.BoltDB.One("Id", objId, modelInstance)
 			if err != nil {
 				return err
 			}
@@ -188,9 +184,6 @@ func (self *Query) ById(objectId interface{}, modelInstance interface{}) error {
 
 }
 
-func (self *Query) GetCollection() *mgo.Collection {
-	return self.collection
-}
 
 func (self *Query) Join(criteria string) *Query {
 
@@ -244,7 +237,7 @@ func (self *Query) Or(criteria map[string]interface{}) *Query {
 			self.o = make([]bson.M, 0)
 		}
 
-		self.o[0]["_id"] = objId
+		self.o[0]["Id"] = objId
 		return self
 	} else {
 
@@ -254,7 +247,7 @@ func (self *Query) Or(criteria map[string]interface{}) *Query {
 
 		for key, val := range criteria {
 			if key != "" {
-				self.o = append(self.o, Q(key, val))
+				self.o = append(self.o, Q(key, self.CheckForObjectId(val)))
 			}
 		}
 
@@ -281,7 +274,7 @@ func (self *Query) AddAndOr() *Query {
 		// first index is reserved for search criteria so we always will fill in a stub conditionally when no search is passed.
 		// Other results we should put in something just in case a filter is not passed so we dont have to litter the _id exists hack across all the code
 
-		self.OrFilter(len(self.ao["$and"])-1, Q("_id", Q("$exists", true)))
+		self.OrFilter(len(self.ao["$and"])-1, Q("Id", Q("$exists", true)))
 	}
 
 	return self
@@ -295,7 +288,7 @@ func (self *Query) AddAnd() *Query {
 		// first index is reserved for search criteria so we always will fill in a stub conditionally when no search is passed.
 		// Other results we should put in something just in case a filter is not passed so we dont have to litter the _id exists hack across all the code
 
-		self.AndFilter(len(self.ao["$and"])-1, Q("_id", Q("$exists", true)))
+		self.AndFilter(len(self.ao["$and"])-1, Q("Id", Q("$exists", true)))
 	}
 
 	return self
@@ -310,9 +303,6 @@ func (self *Query) AddBlankAndOr() *Query {
 
 func (self *Query) AndFilter(index int, criteria map[string]interface{}) *Query {
 	for key, val := range criteria {
-		if key == "Id" {
-			key = "_id"
-		}
 		self.ao["$and"][index]["$and"] = append(self.ao["$and"][index]["$and"], Q(key, val))
 	}
 	return self
@@ -320,19 +310,13 @@ func (self *Query) AndFilter(index int, criteria map[string]interface{}) *Query 
 
 func (self *Query) OrFilter(index int, criteria map[string]interface{}) *Query {
 	for key, val := range criteria {
-		if key == "Id" {
-			key = "_id"
-		}
 		self.ao["$and"][index]["$or"] = append(self.ao["$and"][index]["$or"], Q(key, val))
 	}
 	return self
 }
 
 func (self *Query) AndRange(index int, criteria map[string]Range) *Query {
-	for key, val := range criteria {
-		if key == "Id" {
-			key = "_id"
-		}
+	for _, val := range criteria {
 		self.ao["$and"][index]["$and"] = append(self.ao["$and"][index]["$and"], bson.M{"$gte": val.Min, "$lte": val.Max})
 	}
 
@@ -340,10 +324,7 @@ func (self *Query) AndRange(index int, criteria map[string]Range) *Query {
 }
 
 func (self *Query) OrRange(index int, criteria map[string]Range) *Query {
-	for key, val := range criteria {
-		if key == "Id" {
-			key = "_id"
-		}
+	for _, val := range criteria {
 		self.ao["$and"][index]["$or"] = append(self.ao["$and"][index]["$or"], bson.M{"$gte": val.Min, "$lte": val.Max})
 	}
 
@@ -351,80 +332,56 @@ func (self *Query) OrRange(index int, criteria map[string]Range) *Query {
 }
 
 func (self *Query) AndLessThanEqualTo(index int, criteria map[string]Min) *Query {
-	for key, val := range criteria {
-		if key == "Id" {
-			key = "_id"
-		}
+	for _, val := range criteria {
 		self.ao["$and"][index]["$and"] = append(self.ao["$and"][index]["$and"], bson.M{"$lte": val.Min})
 	}
 	return self
 }
 
 func (self *Query) OrLessThanEqualTo(index int, criteria map[string]Min) *Query {
-	for key, val := range criteria {
-		if key == "Id" {
-			key = "_id"
-		}
+	for _, val := range criteria {
 		self.ao["$and"][index]["$or"] = append(self.ao["$and"][index]["$or"], bson.M{"$lte": val.Min})
 	}
 	return self
 }
 
 func (self *Query) AndLessThan(index int, criteria map[string]Min) *Query {
-	for key, val := range criteria {
-		if key == "Id" {
-			key = "_id"
-		}
+	for _, val := range criteria {
 		self.ao["$and"][index]["$and"] = append(self.ao["$and"][index]["$and"], bson.M{"$lt": val.Min})
 	}
 	return self
 }
 
 func (self *Query) OrLessThan(index int, criteria map[string]Min) *Query {
-	for key, val := range criteria {
-		if key == "Id" {
-			key = "_id"
-		}
+	for _, val := range criteria {
 		self.ao["$and"][index]["$or"] = append(self.ao["$and"][index]["$or"], bson.M{"$lt": val.Min})
 	}
 	return self
 }
 
 func (self *Query) AndGreaterThanEqualTo(index int, criteria map[string]Max) *Query {
-	for key, val := range criteria {
-		if key == "Id" {
-			key = "_id"
-		}
+	for _, val := range criteria {
 		self.ao["$and"][index]["$and"] = append(self.ao["$and"][index]["$and"], bson.M{"$gte": val.Max})
 	}
 	return self
 }
 
 func (self *Query) OrGreaterThanEqualTo(index int, criteria map[string]Max) *Query {
-	for key, val := range criteria {
-		if key == "Id" {
-			key = "_id"
-		}
+	for _, val := range criteria {
 		self.ao["$and"][index]["$or"] = append(self.ao["$and"][index]["$or"], bson.M{"$gte": val.Max})
 	}
 	return self
 }
 
 func (self *Query) OrGreaterThan(index int, criteria map[string]Max) *Query {
-	for key, val := range criteria {
-		if key == "Id" {
-			key = "_id"
-		}
+	for _, val := range criteria {
 		self.ao["$and"][index]["$or"] = append(self.ao["$and"][index]["$or"], bson.M{"$gt": val.Max})
 	}
 	return self
 }
 
 func (self *Query) AndGreaterThan(index int, criteria map[string]Max) *Query {
-	for key, val := range criteria {
-		if key == "Id" {
-			key = "_id"
-		}
+	for _, val := range criteria {
 		self.ao["$and"][index]["$and"] = append(self.ao["$and"][index]["$and"], bson.M{"$gt": val.Max})
 	}
 	return self
@@ -481,7 +438,7 @@ func (self *Query) andOrInNot(index int, criteria map[string]interface{}, queryT
 
 				ids = append(ids, objId)
 			}
-			self.ao["$and"][index][andorType] = append(self.ao["$and"][index][andorType], Q("_id", bson.M{queryType: ids}))
+			self.ao["$and"][index][andorType] = append(self.ao["$and"][index][andorType], Q("Id", bson.M{queryType: ids}))
 		} else {
 			var valuesToQuery []interface{}
 
@@ -490,10 +447,10 @@ func (self *Query) andOrInNot(index int, criteria map[string]interface{}, queryT
 				values := reflect.ValueOf(value)
 				for i := 0; i < values.Len(); i++ {
 					val := values.Index(i).Interface()
-					valuesToQuery = append(valuesToQuery, val)
+					valuesToQuery = append(valuesToQuery, self.CheckForObjectId(val))
 				}
 			} else {
-				valuesToQuery = append(valuesToQuery, value)
+				valuesToQuery = append(valuesToQuery, self.CheckForObjectId(value))
 			}
 			self.ao["$and"][index][andorType] = append(self.ao["$and"][index][andorType], Q(key, bson.M{queryType: valuesToQuery}))
 		}
@@ -507,13 +464,13 @@ func (self *Query) Whitelist(collection string, fields []string) *Query {
 
 	idFound := false
 	for _, val := range fields {
-		if val == "_id" {
+		if val == "Id" {
 			idFound = true
 		}
 	}
 
 	if idFound == false {
-		qff.Fields = append(qff.Fields, "_id")
+		qff.Fields = append(qff.Fields, "Id")
 	}
 
 	self.whiteListed = append(self.whiteListed, qff)
@@ -544,7 +501,7 @@ func (self *Query) Filter(criteria map[string]interface{}) *Query {
 			self.m = make(bson.M)
 		}
 
-		self.m["_id"] = objId
+		self.m["Id"] = objId
 		return self
 	} else {
 
@@ -554,7 +511,7 @@ func (self *Query) Filter(criteria map[string]interface{}) *Query {
 
 		for key, val := range criteria {
 			if key != "" {
-				self.m[key] = val
+				self.m[key] = self.CheckForObjectId(val)
 			}
 		}
 
@@ -624,7 +581,7 @@ func (self *Query) inNot(criteria map[string]interface{}, queryType string) {
 				ids = append(ids, objId)
 			}
 
-			self.m["_id"] = bson.M{queryType: ids}
+			self.m["Id"] = bson.M{queryType: ids}
 
 		} else {
 			var valuesToQuery []interface{}
@@ -634,11 +591,11 @@ func (self *Query) inNot(criteria map[string]interface{}, queryType string) {
 				values := reflect.ValueOf(value)
 				for i := 0; i < values.Len(); i++ {
 					val := values.Index(i).Interface()
-					valuesToQuery = append(valuesToQuery, val)
+					valuesToQuery = append(valuesToQuery, self.CheckForObjectId(val))
 				}
 
 			} else {
-				valuesToQuery = append(valuesToQuery, value)
+				valuesToQuery = append(valuesToQuery, self.CheckForObjectId(value))
 			}
 
 			self.m[key] = bson.M{queryType: valuesToQuery}
@@ -737,11 +694,7 @@ func (self *Query) Skip(val int) *Query {
 }
 
 func (self *Query) All(x interface{}) error {
-	if !serverSettings.WebConfig.Application.LogQueries && serverSettings.WebConfig.Application.LogQueryTimes {
-		defer func() {
-			log.Println(logger.TimeTrackQuery(time.Now(), "q.All()", self.collection, self.m, self.q))
-		}()
-	} else if serverSettings.WebConfig.Application.LogQueries {
+	if serverSettings.WebConfig.Application.LogQueries {
 		defer func() {
 			log.Println(logger.TimeTrack(time.Now(), "q.All()"))
 		}()
@@ -756,12 +709,12 @@ func (self *Query) All(x interface{}) error {
 		self.LogQuery("q.All()")
 	}
 
-	err := q.All(x)
+	err := q.Find(x)
 
 	if err != nil {
 		// This callback is used for if the Ethernet port is unplugged
 		callback := func() error {
-			err = q.All(x)
+			err = q.Find(x)
 			if err != nil {
 				return err
 			}
@@ -774,11 +727,7 @@ func (self *Query) All(x interface{}) error {
 }
 
 func (self *Query) One(x interface{}) error {
-	if !serverSettings.WebConfig.Application.LogQueries && serverSettings.WebConfig.Application.LogQueryTimes {
-		defer func() {
-			log.Println(logger.TimeTrackQuery(time.Now(), "q.One()", self.collection, self.m, self.q))
-		}()
-	} else if serverSettings.WebConfig.Application.LogQueries {
+	if serverSettings.WebConfig.Application.LogQueries {
 		defer func() {
 			log.Println(logger.TimeTrack(time.Now(), "q.One()"))
 		}()
@@ -793,28 +742,20 @@ func (self *Query) One(x interface{}) error {
 		self.LogQuery("q.One()")
 	}
 
-	err := q.One(x)
+	err := q.First(x)
 
 	if err != nil {
 
 		// This callback is used for if the Ethernet port is unplugged
 		callback := func() error {
-			err = q.One(x)
+			err = q.First(x)
 			if err != nil {
 				return err
-			}
-			cnt, _ := q.Count()
-			if cnt != 1 {
-				return errors.New("Did not return exactly one row.  Returned " + extensions.IntToString(cnt))
 			}
 			return self.processJoinsAndViews(x)
 		}
 
 		return self.handleQueryError(err, callback)
-	}
-	cnt, _ := q.Count()
-	if cnt != 1 {
-		return errors.New("Did not return exactly one row.  Returned " + extensions.IntToString(cnt))
 	}
 
 	return self.processJoinsAndViews(x)
@@ -871,11 +812,7 @@ func (self *Query) GetOrCreate(x interface{}, t *Transaction) (err error) {
 }
 
 func (self *Query) TotalRows() int {
-	if !serverSettings.WebConfig.Application.LogQueries && serverSettings.WebConfig.Application.LogQueryTimes {
-		defer func() {
-			log.Println(logger.TimeTrackQuery(time.Now(), "q.TotalRows()", self.collection, self.m, self.q))
-		}()
-	} else if serverSettings.WebConfig.Application.LogQueries {
+	if serverSettings.WebConfig.Application.LogQueries {
 		defer func() {
 			log.Println(logger.TimeTrack(time.Now(), "q.TotalRows()"))
 		}()
@@ -886,17 +823,14 @@ func (self *Query) TotalRows() int {
 	if !self.stopLog && serverSettings.WebConfig.Application.LogQueries {
 		self.LogQuery("q.Length()")
 	}
-	count, _ := q.Count()
+	var tmp Max
+	count, _ := q.Count(&tmp)
 
 	return count
 }
 
 func (self *Query) Count() (int, error) {
-	if !serverSettings.WebConfig.Application.LogQueries && serverSettings.WebConfig.Application.LogQueryTimes {
-		defer func() {
-			log.Println(logger.TimeTrackQuery(time.Now(), "q.Count()", self.collection, self.m, self.q))
-		}()
-	} else if serverSettings.WebConfig.Application.LogQueries {
+	if serverSettings.WebConfig.Application.LogQueries {
 		defer func() {
 			log.Println(logger.TimeTrack(time.Now(), "q.Count()"))
 		}()
@@ -907,13 +841,15 @@ func (self *Query) Count() (int, error) {
 
 	q := self.generateQuery()
 
-	count, err := q.Count()
+	var tmp Max
+	count, err := q.Count(&tmp)
 
 	if err != nil {
 
 		// This callback is used for if the Ethernet port is unplugged
 		callback := func() error {
-			count, err = q.Count()
+			var tmp Max
+			count, err = q.Count(&tmp)
 			return err
 		}
 
@@ -923,11 +859,7 @@ func (self *Query) Count() (int, error) {
 }
 
 func (self *Query) Distinct(key string, x interface{}) error {
-	if !serverSettings.WebConfig.Application.LogQueries && serverSettings.WebConfig.Application.LogQueryTimes {
-		defer func() {
-			log.Println(logger.TimeTrackQuery(time.Now(), "q.Distinct()", self.collection, self.m, self.q))
-		}()
-	} else if serverSettings.WebConfig.Application.LogQueries {
+	if serverSettings.WebConfig.Application.LogQueries {
 		defer func() {
 			log.Println(logger.TimeTrack(time.Now(), "q.Distinct()"))
 		}()
@@ -943,13 +875,13 @@ func (self *Query) Distinct(key string, x interface{}) error {
 		self.LogQuery("q.Distinct()")
 	}
 
-	err := q.Distinct(key, x)
+	err := q.Find(x)
 
 	if err != nil {
 
 		// This callback is used for if the Ethernet port is unplugged
 		callback := func() error {
-			err = q.Distinct(key, x)
+			err = q.Find(x)
 			if err != nil {
 				return err
 			}
@@ -1003,7 +935,7 @@ func (self *Query) processJoins(x interface{}) (err error) {
 			for i := 0; i < source.Len(); i++ {
 				s := source.Index(i)
 				for _, j := range joins {
-					id := reflect.ValueOf(s.FieldByName(j.joinFieldRefName).Interface()).String()
+					id := reflect.ValueOf(self.CheckForObjectId(s.FieldByName(j.joinFieldRefName).Interface())).String()
 					joinsField := s.FieldByName("Joins")
 					setField := joinsField.FieldByName(j.joinFieldName)
 
@@ -1030,7 +962,7 @@ func (self *Query) processJoins(x interface{}) (err error) {
 
 			s := source
 			for _, j := range joins {
-				id := reflect.ValueOf(s.FieldByName(j.joinFieldRefName).Interface()).String()
+				id := reflect.ValueOf(self.CheckForObjectId(s.FieldByName(j.joinFieldRefName).Interface())).String()
 				joinsField := s.FieldByName("Joins")
 				setField := joinsField.FieldByName(j.joinFieldName)
 
@@ -1488,9 +1420,9 @@ func (self *Query) LogQuery(functionName string) {
 	cnt, _ := self.Count()
 	if serverSettings.WebConfig.Application.LogQueryStackTraces {
 		caller := stacktrace.Errorf("GoCore caller:")
-		core.Debug.Dump("Desc-> Called Function query.go#"+functionName, "Desc->Caller for Query:", caller.ErrorStack(), core.Debug.GetDump("Desc->Collection", self.collection, "Desc->Limit", self.limit, "Desc->Skip", self.skip, "Desc->Sort", self.sort, "Desc->mgo Query", self.q, "Desc->Queryset", self.m, "Desc->Count", cnt, "Desc->Joins", self.joins))
+		core.Debug.Dump("Desc-> Called Function query.go#"+functionName, "Desc->Caller for Query:", caller.ErrorStack(), core.Debug.GetDump("Desc->Limit", self.limit, "Desc->Skip", self.skip, "Desc->Sort", self.sort, "Desc->Queryset", self.m, "Desc->Count", cnt, "Desc->Joins", self.joins))
 	} else {
-		core.Debug.Dump("Desc-> Called Function query.go#"+functionName, core.Debug.GetDump("Desc->Collection", self.collection, "Desc->Limit", self.limit, "Desc->Skip", self.skip, "Desc->Sort", self.sort, "Desc->mgo Query", self.q, "Desc->Queryset", self.m, "Desc->Count", cnt, "Desc->Joins", self.joins))
+		core.Debug.Dump("Desc-> Called Function query.go#"+functionName, core.Debug.GetDump("Desc->Limit", self.limit, "Desc->Skip", self.skip, "Desc->Sort", self.sort, "Desc->Queryset", self.m, "Desc->Count", cnt, "Desc->Joins", self.joins))
 	}
 }
 
@@ -1541,13 +1473,78 @@ func (self *Query) isDBConnectionError(err error) bool {
 func (self *Query) Iter() (qi *QueryIterator) {
 	qi = new(QueryIterator)
 	qi.q = self
-	qi.iter = self.generateQuery().Iter()
+	//qi.iter = self.generateQuery().Iter()
 	return
 }
 
-func (self *Query) generateQuery() *mgo.Query {
+func (self *Query) generateQuery() storm.Query {
 
 	var q storm.Query
+
+
+	if self.o != nil {
+		log.Println("todo")
+	} else if self.m != nil {
+		var filters []querySet.Matcher
+		log.Println("start of filter")
+		for k, v := range self.m {
+			log.Println("filtering[" + k + "]" + fmt.Sprintf("%+v", v) + " type=" + reflect.TypeOf(v).String())
+			typeOfInterface := reflect.TypeOf(v).String()
+
+			if typeOfInterface == "bson.M" {
+				for kk, vv := range v.(bson.M) {
+					if kk == "$in" {
+						valType := reflect.TypeOf(vv).String()
+						log.Println(valType)
+						if valType == "[]interface {}" {
+							//Depending on the data type create an array of whatever to pass to it
+							//Right now just debugging string
+
+							// ResolveCollection()
+							// valueToSet, err := collection.ReflectByFieldName(fieldName, x)
+							// if err == nil {
+							// 	filters = append(filters, querySet.In(k, vv))
+							// }
+
+							var output []string
+							output = make([]string, 0)
+							for _, vvv := range vv.([]interface{}) {
+								log.Println("setting as string " + k + "==" + vvv.(string))
+								output = append(output, vvv.(string))
+							}
+							filters = append(filters, querySet.In(k, output))
+						} else {
+							filters = append(filters, querySet.In(k, vv))
+						}
+					} else if kk == "$lte" {
+						filters = append(filters, querySet.Lte(k, vv))
+					} else if kk == "$lt" {
+						filters = append(filters, querySet.Lt(k, vv))
+					} else if kk == "$gt" {
+						filters = append(filters, querySet.Gt(k, vv))
+					} else if kk == "$gte" {
+						filters = append(filters, querySet.Gte(k, vv))
+					}
+				}
+			} else {
+				filters = append(filters, querySet.Eq(k, v))
+			}
+		}
+		log.Println("end of filter", filters)
+		q = dbServices.BoltDB.Select(filters...)
+	} else {
+		q = dbServices.BoltDB.Select(querySet.True())
+	}
+	log.Println("self.entityName=" + self.entityName)
+
+	//if self.ao != nil {
+		// todo self.ao
+	//	q = q.Find()
+
+	//} else if self.o != nil {
+	//	q = self.collection.Find(bson.M{"$or": self.o})
+	//}
+
 
 	if self.limit > 0 {
 		q = q.Limit(self.limit)
@@ -1599,19 +1596,6 @@ func (self *Query) generateQuery() *mgo.Query {
 			q = q.Select(whiteList(whiteListFields))
 		}
 	}*/
-
-
-	//if self.ao != nil {
-		// todo self.ao
-	//	q = q.Find()
-	///} else if self.m != nil {
-
-		//dbServices.BoltDB.
-		//q = self.collection.Find(self.m)
-	//} else if self.o != nil {
-	//	q = self.collection.Find(bson.M{"$or": self.o})
-	//}
-
 	return q
 }
 
@@ -1635,6 +1619,19 @@ func (self *Query) getIdHex(val interface{}) (bson.ObjectId, error) {
 		return bson.ObjectIdHex(myIdInstanceHex.Call([]reflect.Value{})[0].String()), nil
 	} else {
 		return bson.NewObjectId(), errors.New(ERROR_INVALID_ID_VALUE)
+	}
+}
+
+func (self *Query) CheckForObjectId(val interface{}) interface{} {
+
+	myIdType := reflect.TypeOf(val)
+	myIdInstance := reflect.ValueOf(val)
+	myIdInstanceHex := myIdInstance.MethodByName("Hex")
+
+	if myIdType.Name() == "ObjectId" && myIdType.Kind() == reflect.String {
+		return myIdInstanceHex.Call([]reflect.Value{})[0].String()
+	} else {
+		return val
 	}
 }
 

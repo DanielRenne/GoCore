@@ -10,7 +10,7 @@ for ((i=1;i<=45;i++));
 do
    grep "goCoreAppTemplate Started" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/app.log  > /dev/null 2>&1
    ret=$?
-   grep "created index for AccountHistoryRecord.TId" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/app.log  > /dev/null 2>&1
+   grep "Bootstraping of Users" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/app.log  > /dev/null 2>&1
    ret2=$?
    if [[ "$ret" -eq 0 ]] || [[ "$ret2" -eq 0 ]]; then
      echo -e "${GREEN}>>>>>>>>>>>>>>>>>>GOLANG IS FULLY MOUNTED<<<<<<<<<<<<<<<<<<${NC} "

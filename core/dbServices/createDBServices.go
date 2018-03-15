@@ -23,10 +23,14 @@ import (
 /*
 Bolt todo:
 
-Bootstrap logic
+Indexes are panicing
 Transactions within bold using save with tran
 WhiteList/Blacklist seems unsupported completely with storm
-
+And/Or - in query
+Ors - in query
+Iter - in query
+Reflection of In's
+Not in... not sure if this is supported
 
 */
 
@@ -318,7 +322,8 @@ func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir s
 		copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/mongo/stubs/query", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/query.go")
 		////Support for Long Running Transactions Later Maybe
 		//copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/mongo/stubs/transactionObjects.go", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/transactionObjects.go")
-	} else if driver == DATABASE_DRIVER_MONGODB {
+	} else if driver == DATABASE_DRIVER_BOLTDB {
+		copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/bolt/stubs/query", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/query.go")
 		copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/common/stubs/locales", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/locales.go")
 	}
 
@@ -336,21 +341,28 @@ func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir s
 			return
 		}
 
-		transactionTemplate, err := extensions.ReadFile(serverSettings.GOCORE_PATH + "/core/dbServices/mongo/stubs/transaction")
-
-		if err != nil {
-			color.Red("Error reading transactionTemplate.go:  " + err.Error())
-			return
-		}
-		transactionModified := string(transactionTemplate[:])
-
-		if serverSettings.WebConfig.DbConnection.TransactionSizeMax > 0 {
-			transactionModified = strings.Replace(transactionModified, "ci := mgo.CollectionInfo{ForceIdIndex: true}", "ci := mgo.CollectionInfo{ForceIdIndex: true, Capped:true, MaxBytes:"+extensions.IntToString(serverSettings.WebConfig.DbConnection.TransactionSizeMax)+"}\n", -1)
-		}
-
-		writeNoSQLStub(transactionModified, serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/transaction.go")
-
 	}
+
+	var typeFile string
+
+	if driver == DATABASE_DRIVER_MONGODB {
+		typeFile = "mongo"
+	} else if driver == DATABASE_DRIVER_BOLTDB {
+		typeFile = "bolt"
+	}
+	transactionTemplate, err := extensions.ReadFile(serverSettings.GOCORE_PATH + "/core/dbServices/" + typeFile + "/stubs/transaction")
+
+	if err != nil {
+		color.Red("Error reading transactionTemplate.go:  " + err.Error())
+		return
+	}
+	transactionModified := string(transactionTemplate[:])
+
+	if serverSettings.WebConfig.DbConnection.TransactionSizeMax > 0 {
+		transactionModified = strings.Replace(transactionModified, "ci := mgo.CollectionInfo{ForceIdIndex: true}", "ci := mgo.CollectionInfo{ForceIdIndex: true, Capped:true, MaxBytes:"+extensions.IntToString(serverSettings.WebConfig.DbConnection.TransactionSizeMax)+"}\n", -1)
+	}
+
+	writeNoSQLStub(transactionModified, serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/transaction.go")
 
 	//Create the Collection Models
 	for _, collection := range collections {
@@ -360,11 +372,13 @@ func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir s
 		os.Mkdir(serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/", 0777)
 		writeNoSQLModelCollection(val, serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/"+extensions.MakeFirstLowerCase(collection.Schema.Name)+".go", collection)
 
-		//Create the Transaction History Table for the Collection
-		histName := strings.Title(collection.Name) + "History"
-		histModified := strings.Replace(string(histTemplate[:]), "HistCollection", histName, -1)
-		if collection.IsSharable {
-			histModified = strings.Replace(histModified, "//CollectionVariable", heredoc.Docf(`
+		if string(histTemplate) != "" {
+
+			//Create the Transaction History Table for the Collection
+			histName := strings.Title(collection.Name) + "History"
+			histModified := strings.Replace(string(histTemplate[:]), "HistCollection", histName, -1)
+			if collection.IsSharable {
+				histModified = strings.Replace(histModified, "//CollectionVariable", heredoc.Docf(`
 			collection%sMutex.Lock()
 			if serverSettings.WebConfig.HasDbAuth {
 				mongo%sCollection = dbServices.MongoDBAuth.C("%s")
@@ -373,21 +387,22 @@ func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir s
 			}
 			collection%sMutex.Unlock()
 			`, histName, histName, histName, histName, histName, histName), -1)
-		} else {
-			histModified = strings.Replace(histModified, "//CollectionVariable", heredoc.Docf(`
+			} else {
+				histModified = strings.Replace(histModified, "//CollectionVariable", heredoc.Docf(`
 			collection%sMutex.Lock()
 			mongo%sCollection = dbServices.MongoDB.C("%s")
 			collection%sMutex.Unlock()
 			`, histName, histName, histName, histName), -1)
-		}
-		histModified = strings.Replace(histModified, "HistEntity", strings.Title(collection.Schema.Name)+"HistoryRecord", -1)
-		histModified = strings.Replace(histModified, "OriginalEntity", strings.Title(collection.Schema.Name), -1)
-		if serverSettings.WebConfig.DbConnection.AuditHistorySizeMax > 0 {
-			histModified = strings.Replace(histModified, "ci := mgo.CollectionInfo{ForceIdIndex: true}", "ci := mgo.CollectionInfo{ForceIdIndex: true, Capped:true, MaxBytes:"+extensions.IntToString(serverSettings.WebConfig.DbConnection.AuditHistorySizeMax)+"}\n", -1)
-		}
+			}
+			histModified = strings.Replace(histModified, "HistEntity", strings.Title(collection.Schema.Name)+"HistoryRecord", -1)
+			histModified = strings.Replace(histModified, "OriginalEntity", strings.Title(collection.Schema.Name), -1)
+			if serverSettings.WebConfig.DbConnection.AuditHistorySizeMax > 0 {
+				histModified = strings.Replace(histModified, "ci := mgo.CollectionInfo{ForceIdIndex: true}", "ci := mgo.CollectionInfo{ForceIdIndex: true, Capped:true, MaxBytes:"+extensions.IntToString(serverSettings.WebConfig.DbConnection.AuditHistorySizeMax)+"}\n", -1)
+			}
 
-		writeNoSQLStub(histModified, serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/"+extensions.MakeFirstLowerCase(collection.Schema.Name)+"_Hist.go")
+			writeNoSQLStub(histModified, serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/"+extensions.MakeFirstLowerCase(collection.Schema.Name)+"_Hist.go")
 
+		}
 		os.Mkdir(serverSettings.APP_LOCATION+"/webAPIs/", 0777)
 		os.Mkdir(serverSettings.APP_LOCATION+"/webAPIs/"+versionDir, 0777)
 		os.Mkdir(serverSettings.APP_LOCATION+"/webAPIs/"+versionDir+"/webAPI/", 0777)
@@ -429,8 +444,10 @@ func finalizeModelFile(versionDir string) {
 		modelToWrite += "case \"" + strings.Title(collection.Schema.Name) + "\":\n"
 		modelToWrite += " return &" + strings.Title(collection.Schema.Name) + "{}\n"
 
-		modelToWrite += "case \"" + strings.Title(collection.Schema.Name) + "HistoryRecord\":\n"
-		modelToWrite += " return &" + strings.Title(collection.Schema.Name) + "HistoryRecord{}\n"
+		if serverSettings.WebConfig.DbConnection.Driver == DATABASE_DRIVER_MONGODB {
+			modelToWrite += "case \"" + strings.Title(collection.Schema.Name) + "HistoryRecord\":\n"
+			modelToWrite += " return &" + strings.Title(collection.Schema.Name) + "HistoryRecord{}\n"
+		}
 	}
 
 	modelToWrite += "}\n"
@@ -459,14 +476,16 @@ func finalizeModelFile(versionDir string) {
 
 	modelToWrite += "\n"
 	modelToWrite += "func ResolveHistoryCollection(key string) modelCollection{\n\n"
-	modelToWrite += "switch key{\n"
 
-	for _, collection := range allCollections.Collections {
-		modelToWrite += "case \"" + strings.Title(collection.Name) + "History\":\n"
-		modelToWrite += " return &model" + strings.Title(collection.Name) + "History{}\n"
+	if serverSettings.WebConfig.DbConnection.Driver == DATABASE_DRIVER_MONGODB {
+		modelToWrite += "switch key{\n"
+
+		for _, collection := range allCollections.Collections {
+			modelToWrite += "case \"" + strings.Title(collection.Name) + "History\":\n"
+			modelToWrite += " return &model" + strings.Title(collection.Name) + "History{}\n"
+		}
+		modelToWrite += "}\n"
 	}
-
-	modelToWrite += "}\n"
 	modelToWrite += "return nil\n"
 	modelToWrite += "}\n\n"
 	modelToWrite += "func joinField(j join, id string, fieldToSet reflect.Value, remainingRecursions string, q *Query, endRecursion bool, recursionCount int) (err error) {\n\n"
@@ -542,7 +561,7 @@ func generateNoSQLModel(schema NOSQLSchema, collection NOSQLCollection, driver s
 
 	switch driver {
 	case DATABASE_DRIVER_BOLTDB:
-		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "encoding/json", "time", "github.com/asdine/storm", timeImport})
+		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/logger", "github.com/DanielRenne/GoCore/core/serverSettings", "github.com/DanielRenne/GoCore/core/dbServices", "github.com/globalsign/mgo/bson", "encoding/json", "errors", "time", "github.com/asdine/storm", "reflect", "sync", "log", "encoding/base64", "github.com/DanielRenne/GoCore/core/utils", "fmt", "github.com/DanielRenne/GoCore/core/fileCache", "github.com/DanielRenne/GoCore/core", "encoding/hex", "github.com/DanielRenne/GoCore/core/store", "crypto/md5", timeImport})
 	case DATABASE_DRIVER_MONGODB:
 		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "github.com/DanielRenne/GoCore/core/serverSettings", "encoding/json", "github.com/globalsign/mgo", "github.com/globalsign/mgo/bson", "log", "time", "errors", "encoding/base64", "reflect", "github.com/DanielRenne/GoCore/core/utils", "fmt", "github.com/DanielRenne/GoCore/core/logger", "github.com/DanielRenne/GoCore/core", "github.com/DanielRenne/GoCore/core/fileCache", "github.com/DanielRenne/GoCore/core/store", "crypto/md5", "encoding/hex", "sync"})
 		// val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "encoding/json", "gopkg.in/mgo.v2/bson", "log", "time"})
@@ -704,12 +723,18 @@ func genNoSQLCollection(collection NOSQLCollection, schema NOSQLSchema, driver s
 		val += strings.Title(collection.Name) + ".Bootstrap()\n"
 		val += "store.RegisterStore(" + strings.Title(collection.Name) + ")\n"
 		val += "}\n\n"
-
-		val += "func (self *" + strings.Title(schema.Name) + ") GetId() string { \n"
-		val += "return self.Id.Hex()\n"
+	} else if driver == DATABASE_DRIVER_BOLTDB {
+		val += "func init(){\n"
+		val += "collection" + strings.Title(collection.Name) + "Mutex = &sync.RWMutex{}\n\n"
+		val += "//" + strings.Title(collection.Name) + ".Index()\n"
+		val += "go func(){ time.Sleep(time.Second * 5)\n" + strings.Title(collection.Name) + ".Bootstrap()}()\n"
+		val += "store.RegisterStore(" + strings.Title(collection.Name) + ")\n"
 		val += "}\n\n"
-
 	}
+
+	val += "func (self *" + strings.Title(schema.Name) + ") GetId() string { \n"
+	val += "return self.Id.Hex()\n"
+	val += "}\n\n"
 
 	return val
 }
@@ -968,7 +993,7 @@ func genNoSQLAdditionalTags(field NOSQLSchemaField, driver string) string {
 		case "index":
 			return " storm:\"index\"" + tags
 		case "unique":
-			return " storm:\"unique\""
+			return " storm:\"unique\"" + tags
 		}
 	case DATABASE_DRIVER_MONGODB:
 
@@ -992,7 +1017,7 @@ func genNoSQLAdditionalTags(field NOSQLSchemaField, driver string) string {
 
 func genNoSQLFieldType(prefix string, schema NOSQLSchema, field NOSQLSchemaField, driver string) string {
 
-	if driver == "mongoDB" && field.Index == "primary" {
+	if field.Index == "primary" {
 		return "bson.ObjectId"
 	}
 
@@ -1115,18 +1140,14 @@ func genNOSQLQuery(collection NOSQLCollection, schema NOSQLSchema, driver string
 					}
 					elapseMs = elapseMs + 2
 					time.Sleep(time.Millisecond * 2)
-					if elapseMs `, strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name)) + "%" + heredoc.Docf(`10000 == 0 {
+					if elapseMs `, strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name)) + "%" + heredoc.Docf(`10000 == 0 {
 						log.Println("%s has not bootstrapped and has yet to get a collection pointer")
 					}
 				}
-				collection%sMutex.RLock()
-				collection := mongo%sCollection
-				collection%sMutex.RUnlock()
-				query.collection = collection
 				query.entityName = "%s"
 				return query
 			}
-		`, strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(schema.Name))
+		`, strings.Title(collection.Name), strings.Title(schema.Name))
 	}
 	return val
 }
@@ -1315,6 +1336,12 @@ func genNoSQLSchemaSave(collection NOSQLCollection, schema NOSQLSchema, driver s
 	val += "func (self *" + strings.Title(schema.Name) + ") Save() error {\n"
 	switch driver {
 	case DATABASE_DRIVER_BOLTDB:
+		val += "if self.Id == \"\" {\n"
+		val += "self.Id = bson.NewObjectId()\n"
+		val += "}\n"
+		val += "t := time.Now()\n"
+		val += "self.CreateDate = t\n"
+		val += "self.UpdateDate = t \n"
 		val += "return dbServices.BoltDB.Save(self)\n"
 	case DATABASE_DRIVER_MONGODB:
 		val += "collection" + strings.Title(collection.Name) + "Mutex.RLock()\n"
@@ -1425,7 +1452,7 @@ func genNoSQLSchemaSaveByTran(collection NOSQLCollection, schema NOSQLSchema, dr
 	val += "func (self *" + strings.Title(schema.Name) + ") CreateWithTran(t *Transaction, forceCreate bool) error {\n\n"
 	switch driver {
 	case DATABASE_DRIVER_BOLTDB:
-		val += "return dbServices.BoltDB.Save(self)\n"
+		val += "return self.Save(self)\n"
 	case DATABASE_DRIVER_MONGODB:
 		val += "transactionQueue.Lock()\n"
 		val += "defer func() {\n"
@@ -1877,13 +1904,16 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 	val += "	return nil\n"
 	val += "}\n\n"
 
-	val += heredoc.Docf(`
-	var isError bool
-	var query Query
-	collection%sMutex.RLock()
-	query.collection = mongo%sCollection
-	collection%sMutex.RUnlock()
-	`, strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name))
+	val += "var isError bool\n"
+	val += "var query Query\n"
+
+	if driver == DATABASE_DRIVER_MONGODB {
+		val += heredoc.Docf(`
+			collection%sMutex.RLock()
+			query.collection = mongo%sCollection
+			collection%sMutex.RUnlock()
+			`, strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name))
+	}
 
 	val += "cnt, errCount := query.Count()\n"
 	val += "if errCount != nil{\n"
@@ -1908,65 +1938,59 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 	}
 
 	val += heredoc.Docf(`
-			var files [][]byte
-			var err error
-			var distDirectoryFound bool
-			err = fileCache.LoadCachedBootStrapFromKeyIntoMemory(serverSettings.WebConfig.Application.ProductName + "%s")
-			if err != nil {
-				obj.BootStrapComplete()
-				log.Println("Failed to bootstrap data for %s due to caching issue: " + err.Error())
-				return err
-			}
+		var files [][]byte
+		var err error
+		var distDirectoryFound bool
+		err = fileCache.LoadCachedBootStrapFromKeyIntoMemory(serverSettings.WebConfig.Application.ProductName + "%s")
+		if err != nil {
+			obj.BootStrapComplete()
+			log.Println("Failed to bootstrap data for %s due to caching issue: " + err.Error())
+			return err
+		}
 
-			files, err, distDirectoryFound = BootstrapDirectory("%s", cnt)
+		files, err, distDirectoryFound = BootstrapDirectory("%s", cnt)
+		if err != nil {
+			obj.BootStrapComplete()
+			log.Println("Failed to bootstrap data for %s: " + err.Error())
+			return err
+		}
+
+		if dataString != "" {
+			data, err := base64.StdEncoding.DecodeString(dataString)
 			if err != nil {
 				obj.BootStrapComplete()
 				log.Println("Failed to bootstrap data for %s: " + err.Error())
 				return err
 			}
+			files = append(files, data)
+		}
 
-			if dataString != "" {
-				data, err := base64.StdEncoding.DecodeString(dataString)
+		var v []%s
+		for _, file := range files{
+			var fileBootstrap []%s
+			hash := md5.Sum(file)
+			hexString := hex.EncodeToString(hash[:])
+			err = json.Unmarshal(file, &fileBootstrap)
+			if !fileCache.DoesHashExistInCache(serverSettings.WebConfig.Application.ProductName + "%s", hexString) || cnt == 0 {
 				if err != nil {
-					obj.BootStrapComplete()
-					log.Println("Failed to bootstrap data for %s: " + err.Error())
-					return err
+
+					logger.Message("Failed to bootstrap data for %s: " + err.Error(), logger.RED)
+					utils.TalkDirtyToMe("Failed to bootstrap data for %s: " + err.Error())
+					continue
 				}
-				files = append(files, data)
-			}
 
-			var v []%s
-			for _, file := range files{
-				var fileBootstrap []%s
-				hash := md5.Sum(file)
-				hexString := hex.EncodeToString(hash[:])
-				err = json.Unmarshal(file, &fileBootstrap)
-				if !fileCache.DoesHashExistInCache(serverSettings.WebConfig.Application.ProductName + "%s", hexString) || cnt == 0 {
-					if err != nil {
+				fileCache.UpdateBootStrapMemoryCache(serverSettings.WebConfig.Application.ProductName + "%s", hexString)
 
-						logger.Message("Failed to bootstrap data for %s: " + err.Error(), logger.RED)
-						utils.TalkDirtyToMe("Failed to bootstrap data for %s: " + err.Error())
-						continue
-					}
-
-					fileCache.UpdateBootStrapMemoryCache(serverSettings.WebConfig.Application.ProductName + "%s", hexString)
-
-					for i, _ := range fileBootstrap {
-						fb := fileBootstrap[i]
-						v = append(v, fb)
-					}
+				for i, _ := range fileBootstrap {
+					fb := fileBootstrap[i]
+					v = append(v, fb)
 				}
 			}
-			fileCache.WriteBootStrapCacheFile(serverSettings.WebConfig.Application.ProductName + "%s")
+		}
+		fileCache.WriteBootStrapCacheFile(serverSettings.WebConfig.Application.ProductName + "%s")
 
-	`, strings.Title(collection.Name), strings.Title(collection.Name), extensions.MakeFirstLowerCase(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(schema.Name), strings.Title(schema.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name))
-
-	switch driver {
-	case DATABASE_DRIVER_BOLTDB:
-		val += ""
-	case DATABASE_DRIVER_MONGODB:
-
-		val += heredoc.Docf(`
+`, strings.Title(collection.Name), strings.Title(collection.Name), extensions.MakeFirstLowerCase(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(schema.Name), strings.Title(schema.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name))
+	val += heredoc.Docf(`
 		var actualCount int
 		originalCount := len(v)
 		log.Println("Total count of records attempting %s", len(v))
@@ -2044,7 +2068,6 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 			}
 		}
 `, strings.Title(collection.Name), strings.Title(schema.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), extensions.MakeFirstLowerCase(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name))
-	}
 	val += "obj.BootStrapComplete()\n"
 	val += "return nil\n"
 	val += "}\n\n"
@@ -2107,7 +2130,7 @@ func genNoSQLSchemaDelete(collection NOSQLCollection, schema NOSQLSchema, driver
 	val += "func (self *" + strings.Title(schema.Name) + ") Delete() error {\n"
 	switch driver {
 	case "boltDB":
-		val += "return dbServices.BoltDB.Remove(self)\n"
+		val += "return dbServices.BoltDB.Delete(\"" + strings.Title(collection.Name) + "\", self.Id.Hex())\n"
 	case "mongoDB":
 		val += "return mongo" + strings.Title(collection.Name) + "Collection.RemoveId(self.Id)"
 	}
@@ -2121,7 +2144,7 @@ func genNoSQLSchemaDeleteWithTran(collection NOSQLCollection, schema NOSQLSchema
 	val += "func (self *" + strings.Title(schema.Name) + ") DeleteWithTran(t *Transaction) error {\n"
 	switch driver {
 	case "boltDB":
-		val += "return dbServices.BoltDB.Remove(self)\n"
+		val += "return dbServices.BoltDB.Delete(\"" + strings.Title(collection.Name) + "\", self.Id.Hex())\n"
 	case "mongoDB":
 		val += "transactionQueue.Lock()\n"
 		val += "defer func() {\n"
