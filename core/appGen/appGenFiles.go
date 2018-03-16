@@ -65,6 +65,10 @@ func moveAppFiles() {
 	if err != nil {
 		log.Println("error reading humanTitle")
 	}
+	databaseType, err := extensions.ReadFile("/tmp/databaseType")
+	if err != nil {
+		log.Println("error reading databaseType")
+	}
 	parts := strings.Split(serverSettings.APP_LOCATION, "/")
 	appName := parts[len(parts)-1]
 	githubName := parts[len(parts)-2]
@@ -72,7 +76,11 @@ func moveAppFiles() {
 	//First check for the WebConfig.json file
 	_, errNoWebConfig := os.Stat(serverSettings.APP_LOCATION + "/webConfig.json")
 	if errNoWebConfig != nil {
-		extensions.CopyFile(serverSettings.GOCORE_PATH+"/tools/appFiles/webConfig.json", serverSettings.APP_LOCATION+"/webConfig.json")
+		if databaseType == "mongo" {
+			extensions.CopyFile(serverSettings.GOCORE_PATH+"/tools/appFiles/webConfig.json", serverSettings.APP_LOCATION+"/webConfig.json")
+		} else if databaseType == "mongo" {
+			extensions.CopyFile(serverSettings.GOCORE_PATH+"/tools/appFiles/webConfig.bolt.json", serverSettings.APP_LOCATION+"/webConfig.json")
+		}
 		logger.Message("Copied webConfig.json to Application.", logger.GREEN)
 	}
 

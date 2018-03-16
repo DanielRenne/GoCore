@@ -39,6 +39,7 @@ func errorOut(line string, err error, dontExit bool) {
 func main() {
 	var appName string
 	var username string
+	var databaseType string
 	var humanTitle string
 
 	logger.Message("Welcome to the GoCore createApp tool!  Thank you for using GoCore.", logger.YELLOW)
@@ -83,12 +84,32 @@ func main() {
 		}
 	}
 
+	databaseType = "mongo"
+	for {
+		reader := bufio.NewReader(os.Stdin)
+		fmt.Print("'mongo' or 'bolt' (defaults mongo due to most support): ")
+		databaseType, _ = reader.ReadString('\n')
+		usernadatabaseTypeme = strings.Trim(databaseType, "\n")
+		ok := false
+		if databaseType == "mongo" || databaseType == "bolt" {
+			ok = true
+		} else {
+			fmt.Println("Invalid type 'mongo' or 'bolt'")
+		}
+		if ok {
+			break
+		}
+	}
+
 	cdGoPath()
 
 	camelUpper := strings.ToTitle(string(appName[0])) + string(appName[1:])
 
 	err := extensions.WriteToFile(humanTitle, "/tmp/humanTitle", 644)
 	errorOut("extensions.WriteToFile "+humanTitle+" to /tmp/humanTitle", err, false)
+
+	err := extensions.WriteToFile(databaseType, "/tmp/databaseType", 644)
+	errorOut("extensions.WriteToFile "+databaseType+" to /tmp/databaseType", err, false)
 
 	path := "src/github.com/" + username
 	err = os.MkdirAll(path, 0644)
