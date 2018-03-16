@@ -79,6 +79,7 @@ type Query struct {
 	skip        int
 	sort        []string
 	entityName  string
+	collectionName  string
 	e           error
 	joins       map[string]joinType
 	format      DataFormat
@@ -1493,28 +1494,39 @@ func (self *Query) generateQuery() storm.Query {
 
 			if typeOfInterface == "bson.M" {
 				for kk, vv := range v.(bson.M) {
-					if kk == "$in" {
+					if kk == "$in" || kk == "$nin" {
 						valType := reflect.TypeOf(vv).String()
-						log.Println(valType)
 						if valType == "[]interface {}" {
-							//Depending on the data type create an array of whatever to pass to it
-							//Right now just debugging string
-
-							// ResolveCollection()
-							// valueToSet, err := collection.ReflectByFieldName(fieldName, x)
-							// if err == nil {
-							// 	filters = append(filters, querySet.In(k, vv))
-							// }
-
-							var output []string
-							output = make([]string, 0)
-							for _, vvv := range vv.([]interface{}) {
-								log.Println("setting as string " + k + "==" + vvv.(string))
-								output = append(output, vvv.(string))
+							fieldType := ResolveField(self.entityName, k)
+							if fieldType == "string" {
+								var output []string
+								output = make([]string, 0)
+								for _, vvv := range vv.([]interface{}) {
+									output = append(output, vvv.(string))
+								}
+								if kk == "$nin" {
+									filters = append(filters, querySet.Not(querySet.In(k, output)))
+								} else {
+									filters = append(filters, querySet.In(k, output))
+								}
+							} else if fieldType == "int" {
+								var output []int
+								output = make([]int, 0)
+								for _, vvv := range vv.([]interface{}) {
+									output = append(output, vvv.(int))
+								}
+								if kk == "$nin" {
+									filters = append(filters, querySet.Not(querySet.In(k, output)))
+								} else {
+									filters = append(filters, querySet.In(k, output))
+								}
 							}
-							filters = append(filters, querySet.In(k, output))
 						} else {
-							filters = append(filters, querySet.In(k, vv))
+							if kk == "$nin" {
+								filters = append(filters, querySet.Not(querySet.In(k, vv)))
+							} else {
+								filters = append(filters, querySet.In(k, vv))
+							}
 						}
 					} else if kk == "$lte" {
 						filters = append(filters, querySet.Lte(k, vv))

@@ -132,8 +132,14 @@ type NOSQLSchemaDB struct {
 	Collections []NOSQLCollection `json:"collections"`
 }
 
+type fieldType struct {
+	Name string
+	Type string
+}
+
 type entityList struct {
 	Constants     []string
+	FieldNames    []fieldType
 	JoinConstants []string
 }
 
@@ -452,6 +458,20 @@ func finalizeModelFile(versionDir string) {
 
 	modelToWrite += "}\n"
 	modelToWrite += "return nil\n"
+	modelToWrite += "}\n\n"
+
+	modelToWrite += "func ResolveField(collectionName string, fieldName string) string{\n\n"
+	modelToWrite += "switch collectionName + fieldName {\n"
+
+	for key, value := range allCollections.Entities {
+		for _, constValue := range value.FieldNames {
+			modelToWrite += "case \"" + key + constValue.Name + "\":\n"
+			modelToWrite += "return \"" + constValue.Type + "\"\n"
+		}
+	}
+
+	modelToWrite += "}\n"
+	modelToWrite += "return \"\"\n"
 	modelToWrite += "}\n\n"
 
 	modelToWrite += "\n"
@@ -816,6 +836,10 @@ func genNoSQLSchema(collection *NOSQLCollection, schema NOSQLSchema, driver stri
 		allCollections.Lock()
 		entityConsts := allCollections.Entities[strings.Title(schema.Name)]
 		entityConsts.Constants = append(entityConsts.Constants, strings.Title(field.Name))
+		entityConsts.FieldNames = append(entityConsts.FieldNames, fieldType{
+			Name: strings.Title(field.Name),
+			Type: field.Type,
+		})
 		allCollections.Entities[strings.Title(schema.Name)] = entityConsts
 		allCollections.Unlock()
 
@@ -1144,10 +1168,11 @@ func genNOSQLQuery(collection NOSQLCollection, schema NOSQLSchema, driver string
 						log.Println("%s has not bootstrapped and has yet to get a collection pointer")
 					}
 				}
+				query.collectionName = "%s"
 				query.entityName = "%s"
 				return query
 			}
-		`, strings.Title(collection.Name), strings.Title(schema.Name))
+		`, strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(schema.Name))
 	}
 	return val
 }
@@ -1452,7 +1477,7 @@ func genNoSQLSchemaSaveByTran(collection NOSQLCollection, schema NOSQLSchema, dr
 	val += "func (self *" + strings.Title(schema.Name) + ") CreateWithTran(t *Transaction, forceCreate bool) error {\n\n"
 	switch driver {
 	case DATABASE_DRIVER_BOLTDB:
-		val += "return self.Save(self)\n"
+		val += "return self.Save()\n"
 	case DATABASE_DRIVER_MONGODB:
 		val += "transactionQueue.Lock()\n"
 		val += "defer func() {\n"
