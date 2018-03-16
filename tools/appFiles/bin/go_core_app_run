@@ -1,10 +1,11 @@
 whoami=$(whoami)
 if [[ "$whoami" == "root" ]]; then
-    ps -ax | grep tail | awk '{print $1}' | xargs kill > /dev/null 2>&1 
+    ps -ax | grep tail | awk '{print $1}' | xargs kill > /dev/null 2>&1
 else
-    ps -ax | grep tail | awk '{print $1}' | xargs sudo kill > /dev/null 2>&1 
+    ps -ax | grep tail | awk '{print $1}' | xargs sudo kill > /dev/null 2>&1
 fi
 
-bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/kill_golang 
-bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/start_golang 
+bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/kill_golang
+bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/model_build
+bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/start_golang
 bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/start_go_watch_only

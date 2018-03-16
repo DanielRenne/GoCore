@@ -1064,6 +1064,8 @@ func genNoSQLFieldType(prefix string, schema NOSQLSchema, field NOSQLSchemaField
 		return prefix + strings.Title(field.Schema.Name)
 	case "intArray":
 		return "[]int"
+	case "float64":
+		return "float64"
 	case "float64Array":
 		return "[]float64"
 	case "stringArray":

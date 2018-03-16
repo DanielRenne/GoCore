@@ -1498,23 +1498,64 @@ func (self *Query) generateQuery() storm.Query {
 						valType := reflect.TypeOf(vv).String()
 						if valType == "[]interface {}" {
 							fieldType := ResolveField(self.entityName, k)
-							if fieldType == "string" {
+							if fieldType == "string" ||  fieldType == "stringArray"  {
 								var output []string
 								output = make([]string, 0)
-								for _, vvv := range vv.([]interface{}) {
-									output = append(output, vvv.(string))
+								if fieldType == "stringArray" {
+									output = vv.([]string)
+								} else {
+									for _, vvv := range vv.([]interface{}) {
+										output = append(output, vvv.(string))
+									}
 								}
 								if kk == "$nin" {
 									filters = append(filters, querySet.Not(querySet.In(k, output)))
 								} else {
 									filters = append(filters, querySet.In(k, output))
 								}
-							} else if fieldType == "int" {
+							} else if fieldType == "int" || fieldType == "intArray" {
 								var output []int
 								output = make([]int, 0)
-								for _, vvv := range vv.([]interface{}) {
-									output = append(output, vvv.(int))
+								if fieldType == "intArray" {
+									output = vv.([]int)
+								} else {
+									for _, vvv := range vv.([]interface{}) {
+										output = append(output, vvv.(int))
+									}
 								}
+								if kk == "$nin" {
+									filters = append(filters, querySet.Not(querySet.In(k, output)))
+								} else {
+									filters = append(filters, querySet.In(k, output))
+								}
+							} else if fieldType == "float64" || fieldType == "float64Array" {
+								var output []float64
+								output = make([]float64, 0)
+								if fieldType == "float64Array" {
+									output = vv.([]float64)
+								} else {
+									for _, vvv := range vv.([]interface{}) {
+										output = append(output, vvv.(float64))
+									}
+								}
+								if kk == "$nin" {
+									filters = append(filters, querySet.Not(querySet.In(k, output)))
+								} else {
+									filters = append(filters, querySet.In(k, output))
+								}
+							} else if fieldType == "byteArray" {
+								var output []byte
+								output = make([]byte, 0)
+								output = vv.([]byte)
+								if kk == "$nin" {
+									filters = append(filters, querySet.Not(querySet.In(k, output)))
+								} else {
+									filters = append(filters, querySet.In(k, output))
+								}
+							} else if fieldType == "byteArray" {
+								var output []byte
+								output = make([]byte, 0)
+								output = vv.([]byte)
 								if kk == "$nin" {
 									filters = append(filters, querySet.Not(querySet.In(k, output)))
 								} else {
