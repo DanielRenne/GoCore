@@ -101,14 +101,14 @@ func main() {
 			break
 		}
 	}
-	logger.Message("Next choose a color palette:", logger.WHITE)
-	logger.Message("(default) BlueGrey and Orange value=bgo", logger.BLUE)
-	logger.Message("(default) Green and White value=irish", logger.GREEN)
+	//logger.Message("Next choose a color palette:", logger.WHITE)
+	//logger.Message("(default) BlueGrey and Orange value=bgo", logger.BLUE)
+	//logger.Message("(default) Green and White value=irish", logger.GREEN)
 
-	reader = bufio.NewReader(os.Stdin)
-	fmt.Print("Color value: ")
-	colorPalette, _ = reader.ReadString('\n')
-	colorPalette = strings.Trim(colorPalette, "\n")
+	//reader = bufio.NewReader(os.Stdin)
+	//fmt.Print("Color value: ")
+	//colorPalette, _ = reader.ReadString('\n')
+	//colorPalette = strings.Trim(colorPalette, "\n")
 
 	cdGoPath()
 
