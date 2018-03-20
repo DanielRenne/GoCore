@@ -2,6 +2,12 @@ package main
 
 import (
 	"encoding/json"
+	"io/ioutil"
+	"log"
+	"os"
+	"os/exec"
+	"strings"
+
 	"github.com/DanielRenne/GoCore/core/app"
 	"github.com/DanielRenne/GoCore/core/dbServices"
 	"github.com/DanielRenne/GoCore/core/serverSettings"
@@ -10,11 +16,6 @@ import (
 	"github.com/DanielRenne/goCoreAppTemplate/models/v1/model"
 	"github.com/DanielRenne/goCoreAppTemplate/settings"
 	"github.com/davidrenne/heredoc"
-	"io/ioutil"
-	"log"
-	"os"
-	"os/exec"
-	"strings"
 )
 
 func main() {
@@ -48,7 +49,7 @@ func main() {
 	//vm.ButtonBar.Config.OtherTabSelected = append(vm.ButtonBar.Config.OtherTabSelected, viewModel.SETTINGS_CONST_ROLE)
 
 	//Manually set this if you want your table to include foreign keys as "fields" for import and widget lists
-	app.Initialize("src/github.com/DanielRenne/goCoreAppTemplate", "webConfig.json", "mywebsite.com")
+	app.Initialize("src/github.com/DanielRenne/goCoreAppTemplate", "webConfig.json")
 	settings.Initialize()
 	dbServices.Initialize()
 	allowIdFieldsToBeShown := false

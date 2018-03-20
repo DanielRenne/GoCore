@@ -41,6 +41,7 @@ func main() {
 	var username string
 	var databaseType string
 	var humanTitle string
+	var colorPalette string
 
 	logger.Message("Welcome to the GoCore createApp tool!  Thank you for using GoCore.", logger.YELLOW)
 	logger.Message("We hold these below truths to be self-evident", logger.WHITE)
@@ -89,7 +90,7 @@ func main() {
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Print("'mongo' or 'bolt' (defaults mongo due to most support): ")
 		databaseType, _ = reader.ReadString('\n')
-		usernadatabaseTypeme = strings.Trim(databaseType, "\n")
+		databaseType = strings.Trim(databaseType, "\n")
 		ok := false
 		if databaseType == "mongo" || databaseType == "bolt" {
 			ok = true
@@ -100,15 +101,26 @@ func main() {
 			break
 		}
 	}
+	logger.Message("Next choose a color palette:", logger.WHITE)
+	logger.Message("(default) BlueGrey and Orange value=bgo", logger.BLUE)
+	logger.Message("(default) Green and White value=irish", logger.GREEN)
+
+	reader = bufio.NewReader(os.Stdin)
+	fmt.Print("Color value: ")
+	colorPalette, _ = reader.ReadString('\n')
+	colorPalette = strings.Trim(colorPalette, "\n")
 
 	cdGoPath()
 
 	camelUpper := strings.ToTitle(string(appName[0])) + string(appName[1:])
 
-	err := extensions.WriteToFile(humanTitle, "/tmp/humanTitle", 644)
+	err := extensions.WriteToFile(colorPalette, "/tmp/colorPalette", 644)
+	errorOut("extensions.WriteToFile "+colorPalette+" to /tmp/colorPalette", err, false)
+
+	err = extensions.WriteToFile(humanTitle, "/tmp/humanTitle", 644)
 	errorOut("extensions.WriteToFile "+humanTitle+" to /tmp/humanTitle", err, false)
 
-	err := extensions.WriteToFile(databaseType, "/tmp/databaseType", 644)
+	err = extensions.WriteToFile(databaseType, "/tmp/databaseType", 644)
 	errorOut("extensions.WriteToFile "+databaseType+" to /tmp/databaseType", err, false)
 
 	path := "src/github.com/" + username
