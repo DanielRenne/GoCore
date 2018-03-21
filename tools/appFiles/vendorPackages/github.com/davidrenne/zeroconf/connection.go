@@ -2,7 +2,6 @@ package zeroconf
 
 import (
 	"fmt"
-	"log"
 	"net"
 	"strings"
 
@@ -56,7 +55,7 @@ func joinUdp6Multicast(interfaces []net.Interface) (*ipv6.PacketConn, error) {
 	for _, iface := range interfaces {
 		if err := pkConn.JoinGroup(&iface, &net.UDPAddr{IP: mdnsGroupIPv6}); err != nil {
 			if !strings.Contains(iface.Name, "p2p") && !strings.Contains(iface.Name, "awdl") && !strings.Contains(iface.Name, "ppp") {
-				log.Println("Udp6 JoinGroup failed for iface ", iface)
+				//log.Println("Udp6 JoinGroup failed for iface ", iface)
 			}
 			failedJoins++
 		}
@@ -72,7 +71,7 @@ func joinUdp6Multicast(interfaces []net.Interface) (*ipv6.PacketConn, error) {
 func joinUdp4Multicast(interfaces []net.Interface) (*ipv4.PacketConn, error) {
 	udpConn, err := net.ListenUDP("udp4", mdnsWildcardAddrIPv4)
 	if err != nil {
-		log.Printf("[ERR] bonjour: Failed to bind to udp4 multicast: %v", err)
+		// log.Printf("[ERR] bonjour: Failed to bind to udp4 mutlicast: %v", err)
 		return nil, err
 	}
 
@@ -89,7 +88,7 @@ func joinUdp4Multicast(interfaces []net.Interface) (*ipv4.PacketConn, error) {
 	for _, iface := range interfaces {
 		if err := pkConn.JoinGroup(&iface, &net.UDPAddr{IP: mdnsGroupIPv4}); err != nil {
 			if !strings.Contains(iface.Name, "p2p") && !strings.Contains(iface.Name, "awdl") && !strings.Contains(iface.Name, "ppp") {
-				log.Println("Udp4 JoinGroup failed for iface ", iface)
+				//log.Println("Udp4 JoinGroup failed for iface ", iface)
 			}
 
 			failedJoins++

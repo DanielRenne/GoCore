@@ -13,6 +13,8 @@ import (
 	"golang.org/x/net/ipv4"
 	"golang.org/x/net/ipv6"
 
+	"errors"
+
 	"github.com/miekg/dns"
 )
 
@@ -35,7 +37,7 @@ func Register(instance, service, domain string, port int, text []string, ifaces 
 		return nil, fmt.Errorf("Missing service name")
 	}
 	if entry.Domain == "" {
-		entry.Domain = "local"
+		entry.Domain = "local."
 	}
 	if entry.Port == 0 {
 		return nil, fmt.Errorf("Missing port")
@@ -147,8 +149,10 @@ type Server struct {
 	ipv6conn *ipv6.PacketConn
 	ifaces   []net.Interface
 
-	shouldShutdown bool
+	shouldShutdown chan struct{}
 	shutdownLock   sync.Mutex
+	shutdownEnd    sync.WaitGroup
+	isShutdown     bool
 	ttl            uint32
 }
 
@@ -168,10 +172,11 @@ func newServer(ifaces []net.Interface) (*Server, error) {
 	}
 
 	s := &Server{
-		ipv4conn: ipv4conn,
-		ipv6conn: ipv6conn,
-		ifaces:   ifaces,
-		ttl:      3200,
+		ipv4conn:       ipv4conn,
+		ipv6conn:       ipv6conn,
+		ifaces:         ifaces,
+		ttl:            3200,
+		shouldShutdown: make(chan struct{}),
 	}
 
 	return s, nil
@@ -207,13 +212,16 @@ func (s *Server) TTL(ttl uint32) {
 func (s *Server) shutdown() error {
 	s.shutdownLock.Lock()
 	defer s.shutdownLock.Unlock()
-
-	s.unregister()
-
-	if s.shouldShutdown {
-		return nil
+	if s.isShutdown {
+		return errors.New("Server is already shutdown")
 	}
-	s.shouldShutdown = true
+
+	err := s.unregister()
+	if err != nil {
+		return err
+	}
+
+	close(s.shouldShutdown)
 
 	if s.ipv4conn != nil {
 		s.ipv4conn.Close()
@@ -221,6 +229,11 @@ func (s *Server) shutdown() error {
 	if s.ipv6conn != nil {
 		s.ipv6conn.Close()
 	}
+
+	// Wait for connection and routines to be closed
+	s.shutdownEnd.Wait()
+	s.isShutdown = true
+
 	return nil
 }
 
@@ -230,17 +243,24 @@ func (s *Server) recv4(c *ipv4.PacketConn) {
 		return
 	}
 	buf := make([]byte, 65536)
-	for !s.shouldShutdown {
-		var ifIndex int
-		n, cm, from, err := c.ReadFrom(buf)
-		if err != nil {
-			continue
-		}
-		if cm != nil {
-			ifIndex = cm.IfIndex
-		}
-		if err := s.parsePacket(buf[:n], ifIndex, from); err != nil {
-			log.Printf("[ERR] zeroconf: failed to handle query v4: %v", err)
+	s.shutdownEnd.Add(1)
+	defer s.shutdownEnd.Done()
+	for {
+		select {
+		case <-s.shouldShutdown:
+			return
+		default:
+			var ifIndex int
+			n, cm, from, err := c.ReadFrom(buf)
+			if err != nil {
+				continue
+			}
+			if cm != nil {
+				ifIndex = cm.IfIndex
+			}
+			if err := s.parsePacket(buf[:n], ifIndex, from); err != nil {
+				// log.Printf("[ERR] zeroconf: failed to handle query v4: %v", err)
+			}
 		}
 	}
 }
@@ -251,17 +271,24 @@ func (s *Server) recv6(c *ipv6.PacketConn) {
 		return
 	}
 	buf := make([]byte, 65536)
-	for !s.shouldShutdown {
-		var ifIndex int
-		n, cm, from, err := c.ReadFrom(buf)
-		if err != nil {
-			continue
-		}
-		if cm != nil {
-			ifIndex = cm.IfIndex
-		}
-		if err := s.parsePacket(buf[:n], ifIndex, from); err != nil {
-			log.Printf("[ERR] zeroconf: failed to handle query v6: %v", err)
+	s.shutdownEnd.Add(1)
+	defer s.shutdownEnd.Done()
+	for {
+		select {
+		case <-s.shouldShutdown:
+			return
+		default:
+			var ifIndex int
+			n, cm, from, err := c.ReadFrom(buf)
+			if err != nil {
+				continue
+			}
+			if cm != nil {
+				ifIndex = cm.IfIndex
+			}
+			if err := s.parsePacket(buf[:n], ifIndex, from); err != nil {
+				// log.Printf("[ERR] zeroconf: failed to handle query v6: %v", err)
+			}
 		}
 	}
 }
@@ -270,7 +297,7 @@ func (s *Server) recv6(c *ipv6.PacketConn) {
 func (s *Server) parsePacket(packet []byte, ifIndex int, from net.Addr) error {
 	var msg dns.Msg
 	if err := msg.Unpack(packet); err != nil {
-		log.Printf("[ERR] zeroconf: Failed to unpack packet: %v", err)
+		// log.Printf("[ERR] zeroconf: Failed to unpack packet: %v", err)
 		return err
 	}
 	return s.handleQuery(&msg, ifIndex, from)
@@ -294,8 +321,7 @@ func (s *Server) handleQuery(query *dns.Msg, ifIndex int, from net.Addr) error {
 		resp.Answer = []dns.RR{}
 		resp.Extra = []dns.RR{}
 		if err = s.handleQuestion(q, &resp, query, ifIndex); err != nil {
-			log.Printf("[ERR] zeroconf: failed to handle question %v: %v",
-				q, err)
+			// log.Printf("[ERR] zeroconf: failed to handle question %v: %v", q, err)
 			continue
 		}
 		// Check if there is an answer
@@ -337,7 +363,7 @@ func isKnownAnswer(resp *dns.Msg, query *dns.Msg) bool {
 		}
 		ptr := known.(*dns.PTR)
 		if ptr.Ptr == answer.Ptr && hdr.Ttl >= answer.Hdr.Ttl/2 {
-			log.Printf("skipping known answer: %v", ptr)
+			// log.Printf("skipping known answer: %v", ptr)
 			return true
 		}
 	}
@@ -660,7 +686,6 @@ func (s *Server) unicastResponse(resp *dns.Msg, ifIndex int, from net.Addr) erro
 func (s *Server) multicastResponse(msg *dns.Msg, ifIndex int) error {
 	buf, err := msg.Pack()
 	if err != nil {
-		log.Println("Failed to pack message!")
 		return err
 	}
 	if s.ipv4conn != nil {
