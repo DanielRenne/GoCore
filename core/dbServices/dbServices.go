@@ -186,9 +186,23 @@ func openMongo() error {
 	MongoSession, err = mgo.Dial(connectionString) // open an connection -> Dial function
 	DBMutex.Unlock()
 
-	if err != nil { //  if you have a
-		color.Red("Failed to create or open mongo Database at " + connectionString + "\n\t" + err.Error())
-		return err
+	if err != nil {
+		for i := 0; i < 5; i++ {
+			DBMutex.Lock()
+			MongoSession, err = mgo.Dial(connectionString) // open an connection -> Dial function
+			DBMutex.Unlock()
+			if err == nil {
+				break
+			} else {
+				time.Sleep(time.Millisecond * 3)
+			}
+		}
+		if err != nil {
+			color.Red("Failed to create or open mongo Database at " + connectionString + "\n\t" + err.Error())
+			os.Exit(1)
+			return err
+		}
+
 	}
 
 	if serverSettings.WebConfig.HasDbAuth && serverSettings.WebConfig.DbAuthConnection.AuthServer {
