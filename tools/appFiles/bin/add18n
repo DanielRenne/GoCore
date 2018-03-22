@@ -14,8 +14,7 @@ else
           output2=$(python $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n_getkey.py "$1" "$2" "$3" "0")
           python $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n.py "$1" "$2" "$3" "1"
           bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/translation_seed "$1" "$output2"
-          sleep 1
-          python $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/translate_all.py "$1"
+          python $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/translate_all.py "$1" &
           echo " --- All done! ---"
       else
         echo "Nothing done... just check clipboard"

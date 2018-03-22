@@ -109,9 +109,9 @@ else
             sed -i "s/-PAGE_RENDER_EXTRA-/\{\.\.\.this\.globs\.widgetListButtonBarOffset\(\)\}/g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}List/${2}ListComponents.js"
             sed -i "s/-PAGE_RENDER_HEIGHT_WIDGETLIST-//g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}List/${2}ListComponents.js"
 
-            bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/add18n "app" "${camelSingularUpper}Add" "Add ${camelSingularUpper}"
-            bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/add18n "app" "${camelSingularUpper}List" "${camelUpper}"
-            bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/add18n "app" "${camelSingularUpper}Modify" "Modify ${camelSingularUpper}"
+            bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n "app" "${camelSingularUpper}Add" "Add ${camelSingularUpper}"
+            bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n "app" "${camelSingularUpper}List" "${camelUpper}"
+            bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n "app" "${camelSingularUpper}Modify" "Modify ${camelSingularUpper}"
 
         else
             sed -i "s/-PAGE_RENDER_MODE-/plain_page/g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}Add/${2}Add.js"
@@ -143,18 +143,18 @@ else
         sed -i "s/-CAMEL-/$2/g" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}Add/{"${2}AddComponents.js","${2}Add.js"}
         sed -i "s/-CAMELPLURAL-/$1/g" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}Add/{"${2}AddComponents.js","${2}Add.js"}
 
-        bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/add18n "${2}List" "ShowingAll${camelUpper}" "Showing All ${camelUpper}"
-        bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/add18n "${2}List" "Delete${camelSingularUpper}" "Delete ${2}"
-        bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/add18n "${2}List" "Add${camelSingularUpper}" "Add ${2}"
-        bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/add18n "${2}List" "Edit${camelSingularUpper}" "Edit ${2}"
-        bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/add18n "${2}List" "Copy${camelSingularUpper}" "Copy ${2}"
-        bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/add18n "${2}List" "${camelSingularUpper}CopySuccessful" "${camelSingularUpper} was copied"
-        bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/add18n "${2}List" "Error${camelSingularUpper}Copy" "Failed to copy ${camelSingularUpper}"
-        bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/add18n "${2}Add" "Create${camelSingularUpper}" "Create ${2}"
-        bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/add18n "${2}List" "ConfirmDeleteMessage" "Are you sure you would like to delete this ${2}? This action cannot be undone."
-        bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/add18n "${2}List" "Add${camelSingularUpper}" "Add a new ${camelSingularUpper}"
-        bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/add18n "${2}List" AreYouSure "Are you sure you wish to delete {total} ${1}?"
-        bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/add18n "${2}List" AreYouSureInline "Are you sure you wish to delete this ${2}?"
+        bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n "${2}List" "ShowingAll${camelUpper}" "Showing All ${camelUpper}"
+        bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n "${2}List" "Delete${camelSingularUpper}" "Delete ${2}"
+        bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n "${2}List" "Add${camelSingularUpper}" "Add ${2}"
+        bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n "${2}List" "Edit${camelSingularUpper}" "Edit ${2}"
+        bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n "${2}List" "Copy${camelSingularUpper}" "Copy ${2}"
+        bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n "${2}List" "${camelSingularUpper}CopySuccessful" "${camelSingularUpper} was copied"
+        bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n "${2}List" "Error${camelSingularUpper}Copy" "Failed to copy ${camelSingularUpper}"
+        bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n "${2}Add" "Create${camelSingularUpper}" "Create ${2}"
+        bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n "${2}List" "ConfirmDeleteMessage" "Are you sure you would like to delete this ${2}? This action cannot be undone."
+        bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n "${2}List" "Add${camelSingularUpper}" "Add a new ${camelSingularUpper}"
+        bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n "${2}List" AreYouSure "Are you sure you wish to delete {total} ${1}?"
+        bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n "${2}List" AreYouSureInline "Are you sure you wish to delete this ${2}?"
 
 
         cd $GOPATH
