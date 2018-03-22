@@ -275,6 +275,13 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context) {
 
 	//Reader
 	go logger.GoRoutineLogger(func() {
+
+		defer func() {
+			if recover := recover(); recover != nil {
+				log.Println("Panic Recovered at webSocketHandler-> Reader():  ", recover)
+			}
+		}()
+
 		for {
 			messageType, p, err := conn.ReadMessage()
 			if err == nil {
@@ -286,6 +293,12 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context) {
 				}
 
 				go logger.GoRoutineLogger(func() {
+
+					defer func() {
+						if recover := recover(); recover != nil {
+							log.Println("Panic Recovered at webSocketHandler-> Reader-> item.Callback():  ", recover)
+						}
+					}()
 
 					for item := range WebSocketCallbacks.Iter() {
 						if item.Callback != nil {

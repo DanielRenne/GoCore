@@ -136,7 +136,10 @@ func GoRoutineLogger(fn func(), routineDesc string) {
 			log.Println(time.Now().String() + " " + id + " is starting to [" + routineDesc + "]")
 		}
 	}
-	fn()
+	if fn != nil {
+		fn()
+	}
+
 }
 
 func TimeTrack(start time.Time, name string) (log string) {
