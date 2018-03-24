@@ -2,6 +2,7 @@ package dbServices
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 
 	"github.com/DanielRenne/GoCore/core/extensions"
@@ -201,8 +202,13 @@ func RunDBCreate() {
 	// createNoSQLModel(schemaDB.Collections, serverSettings.WebConfig.DbConnection.AppName, serverSettings.WebConfig.DbConnection.Driver)
 	// }
 
-	walkNoSQLSchema()
+	versionDir := "v1"
+	modelPath := serverSettings.APP_LOCATION + "/models/" + versionDir + "/model"
+	// delete model files
+	fmt.Printf("RunDBCreate->Remove Model %v \n", modelPath)
+	os.RemoveAll(modelPath)
 
+	walkNoSQLSchema()
 }
 
 func walkNoSQLSchema() {
