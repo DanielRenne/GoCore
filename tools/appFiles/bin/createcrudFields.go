@@ -83,7 +83,8 @@ func main() {
 	t, err := model.Transactions.New(constants.APP_CONSTANTS_CRONJOB_ID)
 
 	template := capCamel + " Related"
-	count, _ := model.FeatureGroups.Query().Filter(model.Q(model.FIELD_FEATUREGROUP_NAME, template)).Count()
+	var featureGroups []model.FeatureGroup
+	count, _ := model.FeatureGroups.Query().Filter(model.Q(model.FIELD_FEATUREGROUP_NAME, template)).Count(&featureGroups)
 	if count < 1 && outputNewRoles {
 		var fg model.FeatureGroup
 		fg = model.FeatureGroup{

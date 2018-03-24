@@ -78,7 +78,7 @@ func moveAppFiles() {
 	if errNoWebConfig != nil {
 		if string(databaseType) == "mongo" {
 			extensions.CopyFile(serverSettings.GOCORE_PATH+"/tools/appFiles/webConfig.json", serverSettings.APP_LOCATION+"/webConfig.json")
-		} else if string(databaseType) == "mongo" {
+		} else if string(databaseType) == "bolt" {
 			extensions.CopyFile(serverSettings.GOCORE_PATH+"/tools/appFiles/webConfig.bolt.json", serverSettings.APP_LOCATION+"/webConfig.json")
 		}
 		logger.Message("Copied webConfig.json to Application.", logger.GREEN)

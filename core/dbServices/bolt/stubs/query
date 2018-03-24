@@ -764,7 +764,7 @@ func (self *Query) One(x interface{}) error {
 
 func (self *Query) GetOrCreate(x interface{}, t *Transaction) (err error) {
 
-	count, err := self.Count()
+	count, err := self.Count(x)
 
 	if err != nil {
 		return
@@ -812,25 +812,45 @@ func (self *Query) GetOrCreate(x interface{}, t *Transaction) (err error) {
 	return
 }
 
-func (self *Query) TotalRows() int {
+func GetInterfaceSlice(obj interface{}) ([]interface{}, error) {
+	s := reflect.ValueOf(obj)
+
+	if s.Kind() == reflect.Ptr {
+		// Remove pointer to get to value of slice
+		s = reflect.Indirect(reflect.ValueOf(obj))
+	}
+
+	if s.Kind() != reflect.Slice {
+		err := errors.New("Failed to cast interface to []interface{}.")
+		objArray := make([]interface{}, 0)
+		return objArray, err
+	}
+
+	objArray := make([]interface{}, s.Len())
+
+	for i := 0; i < s.Len(); i++ {
+		objArray[i] = s.Index(i).Interface()
+	}
+	return objArray, nil
+}
+
+
+func (self *Query) TotalRows(x interface{}) int {
 	if serverSettings.WebConfig.Application.LogQueries {
 		defer func() {
 			log.Println(logger.TimeTrack(time.Now(), "q.TotalRows()"))
 		}()
 	}
 
-	q := self.generateQuery()
-
-	if !self.stopLog && serverSettings.WebConfig.Application.LogQueries {
-		self.LogQuery("q.Length()")
+	err := self.All(x)
+	xSlice, err := GetInterfaceSlice(x)
+	if err != nil {
+		return 0
 	}
-	var tmp Max
-	count, _ := q.Count(&tmp)
-
-	return count
+	return len(xSlice)
 }
 
-func (self *Query) Count() (int, error) {
+func (self *Query) Count(x interface{}) (int, error) {
 	if serverSettings.WebConfig.Application.LogQueries {
 		defer func() {
 			log.Println(logger.TimeTrack(time.Now(), "q.Count()"))
@@ -840,23 +860,16 @@ func (self *Query) Count() (int, error) {
 		return 0, self.e
 	}
 
-	q := self.generateQuery()
-
-	var tmp Max
-	count, err := q.Count(&tmp)
-
+	err := self.All(x)
 	if err != nil {
-
-		// This callback is used for if the Ethernet port is unplugged
-		callback := func() error {
-			var tmp Max
-			count, err = q.Count(&tmp)
-			return err
-		}
-
-		return count, self.handleQueryError(err, callback)
+		return 0, err
 	}
-	return count, err
+
+	xSlice, err := GetInterfaceSlice(x)
+	if err != nil {
+		return 0, err
+	}
+	return len(xSlice), err
 }
 
 func (self *Query) Distinct(key string, x interface{}) error {
@@ -1418,12 +1431,11 @@ func (self *Query) substituteDateFormat(dateFormat string) string {
 }
 
 func (self *Query) LogQuery(functionName string) {
-	cnt, _ := self.Count()
 	if serverSettings.WebConfig.Application.LogQueryStackTraces {
 		caller := stacktrace.Errorf("GoCore caller:")
-		core.Debug.Dump("Desc-> Called Function query.go#"+functionName, "Desc->Caller for Query:", caller.ErrorStack(), core.Debug.GetDump("Desc->Limit", self.limit, "Desc->Skip", self.skip, "Desc->Sort", self.sort, "Desc->Queryset", self.m, "Desc->Count", cnt, "Desc->Joins", self.joins))
+		core.Debug.Dump("Desc-> Called Function query.go#"+functionName, "Desc->Caller for Query:", caller.ErrorStack(), core.Debug.GetDump("Desc->Limit", self.limit, "Desc->Skip", self.skip, "Desc->Sort", self.sort, "Desc->Queryset", self.m, "Desc->Count", self.joins))
 	} else {
-		core.Debug.Dump("Desc-> Called Function query.go#"+functionName, core.Debug.GetDump("Desc->Limit", self.limit, "Desc->Skip", self.skip, "Desc->Sort", self.sort, "Desc->Queryset", self.m, "Desc->Count", cnt, "Desc->Joins", self.joins))
+		core.Debug.Dump("Desc-> Called Function query.go#"+functionName, core.Debug.GetDump("Desc->Limit", self.limit, "Desc->Skip", self.skip, "Desc->Sort", self.sort, "Desc->Queryset", self.m, "Desc->Count", "Desc->Joins", self.joins))
 	}
 }
 
@@ -1588,6 +1600,7 @@ func (self *Query) generateQuery() storm.Query {
 	} else {
 		q = dbServices.BoltDB.Select(querySet.True())
 	}
+	log.Println("aodave" , fmt.Sprintf("%+v", self.ao))
 	log.Println("self.entityName=" + self.entityName)
 
 	//if self.ao != nil {

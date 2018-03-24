@@ -39,67 +39,10 @@ class AccountAdd extends AccountAddModify {
     this.handleSendInvitationChange = (event, value) => {
       this.setComponentState({SendInvite:value});
     };
-
-    this.handleVectorImageChange = (event, index, value) => {
-      this.setComponentState({
-        ImageFileName: value,
-        ImageFileNameErrors: false
-      });
-    };
-
-    this.handleAccountTypeChange = (event, index, value) => {
-       var long = (value == 'deal') ? "Dealer" : "Customer";
-       this.setComponentState({Account:{AccountTypeShort:value, AccountTypeLong:long}});
-    }
   }
 
   componentDidMount() {
     this.setComponentState({Account: {Email: window.appState.UserEmail}})
-  }
-
-  buildingImageSelection() {
-    if (window.appState.AccountTypeShort != 'atl' || this.state.Account.AccountTypeShort == 'cust') {
-      var buildingImages = this.globs.getBuildingImageInfo();
-
-      return <div>
-          <SelectField floatingLabelText={"* " + window.appContent.SiteBuildingInitialSite}
-                       hintText={"* " + window.appContent.SiteBuildingInitialSite}
-                       value={this.state.ImageFileName}
-                       onChange={this.handleVectorImageChange}
-                       style={{width: 400}}
-                       errorText={this.globs.translate(this.state.ImageFileNameErrors)}>
-            {buildingImages.images.map((v) => {
-              var additionalProps = {};
-              if (v.Group) {
-                additionalProps.disabled = true;
-              } else {
-                additionalProps.leftIcon = <div><img src={buildingImages.path + v.Id + ".jpg.24.png"} style={{marginBottom: 12}}/></div>;
-              }
-              return <MenuItem {...additionalProps} key={v.Id} value={v.Id} primaryText={v.Name}/>;
-            })}
-          </SelectField>
-      </div>;
-    }
-  }
-
-
-
-  accountTypeOption() {
-    if (window.appState.AccountTypeShort == 'atl') {
-      var accountTypes = [{Name:"Dealer", Value:"deal"}, {Name:"Customer", Value:"cust"}];
-      return <SelectField
-              floatingLabelText={"* " + window.pageContent.AccountType}
-              hintText={"* " + window.pageContent.AccountType}
-              value={this.state.Account.AccountTypeShort}
-              onChange={this.handleAccountTypeChange}
-          >
-          {
-            accountTypes.map((type) => {
-              return <MenuItem key={type.Name} value={type.Value} primaryText={type.Name}/>
-            })
-          }
-        </SelectField>
-    }
   }
 
   render() {
@@ -147,7 +90,7 @@ class AccountAdd extends AccountAddModify {
             errorText={this.globs.translate(this.state.Account.Errors.CountryId)}>
           {this.globs.map(this.state.Countries, (v) => <MenuItem key={v.Id} value={v.Id} primaryText={v.Name}/>)}
         </SelectField>
-        
+
         <SelectField floatingLabelText={"* " + window.pageContent.AccountAddEditState}
             value={this.state.Account.StateId}
             hintText={"* " + window.pageContent.AccountAddEditState}
@@ -192,11 +135,6 @@ class AccountAdd extends AccountAddModify {
             onToggle={this.handleSendInvitationChange}/>
 
         </span>
-        <br />
-        {this.accountTypeOption()}
-        <br />
-        {this.buildingImageSelection()}
-        <br />
         <br />
         <RaisedButton
             label={window.pageContent.CreateAccount}

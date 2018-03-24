@@ -262,12 +262,14 @@ func CheckRoleAccessByRole(userId string, roleId string, featureId string) (resu
 
 	filter := make(map[string]interface{}, 2)
 	filter[model.FIELD_ACCOUNTROLE_USERID] = userId
-	c1, err := model.AccountRoles.Query().Filter(filter).Count()
+	var accountRoles []model.AccountRole
+	c1, err := model.AccountRoles.Query().Filter(filter).Count(&accountRoles)
 	if c1 > 0 {
 		return true
 	}
 	if err == nil {
-		count, err := model.RoleFeatures.Query().Filter(model.Q(model.FIELD_ROLEFEATURE_ROLEID, roleId)).Filter(model.Q(model.FIELD_ROLEFEATURE_FEATUREID, featureId)).Count()
+		var roleFeatures []model.RoleFeature
+		count, err := model.RoleFeatures.Query().Filter(model.Q(model.FIELD_ROLEFEATURE_ROLEID, roleId)).Filter(model.Q(model.FIELD_ROLEFEATURE_FEATUREID, featureId)).Count(&roleFeatures)
 		if err != nil {
 			return
 		}

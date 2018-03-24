@@ -466,7 +466,7 @@ func JoinEntity(collectionQ *Query, y interface{}, j join, id string, fieldToSet
 	if IsZeroOfUnderlyingType(fieldToSet.Interface()) || j.isMany {
 		if j.isMany && id != "" {
 			if remainingRecursions == "Count" {
-				cnt, err := collectionQ.ToggleLogFlag(true).Filter(Q(j.joinForeignFieldName, id)).Count()
+				cnt, err := collectionQ.ToggleLogFlag(true).Filter(Q(j.joinForeignFieldName, id)).Count(y)
 				if serverSettings.WebConfig.Application.LogJoinQueries {
 					collectionQ.LogQuery("JoinEntity() Recursion Count Only err?->" + fmt.Sprintf("%+v", err) + " j->" + fmt.Sprintf("%+v", j))
 				}

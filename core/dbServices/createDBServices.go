@@ -1942,7 +1942,8 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 			`, strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name))
 	}
 
-	val += "cnt, errCount := query.Count()\n"
+	val += "var rows []" + strings.Title(schema.Name) + "\n"
+	val += "cnt, errCount := query.Count(&rows)\n"
 	val += "if errCount != nil{\n"
 	val += "cnt = 1\n"
 	val += "}\n\n"

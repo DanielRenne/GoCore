@@ -15,7 +15,7 @@ import AccountAddModify from '../accountModify/accountModifyComponents';
 import ServerSettings from '../serverSettingsModify/serverSettingsModifyComponents'
 import ButtonBarPage from '../../components/buttonBarPage'
 import FontIcon from 'material-ui/FontIcon';
-import {serverSettingsIconLarge, userListIconLarge, accountsIconLarge, userProfileIconLarge, notificationsIconLarge, maintenanceIconLarge, serverSettingsIcon, userListIcon, accountsIcon, userProfileIcon, notificationsIcon, maintenanceIcon, businessIcon, businessIconLarge, blockIcon, blockIconLarge} from '../../globals/icons'
+import {serverSettingsIconLarge, userListIconLarge, accountsIconLarge, userProfileIconLarge, notificationsIconLarge, serverSettingsIcon, userListIcon, accountsIcon, userProfileIcon, notificationsIcon, businessIcon, businessIconLarge, blockIcon, blockIconLarge} from '../../globals/icons'
 // Note all pageContent used in any rendered component for all pages here needs to stay in settings/en/US.json
 
 
@@ -64,10 +64,6 @@ window.Load_settings = function() {
             icon = userProfileIconLarge;
             iconsm = userProfileIcon;
             break;
-          case "EditMaintenance":
-            icon = maintenanceIconLarge;
-            iconsm = maintenanceIcon;
-            break;
       }
     props.tabIconsLarge[value] = icon;
     props.tabIcons[value] = iconsm;
@@ -79,7 +75,6 @@ window.Load_settings = function() {
     page = (<AccountAddModify {...props}/>);
   } else if (state.SettingsBar.ButtonBar.Config.CurrentTab == state.SettingsBar.Constants.AccountAdd) {
     page = (<AccountAdd {...props}/>);
-  //SettingsJSSwitch
   } else if (state.SettingsBar.ButtonBar.Config.CurrentTab == state.SettingsBar.Constants.RoleList) {
     page = (<RoleList {...props}/>);
   } else if (state.SettingsBar.ButtonBar.Config.CurrentTab == state.SettingsBar.Constants.RoleModify) {

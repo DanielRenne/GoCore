@@ -137,13 +137,6 @@ class AccountList extends BasePageComponent {
                     onTouchTap={this.handleEdit}
                     icon={<EditIcon color={blueGrey400}/>}
                   />
-                },
-                {
-                  button: <RaisedButton
-                      title={window.pageContent.SwitchAccountTooltip}
-                      onTouchTap={this.handleSetAccount}
-                      icon={<LoginAs color={blueGrey400}/>}
-                  />
                 }
              ]}
              dataKey={this.state.WidgetList.DataKey}

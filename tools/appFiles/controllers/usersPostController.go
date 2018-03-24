@@ -29,8 +29,8 @@ func (self *UserModifyController) CommonUserValidation(vm *viewModel.UserModifyV
 		if vm.EmailChanged {
 			qs = qs.Exclude(model.Q("Id", vm.User.Id))
 		}
-
-		count, err := qs.Count()
+		var users []model.User
+		count, err := qs.Count(&users)
 		if err != nil {
 			valid &= constants.BITWISE_FALSE
 		}

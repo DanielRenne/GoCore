@@ -823,7 +823,7 @@ func (self *Query) One(x interface{}) error {
 
 func (self *Query) GetOrCreate(x interface{}, t *Transaction) (err error) {
 
-	count, err := self.Count()
+	count, err := self.Count(x)
 
 	if err != nil {
 		return
@@ -892,7 +892,7 @@ func (self *Query) TotalRows() int {
 	return count
 }
 
-func (self *Query) Count() (int, error) {
+func (self *Query) Count(x interface{}) (int, error) {
 	if !serverSettings.WebConfig.Application.LogQueries && serverSettings.WebConfig.Application.LogQueryTimes {
 		defer func() {
 			log.Println(logger.TimeTrackQuery(time.Now(), "q.Count()", self.collection, self.m, self.q))
@@ -1486,12 +1486,11 @@ func (self *Query) substituteDateFormat(dateFormat string) string {
 }
 
 func (self *Query) LogQuery(functionName string) {
-	cnt, _ := self.Count()
 	if serverSettings.WebConfig.Application.LogQueryStackTraces {
 		caller := stacktrace.Errorf("GoCore caller:")
-		core.Debug.Dump("Desc-> Called Function query.go#"+functionName, "Desc->Caller for Query:", caller.ErrorStack(), core.Debug.GetDump("Desc->Collection", self.collection, "Desc->Limit", self.limit, "Desc->Skip", self.skip, "Desc->Sort", self.sort, "Desc->mgo Query", self.q, "Desc->Queryset", self.m, "Desc->Count", cnt, "Desc->Joins", self.joins))
+		core.Debug.Dump("Desc-> Called Function query.go#"+functionName, "Desc->Caller for Query:", caller.ErrorStack(), core.Debug.GetDump("Desc->Collection", self.collection, "Desc->Limit", self.limit, "Desc->Skip", self.skip, "Desc->Sort", self.sort, "Desc->mgo Query", self.q, "Desc->Queryset", self.m , "Desc->Joins", self.joins))
 	} else {
-		core.Debug.Dump("Desc-> Called Function query.go#"+functionName, core.Debug.GetDump("Desc->Collection", self.collection, "Desc->Limit", self.limit, "Desc->Skip", self.skip, "Desc->Sort", self.sort, "Desc->mgo Query", self.q, "Desc->Queryset", self.m, "Desc->Count", cnt, "Desc->Joins", self.joins))
+		core.Debug.Dump("Desc-> Called Function query.go#"+functionName, core.Debug.GetDump("Desc->Collection", self.collection, "Desc->Limit", self.limit, "Desc->Skip", self.skip, "Desc->Sort", self.sort, "Desc->mgo Query", self.q, "Desc->Queryset", self.m, "Desc->Joins", self.joins))
 	}
 }
 
