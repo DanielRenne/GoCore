@@ -161,6 +161,7 @@ class UserList extends BasePageComponent {
                   />
                 }
              ]}
+             data={this.state[this.state.WidgetList.DataKey]}
              dataKey={this.state.WidgetList.DataKey}
           />
           <ConfirmPopup

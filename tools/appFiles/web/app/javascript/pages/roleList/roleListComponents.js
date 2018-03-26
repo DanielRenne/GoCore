@@ -239,6 +239,7 @@ class RoleList extends BasePageComponent {
                 }
              ]}
              dataKey="Roles"
+             data={this.state[this.state.WidgetList.DataKey]}
              searchEnabled={false}
              addRecordOnClick={this.globs.HasRole("ROLE_ADD") ? () => this.globs.FloatingActionButtonClick(null, false, "AddImport", "CONTROLLER_ROLEADD"): null}
              addRecordOnClickToolTip={window.pageContent.AddRole}

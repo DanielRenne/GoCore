@@ -110,6 +110,7 @@ func openBolt() error {
 
 	if err != nil {
 		color.Red("Failed to create or open boltDB Database at " + myDBDir + ":\n\t" + err.Error())
+		os.Exit(1)
 		return err
 	}
 

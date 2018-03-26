@@ -118,7 +118,7 @@ class FeatureList extends BasePageComponent {
         <div>
           <WidgetList
               {...this.globs.widgetListDefaults()}
-              
+
               name="featureList"
               listViewModel={this.state.WidgetList}
               controller="featureList"
@@ -211,6 +211,7 @@ class FeatureList extends BasePageComponent {
                 }
              ]}
              dataKey="Features"
+             data={this.state[this.state.WidgetList.DataKey]}
              addRecordOnClick={() => this.globs.FloatingActionButtonClick(null, () => this.globs.clickCurrentAddOrImportActionButton(), "AddImport", "CONTROLLER_FEATUREADD") }
              addRecordOnClickToolTip={window.pageContent.AddFeature}
              offsetHeightToList={92}

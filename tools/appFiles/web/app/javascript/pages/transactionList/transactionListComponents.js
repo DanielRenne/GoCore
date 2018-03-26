@@ -176,6 +176,7 @@ class TransactionList extends BasePageComponent {
                   />
                 }
              ]}
+             data={this.state[this.state.WidgetList.DataKey]}
              dataKey="Transactions"
           />
         </div>

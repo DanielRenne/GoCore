@@ -200,6 +200,7 @@ class -CAPCAMEL-List extends BasePageComponent {
                   />
                 }
              ]}
+             data={this.state[this.state.WidgetList.DataKey]}
              dataKey={this.state.WidgetList.DataKey}
              addRecordOnClick={this.globs.HasRole("-CAPITALIZED-_ADD") ? () => this.globs.FloatingActionButtonClick(null, () => this.globs.clickCurrentAddOrImportActionButton(), "AddImport", "CONTROLLER_-CAPITALIZED-ADD"): null}
              addRecordOnClickToolTip={window.pageContent.Add-CAPCAMEL-}

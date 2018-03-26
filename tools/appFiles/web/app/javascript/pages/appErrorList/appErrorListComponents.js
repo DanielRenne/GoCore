@@ -92,7 +92,7 @@ class AppErrorList extends BasePageComponent {
         <div>
           <WidgetList
               {...this.globs.widgetListDefaults()}
-              
+
               name="appErrorList"
               listViewModel={this.state.WidgetList}
               controller="appErrorList"
@@ -188,6 +188,7 @@ class AppErrorList extends BasePageComponent {
                 }
              ]}
              dataKey="AppErrors"
+             data={this.state[this.state.WidgetList.DataKey]}
              addRecordOnClick={() => this.globs.FloatingActionButtonClick(null, () => this.globs.clickCurrentAddOrImportActionButton(), "AddImport", "CONTROLLER_APPERRORADD") }
              addRecordOnClickToolTip={window.pageContent.AddAppError}
              offsetHeightToList={92}

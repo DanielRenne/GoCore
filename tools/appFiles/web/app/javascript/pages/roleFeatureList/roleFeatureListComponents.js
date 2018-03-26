@@ -220,6 +220,7 @@ class RoleFeatureList extends BasePageComponent {
                 }
              ]}
              dataKey="RoleFeatures"
+             data={this.state[this.state.WidgetList.DataKey]}
              addRecordOnClick={() => this.globs.FloatingActionButtonClick(null, () => this.globs.clickCurrentAddOrImportActionButton(), "AddImport", "CONTROLLER_ROLEFEATUREADD") }
              addRecordOnClickToolTip={window.pageContent.AddRoleFeature}
              offsetHeightToList={92}

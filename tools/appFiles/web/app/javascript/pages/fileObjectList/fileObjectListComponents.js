@@ -118,7 +118,7 @@ class FileObjectList extends BasePageComponent {
         <div>
           <WidgetList
               {...this.globs.widgetListDefaults()}
-              
+
               name="fileObjectList"
               listViewModel={this.state.WidgetList}
               controller="fileObjectList"
@@ -240,6 +240,7 @@ class FileObjectList extends BasePageComponent {
                 }
              ]}
              dataKey="FileObjects"
+             data={this.state[this.state.WidgetList.DataKey]}
              addRecordOnClick={() => this.globs.FloatingActionButtonClick(null, () => this.globs.clickCurrentAddOrImportActionButton(), "AddImport", "CONTROLLER_FILEOBJECTADD")}
              addRecordOnClickToolTip={window.pageContent.AddFileObject}
              offsetHeightToList={92}

@@ -712,7 +712,7 @@ func (self *Query) All(x interface{}) error {
 
 	err := q.Find(x)
 
-	if err != nil {
+	if err != nil && err.Error() != "not found" {
 		// This callback is used for if the Ethernet port is unplugged
 		callback := func() error {
 			err = q.Find(x)
@@ -1491,16 +1491,123 @@ func (self *Query) Iter() (qi *QueryIterator) {
 }
 
 func (self *Query) generateQuery() storm.Query {
-
 	var q storm.Query
-
-
 	if self.o != nil {
-		log.Println("todo")
+		var filters []querySet.Matcher
+		for _, v := range self.o {
+			log.Println("8r89983r9923u")
+			for kk, vv := range v {
+				if kk == "_id" {
+					kk = "Id"
+				}
+				typeOfInterface := reflect.TypeOf(vv).String()
+				if typeOfInterface == "bson.M" {
+					for operator, val := range vv.(bson.M) {
+						log.Println(operator, val, kk, vv)
+						if operator == "$in" || operator == "$nin" {
+							valType := reflect.TypeOf(val).String()
+							if valType == "[]interface {}" {
+								fieldType := ResolveField(self.entityName, kk)
+								if fieldType == "string" || fieldType == "stringArray" {
+									var output []string
+									output = make([]string, 0)
+									if fieldType == "stringArray" {
+										output = val.([]string)
+									} else {
+										for _, vvv := range val.([]interface{}) {
+											output = append(output, vvv.(string))
+										}
+									}
+									if operator == "$nin" {
+										filters = append(filters, querySet.Not(querySet.In(kk, output)))
+									} else {
+										filters = append(filters, querySet.In(kk, output))
+									}
+								} else if fieldType == "int" || fieldType == "intArray" {
+									var output []int
+									output = make([]int, 0)
+									if fieldType == "intArray" {
+										output = val.([]int)
+									} else {
+										for _, vvv := range val.([]interface{}) {
+											output = append(output, vvv.(int))
+										}
+									}
+									if operator == "$nin" {
+										filters = append(filters, querySet.Not(querySet.In(kk, output)))
+									} else {
+										filters = append(filters, querySet.In(kk, output))
+									}
+								} else if fieldType == "float64" || fieldType == "float64Array" {
+									var output []float64
+									output = make([]float64, 0)
+									if fieldType == "float64Array" {
+										output = val.([]float64)
+									} else {
+										for _, vvv := range val.([]interface{}) {
+											output = append(output, vvv.(float64))
+										}
+									}
+									if operator == "$nin" {
+										filters = append(filters, querySet.Not(querySet.In(kk, output)))
+									} else {
+										filters = append(filters, querySet.In(kk, output))
+									}
+								} else if fieldType == "byteArray" {
+									var output []byte
+									output = make([]byte, 0)
+									output = val.([]byte)
+									if kk == "$nin" {
+										filters = append(filters, querySet.Not(querySet.In(kk, output)))
+									} else {
+										filters = append(filters, querySet.In(kk, output))
+									}
+								} else if fieldType == "byteArray" {
+									var output []byte
+									output = make([]byte, 0)
+									output = val.([]byte)
+									if operator == "$nin" {
+										filters = append(filters, querySet.Not(querySet.In(kk, output)))
+									} else {
+										filters = append(filters, querySet.In(kk, output))
+									}
+								}
+							} else {
+								if operator == "$nin" {
+									filters = append(filters, querySet.Not(querySet.In(kk, val)))
+								} else {
+									filters = append(filters, querySet.In(kk, val))
+								}
+							}
+						} else if operator == "$regex" {
+							valType := reflect.TypeOf(val).String()
+							if valType == "bson.RegEx" {
+								re, ok := val.(bson.RegEx)
+								if ok {
+									filters = append(filters, querySet.Re(kk, re.Pattern))
+								}
+							}
+						} else if operator == "$lte" {
+							filters = append(filters, querySet.Lte(kk, val))
+						} else if operator == "$lt" {
+							filters = append(filters, querySet.Lt(kk, val))
+						} else if operator == "$gt" {
+							filters = append(filters, querySet.Gt(kk, val))
+						} else if operator == "$gte" {
+							filters = append(filters, querySet.Gte(kk, val))
+						}
+					}
+				}
+			}
+		}
+		q = dbServices.BoltDB.Select(querySet.Or(filters...))
 	} else if self.m != nil {
 		var filters []querySet.Matcher
 		log.Println("start of filter")
 		for k, v := range self.m {
+			if k == "_id" {
+				k = "Id"
+			}
 			log.Println("filtering[" + k + "]" + fmt.Sprintf("%+v", v) + " type=" + reflect.TypeOf(v).String())
 			typeOfInterface := reflect.TypeOf(v).String()
 
@@ -1510,7 +1617,7 @@ func (self *Query) generateQuery() storm.Query {
 						valType := reflect.TypeOf(vv).String()
 						if valType == "[]interface {}" {
 							fieldType := ResolveField(self.entityName, k)
-							if fieldType == "string" ||  fieldType == "stringArray"  {
+							if fieldType == "string" || fieldType == "stringArray" {
 								var output []string
 								output = make([]string, 0)
 								if fieldType == "stringArray" {
@@ -1579,6 +1686,14 @@ func (self *Query) generateQuery() storm.Query {
 								filters = append(filters, querySet.Not(querySet.In(k, vv)))
 							} else {
 								filters = append(filters, querySet.In(k, vv))
+							}
+						}
+					} else if kk == "$regex" {
+						valType := reflect.TypeOf(vv).String()
+						if valType == "bson.RegEx" {
+							re, ok := vv.(bson.RegEx)
+							if ok {
+								filters = append(filters, querySet.Re(kk, re.Pattern))
 							}
 						}
 					} else if kk == "$lte" {
