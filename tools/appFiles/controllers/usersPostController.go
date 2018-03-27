@@ -10,9 +10,9 @@ import (
 	"github.com/DanielRenne/goCoreAppTemplate/queries"
 	"github.com/DanielRenne/goCoreAppTemplate/sessionFunctions"
 	"github.com/DanielRenne/goCoreAppTemplate/viewModel"
+	"github.com/globalsign/mgo/bson"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
-	"github.com/globalsign/mgo/bson"
 )
 
 func (self *UserModifyController) CommonUserValidation(vm *viewModel.UserModifyViewModel) int {

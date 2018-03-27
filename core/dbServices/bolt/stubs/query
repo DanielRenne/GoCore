@@ -487,6 +487,10 @@ func (self *Query) Blacklist(collection string, fields []string) *Query {
 	return self
 }
 
+func (self *Query) Where(field string, val interface{}) *Query {
+	return self.Filter(Q(field, val))
+}
+
 func (self *Query) Filter(criteria map[string]interface{}) *Query {
 
 	val, hasId := criteria["Id"]
