@@ -2164,7 +2164,7 @@ func genNoSQLSchemaDelete(collection NOSQLCollection, schema NOSQLSchema, driver
 	val += "func (self *" + strings.Title(schema.Name) + ") Delete() error {\n"
 	switch driver {
 	case "boltDB":
-		val += "return dbServices.BoltDB.Delete(\"" + strings.Title(collection.Name) + "\", self.Id.Hex())\n"
+		val += "return dbServices.BoltDB.Delete(\"" + strings.Title(schema.Name) + "\", self.Id.Hex())\n"
 	case "mongoDB":
 		val += "return mongo" + strings.Title(collection.Name) + "Collection.RemoveId(self.Id)"
 	}
