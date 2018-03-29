@@ -41,6 +41,8 @@ func main() {
 	var username string
 	var databaseType string
 	var humanTitle string
+	var createGit string
+	var pushGit string
 	var colorPalette string
 
 	logger.Message("Welcome to the GoCore createApp tool!  Thank you for using GoCore.", logger.YELLOW)
@@ -99,6 +101,42 @@ func main() {
 		}
 		if ok {
 			break
+		}
+	}
+	
+	createGit = "y"
+	for {
+		reader := bufio.NewReader(os.Stdin)
+		fmt.Print("Create and commit initial git repository (y or n) (defaults y): ")
+		createGit, _ = reader.ReadString('\n')
+		createGit = strings.Trim(createGit, "\n")
+		ok := false
+		if createGit == "y" || createGit == "n" {
+			ok = true
+		} else {
+			fmt.Println("Invalid type 'n' or 'y'")
+		}
+		if ok {
+			break
+		}
+	}
+	
+	if createGit == "y" {
+		
+		for {
+			reader := bufio.NewReader(os.Stdin)
+			fmt.Print("If public repo.  Would you like to push this to github.com? (defaults y): ")
+			pushGit, _ = reader.ReadString('\n')
+			pushGit = strings.Trim(pushGit, "\n")
+			ok := false
+			if pushGit == "y" || pushGit == "n" {
+				ok = true
+			} else {
+				fmt.Println("Invalid type 'n' or 'y'")
+			}
+			if ok {
+				break
+			}
 		}
 	}
 	//logger.Message("Next choose a color palette:", logger.WHITE)
@@ -196,23 +234,34 @@ func main() {
 	err = os.Chdir(appPath)
 	errorOut("cd appPath", err, false)
 
-	talk("Adding github files")
+	if createGit == "y" {
+		talk("Adding github files")
 
-	cmd = exec.Command("git", "init")
-	err = cmd.Run()
-	errorOut("git init", err, false)
+		cmd = exec.Command("git", "init")
+		err = cmd.Run()
+		errorOut("git init", err, false)
 
-	cmd = exec.Command("git", "add", ".")
-	err = cmd.Run()
-	errorOut("git add", err, false)
+		cmd = exec.Command("git", "add", ".")
+		err = cmd.Run()
+		errorOut("git add", err, false)
 
-	cmd = exec.Command("git", "commit", "-m", "Initial GoCore App Generation")
-	err = cmd.Run()
-	errorOut("git commit", err, false)
+		cmd = exec.Command("git", "commit", "-m", "Initial GoCore App Generation")
+		err = cmd.Run()
+		errorOut("git commit", err, false)
 
-	cmd = exec.Command("git", "remote", "add", "origin", "https://github.com/"+username+"/"+appName+".git")
-	err = cmd.Run()
-	errorOut("git commit", err, false)
+		cmd = exec.Command("git", "remote", "add", "origin", "https://github.com/"+username+"/"+appName+".git")
+		err = cmd.Run()
+		errorOut("git commit", err, false)
+		
+		if pushGit == "y" {
+			cmd = exec.Command("curl", "-u", username, "https://api.github.com/user/repos", "-d", "{\"name\": \"$appName\"}")
+			err = cmd.Run() 
+			errorOut("curl create repo on API", err, true)
+			cmd = exec.Command("git", "push", "-u", username, "origin", "master")
+			err = cmd.Run()   
+			errorOut("git push", err, true)
+		}
+	}
 
 	cdGoPath()
 	cmd = exec.Command("go", "install", strings.Replace(modelBuildPath, "src/", "", -1))
