@@ -254,7 +254,7 @@ func main() {
 		errorOut("git commit", err, false)
 		
 		if pushGit == "y" {
-			cmd = exec.Command("curl", "-u", username, "https://api.github.com/user/repos", "-d", "{\"name\": \"$appName\"}")
+			cmd = exec.Command("curl", "-u", username, "https://api.github.com/user/repos", "-d", "{\"name\": \"" + appName + "\"}")
 			err = cmd.Run() 
 			errorOut("curl create repo on API", err, true)
 			cmd = exec.Command("git", "push", "-u", username, "origin", "master")
