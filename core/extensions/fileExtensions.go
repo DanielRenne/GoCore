@@ -158,6 +158,12 @@ func DirSizeWithSearch(path string, fileSearch string) (int64, error) {
 	return size, err
 }
 
+func RemoveDirectoryShell(dir string) (err error) {
+	cmd := exec.Command("rm", "-rf", dir)
+	err = cmd.Run()
+	return
+}
+
 func RemoveDirectory(dir string) error {
 	d, err := os.Open(dir)
 	if err != nil {

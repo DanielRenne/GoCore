@@ -42,7 +42,10 @@ func main() {
 	var databaseType string
 	var humanTitle string
 	var createGit string
+	var createGitUsername string
+	var privateRepo string
 	var pushGit string
+	var gitPassword string
 	var colorPalette string
 
 	logger.Message("Welcome to the GoCore createApp tool!  Thank you for using GoCore.", logger.YELLOW)
@@ -87,12 +90,14 @@ func main() {
 		}
 	}
 
-	databaseType = "mongo"
 	for {
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Print("'mongo' or 'bolt' (defaults mongo due to most support): ")
 		databaseType, _ = reader.ReadString('\n')
 		databaseType = strings.Trim(databaseType, "\n")
+		if databaseType == "" {
+			databaseType = "mongo"
+		}
 		ok := false
 		if databaseType == "mongo" || databaseType == "bolt" {
 			ok = true
@@ -103,13 +108,16 @@ func main() {
 			break
 		}
 	}
-	
+
 	createGit = "y"
 	for {
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Print("Create and commit initial git repository (y or n) (defaults y): ")
 		createGit, _ = reader.ReadString('\n')
 		createGit = strings.Trim(createGit, "\n")
+		if createGit == "" {
+			createGit = "y"
+		}
 		ok := false
 		if createGit == "y" || createGit == "n" {
 			ok = true
@@ -120,14 +128,17 @@ func main() {
 			break
 		}
 	}
-	
+
 	if createGit == "y" {
-		
+
 		for {
 			reader := bufio.NewReader(os.Stdin)
 			fmt.Print("If public repo.  Would you like to push this to github.com? (defaults y): ")
 			pushGit, _ = reader.ReadString('\n')
 			pushGit = strings.Trim(pushGit, "\n")
+			if pushGit == "" {
+				pushGit = "y"
+			}
 			ok := false
 			if pushGit == "y" || pushGit == "n" {
 				ok = true
@@ -139,6 +150,63 @@ func main() {
 			}
 		}
 	}
+
+	if pushGit == "y" {
+
+		for {
+			reader := bufio.NewReader(os.Stdin)
+			fmt.Print("Enter github.com username to push as [will send \"" + username + "\"] change if this is a team account to your local login you use for your team: ")
+			createGitUsername, _ = reader.ReadString('\n')
+			createGitUsername = strings.Trim(createGitUsername, "\n")
+			if createGitUsername == "" {
+				createGitUsername = username
+			}
+			ok := false
+			if createGitUsername != "" {
+				ok = true
+			} else {
+				fmt.Println("Enter username")
+			}
+			if ok {
+				break
+			}
+		}
+
+		for {
+			reader := bufio.NewReader(os.Stdin)
+			fmt.Print("Private Repo (defaults n): ")
+			privateRepo, _ = reader.ReadString('\n')
+			privateRepo = strings.Trim(privateRepo, "\n")
+			if privateRepo == "" {
+				privateRepo = "n"
+			}
+			ok := false
+			if privateRepo == "y" || privateRepo == "n" {
+				ok = true
+			} else {
+				fmt.Println("Invalid type 'n' or 'y'")
+			}
+			if ok {
+				break
+			}
+		}
+		for {
+			reader := bufio.NewReader(os.Stdin)
+			fmt.Print("Enter github.com password for user \"" + createGitUsername + "\": ")
+			gitPassword, _ = reader.ReadString('\n')
+			gitPassword = strings.Trim(gitPassword, "\n")
+			ok := false
+			if gitPassword != "" {
+				ok = true
+			} else {
+				fmt.Println("Enter password with at least 4 bytes")
+			}
+			if ok {
+				break
+			}
+		}
+	}
+
 	//logger.Message("Next choose a color palette:", logger.WHITE)
 	//logger.Message("(default) BlueGrey and Orange value=bgo", logger.BLUE)
 	//logger.Message("(default) Green and White value=irish", logger.GREEN)
@@ -165,14 +233,13 @@ func main() {
 	err = os.MkdirAll(path, 0644)
 	errorOut("os.MkdirAll("+path+", 0644)", err, false)
 
-	fmt.Println("adsffdas name :", appName)
-	fmt.Println(path)
+	fmt.Println("App name :", appName)
 	appPath := path + "/" + appName
 
 	_, err = os.Stat(appPath)
 	if err == nil {
-		err := extensions.RemoveDirectory(appPath)
-		errorOut("extensions.RemoveDirectory(appPath)", err, false)
+		err := extensions.RemoveDirectoryShell(appPath)
+		errorOut("extensions.RemoveDirectoryShell(appPath)", err, false)
 	}
 
 	err = os.MkdirAll(appPath, 0644)
@@ -252,14 +319,29 @@ func main() {
 		cmd = exec.Command("git", "remote", "add", "origin", "https://github.com/"+username+"/"+appName+".git")
 		err = cmd.Run()
 		errorOut("git commit", err, false)
-		
+
 		if pushGit == "y" {
-			cmd = exec.Command("curl", "-u", username, "https://api.github.com/user/repos", "-d", "{\"name\": \"" + appName + "\"}")
-			err = cmd.Run() 
+			talk("Creating repository online")
+			pathExec := "/tmp/execCurl"
+			var endpoint string
+			if username == createGitUsername {
+				endpoint = "https://api.github.com/user/repos"
+			} else {
+				endpoint = "https://api.github.com/orgs/" + username + "/repos"
+			}
+			payload := `"{\"name\": \"` + appName + `\"}"`
+			if privateRepo == "y" {
+				payload = `"{\"private\": true, \"name\": \"` + appName + `\"}"`
+			}
+			err := extensions.WriteToFile("curl -u "+createGitUsername+":"+gitPassword+" "+endpoint+" -d "+payload, pathExec, 777)
+			errorOut("extensions.WriteToFile /tmp/execCurl", err, false)
+			cmd = exec.Command("bash", pathExec)
+			err = cmd.Run()
+			talk("Done creating repository online")
 			errorOut("curl create repo on API", err, true)
-			cmd = exec.Command("git", "push", "-u", username, "origin", "master")
-			err = cmd.Run()   
-			errorOut("git push", err, true)
+			logger.Message("\n\nRun this after completion.\n\ncd "+os.Getenv("GOPATH")+"/"+appPath+"\ngit push -u "+username+" origin master\n\n\nThen enter your password", logger.MAGENTA)
+			err = os.Remove(pathExec)
+			errorOut("Remove "+pathExec, err, true)
 		}
 	}
 

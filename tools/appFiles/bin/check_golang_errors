@@ -23,6 +23,8 @@ do
      ret=$?
      grep ": expected" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/app.log  > /dev/null 2>&1
      ret2=$?
+     grep "address already in use" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/app.log  > /dev/null 2>&1
+     ret3=$?
      echo -e "Golang compiling: (${RED}${i}${NC}) seconds"
 
      if [[ "$ret" -eq 0 ]]; then
@@ -38,6 +40,21 @@ do
        set +e
        say "You broke the build.  Go fix it"
        set -e
+     fi
+     if [[ "$ret3" -eq 0 ]]; then
+       i=1000
+       #break out
+       set +e
+       say "Server is already running on port 80.  Killing all ports and trying again"
+       whoami=$(whoami)
+       if [[ "$whoami" == "root" ]]; then
+         kill $(lsof -t -i:80)
+       else
+         sudo kill $(sudo lsof -t -i:80)
+       fi
+       set -e
+
+       bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/start_golang
      fi
    fi
    sleep 1
