@@ -45,6 +45,7 @@ func main() {
 	var createGitUsername string
 	var privateRepo string
 	var pushGit string
+	var useSSH string
 	var gitPassword string
 	var colorPalette string
 
@@ -152,6 +153,25 @@ func main() {
 	}
 
 	if pushGit == "y" {
+
+		for {
+			reader := bufio.NewReader(os.Stdin)
+			fmt.Print("Use SSH keys locally or password based to push? [y=ssh n=username/password]: ")
+			useSSH, _ = reader.ReadString('\n')
+			useSSH = strings.Trim(createGitUsername, "\n")
+			if useSSH == "" {
+				useSSH = "y"
+			}
+			ok := false
+			if useSSH == "y" || useSSH == "n" {
+				ok = true
+			} else {
+				fmt.Println("Enter y or n")
+			}
+			if ok {
+				break
+			}
+		}
 
 		for {
 			reader := bufio.NewReader(os.Stdin)
@@ -316,9 +336,15 @@ func main() {
 		err = cmd.Run()
 		errorOut("git commit", err, false)
 
-		cmd = exec.Command("git", "remote", "add", "origin", "https://github.com/"+username+"/"+appName+".git")
-		err = cmd.Run()
-		errorOut("git commit", err, false)
+		if useSSH == "y" {
+			cmd = exec.Command("git", "remote", "add", "origin", "git@github.com:"+username+"/"+appName+".git")
+			err = cmd.Run()
+			errorOut("git remote add", err, false)
+		} else {
+			cmd = exec.Command("git", "remote", "add", "origin", "https://github.com/"+username+"/"+appName+".git")
+			err = cmd.Run()
+			errorOut("git remote add", err, false)
+		}
 
 		if pushGit == "y" {
 			talk("Creating repository online")
@@ -339,7 +365,17 @@ func main() {
 			err = cmd.Run()
 			talk("Done creating repository online")
 			errorOut("curl create repo on API", err, true)
-			logger.Message("\n\nRun this after completion.\n\ncd "+os.Getenv("GOPATH")+"/"+appPath+"\ngit push -u "+username+" origin master\n\n\nThen enter your password", logger.MAGENTA)
+
+			if useSSH == "n" {
+				logger.Message("\n\nRun this after completion.\n\ncd "+os.Getenv("GOPATH")+"/"+appPath+"\ngit push -u "+username+" origin master\n\n\nThen enter your password", logger.MAGENTA)
+			} else {
+				cdGoPath()
+				err = os.Chdir(appPath)
+				errorOut("cd appPath", err, false)
+				cmd = exec.Command("git", "push", "origin", "master")
+				err = cmd.Run()
+				errorOut("Git push", err, true)
+			}
 			err = os.Remove(pathExec)
 			errorOut("Remove "+pathExec, err, true)
 		}
