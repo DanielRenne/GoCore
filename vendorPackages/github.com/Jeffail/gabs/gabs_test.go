@@ -74,6 +74,63 @@ func TestExists(t *testing.T) {
 	}
 }
 
+func TestExistsWithArrays(t *testing.T) {
+	sample := []byte(`{"foo":{"bar":{"baz":[10, 2, 3]}}}`)
+
+	val, err := ParseJSON(sample)
+	if err != nil {
+		t.Errorf("Failed to parse: %v", err)
+		return
+	}
+
+	if exp, actual := true, val.Exists("foo", "bar", "baz"); exp != actual {
+		t.Errorf("Wrong result from array based Exists: %v != %v", exp, actual)
+	}
+
+	sample = []byte(`{"foo":{"bar":[{"baz":10},{"baz":2},{"baz":3}]}}`)
+
+	if val, err = ParseJSON(sample); err != nil {
+		t.Errorf("Failed to parse: %v", err)
+		return
+	}
+
+	if exp, actual := true, val.Exists("foo", "bar", "baz"); exp != actual {
+		t.Errorf("Wrong result from array based Exists: %v != %v", exp, actual)
+	}
+	if exp, actual := false, val.Exists("foo", "bar", "baz_NOPE"); exp != actual {
+		t.Errorf("Wrong result from array based Exists: %v != %v", exp, actual)
+	}
+
+	sample = []byte(`{"foo":[{"bar":{"baz":10}},{"bar":{"baz":2}},{"bar":{"baz":3}}]}`)
+
+	if val, err = ParseJSON(sample); err != nil {
+		t.Errorf("Failed to parse: %v", err)
+		return
+	}
+
+	if exp, actual := true, val.Exists("foo", "bar", "baz"); exp != actual {
+		t.Errorf("Wrong result from array based Exists: %v != %v", exp, actual)
+	}
+	if exp, actual := false, val.Exists("foo", "bar", "baz_NOPE"); exp != actual {
+		t.Errorf("Wrong result from array based Exists: %v != %v", exp, actual)
+	}
+
+	sample =
+		[]byte(`[{"foo":{"bar":{"baz":10}}},{"foo":{"bar":{"baz":2}}},{"foo":{"bar":{"baz":3}}}]`)
+
+	if val, err = ParseJSON(sample); err != nil {
+		t.Errorf("Failed to parse: %v", err)
+		return
+	}
+
+	if exp, actual := true, val.Exists("foo", "bar", "baz"); exp != actual {
+		t.Errorf("Wrong result from array based Exists: %v != %v", exp, actual)
+	}
+	if exp, actual := false, val.Exists("foo", "bar", "baz_NOPE"); exp != actual {
+		t.Errorf("Wrong result from array based Exists: %v != %v", exp, actual)
+	}
+}
+
 func TestBasicWithBuffer(t *testing.T) {
 	sample := bytes.NewReader([]byte(`{"test":{"value":10},"test2":20}`))
 
@@ -81,6 +138,42 @@ func TestBasicWithBuffer(t *testing.T) {
 	if err != nil {
 		t.Errorf("Failed to parse: %v", err)
 		return
+	}
+}
+
+func TestBasicWithDecoder(t *testing.T) {
+	sample := []byte(`{"test":{"int":10, "float":6.66}}`)
+	dec := json.NewDecoder(bytes.NewReader(sample))
+	dec.UseNumber()
+
+	val, err := ParseJSONDecoder(dec)
+	if err != nil {
+		t.Errorf("Failed to parse: %v", err)
+		return
+	}
+
+	checkNumber := func(path string, expectedVal json.Number) {
+		data := val.Path(path).Data()
+		asNumber, isNumber := data.(json.Number)
+		if !isNumber {
+			t.Error("Failed to parse using decoder UseNumber policy")
+		}
+		if expectedVal != asNumber {
+			t.Errorf("Expected[%s] but got [%s]", expectedVal, asNumber)
+		}
+	}
+
+	checkNumber("test.int", "10")
+	checkNumber("test.float", "6.66")
+}
+
+func TestFailureWithDecoder(t *testing.T) {
+	sample := []byte(`{"test":{" "invalidCrap":.66}}`)
+	dec := json.NewDecoder(bytes.NewReader(sample))
+
+	_, err := ParseJSONDecoder(dec)
+	if err == nil {
+		t.Fatal("Expected parsing error")
 	}
 }
 

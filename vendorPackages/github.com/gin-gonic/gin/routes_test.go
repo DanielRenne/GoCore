@@ -356,25 +356,25 @@ func TestRouterNotFound(t *testing.T) {
 	router.GET("/", func(c *Context) {})
 
 	testRoutes := []struct {
-		route  string
-		code   int
-		header string
+		route    string
+		code     int
+		location string
 	}{
-		{"/path/", 301, "map[Location:[/path]]"},   // TSR -/
-		{"/dir", 301, "map[Location:[/dir/]]"},     // TSR +/
-		{"", 301, "map[Location:[/]]"},             // TSR +/
-		{"/PATH", 301, "map[Location:[/path]]"},    // Fixed Case
-		{"/DIR/", 301, "map[Location:[/dir/]]"},    // Fixed Case
-		{"/PATH/", 301, "map[Location:[/path]]"},   // Fixed Case -/
-		{"/DIR", 301, "map[Location:[/dir/]]"},     // Fixed Case +/
-		{"/../path", 301, "map[Location:[/path]]"}, // CleanPath
-		{"/nope", 404, ""},                         // NotFound
+		{"/path/", 301, "/path"},   // TSR -/
+		{"/dir", 301, "/dir/"},     // TSR +/
+		{"", 301, "/"},             // TSR +/
+		{"/PATH", 301, "/path"},    // Fixed Case
+		{"/DIR/", 301, "/dir/"},    // Fixed Case
+		{"/PATH/", 301, "/path"},   // Fixed Case -/
+		{"/DIR", 301, "/dir/"},     // Fixed Case +/
+		{"/../path", 301, "/path"}, // CleanPath
+		{"/nope", 404, ""},         // NotFound
 	}
 	for _, tr := range testRoutes {
 		w := performRequest(router, "GET", tr.route)
 		assert.Equal(t, w.Code, tr.code)
 		if w.Code != 404 {
-			assert.Equal(t, fmt.Sprint(w.Header()), tr.header)
+			assert.Equal(t, fmt.Sprint(w.Header().Get("Location")), tr.location)
 		}
 	}
 
@@ -399,4 +399,55 @@ func TestRouterNotFound(t *testing.T) {
 	router.GET("/a", func(c *Context) {})
 	w = performRequest(router, "GET", "/")
 	assert.Equal(t, w.Code, 404)
+}
+
+func TestRouteRawPath(t *testing.T) {
+	route := New()
+	route.UseRawPath = true
+
+	route.POST("/project/:name/build/:num", func(c *Context) {
+		name := c.Params.ByName("name")
+		num := c.Params.ByName("num")
+
+		assert.Equal(t, c.Param("name"), name)
+		assert.Equal(t, c.Param("num"), num)
+
+		assert.Equal(t, "Some/Other/Project", name)
+		assert.Equal(t, "222", num)
+	})
+
+	w := performRequest(route, "POST", "/project/Some%2FOther%2FProject/build/222")
+	assert.Equal(t, w.Code, 200)
+}
+
+func TestRouteRawPathNoUnescape(t *testing.T) {
+	route := New()
+	route.UseRawPath = true
+	route.UnescapePathValues = false
+
+	route.POST("/project/:name/build/:num", func(c *Context) {
+		name := c.Params.ByName("name")
+		num := c.Params.ByName("num")
+
+		assert.Equal(t, c.Param("name"), name)
+		assert.Equal(t, c.Param("num"), num)
+
+		assert.Equal(t, "Some%2FOther%2FProject", name)
+		assert.Equal(t, "333", num)
+	})
+
+	w := performRequest(route, "POST", "/project/Some%2FOther%2FProject/build/333")
+	assert.Equal(t, w.Code, 200)
+}
+
+func TestRouteServeErrorWithWriteHeader(t *testing.T) {
+	route := New()
+	route.Use(func(c *Context) {
+		c.Status(421)
+		c.Next()
+	})
+
+	w := performRequest(route, "GET", "/NotFound")
+	assert.Equal(t, 421, w.Code)
+	assert.Equal(t, 0, w.Body.Len())
 }

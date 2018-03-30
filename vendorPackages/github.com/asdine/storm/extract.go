@@ -1,9 +1,13 @@
 package storm
 
 import (
+	"fmt"
 	"reflect"
+	"strconv"
+	"strings"
 
-	"github.com/fatih/structs"
+	"github.com/asdine/storm/index"
+	"github.com/coreos/bbolt"
 )
 
 // Storm tags
@@ -12,79 +16,67 @@ const (
 	tagIdx       = "index"
 	tagUniqueIdx = "unique"
 	tagInline    = "inline"
+	tagIncrement = "increment"
+	indexPrefix  = "__storm_index_"
 )
 
-type indexInfo struct {
-	Type  string
-	Field *structs.Field
+type fieldConfig struct {
+	Name           string
+	Index          string
+	IsZero         bool
+	IsID           bool
+	Increment      bool
+	IncrementStart int64
+	IsInteger      bool
+	Value          *reflect.Value
+	ForceUpdate    bool
 }
 
-// modelInfo is a structure gathering all the relevant informations about a model
-type modelInfo struct {
-	Name    string
-	Indexes map[string]indexInfo
-	ID      identInfo
-	data    interface{}
+// structConfig is a structure gathering all the relevant informations about a model
+type structConfig struct {
+	Name   string
+	Fields map[string]*fieldConfig
+	ID     *fieldConfig
 }
 
-func (m *modelInfo) AddIndex(f *structs.Field, indexType string, override bool) {
-	fieldName := f.Name()
-	if _, ok := m.Indexes[fieldName]; !ok || override {
-		m.Indexes[fieldName] = indexInfo{
-			Type:  indexType,
-			Field: f,
-		}
+func extract(s *reflect.Value, mi ...*structConfig) (*structConfig, error) {
+	if s.Kind() == reflect.Ptr {
+		e := s.Elem()
+		s = &e
 	}
-}
-
-func (m *modelInfo) AllByType(indexType string) []indexInfo {
-	var idx []indexInfo
-	for k := range m.Indexes {
-		if m.Indexes[k].Type == indexType {
-			idx = append(idx, m.Indexes[k])
-		}
+	if s.Kind() != reflect.Struct {
+		return nil, ErrBadType
 	}
 
-	return idx
-}
-
-func extract(data interface{}, mi ...*modelInfo) (*modelInfo, error) {
-	s := structs.New(data)
-	fields := s.Fields()
+	typ := s.Type()
 
 	var child bool
 
-	var m *modelInfo
+	var m *structConfig
 	if len(mi) > 0 {
 		m = mi[0]
 		child = true
 	} else {
-		m = &modelInfo{}
-		m.Indexes = make(map[string]indexInfo)
-		m.data = data
+		m = &structConfig{}
+		m.Fields = make(map[string]*fieldConfig)
 	}
 
 	if m.Name == "" {
-		m.Name = s.Name()
+		m.Name = typ.Name()
 	}
 
-	for _, f := range fields {
-		if !f.IsExported() {
+	numFields := s.NumField()
+	for i := 0; i < numFields; i++ {
+		field := typ.Field(i)
+		value := s.Field(i)
+
+		if field.PkgPath != "" {
 			continue
 		}
 
-		err := extractField(f, m, child)
+		err := extractField(&value, &field, m, child)
 		if err != nil {
 			return nil, err
-		}
-	}
-
-	// ID field or tag detected
-	if m.ID.Field != nil {
-		if m.ID.Field.IsZero() {
-			m.ID.IsZero = true
-		} else {
-			m.ID.Value = m.ID.Field.Value()
 		}
 	}
 
@@ -92,7 +84,7 @@ func extract(data interface{}, mi ...*modelInfo) (*modelInfo, error) {
 		return m, nil
 	}
 
-	if m.ID.Field == nil {
+	if m.ID == nil {
 		return nil, ErrNoID
 	}
 
@@ -103,45 +95,132 @@ func extract(data interface{}, mi ...*modelInfo) (*modelInfo, error) {
 	return m, nil
 }
 
-func extractField(f *structs.Field, m *modelInfo, isChild bool) error {
-	tag := f.Tag("storm")
+func extractField(value *reflect.Value, field *reflect.StructField, m *structConfig, isChild bool) error {
+	var f *fieldConfig
+	var err error
+
+	tag := field.Tag.Get("storm")
 	if tag != "" {
-		switch tag {
-		case "id":
-			m.ID.Field = f
-		case tagUniqueIdx, tagIdx:
-			m.AddIndex(f, tag, !isChild)
-		case tagInline:
-			if structs.IsStruct(f.Value()) {
-				_, err := extract(f.Value(), m)
-				if err != nil {
-					return err
+		f = &fieldConfig{
+			Name:           field.Name,
+			IsZero:         isZero(value),
+			IsInteger:      isInteger(value),
+			Value:          value,
+			IncrementStart: 1,
+		}
+
+		tags := strings.Split(tag, ",")
+
+		for _, tag := range tags {
+			switch tag {
+			case "id":
+				f.IsID = true
+				f.Index = tagUniqueIdx
+			case tagUniqueIdx, tagIdx:
+				f.Index = tag
+			case tagInline:
+				if value.Kind() == reflect.Ptr {
+					e := value.Elem()
+					value = &e
+				}
+				if value.Kind() == reflect.Struct {
+					a := value.Addr()
+					_, err := extract(&a, m)
+					if err != nil {
+						return err
+					}
+				}
+				// we don't need to save this field
+				return nil
+			default:
+				if strings.HasPrefix(tag, tagIncrement) {
+					f.Increment = true
+					parts := strings.Split(tag, "=")
+					if parts[0] != tagIncrement {
+						return ErrUnknownTag
+					}
+					if len(parts) > 1 {
+						f.IncrementStart, err = strconv.ParseInt(parts[1], 0, 64)
+						if err != nil {
+							return err
+						}
+					}
+				} else {
+					return ErrUnknownTag
 				}
 			}
-		default:
-			return ErrUnknownTag
+		}
+
+		if _, ok := m.Fields[f.Name]; !ok || !isChild {
+			m.Fields[f.Name] = f
 		}
 	}
 
+	if m.ID == nil && f != nil && f.IsID {
+		m.ID = f
+	}
+
 	// the field is named ID and no ID field has been detected before
-	if f.Name() == "ID" && m.ID.Field == nil {
-		m.ID.Field = f
+	if m.ID == nil && field.Name == "ID" {
+		if f == nil {
+			f = &fieldConfig{
+				Index:          tagUniqueIdx,
+				Name:           field.Name,
+				IsZero:         isZero(value),
+				IsInteger:      isInteger(value),
+				IsID:           true,
+				Value:          value,
+				IncrementStart: 1,
+			}
+			m.Fields[field.Name] = f
+		}
+		m.ID = f
 	}
 
 	return nil
 }
 
-// Prefill the most requested informations
-type identInfo struct {
-	Field  *structs.Field
-	IsZero bool
-	Value  interface{}
+func extractSingleField(ref *reflect.Value, fieldName string) (*structConfig, error) {
+	var cfg structConfig
+	cfg.Fields = make(map[string]*fieldConfig)
+
+	f, ok := ref.Type().FieldByName(fieldName)
+	if !ok || f.PkgPath != "" {
+		return nil, fmt.Errorf("field %s not found", fieldName)
+	}
+
+	v := ref.FieldByName(fieldName)
+	err := extractField(&v, &f, &cfg, false)
+	if err != nil {
+		return nil, err
+	}
+
+	return &cfg, nil
 }
 
-func (i *identInfo) Type() reflect.Type {
-	return reflect.TypeOf(i.Field.Value())
+func getIndex(bucket *bolt.Bucket, idxKind string, fieldName string) (index.Index, error) {
+	var idx index.Index
+	var err error
+
+	switch idxKind {
+	case tagUniqueIdx:
+		idx, err = index.NewUniqueIndex(bucket, []byte(indexPrefix+fieldName))
+	case tagIdx:
+		idx, err = index.NewListIndex(bucket, []byte(indexPrefix+fieldName))
+	default:
+		err = ErrIdxNotFound
+	}
+
+	return idx, err
 }
 
-func (i *identInfo) IsOfIntegerFamily() bool {
-	return i.Field != nil && i.Field.Kind() >= reflect.Int && i.Field.Kind() <= reflect.Uint64
+func isZero(v *reflect.Value) bool {
+	zero := reflect.Zero(v.Type()).Interface()
+	current := v.Interface()
+	return reflect.DeepEqual(current, zero)
+}
+
+func isInteger(v *reflect.Value) bool {
+	kind := v.Kind()
+	return v != nil && kind >= reflect.Int && kind <= reflect.Uint64
 }

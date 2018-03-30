@@ -135,20 +135,7 @@ func (g *Container) S(hierarchy ...string) *Container {
 Exists - Checks whether a path exists.
 */
 func (g *Container) Exists(hierarchy ...string) bool {
-	var object interface{}
-
-	object = g.object
-	for target := 0; target < len(hierarchy); target++ {
-		if mmap, ok := object.(map[string]interface{}); ok {
-			object, ok = mmap[hierarchy[target]]
-			if !ok {
-				return false
-			}
-		} else {
-			return false
-		}
-	}
-	return true
+	return g.Search(hierarchy...).Data() != nil
 }
 
 /*
@@ -524,6 +511,19 @@ func ParseJSON(sample []byte) (*Container, error) {
 	var gabs Container
 
 	if err := json.Unmarshal(sample, &gabs.object); err != nil {
+		return nil, err
+	}
+
+	return &gabs, nil
+}
+
+/*
+ParseJSONDecoder - Convert a json.Decoder into a representation of the parsed JSON.
+*/
+func ParseJSONDecoder(decoder *json.Decoder) (*Container, error) {
+	var gabs Container
+
+	if err := decoder.Decode(&gabs.object); err != nil {
 		return nil, err
 	}
 

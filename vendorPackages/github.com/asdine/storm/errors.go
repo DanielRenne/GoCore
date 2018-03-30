@@ -42,4 +42,10 @@ var (
 
 	// ErrNotInTransaction is returned when trying to rollback or commit when not in transaction.
 	ErrNotInTransaction = errors.New("not in transaction")
+
+	// ErrIncompatibleValue is returned when trying to set a value with a different type than the chosen field
+	ErrIncompatibleValue = errors.New("incompatible value")
+
+	// ErrDifferentCodec is returned when using a codec different than the first codec used with the bucket.
+	ErrDifferentCodec = errors.New("the selected codec is incompatible with this bucket")
 )

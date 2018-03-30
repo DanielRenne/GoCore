@@ -1,12 +1,10 @@
 package storm
 
-import (
-	"github.com/boltdb/bolt"
-)
+import "github.com/coreos/bbolt"
 
 // CreateBucketIfNotExists creates the bucket below the current node if it doesn't
 // already exist.
-func (n *Node) CreateBucketIfNotExists(tx *bolt.Tx, bucket string) (*bolt.Bucket, error) {
+func (n *node) CreateBucketIfNotExists(tx *bolt.Tx, bucket string) (*bolt.Bucket, error) {
 	var b *bolt.Bucket
 	var err error
 
@@ -29,11 +27,10 @@ func (n *Node) CreateBucketIfNotExists(tx *bolt.Tx, bucket string) (*bolt.Bucket
 }
 
 // GetBucket returns the given bucket below the current node.
-func (n *Node) GetBucket(tx *bolt.Tx, bucket string) *bolt.Bucket {
+func (n *node) GetBucket(tx *bolt.Tx, children ...string) *bolt.Bucket {
 	var b *bolt.Bucket
 
-	bucketNames := append(n.rootBucket, bucket)
-
+	bucketNames := append(n.rootBucket, children...)
 	for _, bucketName := range bucketNames {
 		if b != nil {
 			if b = b.Bucket([]byte(bucketName)); b == nil {

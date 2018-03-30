@@ -53,6 +53,7 @@ func getInstances(address string) (map[string]map[string]string, error) {
 		return nil, err
 	}
 	defer conn.Close()
+	conn.SetDeadline(time.Now().Add(5 * time.Second))
 	_, err = conn.Write([]byte{3})
 	if err != nil {
 		return nil, err
@@ -542,6 +543,36 @@ const (
 	dataStmHdrTraceActivity = 3
 )
 
+// Query Notifications Header
+// http://msdn.microsoft.com/en-us/library/dd304949.aspx
+type queryNotifHdr struct {
+	notifyId      string
+	ssbDeployment string
+	notifyTimeout uint32
+}
+
+func (hdr queryNotifHdr) pack() (res []byte) {
+	notifyId := str2ucs2(hdr.notifyId)
+	ssbDeployment := str2ucs2(hdr.ssbDeployment)
+
+	res = make([]byte, 2+len(notifyId)+2+len(ssbDeployment)+4)
+	b := res
+
+	binary.LittleEndian.PutUint16(b, uint16(len(notifyId)))
+	b = b[2:]
+	copy(b, notifyId)
+	b = b[len(notifyId):]
+
+	binary.LittleEndian.PutUint16(b, uint16(len(ssbDeployment)))
+	b = b[2:]
+	copy(b, ssbDeployment)
+	b = b[len(ssbDeployment):]
+
+	binary.LittleEndian.PutUint32(b, hdr.notifyTimeout)
+
+	return res
+}
+
 // MARS Transaction Descriptor Header
 // http://msdn.microsoft.com/en-us/library/dd340515.aspx
 type transDescrHdr struct {
@@ -792,10 +823,11 @@ func dialConnection(p *connectParams) (conn net.Conn, err error) {
 		//Try Dials in parallel to avoid waiting for timeouts.
 		connChan := make(chan net.Conn, len(ips))
 		errChan := make(chan error, len(ips))
+		portStr := strconv.Itoa(int(p.port))
 		for _, ip := range ips {
 			go func(ip net.IP) {
 				d := createDialer(p)
-				addr := net.JoinHostPort(ip.String(), strconv.Itoa(int(p.port)))
+				addr := net.JoinHostPort(ip.String(), portStr)
 				conn, err := d.Dial("tcp", addr)
 				if err == nil {
 					connChan <- conn

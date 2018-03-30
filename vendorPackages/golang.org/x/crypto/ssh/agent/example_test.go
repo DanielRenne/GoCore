@@ -29,6 +29,7 @@ func ExampleClientAgent() {
 			// wants it.
 			ssh.PublicKeysCallback(agentClient.Signers),
 		},
+		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 	}
 
 	sshc, err := ssh.Dial("tcp", "localhost:22", config)
