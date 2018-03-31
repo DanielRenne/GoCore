@@ -15,7 +15,7 @@
 		"logGophers": false,
 		"domain": "0.0.0.0",
 		"serverFQDN": "0.0.0.0",
-		"httpPort": 80,
+		"httpPort": 8080,
 		"httpsPort": 443,
 		"releaseMode":"development",
 		"webServiceOnly":false,
