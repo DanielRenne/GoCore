@@ -1,3 +1,0 @@
-set -e
-echo  "Calling translate on: $TMP_CONTROLLER and $TMP_TRANSLATIONKEY and $TMP_TRANSLATION"
-python $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n.py "$TMP_CONTROLLER" "$TMP_TRANSLATIONKEY" "$TMP_TRANSLATION"

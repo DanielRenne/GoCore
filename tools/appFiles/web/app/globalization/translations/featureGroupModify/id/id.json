@@ -1,9 +1,0 @@
-{
-    "FeatureGroupModifyBootstrapMeta": "Bootstrap meta", 
-    "FeatureGroupModifyCreateDate": "Membuat tanggal", 
-    "FeatureGroupModifyLastUpdateId": "Last update id", 
-    "FeatureGroupModifyName": "Nama", 
-    "FeatureGroupModifyUpdateDate": "Tanggal Update", 
-    "objectName": "featureGroupModify", 
-    "welcomeExample": "Selamat datang {page} halaman!"
-}

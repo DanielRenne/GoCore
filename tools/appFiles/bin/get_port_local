@@ -1,1 +1,0 @@
-python $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/get_config_value.py application httpPort

@@ -1,4 +1,0 @@
-package controllers
-
-type -CAPCAMEL-Controller struct {
-}
