@@ -62,7 +62,21 @@ func main() {
 		fmt.Println("Failed to Remove GoCore Repo Zip File:  " + errRemoveRepoZip.Error())
 		return
 	}
+	
+	errRemoveRepoZip = os.Remove("coreManifest.json")
 
+	if errRemoveRepoZip != nil {
+		fmt.Println("Failed to Remove GoCore coreManifest.json: " + errRemoveRepoZip.Error())
+		return
+	}
+	
+	errRemoveRepoZip = os.Remove("README.md")
+
+	if errRemoveRepoZip != nil {
+		fmt.Println("Failed to Remove GoCore README.md: " + errRemoveRepoZip.Error())
+		return
+	}
+	
 	cleanGoCore(v)
 	fmt.Println("\nMoving Files . . .")
 
