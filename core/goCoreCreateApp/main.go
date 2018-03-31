@@ -240,17 +240,17 @@ func main() {
 
 	camelUpper := strings.ToTitle(string(appName[0])) + string(appName[1:])
 
-	err := extensions.WriteToFile(colorPalette, "/tmp/colorPalette", 644)
+	err := extensions.WriteToFile(colorPalette, "/tmp/colorPalette", 0777)
 	errorOut("extensions.WriteToFile "+colorPalette+" to /tmp/colorPalette", err, false)
 
-	err = extensions.WriteToFile(humanTitle, "/tmp/humanTitle", 644)
+	err = extensions.WriteToFile(humanTitle, "/tmp/humanTitle", 0777)
 	errorOut("extensions.WriteToFile "+humanTitle+" to /tmp/humanTitle", err, false)
 
-	err = extensions.WriteToFile(databaseType, "/tmp/databaseType", 644)
+	err = extensions.WriteToFile(databaseType, "/tmp/databaseType", 0777)
 	errorOut("extensions.WriteToFile "+databaseType+" to /tmp/databaseType", err, false)
 
 	path := "src/github.com/" + username
-	err = os.MkdirAll(path, 0644)
+	err = os.MkdirAll(path, 0777)
 	errorOut("os.MkdirAll("+path+", 0644)", err, false)
 
 	fmt.Println("App name :", appName)
@@ -258,21 +258,20 @@ func main() {
 
 	_, err = os.Stat(appPath)
 	if err == nil {
-		err := extensions.RemoveDirectoryShell(appPath)
-		errorOut("extensions.RemoveDirectoryShell(appPath)", err, false)
+		extensions.RemoveDirectoryShell(appPath)
 	}
 
-	err = os.MkdirAll(appPath, 0644)
+	err = os.MkdirAll(appPath, 0777)
 	errorOut("os.MkdirAll("+appPath+", 0644)", err, false)
 
 	modelBuildPath := appPath + "/modelBuild" + camelUpper + "/"
 
-	err = os.MkdirAll(modelBuildPath, 0644)
+	err = os.MkdirAll(modelBuildPath, 0777)
 	errorOut("os.MkdirAll("+modelBuildPath+", 0644)", err, false)
 
 	buildPath := appPath + "/build" + camelUpper + "/"
 
-	err = os.MkdirAll(buildPath, 0644)
+	err = os.MkdirAll(buildPath, 0777)
 	errorOut("os.MkdirAll("+buildPath+", 0644)", err, false)
 
 	template := `
@@ -384,7 +383,7 @@ func main() {
 	cdGoPath()
 	cmd = exec.Command("go", "install", strings.Replace(modelBuildPath, "src/", "", -1))
 	err = cmd.Run()
-	errorOut("go install models", err, false)
+	errorOut("go install models `" + "go install + " + strings.Replace(modelBuildPath, "src/", "", -1)) +"`", err, false)
 
 	cmd = exec.Command("bash", appPath+"/bin/start_app")
 	err = cmd.Start()
