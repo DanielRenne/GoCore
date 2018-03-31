@@ -383,7 +383,7 @@ func main() {
 	cdGoPath()
 	cmd = exec.Command("go", "install", strings.Replace(modelBuildPath, "src/", "", -1))
 	err = cmd.Run()
-	errorOut("go install models `" + "go install + " + strings.Replace(modelBuildPath, "src/", "", -1)) +"`", err, false)
+	errorOut("go install models `"+"go install "+strings.Replace(modelBuildPath, "src/", "", -1)+"`", err, false)
 
 	cmd = exec.Command("bash", appPath+"/bin/start_app")
 	err = cmd.Start()
