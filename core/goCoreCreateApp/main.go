@@ -249,6 +249,11 @@ func main() {
 	err = extensions.WriteToFile(databaseType, "/tmp/databaseType", 0777)
 	errorOut("extensions.WriteToFile "+databaseType+" to /tmp/databaseType", err, false)
 
+	talk("Getting all dependencies and the latest version of GoCore App Templates")
+	cmd := exec.Command("getCore")
+	err = cmd.Run()
+	errorOut("running getCore", err, false)
+
 	path := "src/github.com/" + username
 	err = os.MkdirAll(path, 0777)
 	errorOut("os.MkdirAll("+path+", 0644)", err, false)
@@ -300,7 +305,7 @@ func main() {
 
 	talk("Copying app generation files")
 
-	cmd := exec.Command("go", "run", buildGoFile)
+	cmd = exec.Command("go", "run", buildGoFile)
 	err = cmd.Run()
 	errorOut("running go run "+buildGoFile, err, false)
 
