@@ -104,5 +104,3 @@ Then run
 ## References
 
 * [NOSQL Database Schema Model API](https://github.com/DanielRenne/GoCore/blob/master/doc/NOSQL_Schema_Model.md)
-
-
