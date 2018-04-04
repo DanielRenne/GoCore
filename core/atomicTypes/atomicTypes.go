@@ -1,7 +1,10 @@
 //Package atomicTypes provides object locking / unlocking for setting and getting.
 package atomicTypes
 
-import "sync"
+import (
+	"sync"
+	"time"
+)
 
 //AtomicString provides a string object that is lock safe.
 type AtomicString struct {
@@ -61,6 +64,48 @@ func (obj *AtomicBool) Get() (value bool) {
 
 //Set sets the bool value
 func (obj *AtomicBool) Set(value bool) {
+	obj.valueSync.Lock()
+	obj.value = value
+	obj.valueSync.Unlock()
+}
+
+//AtomicTime provides a time.Time object that is lock safe.
+type AtomicTime struct {
+	valueSync sync.RWMutex
+	value     time.Time
+}
+
+//Get returns the time.Time value
+func (obj *AtomicTime) Get() (value time.Time) {
+	obj.valueSync.RLock()
+	value = obj.value
+	obj.valueSync.RUnlock()
+	return
+}
+
+//Set sets the time.Time value
+func (obj *AtomicTime) Set(value time.Time) {
+	obj.valueSync.Lock()
+	obj.value = value
+	obj.valueSync.Unlock()
+}
+
+//AtomicByteArray provides a []byte object that is lock safe.
+type AtomicByteArray struct {
+	valueSync sync.RWMutex
+	value     []byte
+}
+
+//Get returns the []byte value
+func (obj *AtomicByteArray) Get() (value []byte) {
+	obj.valueSync.RLock()
+	value = obj.value
+	obj.valueSync.RUnlock()
+	return
+}
+
+//Set sets the []byte value
+func (obj *AtomicByteArray) Set(value []byte) {
 	obj.valueSync.Lock()
 	obj.value = value
 	obj.valueSync.Unlock()
