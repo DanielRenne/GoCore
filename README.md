@@ -70,6 +70,8 @@ GoCore has built in functions to read json configuration files to generate SQL T
 
 Open a web browser to:  [http://127.0.0.1:8080](http://127.0.0.1:8080)
 
+Login as admin/admin and setup application roles etc.  More documentation to come later on application specific setup.
+
 #### How to build your own web project in GoCore
 
 See [Application Settings](https://github.com/DanielRenne/GoCore/blob/master/doc/Application_Settings.md) within docs for information on what webConfig.json allows for.
