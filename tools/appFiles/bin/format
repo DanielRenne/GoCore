@@ -1,2 +1,0 @@
-bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/format_golang /src/github.com/DanielRenne/goCoreAppTemplate/
-bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/format_golang /src/github.com/DanielRenne/GoCore/

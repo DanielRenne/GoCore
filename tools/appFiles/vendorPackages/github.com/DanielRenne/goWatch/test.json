@@ -1,8 +1,0 @@
-{
-  "watchers":[
-    {
-      "directories":["test"],
-      "tasks":["ls"]
-    }
-  ]
-}

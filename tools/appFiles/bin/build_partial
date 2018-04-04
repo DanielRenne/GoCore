@@ -1,3 +1,0 @@
-cd $GOPATH
-go build src/github.com/DanielRenne/goCoreAppTemplate/goCoreAppTemplate.go
-go install github.com/DanielRenne/goCoreAppTemplate

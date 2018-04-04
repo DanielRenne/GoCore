@@ -1,9 +1,0 @@
-{
-    "FeatureGroupModifyBootstrapMeta": "!ro!Bootstrap meta", 
-    "FeatureGroupModifyCreateDate": "!ro!Create date", 
-    "FeatureGroupModifyLastUpdateId": "!ro!Last update id", 
-    "FeatureGroupModifyName": "!ro!Name", 
-    "FeatureGroupModifyUpdateDate": "!ro!Update date", 
-    "objectName": "!ro!featureGroupModify", 
-    "welcomeExample": "!ro!Welcome to the {page} page!"
-}
