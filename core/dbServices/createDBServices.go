@@ -697,7 +697,6 @@ func genNoSQLCollection(collection NOSQLCollection, schema NOSQLSchema, driver s
 	val := ""
 	val += "var " + strings.Title(collection.Name) + " model" + strings.Title(collection.Name) + "\n\n"
 	val += "type model" + strings.Title(collection.Name) + " struct{}\n\n"
-	val += "var cache" + strings.Title(collection.Name) + " sync.Map\n\n"
 	val += "var collection" + strings.Title(collection.Name) + "Mutex *sync.RWMutex\n\n"
 	val += "type " + strings.Title(schema.Name) + "JoinItems struct{\n"
 	val += " Count int `json:\"Count\"`\n"
@@ -1413,13 +1412,8 @@ func genById(collection NOSQLCollection, schema NOSQLSchema, driver string) stri
 			joinValue := joins[i]
 			q = q.Join(joinValue)
 		}
-		//if len(joins) > 0 || {
-			err = q.ById(objectID, &retObj)
-			value = reflect.ValueOf(&retObj)
-		//}
-		//if len(joins) == 0 {
-
-		//}
+		err = q.ById(objectID, &retObj)
+		value = reflect.ValueOf(&retObj)
 		return
 	}
 `
