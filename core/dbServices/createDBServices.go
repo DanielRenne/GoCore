@@ -697,6 +697,7 @@ func genNoSQLCollection(collection NOSQLCollection, schema NOSQLSchema, driver s
 	val := ""
 	val += "var " + strings.Title(collection.Name) + " model" + strings.Title(collection.Name) + "\n\n"
 	val += "type model" + strings.Title(collection.Name) + " struct{}\n\n"
+	val += "var cache" + strings.Title(collection.Name) + " sync.Map\n\n"
 	val += "var collection" + strings.Title(collection.Name) + "Mutex *sync.RWMutex\n\n"
 	val += "type " + strings.Title(schema.Name) + "JoinItems struct{\n"
 	val += " Count int `json:\"Count\"`\n"
@@ -1405,19 +1406,23 @@ func genNoSQLSchemaSave(collection NOSQLCollection, schema NOSQLSchema, driver s
 }
 
 func genById(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
-	val := ""
-	val += "func (obj model" + strings.Title(collection.Name) + ") ById(objectID interface{}, joins []string) (value reflect.Value, err error) {\n"
-	val += "var retObj " + strings.Title(schema.Name) + "\n"
-	val += "q := obj.Query()\n"
-	val += "for i := range joins {\n"
-	val += "joinValue := joins[i]\n"
-	val += "q = q.Join(joinValue)\n"
-	val += "}\n"
-	val += "err = q.ById(objectID, &retObj)\n"
-	val += "value = reflect.ValueOf(&retObj)\n"
-	val += "return\n"
-	val += "}\n\n"
-	return val
+	return `func (obj model` + strings.Title(collection.Name) + `) ById(objectID interface{}, joins []string) (value reflect.Value, err error) {
+		var retObj ` + strings.Title(schema.Name) + `
+		q := obj.Query()
+		for i := range joins {
+			joinValue := joins[i]
+			q = q.Join(joinValue)
+		}
+		//if len(joins) > 0 || {
+			err = q.ById(objectID, &retObj)
+			value = reflect.ValueOf(&retObj)
+		//}
+		//if len(joins) == 0 {
+
+		//}
+		return
+	}
+`
 }
 
 func genNewByReflection(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
