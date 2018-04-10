@@ -12,11 +12,9 @@ import (
 
 	"github.com/DanielRenne/GoCore/core/serverSettings"
 	"github.com/asdine/storm"
-	_ "github.com/denisenkom/go-mssqldb"
 	"github.com/fatih/color"
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
-	_ "github.com/go-sql-driver/mysql"
 )
 
 var DBMutex *sync.RWMutex
@@ -33,8 +31,6 @@ var mongoDBNameOverride string
 const (
 
 	//Driver Types
-	DATABASE_DRIVER_MYSQL   = "mysql"
-	DATABASE_DRIVER_MSSQL   = "mssql"
 	DATABASE_DRIVER_BOLTDB  = "boltDB"
 	DATABASE_DRIVER_MONGODB = "mongoDB"
 )
@@ -67,10 +63,6 @@ func Initialize() error {
 	fmt.Println("core dbServices initialized.")
 
 	switch serverSettings.WebConfig.DbConnection.Driver {
-	case DATABASE_DRIVER_MYSQL:
-		return openSQLDriver()
-	case DATABASE_DRIVER_MSSQL:
-		return openSQLDriver()
 	case DATABASE_DRIVER_BOLTDB:
 		return openBolt()
 	case DATABASE_DRIVER_MONGODB:

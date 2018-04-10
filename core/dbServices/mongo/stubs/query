@@ -170,7 +170,11 @@ func (self *Query) ById(objectId interface{}, modelInstance interface{}) error {
 	}
 	q := self.collection.FindId(objId)
 
-	err = q.One(modelInstance)
+	foundCache := dbServices.CollectionCache{}.Fetch(self.collection.Name, objId.Hex(), modelInstance)
+
+	if foundCache == false {
+		err = q.One(modelInstance)
+	}
 
 	if err != nil {
 		// This callback is used for if the Ethernet port is unplugged
@@ -179,10 +183,16 @@ func (self *Query) ById(objectId interface{}, modelInstance interface{}) error {
 			if err != nil {
 				return err
 			}
+			dbServices.CollectionCache{}.Store(self.collection.Name, objId.Hex(), modelInstance)
+
 			return self.processJoinsAndViews(modelInstance)
 		}
 
 		return self.handleQueryError(err, callback)
+	}
+
+	if foundCache == false {
+		dbServices.CollectionCache{}.Store(self.collection.Name, objId.Hex(), modelInstance)
 	}
 
 	return self.processJoinsAndViews(modelInstance)

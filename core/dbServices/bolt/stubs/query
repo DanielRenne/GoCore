@@ -166,7 +166,12 @@ func (self *Query) ById(objectId interface{}, modelInstance interface{}) error {
 		self.LogQuery("q.ById(" + objId.Hex() + ")")
 	}
 
-	err =  dbServices.BoltDB.One("Id", objId, modelInstance)
+	foundCache := dbServices.CollectionCache{}.Fetch(self.collection.Name, objId.Hex(), modelInstance)
+
+	if foundCache == false {
+		err =  dbServices.BoltDB.One("Id", objId, modelInstance)
+	}
+	
 
 	if err != nil {
 		// This callback is used for if the Ethernet port is unplugged
@@ -179,6 +184,10 @@ func (self *Query) ById(objectId interface{}, modelInstance interface{}) error {
 		}
 
 		return self.handleQueryError(err, callback)
+	}
+
+	if foundCache == false {
+		dbServices.CollectionCache{}.Store(self.collection.Name, objId.Hex(), modelInstance)
 	}
 
 	return self.processJoinsAndViews(modelInstance)

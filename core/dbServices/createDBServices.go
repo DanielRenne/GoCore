@@ -1375,6 +1375,7 @@ func genNoSQLSchemaSave(collection NOSQLCollection, schema NOSQLSchema, driver s
 		val += "t := time.Now()\n"
 		val += "self.CreateDate = t\n"
 		val += "self.UpdateDate = t \n"
+		val += "dbServices.CollectionCache{}.Remove(\"" + strings.Title(collection.Name) + "\",self.Id.Hex())\n"
 		val += "return dbServices.BoltDB.Save(self)\n"
 	case DATABASE_DRIVER_MONGODB:
 		val += "collection" + strings.Title(collection.Name) + "Mutex.RLock()\n"
@@ -1398,6 +1399,7 @@ func genNoSQLSchemaSave(collection NOSQLCollection, schema NOSQLSchema, driver s
 		val += "if changeInfo.UpsertedId != nil {\n"
 		val += "self.Id = changeInfo.UpsertedId.(bson.ObjectId)\n"
 		val += "}\n"
+		val += "dbServices.CollectionCache{}.Remove(\"" + strings.Title(collection.Name) + "\",self.Id.Hex())\n"
 		val += "return nil\n"
 	}
 	val += "}\n\n"
@@ -1484,6 +1486,7 @@ func genNoSQLSchemaSaveByTran(collection NOSQLCollection, schema NOSQLSchema, dr
 	val += "func (self *" + strings.Title(schema.Name) + ") CreateWithTran(t *Transaction, forceCreate bool) error {\n\n"
 	switch driver {
 	case DATABASE_DRIVER_BOLTDB:
+		val += "dbServices.CollectionCache{}.Remove(\"" + strings.Title(collection.Name) + "\",self.Id.Hex())\n"
 		val += "return self.Save()\n"
 	case DATABASE_DRIVER_MONGODB:
 		val += "transactionQueue.Lock()\n"
@@ -1519,6 +1522,8 @@ func genNoSQLSchemaSaveByTran(collection NOSQLCollection, schema NOSQLSchema, dr
 		val += "	self.Id = bson.NewObjectId()\n"
 		val += "  self.CreateDate = time.Now()\n"
 		val += "}\n"
+
+		val += "dbServices.CollectionCache{}.Remove(\"" + strings.Title(collection.Name) + "\",self.Id.Hex())\n"
 
 		val += "if forceCreate {\n"
 		val += "	isUpdate = false\n"
@@ -2163,8 +2168,10 @@ func genNoSQLSchemaDelete(collection NOSQLCollection, schema NOSQLSchema, driver
 	val += "func (self *" + strings.Title(schema.Name) + ") Delete() error {\n"
 	switch driver {
 	case "boltDB":
+		val += "dbServices.CollectionCache{}.Remove(\"" + strings.Title(collection.Name) + "\",self.Id.Hex())\n"
 		val += "return dbServices.BoltDB.Delete(\"" + strings.Title(schema.Name) + "\", self.Id.Hex())\n"
 	case "mongoDB":
+		val += "dbServices.CollectionCache{}.Remove(\"" + strings.Title(collection.Name) + "\",self.Id.Hex())\n"
 		val += "return mongo" + strings.Title(collection.Name) + "Collection.RemoveId(self.Id)"
 	}
 	val += "}\n\n"
@@ -2177,6 +2184,7 @@ func genNoSQLSchemaDeleteWithTran(collection NOSQLCollection, schema NOSQLSchema
 	val += "func (self *" + strings.Title(schema.Name) + ") DeleteWithTran(t *Transaction) error {\n"
 	switch driver {
 	case "boltDB":
+		val += "dbServices.CollectionCache{}.Remove(\"" + strings.Title(collection.Name) + "\",self.Id.Hex())\n"
 		val += "return dbServices.BoltDB.Delete(\"" + strings.Title(collection.Name) + "\", self.Id.Hex())\n"
 	case "mongoDB":
 		val += "transactionQueue.Lock()\n"
@@ -2186,6 +2194,7 @@ func genNoSQLSchemaDeleteWithTran(collection NOSQLCollection, schema NOSQLSchema
 		val += "if self.Id.Hex() == \"\" {\n"
 		val += "return errors.New(dbServices.ERROR_CODE_TRANSACTION_RECORD_NOT_EXISTS)\n"
 		val += "}\n\n"
+		val += "dbServices.CollectionCache{}.Remove(\"" + strings.Title(collection.Name) + "\",self.Id.Hex())\n"
 		val += "_, ok := transactionQueue.queue[t.Id.Hex()]\n"
 		val += "if ok == false {\n"
 		val += "	return errors.New(dbServices.ERROR_CODE_TRANSACTION_NOT_PRESENT)\n"
