@@ -39,6 +39,13 @@ type WebSocketConnection struct {
 	WriteLock            sync.RWMutex
 	LastResponseTime     time.Time
 	LastResponseTimeLock sync.RWMutex
+
+	GinContextSync GinContextSync
+}
+
+type GinContextSync struct {
+	sync.RWMutex
+	Context *gin.Context
 }
 
 type WebSocketConnectionMeta struct {
@@ -259,6 +266,7 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context) {
 	wsConn := new(WebSocketConnection)
 	wsConn.Connection = conn
 	wsConn.Req = r
+	wsConn.GinContextSync.Context = c
 	uuid, err := newUUID()
 	if err == nil {
 		wsConn.Id = uuid
@@ -394,14 +402,12 @@ func ReplyToWebSocket(conn *WebSocketConnection, data []byte) {
 	defer func() {
 		if recover := recover(); recover != nil {
 			log.Println("Panic Recovered at ReplyToWebSocket():  ", recover)
-			time.Sleep(time.Millisecond * 3000)
-			ReplyToWebSocket(conn, data)
 			return
 		}
 
 	}()
 
-	go logger.GoRoutineLogger(func() {
+	go func() {
 		defer func() {
 			if recover := recover(); recover != nil {
 				CustomLog("app->ReplyToWebSocket", "Panic Recovered at ReplyToWebSocket():  "+fmt.Sprintf("%+v", recover))
@@ -409,9 +415,9 @@ func ReplyToWebSocket(conn *WebSocketConnection, data []byte) {
 		}()
 		conn.WriteLock.Lock()
 		defer conn.WriteLock.Unlock()
-		conn.Connection.WriteMessage(websocket.BinaryMessage, data)
+		conn.Connection.WriteMessage(websocket.TextMessage, data)
 
-	}, "GoCore/app.go->ReplyToWebSocket[WriteMessage]")
+	}()
 
 }
 
