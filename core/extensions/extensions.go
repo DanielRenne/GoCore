@@ -2,7 +2,9 @@ package extensions
 
 import (
 	"bytes"
+	cryptoRand "crypto/rand"
 	"fmt"
+	"io"
 	"math/rand"
 	"os"
 	"strconv"
@@ -310,4 +312,29 @@ func SyncMapLength(x *sync.Map) (length int) {
 		return true
 	})
 	return
+}
+
+// NewUUID generates a random UUID according to RFC 4122
+func NewUUID() (string, error) {
+	uuid := make([]byte, 16)
+	n, err := io.ReadFull(cryptoRand.Reader, uuid)
+	if n != len(uuid) || err != nil {
+		return "", err
+	}
+	// variant bits; see section 4.1.1
+	uuid[8] = uuid[8]&^0xc0 | 0x80
+	// version 4 (pseudo-random); see section 4.1.3
+	uuid[6] = uuid[6]&^0xf0 | 0x40
+	return fmt.Sprintf("%x-%x-%x-%x-%x", uuid[0:4], uuid[4:6], uuid[6:8], uuid[8:10], uuid[10:]), nil
+}
+
+//RandomString returns a random string of length
+func RandomString(strlen int) string {
+	rand.Seed(time.Now().UTC().UnixNano())
+	const chars = "abcdefghijklmnopqrstuvwxyz0123456789"
+	result := make([]byte, strlen)
+	for i := 0; i < strlen; i++ {
+		result[i] = chars[rand.Intn(len(chars))]
+	}
+	return string(result)
 }

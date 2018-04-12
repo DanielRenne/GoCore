@@ -12,7 +12,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/DanielRenne/GoCore/core/atomicTypes"
 	"github.com/DanielRenne/GoCore/core/dbServices"
+	"github.com/DanielRenne/GoCore/core/extensions"
 	"github.com/DanielRenne/GoCore/core/fileCache"
 	"github.com/DanielRenne/GoCore/core/ginServer"
 	"github.com/DanielRenne/GoCore/core/logger"
@@ -45,7 +47,8 @@ type WebSocketConnection struct {
 
 type GinContextSync struct {
 	sync.RWMutex
-	Context *gin.Context
+	Initialized atomicTypes.AtomicBool
+	Context     *gin.Context
 }
 
 type WebSocketConnectionMeta struct {
@@ -150,7 +153,7 @@ var upgrader = websocket.Upgrader{
 
 var WebSocketConnections WebSocketConnectionCollection
 var webSocketConnectionsMeta sync.Map
-var WebSocketCallbacks WebSocketCallbackSync
+var WebSocketCallbacks sync.Map
 var WebSocketRemovalCallback WebSocketRemoval
 
 func Initialize(path string, config string) (err error) {
@@ -294,26 +297,32 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context) {
 			messageType, p, err := conn.ReadMessage()
 			if err == nil {
 
-				meta, ok := GetWebSocketMeta(uuid)
-				if ok {
-					meta.LastResponseTime = time.Now()
-					SetWebSocketMeta(uuid, meta)
-				}
-
-				go logger.GoRoutineLogger(func() {
-
+				go func() {
 					defer func() {
 						if recover := recover(); recover != nil {
 							log.Println("Panic Recovered at webSocketHandler-> Reader-> item.Callback():  ", recover)
 						}
 					}()
 
-					for item := range WebSocketCallbacks.Iter() {
-						if item.Callback != nil {
-							item.Callback(wsConn, c, messageType, uuid, p)
-						}
+					meta, ok := GetWebSocketMeta(uuid)
+					if ok {
+						meta.LastResponseTime = time.Now()
+						SetWebSocketMeta(uuid, meta)
 					}
-				}, "GoCore/app.go->webSocketHandler[Callback calls]")
+
+					WebSocketCallbacks.Range(func(key interface{}, value interface{}) bool {
+						callback, parsed := value.(WebSocketCallback)
+						if parsed {
+							// if strings.Contains(meta.ContextString, "{\"Page\"") {
+							// 	CustomLog("Websocket Request", string(p))
+							// }
+							callback(wsConn, c, messageType, uuid, p)
+						}
+						return true
+					})
+
+				}()
+
 			} else {
 				if CustomLog != nil {
 					CustomLog("app->deleteWebSocket", "Deleting Web Socket from read Timeout:  "+err.Error()+":  "+wsConn.Connection.RemoteAddr().String())
@@ -395,7 +404,8 @@ func initializeStaticRoutes() {
 }
 
 func RegisterWebSocketDataCallback(callback WebSocketCallback) {
-	WebSocketCallbacks.Append(callback)
+	uuid, _ := extensions.NewUUID()
+	WebSocketCallbacks.Store(uuid, callback)
 }
 
 func ReplyToWebSocket(conn *WebSocketConnection, data []byte) {
