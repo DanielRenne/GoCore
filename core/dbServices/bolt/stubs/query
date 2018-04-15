@@ -166,12 +166,12 @@ func (self *Query) ById(objectId interface{}, modelInstance interface{}) error {
 		self.LogQuery("q.ById(" + objId.Hex() + ")")
 	}
 
-	foundCache := dbServices.CollectionCache{}.Fetch(self.collection.Name, objId.Hex(), modelInstance)
+	foundCache := dbServices.CollectionCache{}.Fetch(self.collectionName, objId.Hex(), modelInstance)
 
 	if foundCache == false {
 		err =  dbServices.BoltDB.One("Id", objId, modelInstance)
 	}
-	
+
 
 	if err != nil {
 		// This callback is used for if the Ethernet port is unplugged
@@ -187,7 +187,7 @@ func (self *Query) ById(objectId interface{}, modelInstance interface{}) error {
 	}
 
 	if foundCache == false {
-		dbServices.CollectionCache{}.Store(self.collection.Name, objId.Hex(), modelInstance)
+		dbServices.CollectionCache{}.Store(self.collectionName, objId.Hex(), modelInstance)
 	}
 
 	return self.processJoinsAndViews(modelInstance)
@@ -1500,10 +1500,13 @@ func (self *Query) Iter() (qi *QueryIterator) {
 
 func (self *Query) generateQuery() storm.Query {
 	var q storm.Query
+	logInfo := false
 	if self.o != nil {
 		var filters []querySet.Matcher
 		for _, v := range self.o {
-			log.Println("8r89983r9923u")
+			if logInfo {
+				log.Println("8r89983r9923u")
+			}
 			for kk, vv := range v {
 				if kk == "_id" {
 					kk = "Id"
@@ -1511,7 +1514,9 @@ func (self *Query) generateQuery() storm.Query {
 				typeOfInterface := reflect.TypeOf(vv).String()
 				if typeOfInterface == "bson.M" {
 					for operator, val := range vv.(bson.M) {
-						log.Println(operator, val, kk, vv)
+						if logInfo {
+							log.Println(operator, val, kk, vv)
+						}
 						if operator == "$in" || operator == "$nin" {
 							valType := reflect.TypeOf(val).String()
 							if valType == "[]interface {}" {
@@ -1570,15 +1575,6 @@ func (self *Query) generateQuery() storm.Query {
 									} else {
 										filters = append(filters, querySet.In(kk, output))
 									}
-								} else if fieldType == "byteArray" {
-									var output []byte
-									output = make([]byte, 0)
-									output = val.([]byte)
-									if operator == "$nin" {
-										filters = append(filters, querySet.Not(querySet.In(kk, output)))
-									} else {
-										filters = append(filters, querySet.In(kk, output))
-									}
 								}
 							} else {
 								if operator == "$nin" {
@@ -1592,7 +1588,7 @@ func (self *Query) generateQuery() storm.Query {
 							if valType == "bson.RegEx" {
 								re, ok := val.(bson.RegEx)
 								if ok {
-									filters = append(filters, querySet.Re(kk, re.Pattern))
+									filters = append(filters, querySet.Re(kk, "(?i)"+re.Pattern))
 								}
 							}
 						} else if operator == "$lte" {
@@ -1611,12 +1607,16 @@ func (self *Query) generateQuery() storm.Query {
 		q = dbServices.BoltDB.Select(querySet.Or(filters...))
 	} else if self.m != nil {
 		var filters []querySet.Matcher
-		log.Println("start of filter")
+		if logInfo {
+			log.Println("start of filter")
+		}
 		for k, v := range self.m {
 			if k == "_id" {
 				k = "Id"
 			}
-			log.Println("filtering[" + k + "]" + fmt.Sprintf("%+v", v) + " type=" + reflect.TypeOf(v).String())
+			if logInfo {
+				log.Println("filtering[" + k + "]" + fmt.Sprintf("%+v", v) + " type=" + reflect.TypeOf(v).String())
+			}
 			typeOfInterface := reflect.TypeOf(v).String()
 
 			if typeOfInterface == "bson.M" {
@@ -1679,15 +1679,6 @@ func (self *Query) generateQuery() storm.Query {
 								} else {
 									filters = append(filters, querySet.In(k, output))
 								}
-							} else if fieldType == "byteArray" {
-								var output []byte
-								output = make([]byte, 0)
-								output = vv.([]byte)
-								if kk == "$nin" {
-									filters = append(filters, querySet.Not(querySet.In(k, output)))
-								} else {
-									filters = append(filters, querySet.In(k, output))
-								}
 							}
 						} else {
 							if kk == "$nin" {
@@ -1701,7 +1692,7 @@ func (self *Query) generateQuery() storm.Query {
 						if valType == "bson.RegEx" {
 							re, ok := vv.(bson.RegEx)
 							if ok {
-								filters = append(filters, querySet.Re(kk, re.Pattern))
+								filters = append(filters, querySet.Re(kk, "(?i)"+re.Pattern))
 							}
 						}
 					} else if kk == "$lte" {
@@ -1718,22 +1709,224 @@ func (self *Query) generateQuery() storm.Query {
 				filters = append(filters, querySet.Eq(k, v))
 			}
 		}
-		log.Println("end of filter", filters)
+		if logInfo {
+			log.Println("end of filter", filters)
+		}
 		q = dbServices.BoltDB.Select(filters...)
+	} else if self.ao != nil {
+		if logInfo {
+			log.Println("aodave", fmt.Sprintf("%+v", self.ao))
+		}
+		var filtersAll []querySet.Matcher
+		for k := range self.ao {
+			if k == "$and" {
+				for k2 := range self.ao[k] {
+					if logInfo {
+						log.Println("aodave-kk", fmt.Sprintf("%+v", k2))
+					}
+					for kkk := range self.ao[k][k2] {
+						if logInfo {
+							log.Println("aodave-kkk", fmt.Sprintf("%+v", kkk))
+						}
+						var filters []querySet.Matcher
+						for kkkk := range self.ao[k][k2][kkk] {
+							bsonM := self.ao[k][k2][kkk][kkkk]
+
+							if logInfo {
+								log.Println("aodave-kkkk", fmt.Sprintf("%+v", bsonM))
+							}
+							typeOfInterface := reflect.TypeOf(bsonM).String()
+
+							if logInfo {
+								log.Println("aodave-typeOfInterface", typeOfInterface)
+							}
+							if typeOfInterface == "bson.M" {
+								for field, value := range bsonM {
+									if field == "_id" {
+										field = "Id"
+									}
+									typeOfInterface := reflect.TypeOf(value).String()
+
+									if logInfo {
+										log.Println("aodave-typeOfInterface", fmt.Sprintf("%+v", typeOfInterface))
+										log.Println("aodave-field", fmt.Sprintf("%+v", field))
+										log.Println("aodave-value", fmt.Sprintf("%+v", value))
+									}
+
+									if typeOfInterface == "bson.M" || typeOfInterface == "map[string]interface {}" {
+										var val map[string]interface{}
+										var ok bool
+										if typeOfInterface == "map[string]interface {}" {
+											val, ok = value.(map[string]interface{})
+										} else {
+											val, ok = value.(bson.M)
+										}
+										if ok {
+											for kk, vv := range val {
+
+												if logInfo {
+													log.Println("aodave-kk", fmt.Sprintf("%+v", kk))
+													log.Println("aodave-vv", fmt.Sprintf("%+v", vv))
+												}
+												if kk == "$in" || kk == "$nin" {
+													valType := reflect.TypeOf(vv).String()
+
+													if logInfo {
+														log.Println("aodave-in", valType)
+													}
+													if valType == "[]interface {}" {
+														fieldType := ResolveField(self.entityName, field)
+
+														if logInfo {
+															log.Println("aodave-in", fieldType)
+														}
+														if fieldType == "string" || fieldType == "stringArray" {
+															var output []string
+															output = make([]string, 0)
+															if fieldType == "stringArray" {
+																output = vv.([]string)
+															} else {
+																for _, vvv := range vv.([]interface{}) {
+																	output = append(output, vvv.(string))
+																}
+															}
+
+															if logInfo {
+																log.Println("aodave-in - output", output)
+															}
+															if kk == "$nin" {
+																filters = append(filters, querySet.Not(querySet.In(field, output)))
+															} else {
+																filters = append(filters, querySet.In(field, output))
+															}
+														} else if fieldType == "int" || fieldType == "intArray" {
+															var output []int
+															output = make([]int, 0)
+															if fieldType == "intArray" {
+																output = vv.([]int)
+															} else {
+																for _, vvv := range vv.([]interface{}) {
+																	output = append(output, vvv.(int))
+																}
+															}
+															if kk == "$nin" {
+																filters = append(filters, querySet.Not(querySet.In(field, output)))
+															} else {
+																filters = append(filters, querySet.In(field, output))
+															}
+														} else if fieldType == "float64" || fieldType == "float64Array" {
+															var output []float64
+															output = make([]float64, 0)
+															if fieldType == "float64Array" {
+																output = vv.([]float64)
+															} else {
+																for _, vvv := range vv.([]interface{}) {
+																	output = append(output, vvv.(float64))
+																}
+															}
+															if kk == "$nin" {
+																filters = append(filters, querySet.Not(querySet.In(field, output)))
+															} else {
+																filters = append(filters, querySet.In(field, output))
+															}
+														} else if fieldType == "byteArray" {
+															var output []byte
+															output = make([]byte, 0)
+															output = vv.([]byte)
+															if kk == "$nin" {
+																filters = append(filters, querySet.Not(querySet.In(field, output)))
+															} else {
+																filters = append(filters, querySet.In(field, output))
+															}
+														}
+													} else {
+														if kk == "$nin" {
+															filters = append(filters, querySet.Not(querySet.In(field, vv)))
+														} else {
+															filters = append(filters, querySet.In(field, vv))
+														}
+													}
+												} else if kk == "$regex" && field != "Id" {
+													fieldType := ResolveField(self.entityName, field)
+
+													if logInfo {
+														log.Println("aodave-regex", fieldType)
+													}
+													if fieldType == "string" {
+														valType := reflect.TypeOf(vv).String()
+														if valType == "bson.RegEx" {
+															re, ok := vv.(bson.RegEx)
+															if ok {
+																filters = append(filters, querySet.Re(field, "(?i)"+re.Pattern))
+															}
+														}
+													} else {
+
+														if logInfo {
+															log.Println("aodave-regex-invalid type must be string", fieldType)
+														}
+													}
+												} else if kk == "$lte" {
+													filters = append(filters, querySet.Lte(field, vv))
+												} else if kk == "$lt" {
+													filters = append(filters, querySet.Lt(field, vv))
+												} else if kk == "$gt" {
+													filters = append(filters, querySet.Gt(field, vv))
+												} else if kk == "$exists" {
+													filters = append(filters, querySet.True())
+												} else if kk == "$gte" {
+													filters = append(filters, querySet.Gte(field, vv))
+												} else {
+													filters = append(filters, querySet.Eq(field, vv))
+												}
+											}
+										} else {
+
+											if logInfo {
+												log.Println("aodave-interface cast not ok")
+											}
+										}
+									} else {
+
+										if logInfo {
+											log.Println("aodave-is regular filter", fmt.Sprintf("%+v", value))
+										}
+										filters = append(filters, querySet.Eq(field, value))
+									}
+								}
+							} else {
+								filters = append(filters, querySet.Eq(k, bsonM))
+							}
+						}
+						if kkk == "$or" {
+							filtersAll = append(filtersAll, querySet.Or(filters...))
+
+							if logInfo {
+								log.Println("aodave-orfilters", fmt.Sprintf("%+v", filters))
+							}
+						} else if kkk == "$and" {
+							filtersAll = append(filtersAll, querySet.And(filters...))
+
+							if logInfo {
+								log.Println("aodave-andfilters", fmt.Sprintf("%+v", filters))
+							}
+						}
+					}
+				}
+			}
+
+			if logInfo {
+				log.Println("aodave-k", fmt.Sprintf("%+v", k))
+			}
+		}
+		q = dbServices.BoltDB.Select(querySet.And(filtersAll...))
 	} else {
 		q = dbServices.BoltDB.Select(querySet.True())
 	}
-	log.Println("aodave" , fmt.Sprintf("%+v", self.ao))
-	log.Println("self.entityName=" + self.entityName)
 
-	//if self.ao != nil {
-		// todo self.ao
-	//	q = q.Find()
-
-	//} else if self.o != nil {
-	//	q = self.collection.Find(bson.M{"$or": self.o})
-	//}
-
+	if logInfo {
+		log.Println("self.entityName=" + self.entityName)
+	}
 
 	if self.limit > 0 {
 		q = q.Limit(self.limit)
@@ -1743,9 +1936,34 @@ func (self *Query) generateQuery() storm.Query {
 		q = q.Skip(self.skip)
 	}
 
-	//if len(self.sort) > 0 {
-	//	q = q.Sort(self.sort...)
-	//}
+	if len(self.sort) > 0 {
+		if logInfo {
+			log.Println("sort info", self.sort)
+		}
+		for i := range self.sort {
+			field := self.sort[i]
+			if len(field) > 0 {
+				if field[:1] == "-" {
+					q = q.Reverse()
+					field = field[1:]
+					if logInfo {
+						log.Println("sort info", "is reversed")
+					}
+				}
+				fieldType := ResolveField(self.entityName, field)
+				if fieldType != "" {
+					if logInfo {
+						log.Println("sort info", field)
+					}
+					q = q.OrderBy(field)
+				} else {
+					if logInfo {
+						log.Println("sort info", "couldnt resolve field on collection")
+					}
+				}
+			}
+		}
+	}
 
 	//Add WhiteList Fields
 	//for i := range self.whiteListed {
