@@ -158,3 +158,23 @@ func TimeTrackQuery(start time.Time, name string, collection *mgo.Collection, m 
 	log += fmt.Sprintf("%s took %s", name, elapsed) + "\n</Timing>\n"
 	return
 }
+
+func Tail(path string, length int64) (data string) {
+	file, err := os.Open(path)
+	if err != nil {
+		return
+	}
+	defer file.Close()
+
+	buf := make([]byte, length)
+	stat, err := os.Stat(path)
+	start := stat.Size() - length
+	if start > 0 {
+		_, err = file.ReadAt(buf, start)
+		if err == nil {
+			data = string(buf)
+		}
+	}
+	return
+}
+
