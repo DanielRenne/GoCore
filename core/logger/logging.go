@@ -2,6 +2,7 @@ package logger
 
 import (
 	"fmt"
+	"os"
 	"log"
 	"math/rand"
 	"sync"
