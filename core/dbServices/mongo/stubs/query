@@ -765,7 +765,7 @@ func (self *Query) All(x interface{}) error {
 		return self.e
 	}
 
-	q := self.generateQuery()
+	q := self.GenerateQuery()
 
 	if !self.stopLog && serverSettings.WebConfig.Application.LogQueries {
 		self.LogQuery("q.All()")
@@ -802,7 +802,7 @@ func (self *Query) One(x interface{}) error {
 		return self.e
 	}
 
-	q := self.generateQuery()
+	q := self.GenerateQuery()
 
 	if !self.stopLog && serverSettings.WebConfig.Application.LogQueries {
 		self.LogQuery("q.One()")
@@ -896,7 +896,7 @@ func (self *Query) TotalRows(x interface{}) int {
 		}()
 	}
 
-	q := self.generateQuery()
+	q := self.GenerateQuery()
 
 	if !self.stopLog && serverSettings.WebConfig.Application.LogQueries {
 		self.LogQuery("q.Length()")
@@ -920,7 +920,7 @@ func (self *Query) Count(x interface{}) (int, error) {
 		return 0, self.e
 	}
 
-	q := self.generateQuery()
+	q := self.GenerateQuery()
 
 	count, err := q.Count()
 
@@ -952,7 +952,7 @@ func (self *Query) Distinct(key string, x interface{}) error {
 		return self.e
 	}
 
-	q := self.generateQuery()
+	q := self.GenerateQuery()
 
 	if !self.stopLog && serverSettings.WebConfig.Application.LogQueries {
 		self.LogQuery("q.Distinct()")
@@ -1555,11 +1555,11 @@ func (self *Query) isDBConnectionError(err error) bool {
 func (self *Query) Iter() (qi *QueryIterator) {
 	qi = new(QueryIterator)
 	qi.q = self
-	qi.iter = self.generateQuery().Iter()
+	qi.iter = self.GenerateQuery().Iter()
 	return
 }
 
-func (self *Query) generateQuery() *mgo.Query {
+func (self *Query) GenerateQuery() *mgo.Query {
 
 	q := self.collection.Find(bson.M{})
 

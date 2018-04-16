@@ -22,7 +22,6 @@ import (
 	"github.com/DanielRenne/GoCore/core/logger"
 	dateformatter "github.com/altipla-consulting/i18n-dateformatter"
 	querySet "github.com/asdine/storm/q"
-	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
 	"github.com/asdine/storm"
 )
@@ -89,8 +88,6 @@ type Query struct {
 }
 
 type QueryIterator struct {
-	q    *Query
-	iter *mgo.Iter
 }
 
 type QueryFieldFilter struct {
@@ -121,31 +118,6 @@ func Criteria(key string, value interface{}) map[string]interface{} {
 }
 
 func (self *QueryIterator) Next(x interface{}) (gotRecord bool, err error) {
-
-	// This callback is used for if the Ethernet port is unplugged
-	callback := func() (err error) {
-		gotRecord = self.iter.Next(x)
-		if gotRecord == false {
-			err = self.iter.Close()
-			return
-		}
-		err = self.q.processJoinsAndViews(x)
-		return
-	}
-
-	gotRecord = self.iter.Next(x)
-	if gotRecord == true {
-		err = self.q.processJoinsAndViews(x)
-		return
-	} else {
-		err = self.iter.Close()
-		if err != nil {
-			err = self.q.handleQueryError(err, callback)
-		} else {
-			return
-		}
-
-	}
 	return
 }
 
@@ -717,7 +689,7 @@ func (self *Query) All(x interface{}) error {
 		return self.e
 	}
 
-	q := self.generateQuery()
+	q := self.GenerateQuery()
 
 	if !self.stopLog && serverSettings.WebConfig.Application.LogQueries {
 		self.LogQuery("q.All()")
@@ -750,7 +722,7 @@ func (self *Query) One(x interface{}) error {
 		return self.e
 	}
 
-	q := self.generateQuery()
+	q := self.GenerateQuery()
 
 	if !self.stopLog && serverSettings.WebConfig.Application.LogQueries {
 		self.LogQuery("q.One()")
@@ -891,7 +863,7 @@ func (self *Query) Distinct(key string, x interface{}) error {
 		return self.e
 	}
 
-	q := self.generateQuery()
+	q := self.GenerateQuery()
 
 	if !self.stopLog && serverSettings.WebConfig.Application.LogQueries {
 		self.LogQuery("q.Distinct()")
@@ -1035,20 +1007,20 @@ func (self *Query) getJoins(x reflect.Value) (joins []join, err error) {
 			j.joinType = allJoin.Type
 
 			//Add WhiteList Fields
-			for i := range self.whiteListed {
-				wl := &self.whiteListed[i]
-				if wl.CollectionName == j.collectionName {
-					j.whiteListedFields = wl.Fields
-				}
-			}
+			// for i := range self.whiteListed {
+			// 	wl := &self.whiteListed[i]
+			// 	if wl.CollectionName == j.collectionName {
+			// 		j.whiteListedFields = wl.Fields
+			// 	}
+			// }
 
 			//Add Blacklist Fields
-			for i := range self.blackListed {
-				bl := &self.blackListed[i]
-				if bl.CollectionName == j.collectionName {
-					j.blackListedFields = bl.Fields
-				}
-			}
+			// for i := range self.blackListed {
+			// 	bl := &self.blackListed[i]
+			// 	if bl.CollectionName == j.collectionName {
+			// 		j.blackListedFields = bl.Fields
+			// 	}
+			// }
 
 			joins = append(joins, j)
 		}
@@ -1080,20 +1052,20 @@ func (self *Query) getJoins(x reflect.Value) (joins []join, err error) {
 			j.joinType = val.Type
 
 			//Add WhiteList Fields
-			for i := range self.whiteListed {
-				wl := &self.whiteListed[i]
-				if wl.CollectionName == j.collectionName {
-					j.whiteListedFields = wl.Fields
-				}
-			}
+			// for i := range self.whiteListed {
+			// 	wl := &self.whiteListed[i]
+			// 	if wl.CollectionName == j.collectionName {
+			// 		j.whiteListedFields = wl.Fields
+			// 	}
+			// }
 
 			//Add Blacklist Fields
-			for i := range self.blackListed {
-				bl := &self.blackListed[i]
-				if bl.CollectionName == j.collectionName {
-					j.blackListedFields = bl.Fields
-				}
-			}
+			// for i := range self.blackListed {
+			// 	bl := &self.blackListed[i]
+			// 	if bl.CollectionName == j.collectionName {
+			// 		j.blackListedFields = bl.Fields
+			// 	}
+			// }
 
 			joins = append(joins, j)
 		}
@@ -1492,13 +1464,16 @@ func (self *Query) isDBConnectionError(err error) bool {
 }
 
 func (self *Query) Iter() (qi *QueryIterator) {
-	qi = new(QueryIterator)
-	qi.q = self
-	//qi.iter = self.generateQuery().Iter()
+	logger.Message(`Iter() not implmented in bolt, use:
+
+		model.CollectionName.Query().GenerateQuery().Each(new(model.RecordName), func(record interface{}) error {
+		r := record.(*model.RecordName)
+
+		})`, logger.RED)
 	return
 }
 
-func (self *Query) generateQuery() storm.Query {
+func (self *Query) GenerateQuery() storm.Query {
 	var q storm.Query
 	logInfo := false
 	if self.o != nil {
