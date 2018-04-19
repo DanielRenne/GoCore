@@ -3,6 +3,7 @@ package extensions
 import (
 	"bytes"
 	cryptoRand "crypto/rand"
+	"encoding/binary"
 	"fmt"
 	"io"
 	"math/rand"
@@ -188,6 +189,28 @@ func Int32ToInt(val int32) (ret int) {
 	tempLong := ((val >> 32) << 32) //shift it right then left 32 bits, which zeroes the lower half of the long
 	ret = (int)(val - tempLong)
 	return ret
+}
+
+// Int32ToDWORD converts an int32 to DWORD byte array.
+func Int32ToDWORD(val int32) (value []byte) {
+	buff := new(bytes.Buffer)
+	err := binary.Write(buff, binary.BigEndian, val)
+	if err != nil {
+		return
+	}
+	value = buff.Bytes()
+	return
+}
+
+// DWordToInt converts an 4 byte to a int32
+func DWordToInt(data []byte) (num int32) {
+	buff := bytes.NewReader(data)
+	err := binary.Read(buff, binary.BigEndian, &num)
+	if err != nil {
+		return
+	}
+
+	return
 }
 
 func BoolToString(val bool) string {
