@@ -13,7 +13,12 @@ import (
 	"github.com/globalsign/mgo/bson"
 )
 
+func cdGoPath() {
+	os.Chdir(os.Getenv("GOPATH"))
+}
+
 func GenerateApp() {
+	cdGoPath()
 	moveAppFiles()
 }
 
