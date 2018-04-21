@@ -117,6 +117,47 @@ func main() {
 		fmt.Println("Failed to Remove appGeneration Files:  " + errRemoveDecompressedFiles.Error())
 		return
 	}
+	
+	
+	
+	appGenerationFileName = "nodeModules"
+	downloadRelease("https://github.com/davidrenne/GoCoreNodeModules/archive/master.zip", appGenerationFileName+".zip")
+
+	fmt.Println("Unzipping GoCoreNodeModules.zip . . .")
+
+	excludedFiles = []string{}
+	errUnzip = zip.Unzip(appGenerationFileName+".zip", appGenerationFileName, excludedFiles)
+
+	if errUnzip != nil {
+		fmt.Println("Failed to Unzip GoCoreNodeModules.zip:  " + errUnzip.Error())
+		return
+	}
+
+	fmt.Println("Unzipped GoCoreNodeModules successfully.")
+
+	errRemoveRepoZip = os.Remove(appGenerationFileName + ".zip")
+
+	if errRemoveRepoZip != nil {
+		fmt.Println("Failed to Remove GoCoreNodeModules zip File:  " + errRemoveRepoZip.Error())
+		return
+	}
+
+	os.RemoveAll(os.Getenv("GOPATH") + "/src/github.com/DanielRenne/GoCore/tools/nodeModules")
+	os.MkdirAll(os.Getenv("GOPATH")+"/src/github.com/DanielRenne/GoCore/tools/nodeModules", 0777)
+
+	//Copy the Files then Remove the Directory
+	fmt.Println(appGenerationFileName + "/master")
+	fmt.Println(os.Getenv("GOPATH") + "/src/github.com/DanielRenne/GoCore/tools/nodeModules")
+	extensions.CopyFolder(appGenerationFileName+"/GoCoreNodeModules-master", os.Getenv("GOPATH")+"/src/github.com/DanielRenne/GoCore/tools/nodeModules")
+
+	fmt.Println("Moved Files Successfully.")
+	fmt.Println("\nStarted Cleaning Files.")
+	errRemoveDecompressedFiles = extensions.RemoveDirectory(appGenerationFileName)
+
+	if errRemoveDecompressedFiles != nil {
+		fmt.Println("Failed to Remove GoCoreNodeModules Files:  " + errRemoveDecompressedFiles.Error())
+		return
+	}
 
 	fmt.Println("Cleaned up Repo Files Successfully.")
 
