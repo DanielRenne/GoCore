@@ -46,21 +46,21 @@ func Unzip(archive, target string, excludedFiles []string) error {
 		fileReader, err := file.Open()
 		if err != nil {
 			if fileReader != nil {
-                fileReader.Close()
-            }
+				fileReader.Close()
+			}
 			return err
 		}
 
 		targetFile, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, file.Mode())
 		if err != nil {
 			if fileReader != nil {
-                fileReader.Close()
-            }
+				fileReader.Close()
+			}
 			return err
 		}
 
 		fmt.Println("Extracting File:  " + file.Name)
-        if _, err := io.Copy(targetFile, fileReader); err != nil {
+		if _, err := io.Copy(targetFile, fileReader); err != nil {
 			fileReader.Close()
 			targetFile.Close()
 			return err
