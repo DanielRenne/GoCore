@@ -65,9 +65,21 @@ func moveAppFiles() {
 	if err != nil {
 		log.Println("error reading humanTitle")
 	}
+	foundDbType := false
 	databaseType, err := extensions.ReadFile("/tmp/databaseType")
 	if err != nil {
 		log.Println("error reading databaseType")
+	} else {
+		foundDbType = true
+	}
+
+	_, errDatabaseType := os.Stat(serverSettings.APP_LOCATION + "/databaseType")
+	if errDatabaseType == nil {
+		databaseType, err = extensions.ReadFile(serverSettings.APP_LOCATION + "/databaseType")
+		if err != nil {
+			log.Println("error reading databaseType local")
+		}
+		foundDbType = false
 	}
 	parts := strings.Split(serverSettings.APP_LOCATION, "/")
 	appName := parts[len(parts)-1]
@@ -76,10 +88,13 @@ func moveAppFiles() {
 	//First check for the WebConfig.json file
 	_, errNoWebConfig := os.Stat(serverSettings.APP_LOCATION + "/webConfig.json")
 	if errNoWebConfig != nil {
-		if string(databaseType) == "mongo" {
+		if string(databaseType) == "mongo" || string(databaseType) == "" {
 			extensions.CopyFile(serverSettings.GOCORE_PATH+"/tools/appFiles/webConfig.json", serverSettings.APP_LOCATION+"/webConfig.json")
 		} else if string(databaseType) == "bolt" {
 			extensions.CopyFile(serverSettings.GOCORE_PATH+"/tools/appFiles/webConfig.bolt.json", serverSettings.APP_LOCATION+"/webConfig.json")
+		}
+		if foundDbType {
+			createFile("/databaseType", string(databaseType))
 		}
 		logger.Message("Copied webConfig.json to Application.", logger.GREEN)
 	}
@@ -331,7 +346,6 @@ nohup.out
 debug
 .happypack
 web/swagger/dist/swagger.*
-/models/
 /webAPIs/
 /log/*
 webConfig.json

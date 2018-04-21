@@ -2,9 +2,9 @@ package logger
 
 import (
 	"fmt"
-	"os"
 	"log"
 	"math/rand"
+	"os"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -178,4 +178,3 @@ func Tail(path string, length int64) (data string) {
 	}
 	return
 }
-
