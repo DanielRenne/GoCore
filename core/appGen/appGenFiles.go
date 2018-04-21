@@ -164,8 +164,7 @@ func moveAppFiles() {
 		replacePath("/constants", project, githubName, appName)
 	}
 
-	// no web config only do this once when theres no webConfig.  In theory we can go back to the old buildApp if we ever merge to DanielRenne
-	if errNoWebConfig != nil {
+	if wasCopied {
 		copyFolder("/install")
 		replacePath("/install", project, githubName, appName)
 		err = os.Rename(serverSettings.APP_LOCATION+"/install/install.go", serverSettings.APP_LOCATION+"/install/install"+strings.Title(appName)+".go")
@@ -367,12 +366,12 @@ web/app/dist
 *.db
 `+appName)
 
-	createFile("/README.md", `# ` + appName + ` [a [GoCore Application](https://github.com/DanielRenne/GoCore/ "GoCore Application")]
+	createFile("/README.md", `# `+appName+` [a [GoCore Application](https://github.com/DanielRenne/GoCore/ "GoCore Application")]
 
 Add an elevator description pitch of what this web app does here.
 
 ## Setting up a development environment for this application ##
 
-go get github.com/` + githubName + `/` + appName + ` && cd $GOPATH/src/github.com/` + githubName + `/` + appName + ` && bash bin/start_app`)
+go get github.com/`+githubName+`/`+appName+` && cd $GOPATH/src/github.com/`+githubName+`/`+appName+` && bash bin/start_app`)
 
 }
