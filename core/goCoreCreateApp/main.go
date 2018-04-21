@@ -299,12 +299,6 @@ func main() {
 	err = extensions.WriteAndGoFormat(heredoc.Docf(template, "buildCore", "buildCore"), buildGoFile)
 	errorOut("extensions.WriteAndGoFormat "+buildGoFile, err, false)
 
-	err = os.MkdirAll(appPath+"/db/goFiles/", 0777)
-	errorOut("os.MkdirAll(/db/goFiles/, 0644)", err, false)
-
-	err = extensions.WriteToFile("", appPath+"/db/goFiles/.gitkeep", 0777)
-	errorOut("extensions.WriteAndGoFormat gitkeep", err, false)
-
 	modelGoFile := modelBuildPath + "modelBuild" + camelUpper + ".go"
 	err = extensions.WriteAndGoFormat(heredoc.Docf(template, "modelBuild", "modelBuild"), modelGoFile)
 	errorOut("extensions.WriteAndGoFormat "+modelGoFile, err, false)

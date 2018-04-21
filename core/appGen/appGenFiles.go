@@ -71,10 +71,11 @@ func moveAppFiles() {
 		log.Println("error reading humanTitle")
 	}
 	foundDbType := false
-	databaseType, err := extensions.ReadFile("/tmp/databaseType")
-	if err != nil {
+	databaseType, errDatabaseFile := extensions.ReadFile("/tmp/databaseType")
+	if errDatabaseFile != nil {
 		log.Println("error reading databaseType")
 	} else {
+		os.Remove("/tmp/databaseType")
 		foundDbType = true
 	}
 
@@ -164,7 +165,7 @@ func moveAppFiles() {
 		replacePath("/constants", project, githubName, appName)
 	}
 
-	if wasCopied {
+	if errDatabaseFile == nil {
 		copyFolder("/install")
 		replacePath("/install", project, githubName, appName)
 		err = os.Rename(serverSettings.APP_LOCATION+"/install/install.go", serverSettings.APP_LOCATION+"/install/install"+strings.Title(appName)+".go")
@@ -227,6 +228,7 @@ func moveAppFiles() {
 		os.MkdirAll(serverSettings.APP_LOCATION+"/db/schemas/1.0.0", 0777)
 		os.MkdirAll(serverSettings.APP_LOCATION+"/db/bootstrap", 0777)
 		os.MkdirAll(serverSettings.APP_LOCATION+"/db/goFiles/v1", 0777)
+		extensions.WriteToFile("Put model class functions and overrides here", serverSettings.APP_LOCATION+"/db/goFiles/v1/.gitkeep", 0777)
 		extensions.CopyFolder(serverSettings.GOCORE_PATH+"/tools/appFiles/db/schemas", serverSettings.APP_LOCATION+"/db/schemas/1.0.0")
 		extensions.CopyFolder(serverSettings.GOCORE_PATH+"/tools/appFiles/db/bootstrap", serverSettings.APP_LOCATION+"/db/bootstrap")
 		logger.Message("Created db/schemas/1.0.0 in Application.", logger.GREEN)
