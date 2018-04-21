@@ -375,6 +375,6 @@ Add an elevator description pitch of what this web app does here.
 
 ` + "```" + `
 go get github.com/` + githubName + `/` + appName + ` && cd $GOPATH/src/github.com/` + githubName + `/` + appName + ` && bash bin/start_app
-```
+` + "```"
 
 }
