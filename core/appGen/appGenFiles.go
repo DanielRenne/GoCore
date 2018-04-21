@@ -373,8 +373,6 @@ Add an elevator description pitch of what this web app does here.
 
 ## Setting up a development environment for this application ##
 
-` + "```" + `
-go get github.com/` + githubName + `/` + appName + ` && cd $GOPATH/src/github.com/` + githubName + `/` + appName + ` && bash bin/start_app
-` + "```"
+go get github.com/` + githubName + `/` + appName + ` && cd $GOPATH/src/github.com/` + githubName + `/` + appName + ` && bash bin/start_app`
 
 }
