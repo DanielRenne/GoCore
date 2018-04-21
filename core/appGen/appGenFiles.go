@@ -366,4 +366,15 @@ web/app/npm-debug.log*
 web/app/dist
 *.db
 `+appName)
+
+	createFile("/README.md", `# ` + appName + ` [a [GoCore Application](https://github.com/DanielRenne/GoCore/ "GoCore Application")]
+
+Add an elevator description pitch of what this web app does here.
+
+## Setting up a development environment for this application ##
+
+` + "```" + `
+go get github.com/` + githubName + `/` + appName + ` && cd $GOPATH/src/github.com/` + githubName + `/` + appName + ` && bash bin/start_app
+```
+
 }
