@@ -362,7 +362,6 @@ docker/dist
 .DS_Store
 .history
 *.vscode
-web/app/node_modules
 web/app/npm-debug.log*
 web/app/dist
 *.db

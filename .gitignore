@@ -1,3 +1,4 @@
 *.idea
 .history
 tools/appFiles
+tools/nodeModules
