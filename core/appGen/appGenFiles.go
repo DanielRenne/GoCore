@@ -364,12 +364,13 @@ docker/dist
 *.vscode
 web/app/npm-debug.log*
 web/app/dist
+web/app/node_modules
 *.db
 `+appName)
 
 	createFile("/README.md", `# `+appName+` [a [GoCore Application](https://github.com/DanielRenne/GoCore/ "GoCore Application")]
 
-Add an elevator description pitch of what this web app does here.
+Add an elevator description to pitch of what this GoCore web app does here.
 
 ## Setting up a development environment for this application ##
 
