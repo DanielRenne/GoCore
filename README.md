@@ -48,6 +48,8 @@ Then run
 
     getCore
 
+### WARNING!  Please review all of these libraries and versions as getCore will remove all these folders and replace with [these files](https://github.com/DanielRenne/GoCoreDep/tree/master/src "these files")  we have vetted as working with GoCore  
+
 ### Build GoCore App
 
 1.  A sample project is available to build a GoCore project.
