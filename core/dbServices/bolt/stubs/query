@@ -1856,7 +1856,7 @@ func (self *Query) GenerateQuery() storm.Query {
 												}
 											}
 										} else {
-
+											filters = append(filters, querySet.True())
 											if logInfo {
 												log.Println("aodave-interface cast not ok")
 											}

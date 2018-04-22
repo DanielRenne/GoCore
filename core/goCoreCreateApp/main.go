@@ -251,6 +251,8 @@ func main() {
 
 	talk("Getting all dependencies and the latest version of GoCore App Templates")
 	cmd := exec.Command("getCore")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 	err = cmd.Run()
 	errorOut("running getCore", err, false)
 
@@ -306,10 +308,14 @@ func main() {
 	talk("Copying app generation files")
 
 	cmd = exec.Command("go", "run", buildGoFile)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 	err = cmd.Run()
 	errorOut("running go run "+buildGoFile, err, false)
 
 	cmd = exec.Command("go", "run", appPath+"/install"+camelUpper+"/install"+camelUpper+".go")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 	err = cmd.Run()
 	errorOut("running "+appPath+"/install"+camelUpper, err, false)
 
@@ -329,23 +335,33 @@ func main() {
 		talk("Adding github files")
 
 		cmd = exec.Command("git", "init")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
 		err = cmd.Run()
 		errorOut("git init", err, false)
 
 		cmd = exec.Command("git", "add", ".")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
 		err = cmd.Run()
 		errorOut("git add", err, false)
 
 		cmd = exec.Command("git", "commit", "-m", "Initial GoCore App Generation")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
 		err = cmd.Run()
 		errorOut("git commit", err, false)
 
 		if useSSH == "y" {
 			cmd = exec.Command("git", "remote", "add", "origin", "git@github.com:"+username+"/"+appName+".git")
 			err = cmd.Run()
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
 			errorOut("git remote add", err, false)
 		} else {
 			cmd = exec.Command("git", "remote", "add", "origin", "https://github.com/"+username+"/"+appName+".git")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
 			err = cmd.Run()
 			errorOut("git remote add", err, false)
 		}
@@ -366,6 +382,8 @@ func main() {
 			err := extensions.WriteToFile("curl -u "+createGitUsername+":"+gitPassword+" "+endpoint+" -d "+payload, pathExec, 777)
 			errorOut("extensions.WriteToFile /tmp/execCurl", err, false)
 			cmd = exec.Command("bash", pathExec)
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
 			err = cmd.Run()
 			talk("Done creating repository online")
 			errorOut("curl create repo on API", err, true)
@@ -377,6 +395,8 @@ func main() {
 				err = os.Chdir(appPath)
 				errorOut("cd appPath", err, false)
 				cmd = exec.Command("git", "push", "origin", "master")
+				cmd.Stdout = os.Stdout
+				cmd.Stderr = os.Stderr
 				err = cmd.Run()
 				errorOut("Git push", err, true)
 			}
@@ -391,7 +411,9 @@ func main() {
 	errorOut("go install models `"+"go install "+strings.Replace(modelBuildPath, "src/", "", -1)+"`", err, false)
 
 	cmd = exec.Command("bash", appPath+"/bin/start_app")
-	err = cmd.Start()
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err = cmd.Run()
 	errorOut("running gocore app server!", err, false)
 
 }

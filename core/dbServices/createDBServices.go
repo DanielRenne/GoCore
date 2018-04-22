@@ -474,6 +474,12 @@ func finalizeModelFile(versionDir string) {
 			modelToWrite += "case \"" + key + constValue.Name + "\":\n"
 			modelToWrite += "return \"" + constValue.Type + "\"\n"
 		}
+		modelToWrite += "case \"" + key + "CreateDate\":\n"
+		modelToWrite += "return \"dateTime\"\n"
+		modelToWrite += "case \"" + key + "UpdateDate\":\n"
+		modelToWrite += "return \"dateTime\"\n"
+		modelToWrite += "case \"" + key + "LastUpdateId\":\n"
+		modelToWrite += "return \"string\"\n"
 	}
 
 	modelToWrite += "}\n"
