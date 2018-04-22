@@ -363,7 +363,6 @@ docker/dist
 .history
 *.vscode
 web/app/npm-debug.log*
-web/app/dist
 web/app/node_modules
 *.db
 `+appName)
