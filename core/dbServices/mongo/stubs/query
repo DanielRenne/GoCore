@@ -85,6 +85,7 @@ type Query struct {
 	renderViews bool
 	whiteListed []QueryFieldFilter
 	blackListed []QueryFieldFilter
+	filteredFields bool
 }
 
 type QueryIterator struct {
@@ -170,7 +171,14 @@ func (self *Query) ById(objectId interface{}, modelInstance interface{}) error {
 	}
 	q := self.collection.FindId(objId)
 
-	foundCache := dbServices.CollectionCache{}.Fetch(self.collection.Name, objId.Hex(), modelInstance)
+	cacheData := true
+	foundCache := false
+
+	if self.filteredFields {
+		cacheData = false
+	} else {
+		foundCache = dbServices.CollectionCache{}.Fetch(self.collection.Name, objId.Hex(), modelInstance)
+	}
 
 	if foundCache == false {
 		err = q.One(modelInstance)
@@ -183,7 +191,11 @@ func (self *Query) ById(objectId interface{}, modelInstance interface{}) error {
 			if err != nil {
 				return err
 			}
-			dbServices.CollectionCache{}.Store(self.collection.Name, objId.Hex(), modelInstance)
+			if cacheData {
+				if reflect.TypeOf(modelInstance).Name() == self.entityName {
+					dbServices.CollectionCache{}.Store(self.collection.Name, objId.Hex(), modelInstance)
+				}
+			}
 
 			return self.processJoinsAndViews(modelInstance)
 		}
@@ -191,13 +203,11 @@ func (self *Query) ById(objectId interface{}, modelInstance interface{}) error {
 		return self.handleQueryError(err, callback)
 	}
 
-	if foundCache == false {
-		dbServices.CollectionCache{}.Store(self.collection.Name, objId.Hex(), modelInstance)
+	if foundCache == false && cacheData {
+		if reflect.TypeOf(modelInstance).Name() == self.entityName {
+			dbServices.CollectionCache{}.Store(self.collection.Name, objId.Hex(), modelInstance)
+		}
 	}
-
-	return self.processJoinsAndViews(modelInstance)
-
-}
 
 func (self *Query) GetCollection() *mgo.Collection {
 	return self.collection
@@ -1593,6 +1603,7 @@ func (self *Query) GenerateQuery() *mgo.Query {
 		wl := &self.whiteListed[i]
 		if wl.CollectionName == self.entityName {
 			q = q.Select(whiteList(wl.Fields))
+			self.filteredFields = true
 		}
 	}
 
@@ -1619,11 +1630,13 @@ func (self *Query) GenerateQuery() *mgo.Query {
 					}
 					if addField {
 						whiteListFields = append(whiteListFields, reflectedFields[i].Name)
+						self.filteredFields = true
 					}
 				}
 			}
 
 			q = q.Select(whiteList(whiteListFields))
+			self.filteredFields = true
 		}
 	}
 

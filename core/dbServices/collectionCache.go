@@ -48,12 +48,18 @@ func (cc CollectionCache) Fetch(collection string, id string, value interface{})
 	if found {
 		cv, parsed := cvObj.(*CacheValue)
 		if parsed && cv != nil {
-			ok = true
 			if serverSettings.WebConfig.DbConnection.Driver == DATABASE_DRIVER_BOLTDB {
-				json.Unmarshal(cv.value, value)
+				err := json.Unmarshal(cv.value, value)
+				if err == nil {
+					ok = true
+				}
 			} else {
-				bson.Unmarshal(cv.value, value)
+				err := bson.Unmarshal(cv.value, value)
+				if err == nil {
+					ok = true
+				}
 			}
+
 			cv.lastUpdate.Set(time.Now())
 			return
 		}
@@ -64,6 +70,7 @@ func (cc CollectionCache) Fetch(collection string, id string, value interface{})
 
 //Store will store the collection object.
 func (cc CollectionCache) Store(collection string, id string, value interface{}) {
+
 	defer func() {
 		if r := recover(); r != nil {
 			log.Println("Panic Recovered at dbServices.collectionCache.Store():  ", r)
