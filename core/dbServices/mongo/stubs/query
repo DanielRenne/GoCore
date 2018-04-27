@@ -192,7 +192,8 @@ func (self *Query) ById(objectId interface{}, modelInstance interface{}) error {
 				return err
 			}
 			if cacheData {
-				if reflect.TypeOf(modelInstance).Name() == self.entityName {
+
+				if modelInstance != nil && reflect.TypeOf(modelInstance).Name() == self.entityName {
 					dbServices.CollectionCache{}.Store(self.collection.Name, objId.Hex(), modelInstance)
 				}
 			}
@@ -204,11 +205,11 @@ func (self *Query) ById(objectId interface{}, modelInstance interface{}) error {
 	}
 
 	if foundCache == false && cacheData {
-		if reflect.TypeOf(modelInstance).Name() == self.entityName {
+		if modelInstance != nil && reflect.TypeOf(modelInstance).Name() == self.entityName {
 			dbServices.CollectionCache{}.Store(self.collection.Name, objId.Hex(), modelInstance)
 		}
 	}
-	return err
+	return self.processJoinsAndViews(modelInstance)
 }
 
 func (self *Query) GetCollection() *mgo.Collection {
