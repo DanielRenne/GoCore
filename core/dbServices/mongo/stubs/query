@@ -208,6 +208,8 @@ func (self *Query) ById(objectId interface{}, modelInstance interface{}) error {
 			dbServices.CollectionCache{}.Store(self.collection.Name, objId.Hex(), modelInstance)
 		}
 	}
+	return err
+}
 
 func (self *Query) GetCollection() *mgo.Collection {
 	return self.collection
