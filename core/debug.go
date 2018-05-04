@@ -4,10 +4,6 @@ package core
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/DanielRenne/GoCore/core/extensions"
-	"github.com/DanielRenne/GoCore/core/serverSettings"
-	"github.com/davidrenne/reflections"
-	"github.com/go-errors/errors"
 	"log"
 	"os"
 	"reflect"
@@ -16,6 +12,11 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/DanielRenne/GoCore/core/extensions"
+	"github.com/DanielRenne/GoCore/core/serverSettings"
+	"github.com/davidrenne/reflections"
+	"github.com/go-errors/errors"
 )
 
 type core_debug struct{}
@@ -290,16 +291,8 @@ func (self *core_debug) ThrowAndPrintError() (output string) {
 		output += "\n"
 		errorInfo := self.ThrowError()
 		stack := strings.Split(errorInfo.ErrorStack(), "\n")
-		filePathSplit := strings.Split(stack[7], ".go:")
-		filePaths := strings.Split(filePathSplit[0], "/")
-		fileName := filePaths[len(filePaths)-1] + ".go"
-		lineParts := strings.Split(filePathSplit[1], "(")
-		lineNumber := strings.TrimSpace(lineParts[0])
-
-		finalLineOfCode := strings.TrimSpace(stack[8])
-
-		if strings.Index(finalLineOfCode, "Desc->Caller for Query") == -1 {
-			output += "\nDump Caller (" + fileName + ":" + lineNumber + "):"
+		if len(stack) >= 8 {
+			output += "\nDump Caller:"
 			output += "\n---------------"
 			//output += strings.Join(stack, ",")
 			output += "\n golines ==> " + strings.TrimSpace(stack[6])

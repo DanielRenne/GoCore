@@ -166,10 +166,10 @@ func RemoveDirectoryShell(dir string) (err error) {
 
 func RemoveDirectory(dir string) error {
 	d, err := os.Open(dir)
+	defer d.Close()
 	if err != nil {
 		return err
 	}
-	defer d.Close()
 	names, err := d.Readdirnames(-1)
 	if err != nil {
 		return err
@@ -202,7 +202,7 @@ func CopyFolder(source string, dest string) (err error) {
 	}
 
 	directory, _ := os.Open(source)
-
+	defer directory.Close()
 	objects, err := directory.Readdir(-1)
 
 	for _, obj := range objects {
@@ -234,18 +234,16 @@ func CopyFolder(source string, dest string) (err error) {
 
 func CopyFile(source string, dest string) (err error) {
 	sourcefile, err := os.Open(source)
+	defer sourcefile.Close()
 	if err != nil {
 		return err
 	}
-
-	defer sourcefile.Close()
 
 	destfile, err := os.Create(dest)
+	defer destfile.Close()
 	if err != nil {
 		return err
 	}
-
-	defer destfile.Close()
 
 	_, err = io.Copy(destfile, sourcefile)
 	if err == nil {
@@ -351,10 +349,10 @@ func MD5(path string) (string, error) {
 
 func UnGzipfunc(source, target string) error {
 	reader, err := os.Open(source)
+	defer reader.Close()
 	if err != nil {
 		return err
 	}
-	defer reader.Close()
 
 	archive, err := gzip.NewReader(reader)
 	if err != nil {
@@ -393,6 +391,7 @@ func Gzipfunc(source string, target string) (err error) {
 
 func GetFileSize(path string) (size int64, err error) {
 	file, err := os.Open(path)
+	defer file.Close()
 	if err != nil {
 		return
 	}
@@ -406,10 +405,10 @@ func GetFileSize(path string) (size int64, err error) {
 
 func UnTar(tarball, target string) error {
 	reader, err := os.Open(tarball)
+	defer reader.Close()
 	if err != nil {
 		return err
 	}
-	defer reader.Close()
 	tarReader := tar.NewReader(reader)
 
 	for {
@@ -430,10 +429,10 @@ func UnTar(tarball, target string) error {
 		}
 
 		file, err := os.OpenFile(path, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, info.Mode())
+		defer file.Close()
 		if err != nil {
 			return err
 		}
-		defer file.Close()
 		_, err = io.Copy(file, tarReader)
 		if err != nil {
 			return err
@@ -489,10 +488,10 @@ func Tar(source string, target string) error {
 			}
 
 			file, err := os.Open(path)
+			defer file.Close()
 			if err != nil {
 				return err
 			}
-			defer file.Close()
 			_, err = io.Copy(tarball, file)
 			return err
 		})
