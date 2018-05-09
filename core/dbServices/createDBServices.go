@@ -1065,6 +1065,8 @@ func genNoSQLFieldType(prefix string, schema NOSQLSchema, field NOSQLSchemaField
 		return "time.Time"
 	case "interface":
 		return "interface{}"
+	case "interfaceArray":
+		return "[]interface{}"
 	case "byteArray":
 		return "[]byte"
 	case "object":
