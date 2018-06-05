@@ -57,6 +57,11 @@ type WebSocketConnectionMeta struct {
 	ContextString    string
 	ContextType      string
 	LastResponseTime time.Time
+	TimeoutOverride  int
+}
+
+func (obj *WebSocketConnectionMeta) SetTimeoutOverride(timeout int) {
+	obj.TimeoutOverride = timeout
 }
 
 type WebSocketConnectionCollection struct {
@@ -278,7 +283,7 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context) {
 		wsConn.Id = uuid
 	}
 
-	SetWebSocketMeta(uuid, WebSocketConnectionMeta{LastResponseTime: time.Now(), Conn: wsConn})
+	SetWebSocketMeta(uuid, &WebSocketConnectionMeta{LastResponseTime: time.Now(), Conn: wsConn})
 
 	if CustomLog != nil {
 		CustomLog("app->webSocketHandler", "Added Web Socket Connection from "+wsConn.Connection.RemoteAddr().String())
@@ -584,47 +589,27 @@ func SetWebSocketTimeout(timeout int) {
 	// 	CustomLog("app->SetWebSocketTimeout", "Checking for Web Socket Timeouts.")
 	// }
 
-	webSocketConnectionsMeta.Range(func(key interface{}, value interface{}) bool {
-		meta, ok := value.(WebSocketConnectionMeta)
-		if ok {
-			if meta.LastResponseTime.Add(time.Millisecond * time.Duration(timeout)).Before(time.Now()) {
-				if CustomLog != nil {
-					CustomLog("app->SetWebSocketTimeout", "Removed Websocket due to timeout from :  "+meta.Conn.Connection.RemoteAddr().String())
+	for {
+		webSocketConnectionsMeta.Range(func(key interface{}, value interface{}) bool {
+			meta, ok := value.(*WebSocketConnectionMeta)
+			if ok {
+				duration := time.Millisecond * time.Duration(timeout)
+				if meta.TimeoutOverride != 0 {
+					duration = time.Millisecond * time.Duration(meta.TimeoutOverride)
 				}
-				log.Println("Removed Websocket due to timeout from :  " + meta.Conn.Connection.RemoteAddr().String())
-				deleteWebSocket(meta.Conn)
+				if meta.LastResponseTime.Add(duration).Before(time.Now()) {
+					if CustomLog != nil {
+						CustomLog("app->SetWebSocketTimeout", "Removed Websocket due to timeout from :  "+meta.Conn.Connection.RemoteAddr().String())
+					}
+					log.Println("Removed Websocket due to timeout from :  " + meta.Conn.Connection.RemoteAddr().String())
+					deleteWebSocket(meta.Conn)
+				}
 			}
-		}
-		return true
-	})
+			return true
+		})
+		time.Sleep(time.Millisecond * 5000)
+	}
 
-	//
-	// var socketsToRemove []*WebSocketConnection
-	//
-	// for item := range WebSocketConnections.Iter() {
-	// 	wsConn := item.Conn
-	// 	wsConn.LastResponseTimeLock.RLock()
-	// 	lastResponseTime := wsConn.LastResponseTime
-	// 	wsConn.LastResponseTimeLock.RUnlock()
-	//
-	// 	if lastResponseTime.Add(time.Millisecond * time.Duration(timeout)).Before(time.Now()) {
-	// 		socketsToRemove = append(socketsToRemove, wsConn)
-	// 	}
-	// }
-	//
-	// for i := 0; i < len(socketsToRemove); i++ {
-	//
-	// 	c := socketsToRemove[i]
-	// 	if CustomLog != nil {
-	// 		CustomLog("app->SetWebSocketTimeout", "Removed Websocket due to timeout from :  "+c.Connection.RemoteAddr().String())
-	// 	}
-	// 	log.Println("Removed Websocket due to timeout from :  " + c.Connection.RemoteAddr().String())
-	// 	deleteWebSocket(c)
-	//
-	// }
-
-	time.Sleep(time.Millisecond * time.Duration(timeout))
-	SetWebSocketTimeout(timeout)
 }
 
 func deleteWebSocket(c *WebSocketConnection) {
@@ -681,7 +666,7 @@ func deleteWebSocket(c *WebSocketConnection) {
 								return
 							}
 						}()
-						WebSocketRemovalCallback(info)
+						WebSocketRemovalCallback(*info)
 					}(c)
 				}
 
@@ -695,16 +680,16 @@ func deleteWebSocket(c *WebSocketConnection) {
 	}
 }
 
-func GetWebSocketMeta(id string) (info WebSocketConnectionMeta, ok bool) {
+func GetWebSocketMeta(id string) (info *WebSocketConnectionMeta, ok bool) {
 	result, ok := webSocketConnectionsMeta.Load(id)
 	if ok {
-		info = result.(WebSocketConnectionMeta)
+		info = result.(*WebSocketConnectionMeta)
 		return
 	}
 	return
 }
 
-func SetWebSocketMeta(id string, info WebSocketConnectionMeta) {
+func SetWebSocketMeta(id string, info *WebSocketConnectionMeta) {
 	webSocketConnectionsMeta.Store(id, info)
 }
 
