@@ -57,6 +57,27 @@ func processGETAPI(c *gin.Context) {
 		return
 	}
 
+	methodType := method.Type()
+	paramCnt := methodType.NumIn()
+	paramType := methodType.In(0)
+	genericType := reflect.TypeOf((*interface{})(nil))
+	in := []reflect.Value{}
+
+	if paramCnt == 0 {
+
+		var tmp string
+		in = append(in, reflect.ValueOf(tmp))
+
+		value := method.Call(in)
+		if len(value) > 0 {
+			y := value[0].Interface()
+			c.JSON(http.StatusOK, y)
+		} else {
+			c.JSON(http.StatusOK, emptyResponse{})
+		}
+		return
+	}
+
 	uriParamsData, err := base64.StdEncoding.DecodeString(uriParams)
 
 	if err != nil {
@@ -74,8 +95,29 @@ func processGETAPI(c *gin.Context) {
 		return
 	}
 
-	in := []reflect.Value{}
-	in = append(in, reflect.ValueOf(x))
+	if paramType == genericType || paramType.String() == "interface {}" {
+		if x != nil {
+			in = append(in, reflect.ValueOf(x))
+		}
+	} else {
+
+		raw := []byte(uriParamsData)
+
+		if len(raw) > 0 {
+			param := reflect.New(paramType)
+			err := json.Unmarshal(raw, param.Interface())
+			if err != nil {
+				e.Error.Message = "Failed to unmarshal raw uriParamsData:  " + err.Error()
+				c.JSON(http.StatusOK, e)
+				return
+			}
+
+			in = append(in, param.Elem())
+		} else {
+			var tmp string
+			in = append(in, reflect.ValueOf(tmp))
+		}
+	}
 
 	value := method.Call(in)
 	if len(value) > 0 {
