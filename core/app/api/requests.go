@@ -9,6 +9,8 @@ import (
 	"reflect"
 	"runtime/debug"
 
+	"github.com/DanielRenne/GoCore/core/extensions"
+	"github.com/DanielRenne/GoCore/core/ginServer"
 	"github.com/gin-gonic/gin"
 )
 
@@ -32,7 +34,7 @@ func processGETAPI(c *gin.Context) {
 			log.Println("Recover Error:  " + fmt.Sprintf("%+v", r))
 			var e errorResponse
 			e.Error.Message = "Recover Error:  " + fmt.Sprintf("%+v", r)
-			c.JSON(http.StatusOK, e)
+			c.JSON(http.StatusInternalServerError, e)
 			return
 		}
 	}()
@@ -48,12 +50,50 @@ func processGETAPI(c *gin.Context) {
 		action = "Root"
 	}
 
+	uriParamsData, err := base64.StdEncoding.DecodeString(uriParams)
+
+	if err != nil {
+		e.Error.Message = "Failed to decode uriParams:  " + err.Error()
+		c.JSON(http.StatusInternalServerError, e)
+		return
+	}
+
+	processRequest(controller, action, uriParamsData, c)
+
+}
+
+func processPOSTAPI(c *gin.Context) {
+
+	defer func() {
+		if r := recover(); r != nil {
+			log.Println("Panic Stack: " + string(debug.Stack()))
+			log.Println("Recover Error:  " + fmt.Sprintf("%+v", r))
+			var e errorResponse
+			e.Error.Message = "Recover Error:  " + fmt.Sprintf("%+v", r)
+			c.JSON(http.StatusInternalServerError, e)
+			return
+		}
+	}()
+
+	controller := c.Query("controller")
+	action := c.Query("action")
+
+	body, _ := ginServer.GetRequestBody(c)
+
+	processRequest(controller, action, body, c)
+}
+
+func processRequest(controller string, action string, data []byte, c *gin.Context) {
+
+	var e errorResponse
+	e.Error = new(errorObj)
+
 	ctl := getController(controller)
 	method := ctl.MethodByName(action)
 
 	if !method.IsValid() {
 		e.Error.Message = "Method " + action + " not available to call."
-		c.JSON(http.StatusOK, e)
+		c.JSON(http.StatusNotImplemented, e)
 		return
 	}
 
@@ -78,41 +118,51 @@ func processGETAPI(c *gin.Context) {
 		return
 	}
 
-	uriParamsData, err := base64.StdEncoding.DecodeString(uriParams)
-
-	if err != nil {
-		e.Error.Message = "Failed to decode uriParams:  " + err.Error()
-		c.JSON(http.StatusOK, e)
-		return
-	}
-
-	var x interface{}
-	err = json.Unmarshal(uriParamsData, &x)
-
-	if err != nil {
-		e.Error.Message = "Failed to unmarshal uriParams:  " + err.Error()
-		c.JSON(http.StatusOK, e)
+	if len(data) == 0 {
+		e.Error.Message = "No data posted.  Method expects a parameter of data."
+		c.JSON(http.StatusBadRequest, e)
 		return
 	}
 
 	if paramType == genericType || paramType.String() == "interface {}" {
+
+		var x interface{}
+		err := json.Unmarshal(data, &x)
+
+		if err != nil {
+			e.Error.Message = "Failed to unmarshal uriParams or post body data:  " + err.Error()
+			c.JSON(http.StatusInternalServerError, e)
+			return
+		}
+
 		if x != nil {
 			in = append(in, reflect.ValueOf(x))
 		}
 	} else {
 
-		raw := []byte(uriParamsData)
+		raw := data
 
 		if len(raw) > 0 {
 			param := reflect.New(paramType)
-			err := json.Unmarshal(raw, param.Interface())
-			if err != nil {
-				e.Error.Message = "Failed to unmarshal raw uriParamsData:  " + err.Error()
-				c.JSON(http.StatusOK, e)
-				return
+
+			if paramType.String() == "string" {
+				paramValue := string(data)
+				in = append(in, reflect.ValueOf(paramValue))
+			} else if paramType.String() == "int" {
+				paramValue := extensions.IntToString(string(data))
+				in = append(in, reflect.ValueOf(paramValue))
+			} else {
+				err := json.Unmarshal(raw, param.Interface())
+				if err != nil {
+					e.Error.Message = "Failed to unmarshal raw uriParamsData:  " + err.Error()
+					log.Printf("%+v", e)
+					c.JSON(http.StatusInternalServerError, e)
+					return
+				}
+
+				in = append(in, param.Elem())
 			}
 
-			in = append(in, param.Elem())
 		} else {
 			var tmp string
 			in = append(in, reflect.ValueOf(tmp))
@@ -126,14 +176,4 @@ func processGETAPI(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusOK, emptyResponse{})
 	}
-}
-
-func processPOSTAPI(c *gin.Context) {
-
-	controller := c.Query("controller")
-	action := c.Query("action")
-	uriParams := c.Query("uriParams")
-
-	log.Printf("Controller:%s\nAction:%s\nURIParams:%s\n", controller, action, uriParams)
-
 }

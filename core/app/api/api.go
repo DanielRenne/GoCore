@@ -2,6 +2,7 @@
 package api
 
 import (
+	"log"
 	"net/http"
 	"reflect"
 	"sync"
@@ -21,12 +22,14 @@ ginServer.Router.POST("/api", appAPI.APICallback)
 ---------------------------------
 */
 func APICallback(c *gin.Context) {
+
+	log.Println(c.Request.Method)
+
 	switch c.Request.Method {
 	case http.MethodGet:
 		processGETAPI(c)
 	case http.MethodPost:
 		processPOSTAPI(c)
-
 	}
 }
 
