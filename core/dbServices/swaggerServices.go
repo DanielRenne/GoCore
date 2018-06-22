@@ -2,11 +2,13 @@ package dbServices
 
 import (
 	"encoding/json"
+
 	"github.com/DanielRenne/GoCore/core/serverSettings"
 	// "fmt"
-	"github.com/fatih/color"
 	"io/ioutil"
 	"sync"
+
+	"github.com/fatih/color"
 )
 
 const SWAGGER_SCHEMA_PATH = "src/github.com/DanielRenne/GoCore/swagger/schemas"
@@ -200,7 +202,7 @@ func init() {
 func LoadSwaggerTemplate() {
 	jsonData, err := ioutil.ReadFile(SWAGGER_SCHEMA_PATH + "/" + CURRENT_SWAGGER_VERSION + "/swagger.json")
 	if err != nil {
-		color.Red("Reading of swagger.json failed:  " + err.Error())
+		// color.Red("Reading of swagger.json failed:  " + err.Error())
 		return
 	}
 

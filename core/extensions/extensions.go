@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"math/rand"
+	"net"
 	"os"
 	"strconv"
 	"strings"
@@ -360,4 +361,30 @@ func RandomString(strlen int) string {
 		result[i] = chars[rand.Intn(len(chars))]
 	}
 	return string(result)
+}
+
+//BigEndianUInt16 will convert a uint16 to 2 bytes
+func BigEndianUInt16(value uint16) (value1 byte, value2 byte) {
+	inject := make([]byte, 2)
+	binary.BigEndian.PutUint16(inject, value)
+	value1 = inject[0]
+	value2 = inject[1]
+	return
+}
+
+//BigEndianUInt32 will convert a uint32 to 4 bytes
+func BigEndianUInt32(value uint32) (value1 byte, value2 byte, value3 byte, value4 byte) {
+	inject := make([]byte, 4)
+	binary.BigEndian.PutUint32(inject, value)
+	value1 = inject[0]
+	value2 = inject[1]
+	value3 = inject[2]
+	value4 = inject[3]
+	return
+}
+
+//IpAddressToUint32 will convert a string ip address to UInt32
+func IpAddressToUint32(ip string) (value uint32) {
+	binary.Read(bytes.NewBuffer(net.ParseIP(ip).To4()), binary.BigEndian, &value)
+	return
 }

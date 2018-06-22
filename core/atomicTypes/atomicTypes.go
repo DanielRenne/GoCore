@@ -48,6 +48,48 @@ func (obj *AtomicInt) Set(value int) {
 	obj.valueSync.Unlock()
 }
 
+//AtomicUInt16 provides an uint16 object that is lock safe.
+type AtomicUInt16 struct {
+	valueSync sync.RWMutex
+	value     uint32
+}
+
+//Get returns the int value
+func (obj *AtomicUInt16) Get() (value uint32) {
+	obj.valueSync.RLock()
+	value = obj.value
+	obj.valueSync.RUnlock()
+	return
+}
+
+//Set sets the int value
+func (obj *AtomicUInt16) Set(value uint32) {
+	obj.valueSync.Lock()
+	obj.value = value
+	obj.valueSync.Unlock()
+}
+
+//AtomicUInt32 provides an uint16 object that is lock safe.
+type AtomicUInt32 struct {
+	valueSync sync.RWMutex
+	value     uint32
+}
+
+//Get returns the int value
+func (obj *AtomicUInt32) Get() (value uint32) {
+	obj.valueSync.RLock()
+	value = obj.value
+	obj.valueSync.RUnlock()
+	return
+}
+
+//Set sets the int value
+func (obj *AtomicUInt32) Set(value uint32) {
+	obj.valueSync.Lock()
+	obj.value = value
+	obj.valueSync.Unlock()
+}
+
 //AtomicBool provides an bool object that is lock safe.
 type AtomicBool struct {
 	valueSync sync.RWMutex
