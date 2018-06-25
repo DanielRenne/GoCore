@@ -9,7 +9,7 @@ import (
 	"reflect"
 	"runtime/debug"
 
-	"github.com/DanielRenne/GoCore/core/extensions"
+	"github.com/DanielRenne/GoCore/core/app"
 	"github.com/DanielRenne/GoCore/core/ginServer"
 	"github.com/gin-gonic/gin"
 )
@@ -25,6 +25,22 @@ type errorObj struct {
 }
 
 type emptyResponse struct{}
+
+type socketAPIRequest struct {
+	CallbackID int        `json:"callBackId"`
+	Data       apiRequest `json:"data"`
+}
+
+type apiRequest struct {
+	Action     string      `json:"action"`
+	State      interface{} `json:"state"`
+	Controller string      `json:"controller"`
+}
+
+type socketAPIResponse struct {
+	CallbackId int         `json:"callBackId"`
+	Data       interface{} `json:"data"`
+}
 
 func processGETAPI(c *gin.Context) {
 
@@ -58,7 +74,12 @@ func processGETAPI(c *gin.Context) {
 		return
 	}
 
-	processRequest(controller, action, uriParamsData, c)
+	response := func(y interface{}, e errorResponse, httpStatus int) {
+		log.Printf("%+v", y)
+		processHTTPResponse(y, e, httpStatus, c)
+	}
+
+	processRequest(controller, action, uriParamsData, c, response)
 
 }
 
@@ -79,11 +100,66 @@ func processPOSTAPI(c *gin.Context) {
 	action := c.Query("action")
 
 	body, _ := ginServer.GetRequestBody(c)
+	log.Printf("%+v", body)
 
-	processRequest(controller, action, body, c)
+	response := func(y interface{}, e errorResponse, httpStatus int) {
+		processHTTPResponse(y, e, httpStatus, c)
+	}
+
+	processRequest(controller, action, body, c, response)
 }
 
-func processRequest(controller string, action string, data []byte, c *gin.Context) {
+func processHTTPResponse(y interface{}, e errorResponse, httpStatus int, c *gin.Context) {
+	if y == nil {
+		c.JSON(httpStatus, e)
+	} else {
+		c.JSON(httpStatus, y)
+	}
+}
+
+func processSocketAPI(c *gin.Context, data []byte, conn *app.WebSocketConnection) {
+
+	var request socketAPIRequest
+
+	var e errorResponse
+	e.Error = new(errorObj)
+
+	var socketResponse socketAPIResponse
+
+	errMarshal := json.Unmarshal(data, &request)
+	if errMarshal != nil {
+
+		e.Error.Message = "Failed to unmarshal socketAPIRequest:  " + errMarshal.Error()
+		socketResponse.Data = e
+		app.ReplyToWebSocketJSON(conn, socketResponse)
+		return
+	}
+
+	socketResponse.CallbackId = request.CallbackID
+
+	response := func(y interface{}, e errorResponse, httpStatus int) {
+		if y == nil {
+			socketResponse.Data = e
+			app.ReplyToWebSocketJSON(conn, socketResponse)
+		} else {
+			socketResponse.Data = y
+			app.ReplyToWebSocketJSON(conn, socketResponse)
+		}
+	}
+
+	data, err := json.Marshal(request.Data.State)
+	if err != nil {
+		e.Error.Message = "Failed to Marshal socketAPIRequest.Data.State:  " + err.Error()
+		socketResponse.Data = e
+		app.ReplyToWebSocketJSON(conn, socketResponse)
+		return
+	}
+
+	processRequest(request.Data.Controller, request.Data.Action, data, c, response)
+
+}
+
+func processRequest(controller string, action string, data []byte, c *gin.Context, results func(y interface{}, e errorResponse, httpStatus int)) {
 
 	var e errorResponse
 	e.Error = new(errorObj)
@@ -93,7 +169,9 @@ func processRequest(controller string, action string, data []byte, c *gin.Contex
 
 	if !method.IsValid() {
 		e.Error.Message = "Method " + action + " not available to call."
-		c.JSON(http.StatusNotImplemented, e)
+		// c.JSON(http.StatusNotImplemented, e)
+
+		results(nil, e, http.StatusNotImplemented)
 		return
 	}
 
@@ -105,22 +183,19 @@ func processRequest(controller string, action string, data []byte, c *gin.Contex
 
 	if paramCnt == 0 {
 
-		var tmp string
-		in = append(in, reflect.ValueOf(tmp))
-
 		value := method.Call(in)
 		if len(value) > 0 {
 			y := value[0].Interface()
-			c.JSON(http.StatusOK, y)
+			results(y, e, http.StatusOK)
 		} else {
-			c.JSON(http.StatusOK, emptyResponse{})
+			results(emptyResponse{}, e, http.StatusOK)
 		}
 		return
 	}
 
 	if len(data) == 0 {
 		e.Error.Message = "No data posted.  Method expects a parameter of data."
-		c.JSON(http.StatusBadRequest, e)
+		results(nil, e, http.StatusBadRequest)
 		return
 	}
 
@@ -131,7 +206,7 @@ func processRequest(controller string, action string, data []byte, c *gin.Contex
 
 		if err != nil {
 			e.Error.Message = "Failed to unmarshal uriParams or post body data:  " + err.Error()
-			c.JSON(http.StatusInternalServerError, e)
+			results(nil, e, http.StatusInternalServerError)
 			return
 		}
 
@@ -145,24 +220,14 @@ func processRequest(controller string, action string, data []byte, c *gin.Contex
 		if len(raw) > 0 {
 			param := reflect.New(paramType)
 
-			if paramType.String() == "string" {
-				paramValue := string(data)
-				in = append(in, reflect.ValueOf(paramValue))
-			} else if paramType.String() == "int" {
-				paramValue := extensions.IntToString(string(data))
-				in = append(in, reflect.ValueOf(paramValue))
-			} else {
-				err := json.Unmarshal(raw, param.Interface())
-				if err != nil {
-					e.Error.Message = "Failed to unmarshal raw uriParamsData:  " + err.Error()
-					log.Printf("%+v", e)
-					c.JSON(http.StatusInternalServerError, e)
-					return
-				}
-
-				in = append(in, param.Elem())
+			err := json.Unmarshal(raw, param.Interface())
+			if err != nil {
+				e.Error.Message = "Failed to unmarshal raw uriParamsData:  " + err.Error()
+				results(nil, e, http.StatusInternalServerError)
+				return
 			}
 
+			in = append(in, param.Elem())
 		} else {
 			var tmp string
 			in = append(in, reflect.ValueOf(tmp))
@@ -172,8 +237,8 @@ func processRequest(controller string, action string, data []byte, c *gin.Contex
 	value := method.Call(in)
 	if len(value) > 0 {
 		y := value[0].Interface()
-		c.JSON(http.StatusOK, y)
+		results(y, e, http.StatusOK)
 	} else {
-		c.JSON(http.StatusOK, emptyResponse{})
+		results(emptyResponse{}, e, http.StatusOK)
 	}
 }

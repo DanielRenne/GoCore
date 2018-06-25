@@ -5,8 +5,10 @@ import (
 	"log"
 	"net/http"
 	"reflect"
+	"strings"
 	"sync"
 
+	"github.com/DanielRenne/GoCore/core/app"
 	"github.com/gin-gonic/gin"
 )
 
@@ -31,6 +33,19 @@ func APICallback(c *gin.Context) {
 	case http.MethodPost:
 		processPOSTAPI(c)
 	}
+}
+
+/*SocketAPICallback provides the routing to controller methods for web socket calls.
+Implementation example-----------
+app.RegisterWebSocketDataCallback(api.SocketAPICallback)
+---------------------------------
+*/
+func SocketAPICallback(conn *app.WebSocketConnection, c *gin.Context, messageType int, id string, data []byte) {
+
+	if strings.Contains(string(data), "\"Thank\"") {
+		return
+	}
+	processSocketAPI(c, data, conn)
 }
 
 //RegisterController registers a controller object to be registered by the name of the object.
