@@ -122,9 +122,14 @@ at ` + time.Now().String() + " " + extensions.IntToString(len(RunningGophers)) +
 	gopherMutex.RUnlock()
 }
 
-func GoRoutineLogger(fn func(), routineDesc string) {
+func GoRoutineLoggerWithId(fn func(), routineDesc string, Id string) {
 	if serverSettings.WebConfig.Application.LogGophers {
-		id := getGopherGender() + utils.RandStringRunes(5)
+		id := getGopherGender()
+		if Id == "" {
+			id += utils.RandStringRunes(5)
+		} else {
+			id += Id
+		}
 		gopherMutex.Lock()
 		descId := id + "-> (" + routineDesc + ")"
 		GopherTimeRunning[descId] = time.Now()
@@ -140,7 +145,10 @@ func GoRoutineLogger(fn func(), routineDesc string) {
 	if fn != nil {
 		fn()
 	}
+}
 
+func GoRoutineLogger(fn func(), routineDesc string) {
+	GoRoutineLoggerWithId(fn, routineDesc, "")
 }
 
 func TimeTrack(start time.Time, name string) (log string) {
