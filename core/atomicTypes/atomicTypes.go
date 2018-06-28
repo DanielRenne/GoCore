@@ -51,11 +51,11 @@ func (obj *AtomicInt) Set(value int) {
 //AtomicUInt16 provides an uint16 object that is lock safe.
 type AtomicUInt16 struct {
 	valueSync sync.RWMutex
-	value     uint32
+	value     uint16
 }
 
 //Get returns the int value
-func (obj *AtomicUInt16) Get() (value uint32) {
+func (obj *AtomicUInt16) Get() (value uint16) {
 	obj.valueSync.RLock()
 	value = obj.value
 	obj.valueSync.RUnlock()
@@ -63,7 +63,7 @@ func (obj *AtomicUInt16) Get() (value uint32) {
 }
 
 //Set sets the int value
-func (obj *AtomicUInt16) Set(value uint32) {
+func (obj *AtomicUInt16) Set(value uint16) {
 	obj.valueSync.Lock()
 	obj.value = value
 	obj.valueSync.Unlock()
