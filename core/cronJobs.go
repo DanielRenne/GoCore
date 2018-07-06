@@ -137,6 +137,11 @@ func (jobs *cronJobs) Start() {
 
 //Register provides a method to register for a callback that is called at the start of the cron job engine and 5 seconds before each day occures.
 func (jobs *cronJobs) RegisterRecurring(t RecurringType, callback RecurringEvent) {
+	defer func() {
+		if r := recover(); r != nil {
+			return
+		}
+	}()
 	recurringJobs.Lock()
 	var re recurringEvent
 	re.Event = callback

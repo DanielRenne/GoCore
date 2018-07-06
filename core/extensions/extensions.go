@@ -4,6 +4,7 @@ import (
 	"bytes"
 	cryptoRand "crypto/rand"
 	"encoding/binary"
+	"encoding/hex"
 	"fmt"
 	"io"
 	"math/rand"
@@ -35,6 +36,18 @@ type FilePath struct {
 func (obj *FilePath) ToString() (str string) {
 	return obj.Path + string(os.PathSeparator) + obj.Name + " | " + obj.Type
 }
+
+
+func GetDecimalAndStringFromHex(twoDigitHexCode string) (decimalValue int, asciiString string, err error) {
+	decoded, err := hex.DecodeString(twoDigitHexCode)
+	if err != nil {
+		return
+	}
+  	decimalValue = int(decoded[0])
+	asciiString = string(string(decoded))
+	return
+}
+
 
 /*
 * leftPad and rightPad just repoeat the padStr the indicated
