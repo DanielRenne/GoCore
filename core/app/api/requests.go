@@ -119,6 +119,14 @@ func processHTTPResponse(y interface{}, e errorResponse, httpStatus int, c *gin.
 
 func processSocketAPI(c *gin.Context, data []byte, conn *app.WebSocketConnection) {
 
+	defer func() {
+		if r := recover(); r != nil {
+			log.Println("Panic Stack at requests.processSocketAPI: " + string(debug.Stack()))
+			log.Println("Recover Error:  " + fmt.Sprintf("%+v", r))
+			return
+		}
+	}()
+
 	var request socketAPIRequest
 
 	var e errorResponse

@@ -218,6 +218,11 @@ func LoadSwaggerTemplate() {
 
 func AddSwaggerGETPath(path string, swaggerPath Swagger2Path) error {
 	SwaggerDefinition.Lock()
+
+	if SwaggerDefinition.Paths == nil {
+		SwaggerDefinition.Paths = make(map[string]Swagger2Path)
+	}
+
 	if val, ok := SwaggerDefinition.Paths[path]; ok {
 		val.GET = swaggerPath.GET
 	} else {
@@ -229,6 +234,11 @@ func AddSwaggerGETPath(path string, swaggerPath Swagger2Path) error {
 
 func AddSwaggerPOSTPath(path string, swaggerPath Swagger2Path) error {
 	SwaggerDefinition.Lock()
+
+	if SwaggerDefinition.Paths == nil {
+		SwaggerDefinition.Paths = make(map[string]Swagger2Path)
+	}
+
 	if val, ok := SwaggerDefinition.Paths[path]; ok {
 		val.POST = swaggerPath.POST
 	} else {
@@ -240,6 +250,11 @@ func AddSwaggerPOSTPath(path string, swaggerPath Swagger2Path) error {
 
 func AddSwaggerPUTPath(path string, swaggerPath Swagger2Path) error {
 	SwaggerDefinition.Lock()
+
+	if SwaggerDefinition.Paths == nil {
+		SwaggerDefinition.Paths = make(map[string]Swagger2Path)
+	}
+
 	if val, ok := SwaggerDefinition.Paths[path]; ok {
 		val.PUT = swaggerPath.PUT
 		SwaggerDefinition.Paths[path] = val
@@ -252,6 +267,11 @@ func AddSwaggerPUTPath(path string, swaggerPath Swagger2Path) error {
 
 func AddSwaggerDELETEPath(path string, swaggerPath Swagger2Path) error {
 	SwaggerDefinition.Lock()
+
+	if SwaggerDefinition.Paths == nil {
+		SwaggerDefinition.Paths = make(map[string]Swagger2Path)
+	}
+
 	if val, ok := SwaggerDefinition.Paths[path]; ok {
 		val.DELETE = swaggerPath.DELETE
 		SwaggerDefinition.Paths[path] = val
@@ -264,6 +284,11 @@ func AddSwaggerDELETEPath(path string, swaggerPath Swagger2Path) error {
 
 func AddSwaggerDefinition(name string, swaggerSchema Swagger2Schema) error {
 	SwaggerDefinition.Lock()
+
+	if SwaggerDefinition.Definitions == nil {
+		SwaggerDefinition.Definitions = make(map[string]Swagger2Schema)
+	}
+
 	SwaggerDefinition.Definitions[name] = swaggerSchema
 	SwaggerDefinition.Unlock()
 	return nil

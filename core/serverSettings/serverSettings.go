@@ -4,8 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"runtime"
-	"strings"
+	"os"
 	"sync"
 )
 
@@ -132,11 +131,6 @@ func Initialize(path string, configurationFile string) (err error) {
 //Sets the GoCore path for go core packages to reference.
 func setGoCorePath() {
 
-	_, filename, _, ok := runtime.Caller(1)
-
-	if ok == true {
-		GOCORE_PATH = strings.Replace(filename[strings.Index(filename, "/src")+1:], "/core/serverSettings/serverSettings.go", "", -1)
-	} else {
-		GOCORE_PATH = "src/github.com/DanielRenne/GoCore"
-	}
+	goPath := os.Getenv("GOPATH")
+	GOCORE_PATH = goPath + "/src/github.com/DanielRenne/GoCore"
 }

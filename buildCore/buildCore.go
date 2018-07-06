@@ -15,3 +15,11 @@ func Initialize(path string, fileName string) {
 	serverSettings.Initialize(path, fileName)
 	dbServices.RunDBCreate()
 }
+
+//GenerateModels will build model files based on your json schema
+func GenerateModels(path string, fileName string) {
+
+	serverSettings.Initialize(path, fileName)
+	dbServices.Initialize()
+	dbServices.RunDBCreate()
+}
