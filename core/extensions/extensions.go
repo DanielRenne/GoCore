@@ -37,17 +37,15 @@ func (obj *FilePath) ToString() (str string) {
 	return obj.Path + string(os.PathSeparator) + obj.Name + " | " + obj.Type
 }
 
-
 func GetDecimalAndStringFromHex(twoDigitHexCode string) (decimalValue int, asciiString string, err error) {
 	decoded, err := hex.DecodeString(twoDigitHexCode)
 	if err != nil {
 		return
 	}
-  	decimalValue = int(decoded[0])
+	decimalValue = int(decoded[0])
 	asciiString = string(string(decoded))
 	return
 }
-
 
 /*
 * leftPad and rightPad just repoeat the padStr the indicated
@@ -163,6 +161,14 @@ func Round(x, unit float64) float64 {
 func StringToInt(val string) int {
 
 	r, err := strconv.Atoi(val)
+	if err != nil {
+		return 0
+	}
+	return r
+}
+
+func StringToFloat(val string, bitSize int) (r float64) {
+	r, err := strconv.ParseFloat(val, bitSize)
 	if err != nil {
 		return 0
 	}
