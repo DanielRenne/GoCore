@@ -17,6 +17,11 @@ const (
 	PathRemove        = "Remove"
 )
 
+type pathValue struct {
+	Path  string      `json:"Path"`
+	Value interface{} `json:"Value"`
+}
+
 //OnChange provides inserts, updates, and deletes to the store key.
 var OnChange func(key string, id string, path string, x interface{}, err error)
 
@@ -121,6 +126,76 @@ func GetByPath(key string, id string, joins []string, path string) (x interface{
 		}
 	}
 
+	return
+}
+
+//GetByPathBatch gets a collection entity-property values by id & path.
+func GetByPathBatch(key string, id string, joins []string, paths []string) (x interface{}, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("%+v", r)
+			return
+		}
+	}()
+
+	collection, ok := getRegistry(key)
+	if !ok {
+		return
+	}
+
+	obj, err := collection.ById(id, joins)
+	if err != nil {
+		return
+	}
+
+	objElem := obj.Elem()
+
+	results := []pathValue{}
+
+	for j := range paths {
+		path := paths[j]
+
+		fields := strings.Split(path, ".")
+		depth := len(fields)
+
+		properties := []reflect.Value{}
+
+		for i := range fields {
+			fieldName := fields[i]
+			arrayIndex := -1
+
+			if strings.Contains(fieldName, "[") {
+				arraySplit := strings.Split(fieldName, "[")
+				fieldName = arraySplit[0]
+				arrayIndex = extensions.StringToInt(strings.Replace(arraySplit[1], "]", "", -1))
+			}
+
+			var fieldValue reflect.Value
+
+			if i == 0 {
+				fieldValue = objElem.FieldByName(fieldName)
+			} else {
+				fieldValue = properties[i-1].FieldByName(fieldName)
+			}
+
+			if arrayIndex == -1 {
+				properties = append(properties, fieldValue)
+			} else {
+				properties = append(properties, fieldValue.Index(arrayIndex))
+			}
+
+			if i+1 == depth {
+				var pv pathValue
+				pv.Path = path
+				pv.Value = properties[i].Interface()
+				results = append(results, pv)
+
+			}
+		}
+
+	}
+
+	x = results
 	return
 }
 
