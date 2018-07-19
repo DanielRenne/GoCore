@@ -263,6 +263,11 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context) {
 			return
 		}
 	}()
+
+	if serverSettings.WebConfig.Application.AllowCrossOriginRequests {
+		r.Header.Add("Access-Control-Allow-Origin", "*")
+	}
+
 	//log.Println("Web Socket Connection")
 	conn, err := upgrader.Upgrade(w, r, nil)
 

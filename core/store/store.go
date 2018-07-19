@@ -350,7 +350,7 @@ func Set(key string, id string, path string, x interface{}, logger func(string, 
 					propInterface := properties[i].Interface()
 					if propInterface != nil {
 						propType := reflect.TypeOf(propInterface).String()
-						logger("PropType", propType)
+
 						if propType == "int" {
 							floatVal, ok := x.(float64)
 							if ok {

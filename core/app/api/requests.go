@@ -11,6 +11,7 @@ import (
 
 	"github.com/DanielRenne/GoCore/core/app"
 	"github.com/DanielRenne/GoCore/core/ginServer"
+	"github.com/DanielRenne/GoCore/core/serverSettings"
 	"github.com/gin-gonic/gin"
 )
 
@@ -74,8 +75,11 @@ func processGETAPI(c *gin.Context) {
 		return
 	}
 
+	if serverSettings.WebConfig.Application.AllowCrossOriginRequests {
+		c.Header("Access-Control-Allow-Origin", "*")
+	}
+
 	response := func(y interface{}, e errorResponse, httpStatus int) {
-		log.Printf("%+v", y)
 		processHTTPResponse(y, e, httpStatus, c)
 	}
 
@@ -100,7 +104,10 @@ func processPOSTAPI(c *gin.Context) {
 	action := c.Query("action")
 
 	body, _ := ginServer.GetRequestBody(c)
-	log.Printf("%+v", body)
+
+	if serverSettings.WebConfig.Application.AllowCrossOriginRequests {
+		c.Header("Access-Control-Allow-Origin", "*")
+	}
 
 	response := func(y interface{}, e errorResponse, httpStatus int) {
 		processHTTPResponse(y, e, httpStatus, c)
@@ -110,6 +117,7 @@ func processPOSTAPI(c *gin.Context) {
 }
 
 func processHTTPResponse(y interface{}, e errorResponse, httpStatus int, c *gin.Context) {
+
 	if y == nil {
 		c.JSON(httpStatus, e)
 	} else {
