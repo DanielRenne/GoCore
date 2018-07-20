@@ -1,8 +1,11 @@
 package core
 
 import (
+	"log"
 	"sync"
 	"time"
+
+	"github.com/DanielRenne/GoCore/core/fileCache"
 )
 
 //CronJobs provides a cron job engine for golang function callbacks to schedule events to execute at specific times of the day and week.
@@ -43,6 +46,7 @@ type OnDemandEvent func(id string, eventTime time.Time, context interface{})
 
 //CronEvent is a callback function called by the cron job engine.
 type RecurringEvent func(eventDate time.Time)
+type OneTimeEvent func() bool
 
 type recurringEvent struct {
 	Type  RecurringType
@@ -72,7 +76,6 @@ func (jobs *cronJobs) ShouldRunEvery15Minutes(x time.Time) (run bool) {
 }
 
 func (jobs *cronJobs) Start() {
-
 	ticker := time.NewTicker(time.Millisecond * 100)
 	go func() {
 
@@ -148,6 +151,34 @@ func (jobs *cronJobs) RegisterRecurring(t RecurringType, callback RecurringEvent
 	re.Type = t
 	recurringJobs.items = append(recurringJobs.items, re)
 	recurringJobs.Unlock()
+}
+
+func (jobs *cronJobs) ExecuteOneTimeJob(jobName string, callback OneTimeEvent) {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Println("panic recover ExecuteOneTimeJob", r)
+			return
+		}
+	}()
+
+	go func() {
+		fileCache.Jobs.Lock()
+		defer func() {
+			fileCache.Jobs.Unlock()
+			if r := recover(); r != nil {
+				log.Println("panic recover ExecuteOneTimeJob", r)
+				return
+			}
+		}()
+
+		value, ok := fileCache.Jobs.Jobs[jobName]
+		if !ok || !value {
+			success := callback()
+			fileCache.Jobs.Jobs[jobName] = success
+			fileCache.WriteJobCacheFile()
+		}
+	}()
+
 }
 
 func processRecurringTick(tm time.Time) {

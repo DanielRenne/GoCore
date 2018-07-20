@@ -10,7 +10,6 @@ import (
 	"encoding/json"
 	"io/ioutil"
 
-	"github.com/DanielRenne/GoCore/core"
 	"github.com/DanielRenne/GoCore/core/extensions"
 	"github.com/DanielRenne/GoCore/core/serverSettings"
 	"github.com/DanielRenne/GoCore/core/utils"
@@ -19,6 +18,7 @@ import (
 
 const (
 	CACHE_STORAGE_PATH = "/usr/local/goCore/caches"
+	CACHE_JOBS         = "/usr/local/goCore/jobs"
 )
 
 const (
@@ -30,6 +30,10 @@ type model struct {
 	sync.RWMutex
 	BootstrapCache map[string][]string
 }
+type job struct {
+	sync.RWMutex
+	Jobs map[string]bool
+}
 
 type byteManifest struct {
 	sync.RWMutex
@@ -38,6 +42,7 @@ type byteManifest struct {
 
 var allGroupCacheDomains []string
 var Model model
+var Jobs job
 var ByteManifest byteManifest
 var peers *groupcache.HTTPPool
 var htmlFileCache *groupcache.Group
@@ -51,9 +56,13 @@ var tempStringCacheSynced = struct {
 
 func init() {
 	os.MkdirAll(CACHE_BOOTSTRAP_STORAGE_PATH, 0777)
+	os.MkdirAll(CACHE_JOBS, 0777)
 	os.MkdirAll(CACHE_MANIFEST_STORAGE_PATH, 0777)
 	Model = model{
 		BootstrapCache: make(map[string][]string, 0),
+	}
+	Jobs = job{
+		Jobs: make(map[string]bool, 0),
 	}
 	ByteManifest = byteManifest{
 		Cache: make(map[string]map[string]int, 0),
@@ -65,6 +74,52 @@ func Initialize() {
 	if serverSettings.WebConfig.Application.Domain != "" {
 		initializeGroupCache(serverSettings.WebConfig.Application.Domain)
 	}
+	LoadJobsFile()
+}
+
+func WriteJobCacheFile() (err error) {
+	strjson, err := json.Marshal(Jobs.Jobs)
+	if err != nil {
+		return err
+	}
+	err = ioutil.WriteFile(CACHE_JOBS+"/jobs.json", []byte(strjson), 0777)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func LoadJobsFile() (err error) {
+	fname := CACHE_JOBS + "/jobs.json"
+	if extensions.DoesFileExist(fname) {
+		var size int64
+		size, err = extensions.GetFileSize(fname)
+		if err != nil {
+			return
+		}
+		if size > 0 {
+			var data map[string]bool
+			jsonData, err := extensions.ReadFile(fname)
+			if err != nil {
+				log.Println("Cache failed to read for " + fname + " deleting file and starting fresh.")
+				if extensions.DoesFileExist(fname) {
+					err = os.Remove(fname)
+					if err != nil {
+						return err
+					}
+				}
+				return err
+			}
+			err = json.Unmarshal(jsonData, &data)
+			if err != nil {
+				return err
+			}
+			Jobs.Lock()
+			Jobs.Jobs = data
+			Jobs.Unlock()
+		}
+	}
+	return
 }
 
 func WriteBootStrapCacheFile(key string) (err error) {
@@ -117,7 +172,7 @@ func DeleteAllBootStrapFileCache() (err error) {
 	if extensions.DoesFileExist(CACHE_BOOTSTRAP_STORAGE_PATH) {
 		err = extensions.RemoveDirectory(CACHE_BOOTSTRAP_STORAGE_PATH)
 		if err != nil {
-			core.Debug.Dump(err)
+			log.Println("DeleteAllBootStrapFileCache1", err)
 			return err
 		}
 		os.MkdirAll(CACHE_BOOTSTRAP_STORAGE_PATH, 0777)
@@ -125,7 +180,7 @@ func DeleteAllBootStrapFileCache() (err error) {
 	if extensions.DoesFileExist(CACHE_MANIFEST_STORAGE_PATH) {
 		err = extensions.RemoveDirectory(CACHE_MANIFEST_STORAGE_PATH)
 		if err != nil {
-			core.Debug.Dump(err)
+			log.Println("DeleteAllBootStrapFileCache2", err)
 			return err
 		}
 		os.MkdirAll(CACHE_MANIFEST_STORAGE_PATH, 0777)
@@ -267,7 +322,7 @@ func DeleteAllManifestFileCache() (err error) {
 	if extensions.DoesFileExist(CACHE_MANIFEST_STORAGE_PATH) {
 		err = extensions.RemoveDirectory(CACHE_MANIFEST_STORAGE_PATH)
 		if err != nil {
-			core.Debug.Dump(err)
+			log.Println("DeleteAllManifestFileCache", err)
 			return err
 		}
 		os.MkdirAll(CACHE_MANIFEST_STORAGE_PATH, 0777)

@@ -47,12 +47,12 @@ func ReplaceTokenInFile(file string, find string, replaceWith string) {
 
 func TalkDirtyToMe(sayWhat string) {
 	if serverSettings.WebConfig.Application.TalkDirty {
-		exec.Command("say", sayWhat).Output()
+		go exec.Command("say", sayWhat).Output()
 	}
 }
 
 func TalkDirty(sayWhat string) {
-	exec.Command("say", sayWhat).Output()
+	go exec.Command("say", sayWhat).Output()
 }
 
 func InArray(a string, list []string) bool {
