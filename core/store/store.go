@@ -3,6 +3,7 @@ package store
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"reflect"
@@ -271,7 +272,7 @@ func Publish(key string, id string, path string, logger func(string, string)) {
 }
 
 //Set updates a collection by id, path.
-func Set(key string, id string, path string, x interface{}, logger func(string, string)) {
+func Set(key string, id string, path string, x interface{}, logger func(string, string)) (err error) {
 
 	defer func() {
 		if r := recover(); r != nil {
@@ -284,6 +285,7 @@ func Set(key string, id string, path string, x interface{}, logger func(string, 
 
 	collection, ok := getRegistry(key)
 	if !ok {
+		err = errors.New("Invalid registry key")
 		return
 	}
 
@@ -304,7 +306,8 @@ func Set(key string, id string, path string, x interface{}, logger func(string, 
 		values := method.Call(in)
 
 		if values[0].Interface() != nil {
-			err, ok := values[0].Interface().(error)
+			var ok bool
+			err, ok = values[0].Interface().(error)
 			if ok {
 				logger("Error", err.Error())
 				log.Printf("%s%+v\n", "Error Parsing Object.", err.Error())
@@ -385,7 +388,8 @@ func Set(key string, id string, path string, x interface{}, logger func(string, 
 	values := method.Call(in)
 
 	if values[0].Interface() != nil {
-		err, ok := values[0].Interface().(error)
+		var ok bool
+		err, ok = values[0].Interface().(error)
 		if ok {
 			logger("Error", err.Error())
 			log.Printf("%s%+v\n", "Error Saving Object.", err.Error())
@@ -399,7 +403,7 @@ func Set(key string, id string, path string, x interface{}, logger func(string, 
 	if OnChange != nil {
 		OnChange(key, id, path, x, nil)
 	}
-
+	return
 	// log.Printf("%s%+v\n", "UPdated Entity ", objElem)
 
 }
