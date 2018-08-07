@@ -7,6 +7,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"github.com/mmcloughlin/professor"
 	"github.com/utrack/gin-csrf"
 )
 
@@ -39,6 +40,9 @@ var hasInitialized bool
 var ginCookieDomain string
 
 func Initialize(mode string, cookieDomain string) {
+	go func() {
+		professor.Launch("localhost:6897")
+	}()
 	gin.SetMode(mode)
 
 	ginCookieDomain = cookieDomain
