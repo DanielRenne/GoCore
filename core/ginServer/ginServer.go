@@ -1,16 +1,13 @@
 package ginServer
 
 import (
-	"fmt"
-	"log"
-	"runtime/debug"
 	"sync"
 
 	"github.com/DanielRenne/GoCore/core/serverSettings"
+	"github.com/davidrenne/professor"
 	"github.com/fatih/color"
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"github.com/mmcloughlin/professor"
 	"github.com/utrack/gin-csrf"
 )
 
@@ -44,16 +41,7 @@ var ginCookieDomain string
 
 func Initialize(mode string, cookieDomain string) {
 	// Run a safe pprof localhost server.
-	go func() {
-		defer func() {
-			if r := recover(); r != nil {
-				log.Println("Panic Stack: " + string(debug.Stack()))
-				log.Println("Recover Error:  " + fmt.Sprintf("%+v", r))
-				return
-			}
-		}()
-		professor.Launch("localhost:6897")
-	}()
+	professor.Launch("localhost:6897")
 	gin.SetMode(mode)
 
 	ginCookieDomain = cookieDomain
