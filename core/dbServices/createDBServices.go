@@ -588,9 +588,9 @@ func generateNoSQLModel(schema NOSQLSchema, collection NOSQLCollection, driver s
 
 	switch driver {
 	case DATABASE_DRIVER_BOLTDB:
-		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/logger", "github.com/DanielRenne/GoCore/core/serverSettings", "github.com/DanielRenne/GoCore/core/dbServices", "github.com/globalsign/mgo/bson", "encoding/json", "errors", "time", "github.com/asdine/storm", "reflect", "sync", "log", "encoding/base64", "github.com/DanielRenne/GoCore/core/utils", "fmt", "github.com/DanielRenne/GoCore/core/fileCache", "github.com/DanielRenne/GoCore/core", "encoding/hex", "github.com/DanielRenne/GoCore/core/store", "crypto/md5"})
+		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/logger", "github.com/DanielRenne/GoCore/core/pubsub", "github.com/DanielRenne/GoCore/core/serverSettings", "github.com/DanielRenne/GoCore/core/dbServices", "github.com/globalsign/mgo/bson", "encoding/json", "errors", "time", "github.com/asdine/storm", "reflect", "sync", "log", "encoding/base64", "github.com/DanielRenne/GoCore/core/utils", "fmt", "github.com/DanielRenne/GoCore/core/fileCache", "github.com/DanielRenne/GoCore/core", "encoding/hex", "github.com/DanielRenne/GoCore/core/store", "crypto/md5"})
 	case DATABASE_DRIVER_MONGODB:
-		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "github.com/DanielRenne/GoCore/core/serverSettings", "encoding/json", "github.com/globalsign/mgo", "github.com/globalsign/mgo/bson", "log", "time", "errors", "encoding/base64", "reflect", "github.com/DanielRenne/GoCore/core/utils", "fmt", "github.com/DanielRenne/GoCore/core/logger", "github.com/DanielRenne/GoCore/core", "github.com/DanielRenne/GoCore/core/fileCache", "github.com/DanielRenne/GoCore/core/store", "crypto/md5", "encoding/hex", "sync"})
+		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "github.com/DanielRenne/GoCore/core/pubsub", "github.com/DanielRenne/GoCore/core/serverSettings", "encoding/json", "github.com/globalsign/mgo", "github.com/globalsign/mgo/bson", "log", "time", "errors", "encoding/base64", "reflect", "github.com/DanielRenne/GoCore/core/utils", "fmt", "github.com/DanielRenne/GoCore/core/logger", "github.com/DanielRenne/GoCore/core", "github.com/DanielRenne/GoCore/core/fileCache", "github.com/DanielRenne/GoCore/core/store", "crypto/md5", "encoding/hex", "sync"})
 		// val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "encoding/json", "gopkg.in/mgo.v2/bson", "log", "time"})
 	}
 
@@ -1379,7 +1379,11 @@ func genNoSQLSchemaSave(collection NOSQLCollection, schema NOSQLSchema, driver s
 		val += "self.CreateDate = t\n"
 		val += "self.UpdateDate = t \n"
 		val += "dbServices.CollectionCache{}.Remove(\"" + strings.Title(collection.Name) + "\",self.Id.Hex())\n"
-		val += "return dbServices.BoltDB.Save(self)\n"
+		val += "err := dbServices.BoltDB.Save(self)\n"
+		val += "if err == nil{\n"
+		val += "pubsub.Publish(\"" + strings.Title(collection.Name) + ".Save\", self)\n"
+		val += "}\n"
+		val += "return\n"
 	case DATABASE_DRIVER_MONGODB:
 		val += "collection" + strings.Title(collection.Name) + "Mutex.RLock()\n"
 		val += "collection := mongo" + strings.Title(collection.Name) + "Collection\n"
@@ -1402,6 +1406,7 @@ func genNoSQLSchemaSave(collection NOSQLCollection, schema NOSQLSchema, driver s
 		val += "if changeInfo.UpsertedId != nil {\n"
 		val += "self.Id = changeInfo.UpsertedId.(bson.ObjectId)\n"
 		val += "}\n"
+		val += "pubsub.Publish(\"" + strings.Title(collection.Name) + ".Save\", self)\n"
 		val += "dbServices.CollectionCache{}.Remove(\"" + strings.Title(collection.Name) + "\",self.Id.Hex())\n"
 		val += "return nil\n"
 	}
@@ -2172,10 +2177,18 @@ func genNoSQLSchemaDelete(collection NOSQLCollection, schema NOSQLSchema, driver
 	switch driver {
 	case "boltDB":
 		val += "dbServices.CollectionCache{}.Remove(\"" + strings.Title(collection.Name) + "\",self.Id.Hex())\n"
-		val += "return dbServices.BoltDB.Delete(\"" + strings.Title(schema.Name) + "\", self.Id.Hex())\n"
+		val += "err := dbServices.BoltDB.Delete(\"" + strings.Title(schema.Name) + "\", self.Id.Hex())\n"
+		val += "if err == nil{\n"
+		val += "pubsub.Publish(\"" + strings.Title(collection.Name) + ".Delete\", self.Id.Hex())\n"
+		val += "}\n"
+		val += "return err\n"
 	case "mongoDB":
 		val += "dbServices.CollectionCache{}.Remove(\"" + strings.Title(collection.Name) + "\",self.Id.Hex())\n"
-		val += "return mongo" + strings.Title(collection.Name) + "Collection.RemoveId(self.Id)"
+		val += "err := mongo" + strings.Title(collection.Name) + "Collection.RemoveId(self.Id)\n"
+		val += "if err == nil{\n"
+		val += "pubsub.Publish(\"" + strings.Title(collection.Name) + ".Delete\", self.Id.Hex())\n"
+		val += "}\n"
+		val += "return err\n"
 	}
 	val += "}\n\n"
 	return val
