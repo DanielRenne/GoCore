@@ -93,6 +93,11 @@ func GetByPath(key string, id string, joins []string, path string) (x interface{
 
 	objElem := obj.Elem()
 
+	if path == "*" {
+		x = obj.Interface()
+		return
+	}
+
 	fields := strings.Split(path, ".")
 	depth := len(fields)
 
@@ -155,6 +160,14 @@ func GetByPathBatch(key string, id string, joins []string, paths []string) (x in
 
 	for j := range paths {
 		path := paths[j]
+
+		if path == "*" {
+			var pv pathValue
+			pv.Path = path
+			pv.Value = obj.Interface()
+			results = append(results, pv)
+			continue
+		}
 
 		fields := strings.Split(path, ".")
 		depth := len(fields)
