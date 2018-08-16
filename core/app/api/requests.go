@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"reflect"
 	"runtime/debug"
+	"strings"
 
 	"github.com/DanielRenne/GoCore/core/app"
 	"github.com/DanielRenne/GoCore/core/ginServer"
@@ -67,7 +68,12 @@ func processGETAPI(c *gin.Context) {
 		action = "Root"
 	}
 
-	uriParamsData, err := base64.StdEncoding.DecodeString(uriParams)
+	var uriParamsData []byte
+	var err error
+
+	if uriParams != "" {
+		uriParamsData, err = base64.StdEncoding.DecodeString(uriParams)
+	}
 
 	if err != nil {
 		e.Error.Message = "Failed to decode uriParams:  " + err.Error()
@@ -180,8 +186,9 @@ func processRequest(controller string, action string, data []byte, c *gin.Contex
 	var e errorResponse
 	e.Error = new(errorObj)
 
-	ctl := getController(controller)
-	method := ctl.MethodByName(action)
+	ctl := getController(strings.Title(controller))
+
+	method := ctl.MethodByName(strings.Title(action))
 
 	if !method.IsValid() {
 		e.Error.Message = "Method " + action + " not available to call."
@@ -191,10 +198,10 @@ func processRequest(controller string, action string, data []byte, c *gin.Contex
 		return
 	}
 
+	log.Println("Data:  " + string(data))
+
 	methodType := method.Type()
 	paramCnt := methodType.NumIn()
-	paramType := methodType.In(0)
-	genericType := reflect.TypeOf((*interface{})(nil))
 	in := []reflect.Value{}
 
 	if paramCnt == 0 {
@@ -208,6 +215,9 @@ func processRequest(controller string, action string, data []byte, c *gin.Contex
 		}
 		return
 	}
+
+	paramType := methodType.In(0)
+	genericType := reflect.TypeOf((*interface{})(nil))
 
 	if len(data) == 0 {
 		e.Error.Message = "No data posted.  Method expects a parameter of data."
