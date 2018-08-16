@@ -4,6 +4,7 @@ import (
 	"sync"
 
 	"github.com/DanielRenne/GoCore/core/serverSettings"
+	"github.com/davidrenne/professor"
 	"github.com/fatih/color"
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -39,6 +40,8 @@ var hasInitialized bool
 var ginCookieDomain string
 
 func Initialize(mode string, cookieDomain string) {
+	// Run a safe pprof localhost server.
+	professor.Launch("localhost:6897")
 	gin.SetMode(mode)
 
 	ginCookieDomain = cookieDomain
