@@ -152,3 +152,33 @@ func (obj *AtomicByteArray) Set(value []byte) {
 	obj.value = value
 	obj.valueSync.Unlock()
 }
+
+//AtomicBoolArray provides a []bool object that is lock safe.
+type AtomicBoolArray struct {
+	valueSync sync.RWMutex
+	value     []bool
+}
+
+//Get returns the []bool value
+func (obj *AtomicBoolArray) Get() (value []bool) {
+	obj.valueSync.RLock()
+	value = obj.value
+	obj.valueSync.RUnlock()
+	return
+}
+
+//Set sets the []bool value
+func (obj *AtomicBoolArray) Set(value []bool) {
+	obj.valueSync.Lock()
+	obj.value = value
+	obj.valueSync.Unlock()
+}
+
+//SetByIndex sets a bool by index value
+func (obj *AtomicBoolArray) SetByIndex(index int, value bool) {
+	obj.valueSync.Lock()
+	if len(obj.value) > index {
+		obj.value[index] = value
+	}
+	obj.valueSync.Unlock()
+}

@@ -1406,8 +1406,8 @@ func genNoSQLSchemaSave(collection NOSQLCollection, schema NOSQLSchema, driver s
 		val += "if changeInfo.UpsertedId != nil {\n"
 		val += "self.Id = changeInfo.UpsertedId.(bson.ObjectId)\n"
 		val += "}\n"
-		val += "pubsub.Publish(\"" + strings.Title(collection.Name) + ".Save\", self)\n"
 		val += "dbServices.CollectionCache{}.Remove(\"" + strings.Title(collection.Name) + "\",self.Id.Hex())\n"
+		val += "pubsub.Publish(\"" + strings.Title(collection.Name) + ".Save\", self)\n"
 		val += "return nil\n"
 	}
 	val += "}\n\n"
