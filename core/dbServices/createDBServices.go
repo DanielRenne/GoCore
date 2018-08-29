@@ -119,6 +119,7 @@ type NOSQLSchema struct {
 
 type NOSQLCollection struct {
 	Name       string      `json:"name"`
+	ClearTable bool        `json:"clearTable"`
 	IsSharable bool        `json:"isSharable"`
 	Schema     NOSQLSchema `json:"schema"`
 	FieldTypes map[string]FieldType
@@ -1965,6 +1966,11 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 	val += "if errCount != nil{\n"
 	val += "cnt = 1\n"
 	val += "}\n\n"
+
+	if collection.ClearTable {
+		val += "query.collection.DropCollection()\n"
+		val += "cnt = 0\n"
+	}
 
 	//First check if the path exists to bootstrap data
 	path := serverSettings.APP_LOCATION + "/db/bootstrap/" + extensions.MakeFirstLowerCase(collection.Name) + "/" + extensions.MakeFirstLowerCase(collection.Name) + ".json"
