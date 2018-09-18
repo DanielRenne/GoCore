@@ -1106,6 +1106,7 @@ func genNoSQLRuntime(collection NOSQLCollection, schema NOSQLSchema, driver stri
 	val += genById(collection, schema, driver)
 	val += genNewByReflection(collection, schema, driver)
 	val += genByFilter(collection, schema, driver)
+	val += genCountByFilter(collection, schema, driver)
 	val += genNOSQLQuery(collection, schema, driver)
 	val += genNoSQLSchemaIndex(collection, schema, driver)
 	val += genNoSQLBootstrap(collection, schema, driver)
@@ -1457,6 +1458,28 @@ func genNewId(collection NOSQLCollection, schema NOSQLSchema, driver string) str
 	val := ""
 	val += "func (obj *" + strings.Title(schema.Name) + ") NewId() {\n"
 	val += "obj.Id = bson.NewObjectId()\n"
+	val += "}\n\n"
+	return val
+}
+
+func genCountByFilter(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
+	val := ""
+	val += "func (obj model" + strings.Title(collection.Name) + ") CountByFilter(filter map[string]interface{}, inFilter map[string]interface{}, excludeFilter map[string]interface{}, joins []string) (count int, err error) {\n"
+	val += "var retObj []" + strings.Title(schema.Name) + "\n"
+	val += "q := obj.Query().Filter(filter)\n"
+	val += "if len(inFilter) > 0 {\n"
+	val += "	q = q.In(inFilter)\n"
+	val += "}\n"
+	val += "if len(excludeFilter) > 0 {\n"
+	val += "	q = q.Exclude(excludeFilter)\n"
+	val += "}\n"
+	val += "// joins really make no sense here but just copy paste coding here\n"
+	val += "for i := range joins {\n"
+	val += "joinValue := joins[i]\n"
+	val += "q = q.Join(joinValue)\n"
+	val += "}\n"
+	val += "cnt, errCount := q.Count(&retObj)\n"
+	val += "return cnt, errCount\n"
 	val += "}\n\n"
 	return val
 }

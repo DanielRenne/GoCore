@@ -50,6 +50,29 @@ func Get(key string, id string, joins []string) (x interface{}, err error) {
 }
 
 //GetByFilter gets a collection entity by filter.
+func GetCountByFilter(key string, filter map[string]interface{}, inFilter map[string]interface{}, excludeFilter map[string]interface{}, joins []string) (x interface{}, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("%+v", r)
+			return
+		}
+	}()
+
+	collection, ok := getRegistry(key)
+	if !ok {
+		return
+	}
+
+	count, err := collection.CountByFilter(filter, inFilter, excludeFilter, joins)
+	if err != nil {
+		return
+	}
+
+	x = count
+	return
+}
+
+//GetByFilter gets a collection entity by filter.
 func GetByFilter(key string, filter map[string]interface{}, inFilter map[string]interface{}, excludeFilter map[string]interface{}, joins []string) (x interface{}, err error) {
 	defer func() {
 		if r := recover(); r != nil {
