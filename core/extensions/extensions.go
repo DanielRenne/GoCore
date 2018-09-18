@@ -149,9 +149,9 @@ func PrintZettaBytes(bytes int64) string {
 	return fmt.Sprint(FloatToString(zettabytes, 2), " ZB")
 }
 
-func FloatToString(input_num float64, decimals int) string {
+func FloatToString(input_num float64, precision int) string {
 	// to convert a float number to a string
-	return strconv.FormatFloat(input_num, 'f', decimals, 64)
+	return strconv.FormatFloat(input_num, 'f', precision, 64)
 }
 
 func Round(x, unit float64) float64 {
@@ -167,8 +167,8 @@ func StringToInt(val string) int {
 	return r
 }
 
-func StringToFloat(val string, bitSize int) (r float64) {
-	r, err := strconv.ParseFloat(val, bitSize)
+func StringToFloat(val string, precision int) (r float64) {
+	r, err := strconv.ParseFloat(val, precision)
 	if err != nil {
 		return 0
 	}
