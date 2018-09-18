@@ -2,7 +2,6 @@ package app
 
 import (
 	"crypto/rand"
-	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -436,28 +435,34 @@ func ReplyToWebSocket(conn *WebSocketConnection, data []byte) {
 
 	}()
 
-	deadLockChan := make(chan int)
+	// deadLockChan := make(chan int)
 
 	go func() {
+
+		unlocked := false
 		defer func() {
 			if recover := recover(); recover != nil {
+				if !unlocked {
+					conn.WriteLock.Unlock()
+				}
 				CustomLog("app->ReplyToWebSocket", "Panic Recovered at ReplyToWebSocket():  "+fmt.Sprintf("%+v", recover))
 			}
 		}()
 		conn.WriteLock.Lock()
-		defer conn.WriteLock.Unlock()
 		conn.Connection.WriteMessage(websocket.TextMessage, data)
-		deadLockChan <- 0
+		unlocked = true
+		conn.WriteLock.Unlock()
+		// deadLockChan <- 0
 	}()
 
-	go func() {
-		select {
-		case <-deadLockChan:
-		case <-time.After(3 * time.Second):
-			CustomLog("Socket Reply JSON Deadlock", "Disconnecting socket.")
-			deleteWebSocket(conn)
-		}
-	}()
+	// go func() {
+	// 	select {
+	// 	case <-deadLockChan:
+	// 	case <-time.After(3 * time.Second):
+	// 		CustomLog("Socket Reply JSON Deadlock", "Disconnecting socket.")
+	// 		deleteWebSocket(conn)
+	// 	}
+	// }()
 
 }
 
@@ -472,36 +477,43 @@ func ReplyToWebSocketJSON(conn *WebSocketConnection, v interface{}) {
 		}
 	}()
 
-	deadLockChan := make(chan int)
+	// deadLockChan := make(chan int)
 
 	go func() {
+
+		unlocked := false
+
 		defer func() {
 			if recover := recover(); recover != nil {
+				if !unlocked {
+					conn.WriteLock.Unlock()
+				}
 				CustomLog("app->ReplyToWebSocketJSON", "Panic Recovered at ReplyToWebSocketJSON():  "+fmt.Sprintf("%+v", recover))
 			}
 		}()
-		conn.WriteLock.Lock()
-		defer conn.WriteLock.Unlock()
+
 		conn.Connection.SetWriteDeadline(time.Now().Add(time.Duration(10000) * time.Millisecond))
+		conn.WriteLock.Lock()
 		conn.Connection.WriteJSON(v)
-		deadLockChan <- 0
+		unlocked = true
+		conn.WriteLock.Unlock()
+		// deadLockChan <- 0
 	}()
 
-	go func() {
-		select {
-		case <-deadLockChan:
-		case <-time.After(3 * time.Second):
-			CustomLog("Socket Reply JSON Deadlock", "Disconnecting socket.")
-			deleteWebSocket(conn)
-		}
-	}()
+	// go func() {
+	// 	select {
+	// 	case <-deadLockChan:
+	// 	case <-time.After(3 * time.Second):
+	// 		CustomLog("Socket Reply JSON Deadlock", "Disconnecting socket.")
+	// 		deleteWebSocket(conn)
+	// 	}
+	// }()
 
 }
 
 func ReplyToWebSocketPubSub(conn *WebSocketConnection, key string, v interface{}) {
 	defer func() {
 		if recover := recover(); recover != nil {
-			// conn.WriteLock.Unlock()
 		}
 	}()
 
@@ -509,29 +521,36 @@ func ReplyToWebSocketPubSub(conn *WebSocketConnection, key string, v interface{}
 	payload.Key = key
 	payload.Content = v
 
-	deadLockChan := make(chan int)
+	// deadLockChan := make(chan int)
 
 	go func() {
+
+		unlocked := false
 		defer func() {
 			if recover := recover(); recover != nil {
+				if !unlocked {
+					conn.WriteLock.Unlock()
+				}
 				CustomLog("app->ReplyToWebSocketPubSub", "Panic Recovered at ReplyToWebSocketPubSub():  "+fmt.Sprintf("%+v", recover))
 			}
 		}()
-		conn.WriteLock.Lock()
-		defer conn.WriteLock.Unlock()
+
 		conn.Connection.SetWriteDeadline(time.Now().Add(time.Duration(10000) * time.Millisecond))
+		conn.WriteLock.Lock()
 		conn.Connection.WriteJSON(payload)
-		deadLockChan <- 0
+		unlocked = true
+		conn.WriteLock.Unlock()
+		// deadLockChan <- 0
 	}()
 
-	go func() {
-		select {
-		case <-deadLockChan:
-		case <-time.After(3 * time.Second):
-			CustomLog("Socket Broadcast Data Deadlock", "Disconnecting socket.")
-			deleteWebSocket(conn)
-		}
-	}()
+	// go func() {
+	// 	select {
+	// 	case <-deadLockChan:
+	// 	case <-time.After(3 * time.Second):
+	// 		CustomLog("Socket Broadcast Data Deadlock", "Disconnecting socket.")
+	// 		deleteWebSocket(conn)
+	// 	}
+	// }()
 
 }
 
@@ -548,29 +567,35 @@ func BroadcastWebSocketData(data []byte) {
 
 	for item := range WebSocketConnections.Iter() {
 
-		deadLockChan := make(chan int)
+		// deadLockChan := make(chan int)
 		conn := item.Conn
 
 		go func() {
+
+			unlocked := false
 			defer func() {
 				if recover := recover(); recover != nil {
+					if !unlocked {
+						conn.WriteLock.Unlock()
+					}
 					CustomLog("app->BroadcastWebSocketData", "Panic Recovered at BroadcastWebSocketData():  "+fmt.Sprintf("%+v", recover))
 				}
 			}()
 			conn.WriteLock.Lock()
-			defer conn.WriteLock.Unlock()
 			conn.Connection.WriteMessage(websocket.BinaryMessage, data)
-			deadLockChan <- 0
+			unlocked = true
+			conn.WriteLock.Unlock()
+			// deadLockChan <- 0
 		}()
 
-		go func() {
-			select {
-			case <-deadLockChan:
-			case <-time.After(3 * time.Second):
-				CustomLog("Socket Broadcast Data Deadlock", "Disconnecting socket.")
-				deleteWebSocket(conn)
-			}
-		}()
+		// go func() {
+		// 	select {
+		// 	case <-deadLockChan:
+		// 	case <-time.After(3 * time.Second):
+		// 		CustomLog("Socket Broadcast Data Deadlock", "Disconnecting socket.")
+		// 		deleteWebSocket(conn)
+		// 	}
+		// }()
 	}
 }
 
@@ -586,30 +611,37 @@ func BroadcastWebSocketJSON(v interface{}) {
 
 	for item := range WebSocketConnections.Iter() {
 
-		deadLockChan := make(chan int)
+		// deadLockChan := make(chan int)
 		conn := item.Conn
 
 		go func() {
+
+			unlocked := false
 			defer func() {
 				if recover := recover(); recover != nil {
+					if !unlocked {
+						conn.WriteLock.Unlock()
+					}
 					CustomLog("app->BroadcastWebSocketJSON", "Panic Recovered at BroadcastWebSocketJSON():  "+fmt.Sprintf("%+v", recover))
 				}
 			}()
-			conn.WriteLock.Lock()
-			defer conn.WriteLock.Unlock()
+
 			conn.Connection.SetWriteDeadline(time.Now().Add(time.Duration(10000) * time.Millisecond))
+			conn.WriteLock.Lock()
 			conn.Connection.WriteJSON(v)
-			deadLockChan <- 0
+			unlocked = true
+			conn.WriteLock.Unlock()
+			// deadLockChan <- 0
 		}()
 
-		go func() {
-			select {
-			case <-deadLockChan:
-			case <-time.After(3 * time.Second):
-				CustomLog("Socket Broadcast JSON Deadlock", "Disconnecting socket.")
-				deleteWebSocket(conn)
-			}
-		}()
+		// go func() {
+		// 	select {
+		// 	case <-deadLockChan:
+		// 	case <-time.After(3 * time.Second):
+		// 		CustomLog("Socket Broadcast JSON Deadlock", "Disconnecting socket.")
+		// 		deleteWebSocket(conn)
+		// 	}
+		// }()
 	}
 }
 
@@ -627,35 +659,42 @@ func PublishWebSocketJSON(key string, v interface{}) {
 	payload.Content = v
 
 	//Serialize and Deserialize to prevent Race Conditions from caller.
-	data, _ := json.Marshal(payload)
-	json.Unmarshal(data, &payload)
+	// data, _ := json.Marshal(payload)
+	// json.Unmarshal(data, &payload)
 
 	for item := range WebSocketConnections.Iter() {
 
-		deadLockChan := make(chan int)
+		// deadLockChan := make(chan int)
 		conn := item.Conn
 
 		go func() {
+
+			unlocked := false
 			defer func() {
 				if recover := recover(); recover != nil {
+					if !unlocked {
+						conn.WriteLock.Unlock()
+					}
 					CustomLog("app->PublishWebSocketJSON", "Panic Recovered at PublishWebSocketJSON():  "+fmt.Sprintf("%+v", recover))
 				}
 			}()
-			conn.WriteLock.Lock()
-			defer conn.WriteLock.Unlock()
+
 			conn.Connection.SetWriteDeadline(time.Now().Add(time.Duration(10000) * time.Millisecond))
+			conn.WriteLock.Lock()
 			conn.Connection.WriteJSON(payload)
-			deadLockChan <- 0
+			unlocked = true
+			conn.WriteLock.Unlock()
+			// deadLockChan <- 0
 		}()
 
-		go func() {
-			select {
-			case <-deadLockChan:
-			case <-time.After(3 * time.Second):
-				CustomLog("Socket Publishing JSON Deadlock", "Disconnecting socket.")
-				deleteWebSocket(conn)
-			}
-		}()
+		// go func() {
+		// 	select {
+		// 	case <-deadLockChan:
+		// 	case <-time.After(3 * time.Second):
+		// 		CustomLog("Socket Publishing JSON Deadlock", "Disconnecting socket.")
+		// 		deleteWebSocket(conn)
+		// 	}
+		// }()
 	}
 }
 
