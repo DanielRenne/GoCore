@@ -217,6 +217,10 @@ func moveAppFiles() {
 	if wasCopied {
 		replacePath("/networks", project, githubName, appName)
 	}
+	wasCopied = copyFolder("/gitWebHooks")
+	if wasCopied {
+		replacePath("/gitWebHooks", project, githubName, appName)
+	}
 	wasCopied = copyFolder("/controllerRegistry")
 	if wasCopied {
 		replacePath("/controllerRegistry", project, githubName, appName)
@@ -276,6 +280,7 @@ import (
 	"github.com/DanielRenne/GoCore/core/ginServer"
 	"github.com/DanielRenne/GoCore/core/logger"
 	_ "`+strings.Replace(serverSettings.APP_LOCATION, "src/", "", -1)+`/controllerRegistry"
+	_ "`+strings.Replace(serverSettings.APP_LOCATION, "src/", "", -1)+`/gitWebHooks"
 	"`+strings.Replace(serverSettings.APP_LOCATION, "src/", "", -1)+`/br"
 	"`+strings.Replace(serverSettings.APP_LOCATION, "src/", "", -1)+`/controllers"
 	"`+strings.Replace(serverSettings.APP_LOCATION, "src/", "", -1)+`/cron"
