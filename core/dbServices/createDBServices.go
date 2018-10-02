@@ -1268,7 +1268,7 @@ func genNoSQLSchemaReflectByFieldName(collection NOSQLCollection) string {
 				val += "value = reflect.ValueOf(arrayToSet)\n"
 				val += "}else {\n"
 				val += "data, _ := json.Marshal(x)\n"
-				val += "var obj " + valueType + "\n"
+				val += "var obj []" + valueType + "\n"
 				val += "err = json.Unmarshal(data, &obj)\n"
 				val += "if err != nil {\n"
 				val += "return\n"
