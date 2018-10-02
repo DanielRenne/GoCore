@@ -60,6 +60,10 @@ type Application struct {
 	CookieDomain             string        `json:"cookieDomain"`
 	ReleaseMode              string        `json:"releaseMode"`
 	WebServiceOnly           bool          `json:"webServiceOnly"`
+	MountGitWebHooks         bool          `json:"mountGitWebHooks"`
+	GitWebHookSecretKey      string        `json:"gitWebHookSecretKey"`
+	GitWebHookPort           string        `json:"gitWebHookServerPort"`
+	GitWebHookPath           string        `json:"gitWebHookPath"`
 	Info                     info          `json:"info"`
 	HtmlTemplates            htmlTemplates `json:"htmlTemplates"`
 	RootIndexPath            string        `json:"rootIndexPath"`

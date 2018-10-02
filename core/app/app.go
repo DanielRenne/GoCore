@@ -16,11 +16,13 @@ import (
 	"github.com/DanielRenne/GoCore/core/extensions"
 	"github.com/DanielRenne/GoCore/core/fileCache"
 	"github.com/DanielRenne/GoCore/core/ginServer"
+	"github.com/DanielRenne/GoCore/core/gitWebHooks"
 	"github.com/DanielRenne/GoCore/core/logger"
 	"github.com/DanielRenne/GoCore/core/serverSettings"
 	"github.com/DanielRenne/GoCore/core/store"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"gopkg.in/go-playground/webhooks.v5/github"
 )
 
 type WebSocketRemoval func(info WebSocketConnectionMeta)
@@ -225,6 +227,45 @@ func Run() {
 			return
 		}
 	}()
+
+	if serverSettings.WebConfig.Application.MountGitWebHooks == true {
+		hook, _ := github.New(github.Options.Secret(serverSettings.WebConfig.Application.GitWebHookSecretKey))
+		http.HandleFunc(serverSettings.WebConfig.Application.GitWebHookPath, func(w http.ResponseWriter, r *http.Request) {
+
+			// only these git hooks are supported right now to pass parsed github info to you
+			payload, err := hook.Parse(r, github.PushEvent, github.IssuesEvent, github.IssueCommentEvent, github.CreateEvent, github.DeleteEvent, github.ProjectCardEvent, github.ProjectColumnEvent, github.ProjectEvent)
+			if err != nil {
+				if err == github.ErrEventNotFound {
+					// ok event wasn;t one of the ones asked to be parsed
+				}
+			}
+			switch payload.(type) {
+			case github.ProjectCardPayload:
+				info := payload.(github.ProjectCardPayload)
+				gitWebHooks.RunEvent(gitWebHooks.PROJECT_CARD, info)
+			case github.ProjectColumnPayload:
+				info := payload.(github.ProjectColumnPayload)
+				gitWebHooks.RunEvent(gitWebHooks.PROJECT_COLUMN, info)
+			case github.ProjectPayload:
+				info := payload.(github.ProjectPayload)
+				gitWebHooks.RunEvent(gitWebHooks.PROJECT, info)
+			case github.IssuesPayload:
+				info := payload.(github.IssuesPayload)
+				gitWebHooks.RunEvent(gitWebHooks.ISSUES, info)
+			case github.IssueCommentPayload:
+				info := payload.(github.IssueCommentPayload)
+				gitWebHooks.RunEvent(gitWebHooks.ISSUE_COMMENT, info)
+			case github.PushPayload:
+				info := payload.(github.PushPayload)
+				gitWebHooks.RunEvent(gitWebHooks.PUSH_TYPE, info)
+			}
+		})
+		port := "12345"
+		if serverSettings.WebConfig.Application.GitWebHookPort != "" {
+			port = serverSettings.WebConfig.Application.GitWebHookPort
+		}
+		go http.ListenAndServe(":"+port, nil)
+	}
 
 	if serverSettings.WebConfig.Application.WebServiceOnly == false {
 
