@@ -555,6 +555,109 @@ func Append(key string, id string, path string, x interface{}, logger func(strin
 	return
 }
 
+//Splice removes to an array field.
+func Splice(key string, id string, path string, x interface{}, logger func(string, string)) (y interface{}, err error) {
+
+	defer func() {
+		if r := recover(); r != nil {
+			logger("Recover", fmt.Sprintf("%+v", r))
+			if OnChange != nil {
+				OnChange(key, id, path, x, fmt.Errorf("%+v", r))
+			}
+		}
+	}()
+
+	collection, ok := getRegistry(key)
+	if !ok {
+		return
+	}
+
+	obj, err := collection.ById(id, []string{})
+	if err != nil {
+		log.Printf("%s%s", "Error Getting Collection Object by id.  ", err.Error())
+		return
+	}
+
+	objElem := obj.Elem()
+
+	fields := strings.Split(path, ".")
+	depth := len(fields)
+
+	properties := []reflect.Value{}
+
+	var updatedArray reflect.Value
+
+	for i := range fields {
+		fieldName := fields[i]
+		arrayIndex := -1
+
+		if strings.Contains(fieldName, "[") {
+			arraySplit := strings.Split(fieldName, "[")
+			fieldName = arraySplit[0]
+			arrayIndex = extensions.StringToInt(strings.Replace(arraySplit[1], "]", "", -1))
+		}
+
+		var fieldValue reflect.Value
+
+		if i == 0 {
+			fieldValue = objElem.FieldByName(fieldName)
+		} else {
+			fieldValue = properties[i-1].FieldByName(fieldName)
+		}
+
+		if arrayIndex == -1 {
+			properties = append(properties, fieldValue)
+		} else {
+			properties = append(properties, fieldValue.Index(arrayIndex))
+		}
+
+		if i+1 == depth {
+			if properties[i].CanSet() {
+
+				propType := reflect.TypeOf(x).String()
+
+				if propType == "float64" {
+					floatVal, ok := x.(float64)
+					if ok {
+						x = int(floatVal)
+					}
+				}
+
+				index := x.(int)
+				length := properties[i].Len()
+
+				properties[i].Set(reflect.AppendSlice(properties[i].Slice(0, index), properties[i].Slice(index+1, length)))
+				updatedArray = properties[i]
+			}
+		}
+	}
+
+	method := obj.MethodByName("Save")
+
+	in := []reflect.Value{}
+	values := method.Call(in)
+
+	if values[0].Interface() != nil {
+		errInterface, ok := values[0].Interface().(error)
+		if ok {
+			logger("Error", errInterface.Error())
+			log.Printf("%s%+v\n", "Error Saving Object.", errInterface.Error())
+			if OnChange != nil {
+				OnChange(key, id, path, x, errInterface)
+			}
+			err = errInterface
+			return
+		}
+	}
+
+	if OnChange != nil {
+		OnChange(key, id, path, updatedArray.Interface(), nil)
+	}
+
+	y = updatedArray.Interface()
+	return
+}
+
 //Add adds an entity to the collection and returns it.
 func Add(key string, x interface{}, logger func(string, string)) (y interface{}, err error) {
 
