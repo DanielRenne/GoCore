@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/DanielRenne/GoCore/core/extensions"
+	"github.com/DanielRenne/GoCore/core/utils"
 )
 
 const (
@@ -243,6 +244,7 @@ func Publish(key string, id string, path string, logger func(string, string)) {
 		if r := recover(); r != nil {
 			logger("Recover", fmt.Sprintf("%+v", r))
 			if OnChange != nil {
+				utils.TalkDirtySlowly("1 Store Publish Error:" + fmt.Errorf("%+v", r).Error())
 				OnChange(key, id, path, nil, fmt.Errorf("%+v", r))
 			}
 		}
@@ -314,6 +316,7 @@ func Set(key string, id string, path string, x interface{}, logger func(string, 
 		if r := recover(); r != nil {
 			logger("Recover", fmt.Sprintf("%+v", r))
 			if OnChange != nil {
+				utils.TalkDirtySlowly("2 Store Set Error:" + fmt.Errorf("%+v", r).Error())
 				OnChange(key, id, path, x, fmt.Errorf("%+v", r))
 			}
 		}
@@ -348,6 +351,7 @@ func Set(key string, id string, path string, x interface{}, logger func(string, 
 				logger("Error", err.Error())
 				log.Printf("%s%+v\n", "Error Parsing Object.", err.Error())
 				if OnChange != nil {
+					utils.TalkDirtySlowly("3 Store Set Error:" + err.Error())
 					OnChange(key, id, path, x, err)
 				}
 				return
@@ -395,24 +399,37 @@ func Set(key string, id string, path string, x interface{}, logger func(string, 
 							if ok {
 								x = int(floatVal)
 							}
+							intVal, ok := x.(string)
+							if ok {
+								x = extensions.StringToInt(intVal)
+							}
 						} else if propType == "float64" {
 							intVal, ok := x.(int)
 							if ok {
 								x = float64(intVal)
+							}
+							floatVal, ok := x.(string)
+							if ok {
+								x = extensions.StringToFloat(floatVal, 0)
 							}
 						}
 					}
 
 					// logger("Trying to set", fmt.Sprintf("%+v", x))
 
-					valueToSet, err := collection.ReflectByFieldName(fieldName, x)
-					if err != nil {
-						logger("Error Setting Value to Store", fmt.Sprintf("%+v", valueToSet)+"\nError:  "+err.Error())
-						OnChange(key, id, path, x, err)
+					if arrayIndex == -1 {
+						valueToSet, err2 := collection.ReflectByFieldName(fieldName, x)
+						if err2 != nil {
+							logger("Error Setting Value to Store", fmt.Sprintf("%+v", valueToSet)+"\nError:  "+err2.Error())
+							utils.TalkDirtySlowly("4 Store Set Error: " + err2.Error())
+							OnChange(key, id, path, x, err2)
+							return
+						}
+						properties[i].Set(valueToSet)
+					} else {
+						properties[i].Set(reflect.ValueOf(x))
 					}
 
-					// properties[i].Set(reflect.ValueOf(x))
-					properties[i].Set(valueToSet)
 				}
 			}
 		}
@@ -430,6 +447,7 @@ func Set(key string, id string, path string, x interface{}, logger func(string, 
 			logger("Error", err.Error())
 			log.Printf("%s%+v\n", "Error Saving Object.", err.Error())
 			if OnChange != nil {
+				utils.TalkDirtySlowly("5 Store Publish Error:" + err.Error())
 				OnChange(key, id, path, x, err)
 			}
 			return
@@ -451,6 +469,7 @@ func Append(key string, id string, path string, x interface{}, logger func(strin
 		if r := recover(); r != nil {
 			logger("Recover", fmt.Sprintf("%+v", r))
 			if OnChange != nil {
+				utils.TalkDirtySlowly("6 Store Append Error:" + err.Error())
 				OnChange(key, id, path, x, fmt.Errorf("%+v", r))
 			}
 		}
@@ -520,6 +539,7 @@ func Append(key string, id string, path string, x interface{}, logger func(strin
 				valueToSet, err := collection.ReflectBaseTypeByFieldName(fieldName, x)
 				if err != nil {
 					logger("Error Setting Value to Store", fmt.Sprintf("%+v", valueToSet)+"\nError:  "+err.Error())
+					utils.TalkDirtySlowly("7 Store Append Error:" + err.Error())
 					OnChange(key, id, path, x, err)
 				}
 
@@ -540,6 +560,7 @@ func Append(key string, id string, path string, x interface{}, logger func(strin
 			logger("Error", errInterface.Error())
 			log.Printf("%s%+v\n", "Error Saving Object.", errInterface.Error())
 			if OnChange != nil {
+				utils.TalkDirtySlowly("8 Store Append Error:" + err.Error())
 				OnChange(key, id, path, x, errInterface)
 			}
 			err = errInterface
@@ -562,6 +583,7 @@ func Splice(key string, id string, path string, x interface{}, logger func(strin
 		if r := recover(); r != nil {
 			logger("Recover", fmt.Sprintf("%+v", r))
 			if OnChange != nil {
+				utils.TalkDirtySlowly("9 Store Splice  Error:" + err.Error())
 				OnChange(key, id, path, x, fmt.Errorf("%+v", r))
 			}
 		}
@@ -643,6 +665,7 @@ func Splice(key string, id string, path string, x interface{}, logger func(strin
 			logger("Error", errInterface.Error())
 			log.Printf("%s%+v\n", "Error Saving Object.", errInterface.Error())
 			if OnChange != nil {
+				utils.TalkDirtySlowly("10 Store Append Error:" + errInterface.Error())
 				OnChange(key, id, path, x, errInterface)
 			}
 			err = errInterface
@@ -665,6 +688,7 @@ func Add(key string, x interface{}, logger func(string, string)) (y interface{},
 		if r := recover(); r != nil {
 			logger("Recover", fmt.Sprintf("%+v", r))
 			if OnChange != nil {
+				utils.TalkDirtySlowly("11 Store Add Error:" + fmt.Errorf("%+v", r).Error())
 				OnChange(key, "", "", x, fmt.Errorf("%+v", r))
 			}
 		}
@@ -681,6 +705,7 @@ func Add(key string, x interface{}, logger func(string, string)) (y interface{},
 		data, errMarshal := json.Marshal(x)
 		if errMarshal != nil {
 			if OnChange != nil {
+				utils.TalkDirtySlowly("12 Store Add Error:" + errMarshal.Error())
 				OnChange(key, "", "", x, errMarshal)
 			}
 			return
@@ -688,6 +713,7 @@ func Add(key string, x interface{}, logger func(string, string)) (y interface{},
 		errUnMarshal := json.Unmarshal(data, obj.Interface())
 		if errUnMarshal != nil {
 			if OnChange != nil {
+				utils.TalkDirtySlowly("13 Store Add Error:" + errUnMarshal.Error())
 				OnChange(key, "", "", x, errUnMarshal)
 			}
 			return
@@ -705,6 +731,7 @@ func Add(key string, x interface{}, logger func(string, string)) (y interface{},
 			logger("Error", err.Error())
 			log.Printf("%s%+v\n", "Error Saving Object.", err.Error())
 			if OnChange != nil {
+				utils.TalkDirtySlowly("14 Store Add Error:" + err.Error())
 				OnChange(key, "", "", x, err)
 			}
 			err = errSave
@@ -730,6 +757,7 @@ func Remove(key string, id string) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			if OnChange != nil {
+				utils.TalkDirtySlowly("15 Store Remove Error:" + err.Error())
 				OnChange(key, "", "", nil, fmt.Errorf("%+v", r))
 			}
 		}
@@ -759,6 +787,7 @@ func Remove(key string, id string) (err error) {
 		if ok {
 			log.Printf("%s%+v\n", "Error Deleting Object.", err.Error())
 			if OnChange != nil {
+				utils.TalkDirtySlowly("16 Store Remove Error:" + err.Error())
 				OnChange(key, "", "", nil, err)
 			}
 			err = errSave

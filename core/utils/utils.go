@@ -46,17 +46,21 @@ func ReplaceTokenInFile(file string, find string, replaceWith string) {
 }
 
 func TalkDirtyToMe(sayWhat string) {
-	if serverSettings.WebConfig.Application.TalkDirty {
+	if serverSettings.WebConfig.Application.ReleaseMode == "development" {
 		go exec.Command("say", sayWhat).Output()
 	}
 }
 
 func TalkDirty(sayWhat string) {
-	go exec.Command("say", sayWhat).Output()
+	if serverSettings.WebConfig.Application.ReleaseMode == "development" {
+		go exec.Command("say", sayWhat).Output()
+	}
 }
 
 func TalkDirtySlowly(sayWhat string) {
-	exec.Command("say", sayWhat).Output()
+	if serverSettings.WebConfig.Application.ReleaseMode == "development" {
+		exec.Command("say", sayWhat).Output()
+	}
 }
 
 func InArray(a string, list []string) bool {

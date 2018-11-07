@@ -53,6 +53,12 @@ func init() {
 	}()
 }
 
+func Log(dataValues ...interface{}) {
+	for _, value := range dataValues {
+		Message(fmt.Sprintf("%+v", value), CYAN)
+	}
+}
+
 func Message(message string, c Color) {
 	switch c {
 	case 1:
