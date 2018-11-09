@@ -111,6 +111,21 @@ func (obj *AtomicBool) Set(value bool) {
 	obj.valueSync.Unlock()
 }
 
+//SetIf sets the bool value only if the check back true; return if the value was set
+func (obj *AtomicBool) SetIf(check, value bool) (success bool) {
+	obj.valueSync.Lock()
+	defer obj.valueSync.Unlock()
+
+	success = false
+	if obj.value == check {
+		obj.value = value
+
+		success = true
+	}
+
+	return
+}
+
 //AtomicTime provides a time.Time object that is lock safe.
 type AtomicTime struct {
 	valueSync sync.RWMutex
