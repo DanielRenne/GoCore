@@ -48,6 +48,24 @@ func (obj *AtomicInt) Set(value int) {
 	obj.valueSync.Unlock()
 }
 
+// Increment allows for the value to safely be increased by 1
+func (obj *AtomicInt) Increment() int {
+	obj.valueSync.Lock()
+	defer obj.valueSync.Unlock()
+
+	obj.value++
+	return obj.value
+}
+
+// Decrement allows for the value to safely be decreased by 1
+func (obj *AtomicInt) Decrement() int {
+	obj.valueSync.Lock()
+	defer obj.valueSync.Unlock()
+
+	obj.value--
+	return obj.value
+}
+
 //AtomicUInt16 provides an uint16 object that is lock safe.
 type AtomicUInt16 struct {
 	valueSync sync.RWMutex
@@ -111,16 +129,16 @@ func (obj *AtomicBool) Set(value bool) {
 	obj.valueSync.Unlock()
 }
 
-//SetIf sets the bool value only if the check back true; return if the value was set
-func (obj *AtomicBool) SetIf(check, value bool) (success bool) {
+//ToggleTrue sets the bool value only if the check back true; return if the value was set
+func (obj *AtomicBool) ToggleTrue() (changed bool) {
 	obj.valueSync.Lock()
 	defer obj.valueSync.Unlock()
 
-	success = false
-	if obj.value == check {
-		obj.value = value
+	changed = false
+	if obj.value == false {
+		obj.value = true
 
-		success = true
+		changed = true
 	}
 
 	return
