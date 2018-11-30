@@ -1660,6 +1660,10 @@ func (self *Query) getIdHex(val interface{}) (bson.ObjectId, error) {
 	myIdInstance := reflect.ValueOf(val)
 	myIdInstanceHex := myIdInstance.MethodByName("Hex")
 
+	if myIdType.Name() != "ObjectId" && (myIdType.Kind() == reflect.String && bson.IsObjectIdHex(val.(string)) == false) {
+		return bson.NewObjectId(), errors.New(ERROR_INVALID_ID_VALUE)
+	}
+
 	if myIdType.Name() != "ObjectId" && myIdType.Kind() == reflect.String && val.(string) != "" {
 		return bson.ObjectIdHex(val.(string)), nil
 	} else if myIdType.Name() == "ObjectId" && myIdType.Kind() == reflect.String {
