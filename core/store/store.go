@@ -142,17 +142,30 @@ func GetByPath(key string, id string, joins []string, path string) (x interface{
 		if i == 0 {
 			fieldValue = objElem.FieldByName(fieldName)
 		} else {
-			fieldValue = properties[i-1].FieldByName(fieldName)
+			if properties[i-1].IsValid() {
+				fieldValue = properties[i-1].FieldByName(fieldName)
+			} else {
+				fieldValue = reflect.Value{}
+			}
 		}
 
 		if arrayIndex == -1 {
 			properties = append(properties, fieldValue)
 		} else {
-			properties = append(properties, fieldValue.Index(arrayIndex))
+			if fieldValue.Len() >= arrayIndex+1 {
+				properties = append(properties, fieldValue.Index(arrayIndex))
+			} else {
+				properties = append(properties, reflect.Value{})
+			}
 		}
 
 		if i+1 == depth {
-			x = properties[i].Interface()
+			if properties[i].IsValid() && properties[i].CanInterface() {
+				x = properties[i].Interface()
+			} else {
+				x = nil
+			}
+
 		}
 	}
 
@@ -213,19 +226,34 @@ func GetByPathBatch(key string, id string, joins []string, paths []string) (x in
 			if i == 0 {
 				fieldValue = objElem.FieldByName(fieldName)
 			} else {
-				fieldValue = properties[i-1].FieldByName(fieldName)
+				if properties[i-1].IsValid() {
+					fieldValue = properties[i-1].FieldByName(fieldName)
+				} else {
+					fieldValue = reflect.Value{}
+				}
+
 			}
 
 			if arrayIndex == -1 {
 				properties = append(properties, fieldValue)
 			} else {
-				properties = append(properties, fieldValue.Index(arrayIndex))
+				if fieldValue.Len() >= arrayIndex+1 {
+					properties = append(properties, fieldValue.Index(arrayIndex))
+				} else {
+					properties = append(properties, reflect.Value{})
+				}
+
 			}
 
 			if i+1 == depth {
 				var pv pathValue
 				pv.Path = path
-				pv.Value = properties[i].Interface()
+				if properties[i].IsValid() && properties[i].CanInterface() {
+					pv.Value = properties[i].Interface()
+				} else {
+					pv.Value = nil
+				}
+
 				results = append(results, pv)
 
 			}
