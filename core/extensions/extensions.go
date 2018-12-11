@@ -9,6 +9,7 @@ import (
 	"io"
 	"math/rand"
 	"net"
+	"net/http"
 	"os"
 	"strconv"
 	"strings"
@@ -405,5 +406,19 @@ func BigEndianUInt32(value uint32) (value1 byte, value2 byte, value3 byte, value
 //IpAddressToUint32 will convert a string ip address to UInt32
 func IpAddressToUint32(ip string) (value uint32) {
 	binary.Read(bytes.NewBuffer(net.ParseIP(ip).To4()), binary.BigEndian, &value)
+	return
+}
+
+//GetUserAgentName will return the name of the user agent.
+func GetUserAgentName(req *http.Request) (name string) {
+	ua := req.Header.Get("User-Agent")
+	if ua != "" {
+		values := strings.Split(ua, " ")
+		lastBlock := values[len(values)-1]
+		details := strings.Split(lastBlock, "/")
+		if len(details) > 0 {
+			name = details[0]
+		}
+	}
 	return
 }
