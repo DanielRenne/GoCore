@@ -2208,14 +2208,14 @@ func genNoSQLSchemaDelete(collection NOSQLCollection, schema NOSQLSchema, driver
 		val += "dbServices.CollectionCache{}.Remove(\"" + strings.Title(collection.Name) + "\",self.Id.Hex())\n"
 		val += "err := dbServices.BoltDB.Delete(\"" + strings.Title(schema.Name) + "\", self.Id.Hex())\n"
 		val += "if err == nil{\n"
-		val += "pubsub.Publish(\"" + strings.Title(collection.Name) + ".Delete\", self.Id.Hex())\n"
+		val += "pubsub.Publish(\"" + strings.Title(collection.Name) + ".Delete\", self)\n"
 		val += "}\n"
 		val += "return err\n"
 	case "mongoDB":
 		val += "dbServices.CollectionCache{}.Remove(\"" + strings.Title(collection.Name) + "\",self.Id.Hex())\n"
 		val += "err := mongo" + strings.Title(collection.Name) + "Collection.RemoveId(self.Id)\n"
 		val += "if err == nil{\n"
-		val += "pubsub.Publish(\"" + strings.Title(collection.Name) + ".Delete\", self.Id.Hex())\n"
+		val += "pubsub.Publish(\"" + strings.Title(collection.Name) + ".Delete\", self)\n"
 		val += "}\n"
 		val += "return err\n"
 	}
