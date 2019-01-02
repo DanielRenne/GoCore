@@ -471,7 +471,18 @@ func finalizeModelFile(versionDir string) {
 	modelToWrite += "switch collectionName + fieldName {\n"
 
 	for key, value := range allCollections.Entities {
+
+		var fieldNameLookup sync.Map
+
 		for _, constValue := range value.FieldNames {
+
+			_, found := fieldNameLookup.Load(key + constValue.Name)
+			if found {
+				continue
+			} else {
+				fieldNameLookup.Store(key+constValue.Name, nil)
+			}
+
 			modelToWrite += "case \"" + key + constValue.Name + "\":\n"
 			modelToWrite += "return \"" + constValue.Type + "\"\n"
 		}
