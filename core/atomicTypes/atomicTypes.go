@@ -215,3 +215,24 @@ func (obj *AtomicBoolArray) SetByIndex(index int, value bool) {
 	}
 	obj.valueSync.Unlock()
 }
+
+//AtomicFloat64 provides a float64 object that is lock safe.
+type AtomicFloat64 struct {
+	valueSync sync.RWMutex
+	value     float64
+}
+
+//Get returns the float64 value
+func (obj *AtomicFloat64) Get() (value float64) {
+	obj.valueSync.RLock()
+	value = obj.value
+	obj.valueSync.RUnlock()
+	return
+}
+
+//Set sets the float64 value
+func (obj *AtomicFloat64) Set(value float64) {
+	obj.valueSync.Lock()
+	obj.value = value
+	obj.valueSync.Unlock()
+}
