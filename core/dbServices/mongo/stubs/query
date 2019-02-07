@@ -898,7 +898,7 @@ func (self *Query) GetOrCreate(x interface{}, t *Transaction) (err error) {
 	return
 }
 
-func (self *Query) TotalRows(x interface{}) int {
+func (self *Query) TotalRows() int {
 	if !serverSettings.WebConfig.Application.LogQueries && serverSettings.WebConfig.Application.LogQueryTimes {
 		defer func() {
 			log.Println(logger.TimeTrackQuery(time.Now(), "q.TotalRows()", self.collection, self.m, self.q))

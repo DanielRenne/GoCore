@@ -748,7 +748,7 @@ func (self *Query) One(x interface{}) error {
 }
 
 func (self *Query) GetOrCreate(x interface{}, t *Transaction) (err error) {
-	count := self.TotalRows(x)
+	count := self.TotalRows()
 
 	if count == 1 {
 		err = self.One(x)
@@ -815,7 +815,7 @@ func GetInterfaceSlice(obj interface{}) ([]interface{}, error) {
 }
 
 
-func (self *Query) TotalRows(x interface{}) int {
+func (self *Query) TotalRows() int {
 	if serverSettings.WebConfig.Application.LogQueries {
 		defer func() {
 			log.Println(logger.TimeTrack(time.Now(), "q.TotalRows()"))
