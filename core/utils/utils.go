@@ -101,3 +101,7 @@ func InterfaceMap() (ret map[string]interface{}) {
 	ret = make(map[string]interface{}, 1)
 	return ret
 }
+
+func RandomFloat() float32 {
+	return rand.Float32() // Intn(max-min) + min
+}
