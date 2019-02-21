@@ -370,6 +370,7 @@ docker/dist
 web/app/npm-debug.log*
 web/app/node_modules
 *.db
+/models/
 `+appName)
 
 	createFile("/README.md", `# `+appName+` [a [GoCore Application](https://github.com/DanielRenne/GoCore/ "GoCore Application")]
