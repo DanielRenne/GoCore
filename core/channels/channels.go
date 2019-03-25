@@ -66,7 +66,7 @@ func (q *Queue) Wait(x interface{}) (c chan interface{}, any bool) {
 				return
 			}
 		}()
-		time.Sleep(time.Millisecond * 5000)
+		time.Sleep(time.Millisecond * 10000)
 		_, ok := q.channels.Load(randomValue)
 		if ok {
 			q.channels.Delete(randomValue)
