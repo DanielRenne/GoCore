@@ -168,6 +168,15 @@ func StringToInt(val string) int {
 	return r
 }
 
+func StringToUInt16(val string) uint16 {
+
+	r, err := strconv.Atoi(val)
+	if err != nil {
+		return 0
+	}
+	return uint16(r)
+}
+
 func StringToFloat(val string, precision int) (r float64) {
 	r, err := strconv.ParseFloat(val, precision)
 	if err != nil {
