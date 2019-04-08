@@ -38,6 +38,15 @@ func (obj *FilePath) ToString() (str string) {
 	return obj.Path + string(os.PathSeparator) + obj.Name + " | " + obj.Type
 }
 
+func HexToInt(hexStr string) int {
+	// remove 0x suffix if found in the input string
+	cleaned := strings.Replace(hexStr, "0x", "", -1)
+
+	// base 16 for hexadecimal
+	result, _ := strconv.ParseUint(cleaned, 16, 64)
+	return int(result)
+}
+
 func GetDecimalAndStringFromHex(twoDigitHexCode string) (decimalValue int, asciiString string, err error) {
 	decoded, err := hex.DecodeString(twoDigitHexCode)
 	if err != nil {
