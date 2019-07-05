@@ -280,7 +280,16 @@ func Run() {
 
 	initializeStaticRoutes()
 
-	go ginServer.Router.RunTLS(":"+strconv.Itoa(serverSettings.WebConfig.Application.HttpsPort), serverSettings.APP_LOCATION+"/keys/cert.pem", serverSettings.APP_LOCATION+"/keys/key.pem")
+	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				log.Println("Panic Recovered at Run TLS():  ", r)
+				return
+			}
+		}()
+
+		ginServer.Router.RunTLS(":"+strconv.Itoa(serverSettings.WebConfig.Application.HttpsPort), serverSettings.APP_LOCATION+"/keys/cert.pem", serverSettings.APP_LOCATION+"/keys/key.pem")
+	}()
 
 	log.Println("GoCore Application Started")
 
