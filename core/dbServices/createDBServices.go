@@ -854,7 +854,15 @@ func genNoSQLSchema(collection *NOSQLCollection, schema NOSQLSchema, driver stri
 
 		allCollections.Lock()
 		entityConsts := allCollections.Entities[strings.Title(schema.Name)]
-		entityConsts.Constants = append(entityConsts.Constants, strings.Title(field.Name))
+		insert := true
+		for _, con := range entityConsts.Constants {
+			if strings.Title(field.Name) == con {
+				insert = false
+			}
+		}
+		if insert {
+			entityConsts.Constants = append(entityConsts.Constants, strings.Title(field.Name))
+		}
 		entityConsts.FieldNames = append(entityConsts.FieldNames, fieldType{
 			Name: strings.Title(field.Name),
 			Type: field.Type,
