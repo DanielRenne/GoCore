@@ -557,6 +557,56 @@ func (self *Query) Where(field string, val interface{}) *Query {
 	return self.Filter(Q(field, val))
 }
 
+func (self *Query) Exists(criteria map[string]interface{}) *Query {
+
+	_, hasId := criteria["Id"]
+	if hasId {
+		if self.m == nil {
+			self.m = make(bson.M)
+		}
+
+		self.m["_id"] = Q("$exists", true)
+		return self
+	} else {
+
+		if self.m == nil {
+			self.m = make(bson.M)
+		}
+
+		for key, _ := range criteria {
+			if key != "" {
+				self.m[key] = Q("$exists", true)
+			}
+		}
+	}
+	return self
+}
+
+func (self *Query) NotExists(criteria map[string]interface{}) *Query {
+
+	_, hasId := criteria["Id"]
+	if hasId {
+		if self.m == nil {
+			self.m = make(bson.M)
+		}
+
+		self.m["_id"] = Q("$exists", false)
+		return self
+	} else {
+
+		if self.m == nil {
+			self.m = make(bson.M)
+		}
+
+		for key, _ := range criteria {
+			if key != "" {
+				self.m[key] = Q("$exists", false)
+			}
+		}
+	}
+	return self
+}
+
 func (self *Query) Filter(criteria map[string]interface{}) *Query {
 
 	val, hasId := criteria["Id"]
