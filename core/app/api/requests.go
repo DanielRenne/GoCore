@@ -198,8 +198,6 @@ func processRequest(controller string, action string, data []byte, c *gin.Contex
 		return
 	}
 
-	log.Println("Data:  " + string(data))
-
 	methodType := method.Type()
 	paramCnt := methodType.NumIn()
 	in := []reflect.Value{}
