@@ -111,9 +111,9 @@ func processPOSTAPI(c *gin.Context) {
 
 	body, _ := ginServer.GetRequestBody(c)
 
-	if serverSettings.WebConfig.Application.AllowCrossOriginRequests {
-		c.Header("Access-Control-Allow-Origin", "*")
-	}
+	// if serverSettings.WebConfig.Application.AllowCrossOriginRequests {
+	c.Header("Access-Control-Allow-Origin", "127.0.0.1")
+	// }
 
 	response := func(y interface{}, e errorResponse, httpStatus int) {
 		processHTTPResponse(y, e, httpStatus, c)
