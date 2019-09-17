@@ -16,7 +16,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type errorResponse struct {
+type ErrorResponse struct {
 	Error *errorObj `json:"error,omitEmpty"`
 }
 
@@ -50,14 +50,14 @@ func processGETAPI(c *gin.Context) {
 		if r := recover(); r != nil {
 			log.Println("Panic Stack: " + string(debug.Stack()))
 			log.Println("Recover Error:  " + fmt.Sprintf("%+v", r))
-			var e errorResponse
+			var e ErrorResponse
 			e.Error.Message = "Recover Error:  " + fmt.Sprintf("%+v", r)
 			c.JSON(http.StatusInternalServerError, e)
 			return
 		}
 	}()
 
-	var e errorResponse
+	var e ErrorResponse
 	e.Error = new(errorObj)
 
 	controller := c.Query("controller")
@@ -85,7 +85,7 @@ func processGETAPI(c *gin.Context) {
 		c.Header("Access-Control-Allow-Origin", "*")
 	}
 
-	response := func(y interface{}, e errorResponse, httpStatus int) {
+	response := func(y interface{}, e ErrorResponse, httpStatus int) {
 		processHTTPResponse(y, e, httpStatus, c)
 	}
 
@@ -99,7 +99,7 @@ func processPOSTAPI(c *gin.Context) {
 		if r := recover(); r != nil {
 			log.Println("Panic Stack: " + string(debug.Stack()))
 			log.Println("Recover Error:  " + fmt.Sprintf("%+v", r))
-			var e errorResponse
+			var e ErrorResponse
 			e.Error.Message = "Recover Error:  " + fmt.Sprintf("%+v", r)
 			c.JSON(http.StatusInternalServerError, e)
 			return
@@ -115,14 +115,14 @@ func processPOSTAPI(c *gin.Context) {
 	c.Header("Access-Control-Allow-Origin", "127.0.0.1")
 	// }
 
-	response := func(y interface{}, e errorResponse, httpStatus int) {
+	response := func(y interface{}, e ErrorResponse, httpStatus int) {
 		processHTTPResponse(y, e, httpStatus, c)
 	}
 
 	processRequest(controller, action, body, c, response)
 }
 
-func processHTTPResponse(y interface{}, e errorResponse, httpStatus int, c *gin.Context) {
+func processHTTPResponse(y interface{}, e ErrorResponse, httpStatus int, c *gin.Context) {
 
 	if y == nil {
 		c.JSON(httpStatus, e)
@@ -143,7 +143,7 @@ func processSocketAPI(c *gin.Context, data []byte, conn *app.WebSocketConnection
 
 	var request socketAPIRequest
 
-	var e errorResponse
+	var e ErrorResponse
 	e.Error = new(errorObj)
 
 	var socketResponse socketAPIResponse
@@ -159,7 +159,7 @@ func processSocketAPI(c *gin.Context, data []byte, conn *app.WebSocketConnection
 
 	socketResponse.CallbackId = request.CallbackID
 
-	response := func(y interface{}, e errorResponse, httpStatus int) {
+	response := func(y interface{}, e ErrorResponse, httpStatus int) {
 		if y == nil {
 			socketResponse.Data = e
 			app.ReplyToWebSocketJSON(conn, socketResponse)
@@ -181,9 +181,14 @@ func processSocketAPI(c *gin.Context, data []byte, conn *app.WebSocketConnection
 
 }
 
-func processRequest(controller string, action string, data []byte, c *gin.Context, results func(y interface{}, e errorResponse, httpStatus int)) {
+//ProcessRequest will process a controller requeest.
+func ProcessRequest(controller string, action string, data []byte, results func(y interface{}, e ErrorResponse, httpStatus int)) {
+	processRequest(controller, action, data, nil, results)
+}
 
-	var e errorResponse
+func processRequest(controller string, action string, data []byte, c *gin.Context, results func(y interface{}, e ErrorResponse, httpStatus int)) {
+
+	var e ErrorResponse
 	e.Error = new(errorObj)
 
 	ctl := getController(strings.Title(controller))

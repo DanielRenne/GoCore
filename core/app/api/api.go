@@ -58,6 +58,16 @@ func RegisterControllerByKey(key string, controller interface{}) {
 	registry.Store(key, reflect.ValueOf(controller))
 }
 
+//GetControllerInterface will return the interface of the controller.
+func GetControllerInterface(key string) interface{} {
+
+	controller, ok := getControllerRegistry(key)
+	if ok {
+		return controller.Interface()
+	}
+	return reflect.ValueOf(nil).Interface()
+}
+
 func getController(key string) reflect.Value {
 
 	controller, ok := getControllerRegistry(key)
