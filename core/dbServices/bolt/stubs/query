@@ -822,8 +822,8 @@ func (self *Query) TotalRows() int {
 		}()
 	}
 
-	err := self.All(x)
-	xSlice, err := GetInterfaceSlice(x)
+	err := self.All()
+	xSlice, err := GetInterfaceSlice()
 	if err != nil {
 		return 0
 	}
