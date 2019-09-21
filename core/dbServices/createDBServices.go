@@ -1404,7 +1404,7 @@ func genNoSQLSchemaSave(collection NOSQLCollection, schema NOSQLSchema, driver s
 		val += "if err == nil{\n"
 		val += "pubsub.Publish(\"" + strings.Title(collection.Name) + ".Save\", self)\n"
 		val += "}\n"
-		val += "return\n"
+		val += "return nil\n"
 	case DATABASE_DRIVER_MONGODB:
 		val += "collection" + strings.Title(collection.Name) + "Mutex.RLock()\n"
 		val += "collection := mongo" + strings.Title(collection.Name) + "Collection\n"
