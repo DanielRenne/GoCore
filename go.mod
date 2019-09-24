@@ -101,5 +101,3 @@ require (
 	honnef.co/go/js/dom v0.0.0-20190526011328-ebc4cf92d81f // indirect
 	xojoc.pw/useragent v0.0.0-20170215185434-52903803fc66 // indirect
 )
-
-replace github.com/DanielRenne/GoCore/core/app => ./core/app
