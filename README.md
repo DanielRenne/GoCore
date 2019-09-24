@@ -23,6 +23,22 @@ Below are some targeted goals:
 ----------
 ## Getting Started ##
 
+### Install Homebrew ###
+
+`/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"`
+
+### Install MongoDB ###
+
+`brew tap mongodb/brew`
+
+`brew install mongodb-community`
+
+`brew services start mongodb/brew/mongodb-community`
+
+### Install NPM and Node JS ###
+
+https://nodejs.org/en/download/
+
 ### Install Golang
 
 [Setup](https://golang.org/doc/install/ "Setup")
