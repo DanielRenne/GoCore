@@ -1,0 +1,17 @@
+{
+    "CreateTransaction": "Membuat transaksi", 
+    "TransactionAddCollections": "Koleksi", 
+    "TransactionAddCommitted": "Penting", 
+    "TransactionAddCompleteDate": "Tanggal lengkap", 
+    "TransactionAddCreateDate": "Membuat tanggal", 
+    "TransactionAddDetails": "Detail", 
+    "TransactionAddError": "Kesalahan", 
+    "TransactionAddLastUpdate": "Last update", 
+    "TransactionAddRollbackDate": "Rollback tanggal", 
+    "TransactionAddRollbackReason": "Rollback alasan", 
+    "TransactionAddRolledBack": "Digulung kembali", 
+    "TransactionAddRolledBackBy": "Kembali digulirkan oleh", 
+    "TransactionAddUserId": "User id", 
+    "objectName": "transactionAdd", 
+    "welcomeExample": "Selamat datang {page} halaman!"
+}

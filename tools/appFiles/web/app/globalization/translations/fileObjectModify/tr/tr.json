@@ -1,0 +1,15 @@
+{
+    "FileObjectModifyAccountId": "Id hesab\u0131 ", 
+    "FileObjectModifyContent": "\u0130\u00e7erik", 
+    "FileObjectModifyCreateDate": "Tarih olu\u015fturmak ", 
+    "FileObjectModifyLastUpdateId": "Son g\u00fcncelleme kimli\u011fi", 
+    "FileObjectModifyMD5": "5 MD ", 
+    "FileObjectModifyModified": "Modifiye", 
+    "FileObjectModifyModifiedUnix": "Modifiye un\u0131x", 
+    "FileObjectModifyName": "Ad\u0131", 
+    "FileObjectModifySize": "Boyutu", 
+    "FileObjectModifyType": "Yaz\u0131n", 
+    "FileObjectModifyUpdateDate": "Tarih g\u00fcncelleme ", 
+    "objectName": "fileObjectModify", 
+    "welcomeExample": "{page} sayfas\u0131na ho\u015f geldiniz!"
+}

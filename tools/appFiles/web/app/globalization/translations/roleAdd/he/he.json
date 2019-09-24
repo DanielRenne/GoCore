@@ -1,0 +1,12 @@
+{
+    "CreateRole": "\u05dc\u05d9\u05e6\u05d5\u05e8 \u05ea\u05e4\u05e7\u05d9\u05d3", 
+    "RoleAddAccountId": "\u05d0\u05ea \u05de\u05d6\u05d4\u05d4 \u05d7\u05e9\u05d1\u05d5\u05df", 
+    "RoleAddCanDelete": "\u05d9\u05db\u05d5\u05dc \u05dc\u05de\u05d7\u05d5\u05e7", 
+    "RoleAddCreateDate": "\u05ea\u05d0\u05e8\u05d9\u05da \u05d9\u05e6\u05d9\u05e8\u05d4", 
+    "RoleAddLastUpdateId": "\u05e2\u05d3\u05db\u05d5\u05df \u05d0\u05d7\u05e8\u05d5\u05df id", 
+    "RoleAddName": "\u05e9\u05dd", 
+    "RoleAddShortName": "\u05e9\u05dd \u05e7\u05e6\u05e8", 
+    "RoleAddUpdateDate": "\u05ea\u05d0\u05e8\u05d9\u05da \u05e2\u05d3\u05db\u05d5\u05df", 
+    "objectName": "roleAdd", 
+    "welcomeExample": "\u05d1\u05e8\u05d5\u05db\u05d9\u05dd \u05d4\u05d1\u05d0\u05d9\u05dd {page} \u05d3\u05e3!"
+}

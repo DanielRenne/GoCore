@@ -1,0 +1,15 @@
+{
+    "FileObjectModifyAccountId": "Identifikator ra\u010duna", 
+    "FileObjectModifyContent": "Sadr\u017eaj", 
+    "FileObjectModifyCreateDate": "Datum osnivanja", 
+    "FileObjectModifyLastUpdateId": "Posljednja obnova EID", 
+    "FileObjectModifyMD5": "MD-5", 
+    "FileObjectModifyModified": "Mijenjati", 
+    "FileObjectModifyModifiedUnix": "Promjene u Unix", 
+    "FileObjectModifyName": "Naziv", 
+    "FileObjectModifySize": "Veli\u010dina", 
+    "FileObjectModifyType": "Vrsta", 
+    "FileObjectModifyUpdateDate": "Datum a\u017euriranja", 
+    "objectName": "fileObjectModify", 
+    "welcomeExample": "Dobrodo\u0161li na {page} stranice!"
+}

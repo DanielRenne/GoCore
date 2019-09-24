@@ -1,0 +1,15 @@
+{
+    "FileObjectModifyAccountId": "\u0418\u0434\u0435\u043d\u0442\u0438\u0444\u0438\u043a\u0430\u0442\u043e\u0440 \u0443\u0447\u0435\u0442\u043d\u043e\u0439 \u0437\u0430\u043f\u0438\u0441\u0438", 
+    "FileObjectModifyContent": "\u0421\u043e\u0434\u0435\u0440\u0436\u0430\u043d\u0438\u0435", 
+    "FileObjectModifyCreateDate": "\u0414\u0430\u0442\u0430 \u0441\u043e\u0437\u0434\u0430\u043d\u0438\u044f", 
+    "FileObjectModifyLastUpdateId": "\u041f\u043e\u0441\u043b\u0435\u0434\u043d\u0435\u0435 \u043e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u0435 \u0418\u0414", 
+    "FileObjectModifyMD5": "\u041c\u0414 5", 
+    "FileObjectModifyModified": "\u0418\u0437\u043c\u0435\u043d\u0435\u043d", 
+    "FileObjectModifyModifiedUnix": "\u0418\u0437\u043c\u0435\u043d\u0435\u043d \u0432 Unix", 
+    "FileObjectModifyName": "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435", 
+    "FileObjectModifySize": "\u0420\u0430\u0437\u043c\u0435\u0440", 
+    "FileObjectModifyType": "\u0422\u0438\u043f", 
+    "FileObjectModifyUpdateDate": "\u0414\u0430\u0442\u0430 \u043e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u044f", 
+    "objectName": "fileObjectModify", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

@@ -1,0 +1,16 @@
+{
+    "TransactionModifyCollections": "Koleksiyonlar\u0131", 
+    "TransactionModifyCommitted": "Taahh\u00fct", 
+    "TransactionModifyCompleteDate": "Tam tarih", 
+    "TransactionModifyCreateDate": "Tarih olu\u015fturmak ", 
+    "TransactionModifyDetails": "Ayr\u0131nt\u0131lar\u0131", 
+    "TransactionModifyError": "Hata", 
+    "TransactionModifyLastUpdate": "Son g\u00fcncelleme", 
+    "TransactionModifyRollbackDate": "Geri alma tarihi", 
+    "TransactionModifyRollbackReason": "Geri alma sebebi", 
+    "TransactionModifyRolledBack": "Geri", 
+    "TransactionModifyRolledBackBy": "Tekrar geri d\u00f6nm\u00fc\u015f ", 
+    "TransactionModifyUserId": "Kullan\u0131c\u0131 kimli\u011fi", 
+    "objectName": "transactionModify", 
+    "welcomeExample": "{page} sayfas\u0131na ho\u015f geldiniz!"
+}

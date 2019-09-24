@@ -1,0 +1,13 @@
+{
+    "AliasDeviceLabel": "* Alias av Enheten", 
+    "Cancel": "Avbryt", 
+    "EnterAlias": "Vennligst skriv inn et alias for denne enheten som er koblet", 
+    "ErrorNoAlias": "Vennligst legg inn en ikke-tom alias", 
+    "ErrorNoBuildings": "Ingen bygninger som er tilgjengelige", 
+    "ErrorNoSites": "Ingen nettsteder tilgjengelig", 
+    "ResetPass": "Tilbakestill Passord", 
+    "RoomSync": "Rommet Synkronisering", 
+    "Synchronizing": "Synkronisering", 
+    "UserCanceled": "En bruker avbrutt tiltak for \u00e5 synkronisere dette rommet, vennligst pr\u00f8v igjen.", 
+    "Waiting": "Venter p\u00e5 Godkjennelse..."
+}

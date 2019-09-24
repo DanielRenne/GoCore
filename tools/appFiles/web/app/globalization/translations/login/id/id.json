@@ -1,0 +1,13 @@
+{
+    "AliasDeviceLabel": "* Alias Perangkat", 
+    "Cancel": "Membatalkan", 
+    "EnterAlias": "Silakan masukkan sebuah alias untuk perangkat yang terhubung", 
+    "ErrorNoAlias": "Silahkan masukkan non kosong alias", 
+    "ErrorNoBuildings": "Tidak ada bangunan yang tersedia", 
+    "ErrorNoSites": "Tidak ada situs yang tersedia", 
+    "ResetPass": "Reset Password", 
+    "RoomSync": "Kamar Sinkronisasi", 
+    "Synchronizing": "Sinkronisasi", 
+    "UserCanceled": "Pengguna membatalkan tindakan untuk menyelaraskan ruangan ini, silakan coba lagi.", 
+    "Waiting": "Menunggu Persetujuan..."
+}

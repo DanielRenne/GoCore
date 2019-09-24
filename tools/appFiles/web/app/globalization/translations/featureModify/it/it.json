@@ -1,0 +1,12 @@
+{
+    "FeatureModifyBootstrapMeta": "Bootstrap meta", 
+    "FeatureModifyCreateDate": "Data di creazione", 
+    "FeatureModifyDescription": "Descrizione", 
+    "FeatureModifyFeatureGroupId": "Funzione id di gruppo", 
+    "FeatureModifyKey": "Chiave", 
+    "FeatureModifyLastUpdateId": "Ultimo aggiornamento id", 
+    "FeatureModifyName": "Nome", 
+    "FeatureModifyUpdateDate": "La data di aggiornamento", 
+    "objectName": "featureModify", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

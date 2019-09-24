@@ -1,0 +1,11 @@
+{
+    "RoleModifyAccountId": "Akun id", 
+    "RoleModifyCanDelete": "Dapat menghapus", 
+    "RoleModifyCreateDate": "Membuat tanggal", 
+    "RoleModifyLastUpdateId": "Last update id", 
+    "RoleModifyName": "Nama", 
+    "RoleModifyShortName": "Pendek nama", 
+    "RoleModifyUpdateDate": "Tanggal Update", 
+    "objectName": "roleModify", 
+    "welcomeExample": "Selamat datang {page} halaman!"
+}

@@ -1,0 +1,11 @@
+{
+    "RoleModifyAccountId": "Id \u00fa\u010dtu", 
+    "RoleModifyCanDelete": "M\u016f\u017eete odstranit", 
+    "RoleModifyCreateDate": "Datum vytvo\u0159en\u00ed", 
+    "RoleModifyLastUpdateId": "Posledn\u00ed aktualizace id", 
+    "RoleModifyName": "Jm\u00e9no", 
+    "RoleModifyShortName": "Kr\u00e1tk\u00fd n\u00e1zev", 
+    "RoleModifyUpdateDate": "Datum aktualizace", 
+    "objectName": "roleModify", 
+    "welcomeExample": "V\u00edtejte na {page} str\u00e1nka!"
+}

@@ -1,0 +1,13 @@
+{
+    "AliasDeviceLabel": "* Alias for Enheden", 
+    "Cancel": "Annuller", 
+    "EnterAlias": "Indtast et kaldenavn til denne tilsluttede enhed", 
+    "ErrorNoAlias": "Indtast venligst ikke en tom alias", 
+    "ErrorNoBuildings": "Ingen bygninger til r\u00e5dighed", 
+    "ErrorNoSites": "Ingen steder findes", 
+    "ResetPass": "Reset Password", 
+    "RoomSync": "V\u00e6relses Synkronisering", 
+    "Synchronizing": "Synkronisering", 
+    "UserCanceled": "En bruger aflyst indsats for at synkronisere dette v\u00e6relse, pr\u00f8v venligst igen.", 
+    "Waiting": "Venter p\u00e5 Godkendelse..."
+}

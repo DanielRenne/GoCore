@@ -1,0 +1,12 @@
+{
+    "CreateRole": "!ko!Create role", 
+    "RoleAddAccountId": "!ko!Account id", 
+    "RoleAddCanDelete": "!ko!Can delete", 
+    "RoleAddCreateDate": "!ko!Create date", 
+    "RoleAddLastUpdateId": "!ko!Last update id", 
+    "RoleAddName": "!ko!Name", 
+    "RoleAddShortName": "!ko!Short name", 
+    "RoleAddUpdateDate": "!ko!Update date", 
+    "objectName": "!ko!roleAdd", 
+    "welcomeExample": "!ko!Welcome to the {page} page!"
+}

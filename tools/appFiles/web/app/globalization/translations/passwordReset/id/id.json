@@ -1,0 +1,13 @@
+{
+    "ConfirmPassword": "Konfirmasi Password", 
+    "ErrorPasswordNotValid": "Password harus minimal 8 karakter. Termasuk 1 angka, 1 huruf besar.", 
+    "FieldRequired": "Bidang Yang Diperlukan.", 
+    "NewPassword": "Password Baru", 
+    "OriginalPassword": "Password Asli", 
+    "PasswordResetHeader": "Reset Password untuk {Email}.", 
+    "PasswordResetMessage": "Sebuah password reset untuk {Email} telah diminta. Silahkan klik {Link} untuk me-reset password anda. \n\nReset ini akan berakhir dalam waktu 48 jam.", 
+    "PasswordResetTitle": "GoCoreAppHumanName Reset Password", 
+    "PasswordsNoMatch": "Password tidak cocok.", 
+    "ResetCompleted": "Permintaan ini telah selesai. Silakan meminta reset password.", 
+    "Title": "Reset Password"
+}

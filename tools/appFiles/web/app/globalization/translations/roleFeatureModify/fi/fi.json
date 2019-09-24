@@ -1,0 +1,10 @@
+{
+    "RoleFeatureModifyBootstrapMeta": "Bootstrap meta", 
+    "RoleFeatureModifyCreateDate": "Luo p\u00e4iv\u00e4m\u00e4\u00e4r\u00e4", 
+    "RoleFeatureModifyFeatureId": "Ominaisuus tunnus", 
+    "RoleFeatureModifyLastUpdateId": "Viimeisin p\u00e4ivitys id", 
+    "RoleFeatureModifyRoleId": "Teht\u00e4v\u00e4 id", 
+    "RoleFeatureModifyUpdateDate": "P\u00e4ivitys p\u00e4iv\u00e4m\u00e4\u00e4r\u00e4", 
+    "objectName": "roleFeatureModify", 
+    "welcomeExample": "Tervetuloa {page} - sivulla!"
+}

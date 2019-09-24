@@ -1,0 +1,11 @@
+{
+    "CreateRoleFeature": "Opprette roleFeature", 
+    "RoleFeatureAddBootstrapMeta": "Bootstrap meta", 
+    "RoleFeatureAddCreateDate": "Opprette dato", 
+    "RoleFeatureAddFeatureId": "Har id-en", 
+    "RoleFeatureAddLastUpdateId": "Siste oppdatering id", 
+    "RoleFeatureAddRoleId": "Rolle-id", 
+    "RoleFeatureAddUpdateDate": "Du vil oppdatere dato", 
+    "objectName": "roleFeatureAdd", 
+    "welcomeExample": "Velkommen til {page} side!"
+}

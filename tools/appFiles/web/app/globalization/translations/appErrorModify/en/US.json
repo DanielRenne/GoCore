@@ -1,0 +1,13 @@
+{
+    "AppErrorModifyAccountId": "Account id", 
+    "AppErrorModifyClientSide": "Client side", 
+    "AppErrorModifyCreateDate": "Create date", 
+    "AppErrorModifyLastUpdateId": "Last update id", 
+    "AppErrorModifyMessage": "Message", 
+    "AppErrorModifyStackShown": "Stack shown", 
+    "AppErrorModifyUpdateDate": "Update date", 
+    "AppErrorModifyUrl": "Url", 
+    "AppErrorModifyUserId": "User id", 
+    "objectName": "appErrorModify", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

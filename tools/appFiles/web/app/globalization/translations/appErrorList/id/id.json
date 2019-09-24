@@ -1,0 +1,23 @@
+{
+    "AddAppError": "Tambahkan baru AppError", 
+    "AppErrorListHeaderClientSide": "Sisi klien", 
+    "AppErrorListHeaderLastUpdateId": "Last update id", 
+    "AppErrorListHeaderMessage": "Pesan", 
+    "AppErrorListHeaderStackShown": "Tumpukan ditampilkan", 
+    "AppErrorListHeaderUpdateDate": "Tanggal Update", 
+    "AppErrorListHeaderUrl": "Url", 
+    "AppErrorListToolTipClientSide": "Sisi klien", 
+    "AppErrorListToolTipLastUpdateId": "Last update id", 
+    "AppErrorListToolTipMessage": "Pesan", 
+    "AppErrorListToolTipStackShown": "Tumpukan ditampilkan", 
+    "AppErrorListToolTipUpdateDate": "Tanggal Update", 
+    "AppErrorListToolTipUrl": "Url", 
+    "AreYouSure": "Apakah anda yakin anda ingin menghapus {total} appErrors?", 
+    "AreYouSureInline": "Apakah anda yakin anda ingin menghapus ini appError?", 
+    "ConfirmDeleteMessage": "Apakah anda yakin anda ingin menghapus ini appError? Tindakan ini tidak dapat dibatalkan.", 
+    "DeleteAppError": "Menghapus appError", 
+    "EditAppError": "Edit appError", 
+    "ShowingAllAppErrors": "Menampilkan Semua AppErrors", 
+    "objectName": "appErrorList", 
+    "welcomeExample": "Selamat datang {page} halaman!"
+}

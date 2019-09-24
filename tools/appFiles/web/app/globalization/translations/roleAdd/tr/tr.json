@@ -1,0 +1,12 @@
+{
+    "CreateRole": "Rol olu\u015ftur ", 
+    "RoleAddAccountId": "Id hesab\u0131 ", 
+    "RoleAddCanDelete": "Sil ", 
+    "RoleAddCreateDate": "Tarih olu\u015fturmak ", 
+    "RoleAddLastUpdateId": "Son g\u00fcncelleme kimli\u011fi", 
+    "RoleAddName": "Ad\u0131", 
+    "RoleAddShortName": "K\u0131sa ad\u0131", 
+    "RoleAddUpdateDate": "Tarih g\u00fcncelleme ", 
+    "objectName": "roleAdd", 
+    "welcomeExample": "{page} sayfas\u0131na ho\u015f geldiniz!"
+}

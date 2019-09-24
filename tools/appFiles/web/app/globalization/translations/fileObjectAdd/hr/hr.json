@@ -1,0 +1,16 @@
+{
+    "CreateFileObject": "Stvoriti potomak fileobject", 
+    "FileObjectAddAccountId": "Identifikator ra\u010duna", 
+    "FileObjectAddContent": "Sadr\u017eaj", 
+    "FileObjectAddCreateDate": "Datum osnivanja", 
+    "FileObjectAddLastUpdateId": "Posljednja obnova EID", 
+    "FileObjectAddMD5": "MD-5", 
+    "FileObjectAddModified": "Mijenjati", 
+    "FileObjectAddModifiedUnix": "Promjene u Unix", 
+    "FileObjectAddName": "Naziv", 
+    "FileObjectAddSize": "Veli\u010dina", 
+    "FileObjectAddType": "Vrsta", 
+    "FileObjectAddUpdateDate": "Datum a\u017euriranja", 
+    "objectName": "fileObjectAdd", 
+    "welcomeExample": "Dobrodo\u0161li na {page} stranice!"
+}

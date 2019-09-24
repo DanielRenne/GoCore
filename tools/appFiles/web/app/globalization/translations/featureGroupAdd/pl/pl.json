@@ -1,0 +1,10 @@
+{
+    "CreateFeatureGroup": "Utworzy\u0107 featureGroup", 
+    "FeatureGroupAddBootstrapMeta": "Rzemyk Meta", 
+    "FeatureGroupAddCreateDate": "Data utworzenia", 
+    "FeatureGroupAddLastUpdateId": "Ostatnia aktualizacja ID", 
+    "FeatureGroupAddName": "Nazwa", 
+    "FeatureGroupAddUpdateDate": "Data aktualizacji", 
+    "objectName": "featureGroupAdd", 
+    "welcomeExample": "Zapraszamy do {page} strony!"
+}

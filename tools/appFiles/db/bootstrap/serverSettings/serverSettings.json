@@ -1,0 +1,29 @@
+[
+	{
+		"Id": "57fba4bb0412452d6d5248c6",
+		"Name": "Lockout Attempts",
+		"Key": "lockoutAttempts",
+		"Category": "users",
+		"Value": "0",
+		"CreateDate":"2016-08-26T10:49:04.630536446-04:00",
+		"UpdateDate":"2016-08-26T10:49:04.630536446-04:00",
+		"LastUpdateId":"57d9b383dcba0f51172f1f57",
+		"BootstrapMeta": {
+			"AlwaysUpdate": false
+		}
+	},
+	{
+		"Id": "597e315460e657d9b70563aa",
+		"Name" : "Time Zone",
+		"Key" : "TimeZone",
+		"Category" : "timeSettings",
+		"Value" : "0",
+		"Any" : "192.168.0.1",
+		"CreateDate":"2016-08-26T10:49:04.630536446-04:00",
+		"UpdateDate":"2016-08-26T10:49:04.630536446-04:00",
+		"LastUpdateId":"57d9b383dcba0f51172f1f57",
+		"BootstrapMeta": {
+			"AlwaysUpdate": false
+		}
+	}
+]

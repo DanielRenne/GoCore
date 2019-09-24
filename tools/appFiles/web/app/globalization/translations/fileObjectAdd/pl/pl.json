@@ -1,0 +1,16 @@
+{
+    "CreateFileObject": "Utworzy\u0107 potomek fileobject", 
+    "FileObjectAddAccountId": "Identyfikator konta", 
+    "FileObjectAddContent": "Spis tre\u015bci", 
+    "FileObjectAddCreateDate": "Data utworzenia", 
+    "FileObjectAddLastUpdateId": "Ostatnia aktualizacja ID", 
+    "FileObjectAddMD5": "MD 5", 
+    "FileObjectAddModified": "Zmieniony", 
+    "FileObjectAddModifiedUnix": "Zmieniony w Unix", 
+    "FileObjectAddName": "Nazwa", 
+    "FileObjectAddSize": "Rozmiar", 
+    "FileObjectAddType": "Typ", 
+    "FileObjectAddUpdateDate": "Data aktualizacji", 
+    "objectName": "fileObjectAdd", 
+    "welcomeExample": "Zapraszamy do {page} strony!"
+}

@@ -1,0 +1,14 @@
+{
+    "AppErrorAddAccountId": "\uacc4\uc815 id", 
+    "AppErrorAddClientSide": "\ud074\ub77c\uc774\uc5b8\ud2b8 \uce21\uba74", 
+    "AppErrorAddCreateDate": "\uc0dd\uc131 \ub0a0\uc9dc", 
+    "AppErrorAddLastUpdateId": "\ub9c8\uc9c0\ub9c9 \uc5c5\ub370\uc774\ud2b8 id", 
+    "AppErrorAddMessage": "\uba54\uc2dc\uc9c0", 
+    "AppErrorAddStackShown": "\uc2a4\ud0dd \ud45c\uc2dc", 
+    "AppErrorAddUpdateDate": "\uc5c5\ub370\uc774\ud2b8 \ub0a0\uc9dc", 
+    "AppErrorAddUrl": "Url", 
+    "AppErrorAddUserId": "User id", 
+    "CreateAppError": "\uc744 \ub9cc\ub4e4 appError", 
+    "objectName": "appErrorAdd", 
+    "welcomeExample": "\uc624\uc2e0 \uac83\uc744 \ud658\uc601\ud569{page}\ud398\uc774\uc9c0!"
+}

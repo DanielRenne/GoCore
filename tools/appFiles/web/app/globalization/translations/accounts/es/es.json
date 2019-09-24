@@ -1,0 +1,5 @@
+{
+    "ErrorAccountNotFound": "No se pudo encontrar la cuenta.", 
+    "objectName": "cuentas", 
+    "welcomeExample": "Bienvenidos a la {page} p\u00e1gina!"
+}

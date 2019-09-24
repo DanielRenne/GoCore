@@ -1,0 +1,13 @@
+{
+    "AppErrorModifyAccountId": "Id \u00fa\u010dtu", 
+    "AppErrorModifyClientSide": "Na stran\u011b klienta", 
+    "AppErrorModifyCreateDate": "Datum vytvo\u0159en\u00ed", 
+    "AppErrorModifyLastUpdateId": "Posledn\u00ed aktualizace id", 
+    "AppErrorModifyMessage": "Zpr\u00e1va", 
+    "AppErrorModifyStackShown": "Z\u00e1sobn\u00edk je zn\u00e1zorn\u011bno", 
+    "AppErrorModifyUpdateDate": "Datum aktualizace", 
+    "AppErrorModifyUrl": "Url", 
+    "AppErrorModifyUserId": "Id u\u017eivatele", 
+    "objectName": "appErrorModify", 
+    "welcomeExample": "V\u00edtejte na {page} str\u00e1nka!"
+}

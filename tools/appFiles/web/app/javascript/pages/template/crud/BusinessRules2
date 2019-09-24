@@ -1,0 +1,124 @@
+package br
+
+import (
+	"fmt"
+
+	"github.com/pkg/errors"
+	"github.com/DanielRenne/GoCore/core"
+	"github.com/DanielRenne/goCoreAppTemplate/constants"
+	"github.com/DanielRenne/goCoreAppTemplate/models/v1/model"
+	"github.com/DanielRenne/goCoreAppTemplate/queries"
+	"github.com/DanielRenne/goCoreAppTemplate/sessionFunctions"
+	"github.com/DanielRenne/goCoreAppTemplate/viewModel"
+)
+
+type -CAPCAMELPLURAL-_Br struct{}
+
+func (self -CAPCAMELPLURAL-_Br) Create(context session_functions.RequestContext, vm *viewModel.-CAPCAMEL-ModifyViewModel, t *model.Transaction) (message string, err error) {
+
+	message, err = self.Validate(vm)
+	if err != nil {
+		return
+	}
+
+	err = vm.-CAPCAMEL-.SaveWithTran(t)
+
+	if err != nil {
+		if model.IsValidationError(err) {
+			err = errors.Wrap(err, core.Debug.ErrLineAndFile(err))
+			session_functions.Dump("Error->Validation_Error->-CAPCAMEL-Br->Create", fmt.Sprintf("%+v", vm.-CAPCAMEL-.Errors))
+			message = queries.AppContent.GetTranslation(context, constants.ERRORS_-CAPITALIZED-_SAVE) + core.Debug.HandleError(err)
+			return
+		} else {
+			err = errors.Wrap(err, core.Debug.ErrLineAndFile(err))
+			session_functions.Dump("Error->-CAPCAMEL-Br->Create", err.Error())
+			message = queries.AppContent.GetTranslation(context, constants.ERRORS_-CAPITALIZED-_SAVE) + core.Debug.HandleError(err)
+			return
+		}
+	}
+
+	message = constants.-CAPITALIZED-_SAVE_SUCCESS
+
+	return
+
+}
+
+func (self -CAPCAMELPLURAL-_Br) Update(context session_functions.RequestContext, vm *viewModel.-CAPCAMEL-ModifyViewModel, t *model.Transaction) (message string, err error) {
+
+	message, err = self.Validate(vm)
+	if err != nil {
+		return
+	}
+
+	err = vm.-CAPCAMEL-.SaveWithTran(t)
+
+	if err != nil {
+		if model.IsValidationError(err) {
+			err = errors.Wrap(err, core.Debug.ErrLineAndFile(err))
+			session_functions.Dump("Error->Validation_Error->-CAPCAMEL-Br->Update", fmt.Sprintf("%+v", vm.-CAPCAMEL-.Errors))
+			message = queries.AppContent.GetTranslation(context, constants.ERRORS_-CAPITALIZED-_SAVE) + core.Debug.HandleError(err)
+			return
+		} else {
+		    err = errors.Wrap(err, core.Debug.ErrLineAndFile(err))
+			session_functions.Dump("Error->-CAPCAMEL-Br->Update", err.Error())
+			message = queries.AppContent.GetTranslation(context, constants.ERRORS_-CAPITALIZED-_SAVE) + core.Debug.HandleError(err)
+			return
+		}
+	}
+
+	message = constants.-CAPITALIZED-_SAVE_SUCCESS
+
+	return
+
+}
+
+
+func (self -CAPCAMELPLURAL-_Br) CopyById(context session_functions.RequestContext, copyRowVm string, t *model.Transaction) (copyVm viewModel.-CAPCAMEL-ModifyViewModel, message string, err error) {
+	err = model.-CAPCAMELPLURAL-.Query().ById(copyRowVm, &copyVm.-CAPCAMEL-)
+	if err != nil {
+		err = errors.Wrap(err, core.Debug.ErrLineAndFile(err))
+		message = constants.ERRORS_-CAPITALIZED-_COPY
+		return
+	}
+	return self.Copy(context, copyVm, t)
+}
+
+func (self -CAPCAMELPLURAL-_Br) Copy(context session_functions.RequestContext, copyRowVm viewModel.-CAPCAMEL-ModifyViewModel, t *model.Transaction) (copyVm viewModel.-CAPCAMEL-ModifyViewModel, message string, err error) {
+	copyVm = copyRowVm
+	copyVm.-CAPCAMEL-.Id = ""
+
+	message, err = self.Create(context, &copyVm, t)
+	if err != nil {
+	    err = errors.Wrap(err, core.Debug.ErrLineAndFile(err))
+	    message = constants.ERRORS_-CAPITALIZED-_COPY
+		return
+	}
+
+	message = constants.-CAPITALIZED-_COPY_SUCCESSFUL
+	return
+}
+
+
+func (self -CAPCAMELPLURAL-_Br) Delete(context session_functions.RequestContext, vm *viewModel.-CAPCAMEL-ModifyViewModel, t *model.Transaction) (message string, err error) {
+	err = vm.-CAPCAMEL-.DeleteWithTran(t)
+
+	if err != nil {
+	    err = errors.Wrap(err, core.Debug.ErrLineAndFile(err))
+		message = constants.ERRORS_-CAPITALIZED-_DELETE
+		return
+	}
+
+	message = constants.-CAPITALIZED-_DELETE_SUCCESSFUL
+	return
+}
+
+func (self -CAPCAMELPLURAL-_Br) WrapViewModel(-CAPCAMEL-Instance model.-CAPCAMEL-) viewModel.-CAPCAMEL-ModifyViewModel {
+	vm := viewModel.-CAPCAMEL-ModifyViewModel{}
+	vm.-CAPCAMEL- = -CAPCAMEL-Instance
+	return vm
+}
+
+func (self -CAPCAMELPLURAL-_Br) Validate(vm *viewModel.-CAPCAMEL-ModifyViewModel) (message string, err error) {
+	return
+}
+

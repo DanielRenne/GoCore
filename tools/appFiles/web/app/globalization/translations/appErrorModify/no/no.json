@@ -1,0 +1,13 @@
+{
+    "AppErrorModifyAccountId": "Konto-id", 
+    "AppErrorModifyClientSide": "Klient-side", 
+    "AppErrorModifyCreateDate": "Opprette dato", 
+    "AppErrorModifyLastUpdateId": "Siste oppdatering id", 
+    "AppErrorModifyMessage": "Melding", 
+    "AppErrorModifyStackShown": "Stabel vist", 
+    "AppErrorModifyUpdateDate": "Du vil oppdatere dato", 
+    "AppErrorModifyUrl": "Url", 
+    "AppErrorModifyUserId": "Bruker-id", 
+    "objectName": "appErrorModify", 
+    "welcomeExample": "Velkommen til {page} side!"
+}

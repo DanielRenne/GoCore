@@ -1,0 +1,58 @@
+{
+	"appSettings": {
+		"developerLogReact": false,
+		"developerLogState": false,
+		"developerLogStateChangePerformance": false,
+		"developerLogTheseObjects": [],
+		"developerMode": false,
+		"developerSuppressTheseObjects": [],
+		"developerSuppressThesePages": [],
+		"serverAdmins": []
+	},
+	"application": {
+		"bootstrapData": true,
+		"csrfSecret": "goCoreCsrfSecret",
+		"customGinLogger": true,
+		"disableRootIndex": true,
+		"domain": "0.0.0.0",
+		"htmlTemplates": {
+				"directory": "templates",
+				"directoryLevels": 1,
+				"enabled": false
+		},
+		"httpPort": 80,
+		"httpsPort": 443,
+		"info": {
+			"title": "goCoreProductName",
+			"description":"A web site to try GoCore running the goCoreProductName app.",
+			"contact":{
+				"name":"Developer of this App",
+				"email":"support@myWebSite.com",
+				"url":"myWebSite.com"
+			},
+			"license": {
+				"name": "Apache 2.0",
+				"url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+			},
+			"termsOfService":"http://127.0.0.1/terms"
+		},
+		"logGophers": false,
+		"productName": "goCoreProductNameMainProduct",
+		"releaseMode": "release",
+		"serverFQDN": "unknown",
+		"sessionExpirationDays": 3650,
+		"sessionKey": "goCoreSessionKey",
+		"sessionName": "goCoreProductName",
+		"sessionSecureCookie": false,
+		"versionDot": "1.1.4002",
+		"versionNumeric": 1,
+		"webServiceOnly": false
+	},
+	"dbConnections": [
+		{
+			"driver" : "mongoDB",
+			"connectionString": "mongodb://127.0.0.1:27017/goCoreProductName",
+			"database": "goCoreProductName"
+		}
+	]
+}

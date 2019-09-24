@@ -1,0 +1,16 @@
+{
+    "AddRoleFeature": "Legge til en ny RoleFeature", 
+    "AreYouSure": "Er du sikker p\u00e5 at du \u00f8nsker \u00e5 slette {total} roleFeatures?", 
+    "AreYouSureInline": "Er du sikker p\u00e5 at du vil slette dette roleFeature?", 
+    "ConfirmDeleteMessage": "Er du sikker p\u00e5 at du vil slette dette roleFeature? Denne handlingen kan ikke gj\u00f8res om.", 
+    "CopyRoleFeature": "Kopier roleFeature", 
+    "DeleteRoleFeature": "Slett roleFeature", 
+    "EditRoleFeature": "Rediger roleFeature", 
+    "RoleFeatureListHeaderLastUpdateId": "Siste oppdatering id", 
+    "RoleFeatureListHeaderUpdateDate": "Du vil oppdatere dato", 
+    "RoleFeatureListToolTipLastUpdateId": "Siste oppdatering id", 
+    "RoleFeatureListToolTipUpdateDate": "Du vil oppdatere dato", 
+    "ShowingAllRoleFeatures": "Viser Alle RoleFeatures", 
+    "objectName": "roleFeatureList", 
+    "welcomeExample": "Velkommen til {page} side!"
+}

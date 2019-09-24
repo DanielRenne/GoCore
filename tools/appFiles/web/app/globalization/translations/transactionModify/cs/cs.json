@@ -1,0 +1,16 @@
+{
+    "TransactionModifyCollections": "Sb\u00edrky", 
+    "TransactionModifyCommitted": "Zav\u00e1zali", 
+    "TransactionModifyCompleteDate": "Kompletn\u00ed datum", 
+    "TransactionModifyCreateDate": "Datum vytvo\u0159en\u00ed", 
+    "TransactionModifyDetails": "Podrobnosti", 
+    "TransactionModifyError": "Chyba", 
+    "TransactionModifyLastUpdate": "Posledn\u00ed aktualizace", 
+    "TransactionModifyRollbackDate": "Rollback data", 
+    "TransactionModifyRollbackReason": "D\u016fvod vr\u00e1cen\u00ed", 
+    "TransactionModifyRolledBack": "Vr\u00e1cena zp\u011bt", 
+    "TransactionModifyRolledBackBy": "Vr\u00e1cena zp\u011bt do", 
+    "TransactionModifyUserId": "Id u\u017eivatele", 
+    "objectName": "transactionModify", 
+    "welcomeExample": "V\u00edtejte na {page} str\u00e1nka!"
+}

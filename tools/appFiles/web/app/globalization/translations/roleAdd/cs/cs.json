@@ -1,0 +1,12 @@
+{
+    "CreateRole": "Vytvo\u0159it roli", 
+    "RoleAddAccountId": "Id \u00fa\u010dtu", 
+    "RoleAddCanDelete": "M\u016f\u017eete odstranit", 
+    "RoleAddCreateDate": "Datum vytvo\u0159en\u00ed", 
+    "RoleAddLastUpdateId": "Posledn\u00ed aktualizace id", 
+    "RoleAddName": "Jm\u00e9no", 
+    "RoleAddShortName": "Kr\u00e1tk\u00fd n\u00e1zev", 
+    "RoleAddUpdateDate": "Datum aktualizace", 
+    "objectName": "roleAdd", 
+    "welcomeExample": "V\u00edtejte na {page} str\u00e1nka!"
+}

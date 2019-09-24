@@ -1,0 +1,12 @@
+{
+    "FeatureModifyBootstrapMeta": "\u041f\u0440\u0438\u0445\u043b\u043e\u043f \u041c\u0435\u0442\u0430", 
+    "FeatureModifyCreateDate": "\u0414\u0430\u0442\u0430 \u0441\u043e\u0437\u0434\u0430\u043d\u0438\u044f", 
+    "FeatureModifyDescription": "\u041e\u043f\u0438\u0441\u0430\u043d\u0438\u0435", 
+    "FeatureModifyFeatureGroupId": "\u0424\u0443\u043d\u043a\u0446\u0438\u044f ID \u0433\u0440\u0443\u043f\u043f\u044b", 
+    "FeatureModifyKey": "\u041a\u043b\u044e\u0447", 
+    "FeatureModifyLastUpdateId": "\u041f\u043e\u0441\u043b\u0435\u0434\u043d\u0435\u0435 \u043e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u0435 \u0418\u0414", 
+    "FeatureModifyName": "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435", 
+    "FeatureModifyUpdateDate": "\u0414\u0430\u0442\u0430 \u043e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u044f", 
+    "objectName": "featureModify", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

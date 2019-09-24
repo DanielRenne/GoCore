@@ -1,0 +1,12 @@
+{
+    "FeatureModifyBootstrapMeta": "Bootstrap meta", 
+    "FeatureModifyCreateDate": "Membuat tanggal", 
+    "FeatureModifyDescription": "Deskripsi", 
+    "FeatureModifyFeatureGroupId": "Fitur group id", 
+    "FeatureModifyKey": "Kunci", 
+    "FeatureModifyLastUpdateId": "Last update id", 
+    "FeatureModifyName": "Nama", 
+    "FeatureModifyUpdateDate": "Tanggal Update", 
+    "objectName": "featureModify", 
+    "welcomeExample": "Selamat datang {page} halaman!"
+}

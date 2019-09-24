@@ -1,0 +1,13 @@
+{
+    "AliasDeviceLabel": "* Alias Laite", 
+    "Cancel": "Peruuta", 
+    "EnterAlias": "Kirjoita alias t\u00e4h\u00e4n liitetty laite", 
+    "ErrorNoAlias": "Anna ei tyhj\u00e4 alias", 
+    "ErrorNoBuildings": "Ei ole rakennuksia saatavilla", 
+    "ErrorNoSites": "Ei sivustoja saatavilla", 
+    "ResetPass": "Palauta Salasana", 
+    "RoomSync": "Huone Synkronointi", 
+    "Synchronizing": "Synkronointi", 
+    "UserCanceled": "K\u00e4ytt\u00e4j\u00e4 perui toiminnon synkronoida t\u00e4t\u00e4 tilaa, yrit\u00e4 uudelleen.", 
+    "Waiting": "Odottaa Hyv\u00e4ksynt\u00e4\u00e4..."
+}

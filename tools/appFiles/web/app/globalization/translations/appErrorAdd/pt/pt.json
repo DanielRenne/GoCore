@@ -1,0 +1,14 @@
+{
+    "AppErrorAddAccountId": "Id da conta", 
+    "AppErrorAddClientSide": "Do lado do cliente", 
+    "AppErrorAddCreateDate": "Data de cria\u00e7\u00e3o", 
+    "AppErrorAddLastUpdateId": "\u00daltima atualiza\u00e7\u00e3o de identifica\u00e7\u00e3o", 
+    "AppErrorAddMessage": "Mensagem", 
+    "AppErrorAddStackShown": "Pilha mostrado", 
+    "AppErrorAddUpdateDate": "Data de atualiza\u00e7\u00e3o", 
+    "AppErrorAddUrl": "Url", 
+    "AppErrorAddUserId": "Id de usu\u00e1rio", 
+    "CreateAppError": "Criar appError", 
+    "objectName": "appErrorAdd", 
+    "welcomeExample": "Bem-vindo ao {page} p\u00e1gina!"
+}

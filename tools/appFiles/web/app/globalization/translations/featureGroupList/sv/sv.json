@@ -1,0 +1,18 @@
+{
+    "AddFeatureGroup": "L\u00e4gga till en ny FeatureGroup", 
+    "AreYouSure": "Are you sure you wish to delete {total} featureGroups?", 
+    "AreYouSureInline": "\u00c4r du s\u00e4ker p\u00e5 att du vill radera detta featureGroup?", 
+    "ConfirmDeleteMessage": "\u00c4r du s\u00e4ker p\u00e5 att du vill radera detta featureGroup? Denna \u00e5tg\u00e4rd kan inte \u00e5ngras.", 
+    "CopyFeatureGroup": "Kopiera featureGroup", 
+    "DeleteFeatureGroup": "Ta bort featureGroup", 
+    "EditFeatureGroup": "Redigera featureGroup", 
+    "FeatureGroupListHeaderLastUpdateId": "Senaste uppdatering id", 
+    "FeatureGroupListHeaderName": "Namn", 
+    "FeatureGroupListHeaderUpdateDate": "Uppdatera datum", 
+    "FeatureGroupListToolTipLastUpdateId": "Senaste uppdatering id", 
+    "FeatureGroupListToolTipName": "Namn", 
+    "FeatureGroupListToolTipUpdateDate": "Uppdatera datum", 
+    "ShowingAllFeatureGroups": "Visar Alla FeatureGroups", 
+    "objectName": "featureGroupList", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

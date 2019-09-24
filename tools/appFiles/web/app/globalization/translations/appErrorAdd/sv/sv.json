@@ -1,0 +1,14 @@
+{
+    "AppErrorAddAccountId": "Konto-id", 
+    "AppErrorAddClientSide": "Klientsidan", 
+    "AppErrorAddCreateDate": "Skapa dagen", 
+    "AppErrorAddLastUpdateId": "Senaste uppdatering id", 
+    "AppErrorAddMessage": "Meddelande", 
+    "AppErrorAddStackShown": "Stack visas", 
+    "AppErrorAddUpdateDate": "Uppdatera datum", 
+    "AppErrorAddUrl": "Url", 
+    "AppErrorAddUserId": "Anv\u00e4ndar-id", 
+    "CreateAppError": "Skapa appError", 
+    "objectName": "appErrorAdd", 
+    "welcomeExample": "V\u00e4lkommen till {page} sida!"
+}

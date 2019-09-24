@@ -1,0 +1,18 @@
+{
+    "AddFeatureGroup": "Tambahkan baru FeatureGroup", 
+    "AreYouSure": "Apakah anda yakin anda ingin menghapus {total} featureGroups?", 
+    "AreYouSureInline": "Apakah anda yakin anda ingin menghapus ini featureGroup?", 
+    "ConfirmDeleteMessage": "Apakah anda yakin anda ingin menghapus ini featureGroup? Tindakan ini tidak dapat dibatalkan.", 
+    "CopyFeatureGroup": "Copy featureGroup", 
+    "DeleteFeatureGroup": "Menghapus featureGroup", 
+    "EditFeatureGroup": "Edit featureGroup", 
+    "FeatureGroupListHeaderLastUpdateId": "Last update id", 
+    "FeatureGroupListHeaderName": "Nama", 
+    "FeatureGroupListHeaderUpdateDate": "Tanggal Update", 
+    "FeatureGroupListToolTipLastUpdateId": "Last update id", 
+    "FeatureGroupListToolTipName": "Nama", 
+    "FeatureGroupListToolTipUpdateDate": "Tanggal Update", 
+    "ShowingAllFeatureGroups": "Menampilkan Semua FeatureGroups", 
+    "objectName": "featureGroupList", 
+    "welcomeExample": "Selamat datang {page} halaman!"
+}

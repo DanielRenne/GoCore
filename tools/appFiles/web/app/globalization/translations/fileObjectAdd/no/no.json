@@ -1,0 +1,16 @@
+{
+    "CreateFileObject": "Opprette fileObject", 
+    "FileObjectAddAccountId": "Konto-id", 
+    "FileObjectAddContent": "Innhold", 
+    "FileObjectAddCreateDate": "Opprette dato", 
+    "FileObjectAddLastUpdateId": "Siste oppdatering id", 
+    "FileObjectAddMD5": "MD 5", 
+    "FileObjectAddModified": "Endret", 
+    "FileObjectAddModifiedUnix": "Endret unix", 
+    "FileObjectAddName": "Navn", 
+    "FileObjectAddSize": "St\u00f8rrelse", 
+    "FileObjectAddType": "Type", 
+    "FileObjectAddUpdateDate": "Du vil oppdatere dato", 
+    "objectName": "fileObjectAdd", 
+    "welcomeExample": "Velkommen til {page} side!"
+}

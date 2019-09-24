@@ -1,0 +1,12 @@
+{
+    "CreateRole": "Utworzy\u0107 rol\u0119", 
+    "RoleAddAccountId": "Identyfikator konta", 
+    "RoleAddCanDelete": "Mo\u017cesz usun\u0105\u0107", 
+    "RoleAddCreateDate": "Data utworzenia", 
+    "RoleAddLastUpdateId": "Ostatnia aktualizacja ID", 
+    "RoleAddName": "Nazwa", 
+    "RoleAddShortName": "Kr\u00f3tka nazwa", 
+    "RoleAddUpdateDate": "Data aktualizacji", 
+    "objectName": "roleAdd", 
+    "welcomeExample": "Zapraszamy do {page} strony!"
+}

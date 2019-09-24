@@ -1,0 +1,14 @@
+{
+    "AppErrorAddAccountId": "Account-id", 
+    "AppErrorAddClientSide": "De kant van de Client", 
+    "AppErrorAddCreateDate": "Datum aanmaken", 
+    "AppErrorAddLastUpdateId": "Laatste update id", 
+    "AppErrorAddMessage": "Bericht", 
+    "AppErrorAddStackShown": "Stapel weergegeven", 
+    "AppErrorAddUpdateDate": "Update datum", 
+    "AppErrorAddUrl": "Url", 
+    "AppErrorAddUserId": "Gebruikers-id", 
+    "CreateAppError": "Maak appError", 
+    "objectName": "appErrorAdd", 
+    "welcomeExample": "Welkom op de {page} pagina!"
+}

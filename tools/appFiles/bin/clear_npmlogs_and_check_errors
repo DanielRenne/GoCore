@@ -1,0 +1,50 @@
+#!/bin/bash
+cd $GOPATH
+RED='\033[0;31m'
+REACTCOMPILING=0
+GOWATCHRUNNING=0
+NC='\033[0m' # No Color
+GREEN="\[$(tput setaf 2)\]"
+pkill clear_npmlogs_and_check_errors
+echo "" >  $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npmErrors.log
+echo "" >  $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log
+i=1
+while true; do
+   grep "bundle is now VALID" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log > /dev/null 2>&1
+   ret=$?
+   grep "webpack: Compiled successfully" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log > /dev/null 2>&1
+   ret2=$?
+   grep "pack: Failed to compil" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log  > /dev/null 2>&1
+   ret3=$?
+   grep "ERROR in" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log  > /dev/null 2>&1
+   ret4=$?
+   grep "SyntaxError" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log  > /dev/null 2>&1
+   ret5=$?
+   grep "npm ERR" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log  > /dev/null 2>&1
+   ret6=$?
+   if [[ "$ret" -eq 0 ]] || [[ "$ret2" -eq 0 ]] || [[ "$ret3" -eq 0 ]] || [[ "$ret4" -eq 0 ]] || [[ "$ret5" -eq 0 ]] || [[ "$ret6" -eq 0 ]]; then
+       grep "ERROR in" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log  > /dev/null 2>&1
+       ret=$?
+       grep "SyntaxError" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log  > /dev/null 2>&1
+       ret2=$?
+       grep "pack: Failed to compil" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log  > /dev/null 2>&1
+       ret3=$?
+       grep "npm ERR" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log  > /dev/null 2>&1
+       ret4=$?
+       i=0
+       if [[ "$ret" -eq 0 ]] || [[ "$ret2" -eq 0 ]] || [[ "$ret3" -eq 0 ]] || [[ "$ret4" -eq 0 ]]; then
+         echo -e "${RED}>>>>>>>>>>>>>>>>>> Webpack has errors in your JSX!!!! <<<<<<<<<<<<<<<<<<${NC}"
+         grep "ERROR in" -A50 $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log
+         say "Errors in React"  > /dev/null 2>&1
+         cp $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npmErrors.log
+         cat $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npmErrors.log
+       else 
+           cp $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npmSuccess.log
+           say "React compiled"  > /dev/null 2>&1
+       fi
+       echo "" >  $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log
+       REACTCOMPILING=0
+   fi
+   ((++i))
+   sleep 1
+done

@@ -1,0 +1,10 @@
+{
+    "RoleFeatureModifyBootstrapMeta": "Rzemyk Meta", 
+    "RoleFeatureModifyCreateDate": "Data utworzenia", 
+    "RoleFeatureModifyFeatureId": "ID obiektu ", 
+    "RoleFeatureModifyLastUpdateId": "Ostatnia aktualizacja ID", 
+    "RoleFeatureModifyRoleId": "Identyfikator roli ", 
+    "RoleFeatureModifyUpdateDate": "Data aktualizacji", 
+    "objectName": "roleFeatureModify", 
+    "welcomeExample": "Zapraszamy do {page} strony!"
+}

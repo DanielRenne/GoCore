@@ -1,0 +1,13 @@
+{
+    "AliasDeviceLabel": "* Alias urz\u0105dzenia", 
+    "Cancel": "Cofnij", 
+    "EnterAlias": "Wprowad\u017a nazw\u0119 dla pod\u0142\u0105czonego urz\u0105dzenia", 
+    "ErrorNoAlias": "Prosz\u0119, wprowad\u017a alias nie jest pusty", 
+    "ErrorNoBuildings": "Brak dost\u0119pnych budynk\u00f3w", 
+    "ErrorNoSites": "Nie ma stron", 
+    "ResetPass": "Resetowanie Has\u0142a", 
+    "RoomSync": "Synchronizacji Pok\u00f3j ", 
+    "Synchronizing": "Synchronizacja", 
+    "UserCanceled": "U\u017cytkownik anulowa\u0142 operacj\u0119 synchronizacji ten numer, prosz\u0119 spr\u00f3bowa\u0107 ponownie.", 
+    "Waiting": "Czekam na zatwierdzenie..."
+}

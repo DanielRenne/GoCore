@@ -1,0 +1,17 @@
+{
+    "CreateTransaction": "Utworzy\u0107 transakcj\u0119", 
+    "TransactionAddCollections": "Kolekcji", 
+    "TransactionAddCommitted": "Doskona\u0142e", 
+    "TransactionAddCompleteDate": "Pe\u0142na Data", 
+    "TransactionAddCreateDate": "Data utworzenia", 
+    "TransactionAddDetails": "Szczeg\u00f3\u0142y", 
+    "TransactionAddError": "B\u0142\u0105d", 
+    "TransactionAddLastUpdate": "Ostatnia aktualizacja", 
+    "TransactionAddRollbackDate": "Data wycofa\u0107 ", 
+    "TransactionAddRollbackReason": "Przyczyna wycofywania", 
+    "TransactionAddRolledBack": "Wycofywanie", 
+    "TransactionAddRolledBackBy": "Wycofywanie", 
+    "TransactionAddUserId": "ID u\u017cytkownika ", 
+    "objectName": "transactionAdd", 
+    "welcomeExample": "Zapraszamy do {page} strony!"
+}

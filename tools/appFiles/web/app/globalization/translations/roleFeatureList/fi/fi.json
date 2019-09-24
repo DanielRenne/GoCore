@@ -1,0 +1,16 @@
+{
+    "AddRoleFeature": "Lis\u00e4\u00e4 uusi RoleFeature", 
+    "AreYouSure": "Oletko varma, ett\u00e4 haluat poistaa {total} roleFeatures?", 
+    "AreYouSureInline": "Oletko varma, ett\u00e4 haluat poistaa t\u00e4m\u00e4n roleFeature?", 
+    "ConfirmDeleteMessage": "Oletko varma, ett\u00e4 haluat poistaa t\u00e4m\u00e4n roleFeature? T\u00e4t\u00e4 toimintoa ei voi perua.", 
+    "CopyRoleFeature": "Kopioi roleFeature", 
+    "DeleteRoleFeature": "Poista roleFeature", 
+    "EditRoleFeature": "Muokkaa roleFeature", 
+    "RoleFeatureListHeaderLastUpdateId": "Viimeisin p\u00e4ivitys id", 
+    "RoleFeatureListHeaderUpdateDate": "P\u00e4ivitys p\u00e4iv\u00e4m\u00e4\u00e4r\u00e4", 
+    "RoleFeatureListToolTipLastUpdateId": "Viimeisin p\u00e4ivitys id", 
+    "RoleFeatureListToolTipUpdateDate": "P\u00e4ivitys p\u00e4iv\u00e4m\u00e4\u00e4r\u00e4", 
+    "ShowingAllRoleFeatures": "Osoittaa Kaikki RoleFeatures", 
+    "objectName": "roleFeatureList", 
+    "welcomeExample": "Tervetuloa {page} - sivulla!"
+}

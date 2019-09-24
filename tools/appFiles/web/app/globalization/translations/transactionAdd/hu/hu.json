@@ -1,0 +1,17 @@
+{
+    "CreateTransaction": "Hozzon l\u00e9tre \u00fcgylet", 
+    "TransactionAddCollections": "Gy\u0171jtem\u00e9nyek", 
+    "TransactionAddCommitted": "Elk\u00f6telezett", 
+    "TransactionAddCompleteDate": "Teljes d\u00e1tuma", 
+    "TransactionAddCreateDate": "L\u00e9trehoz\u00e1s d\u00e1tuma", 
+    "TransactionAddDetails": "R\u00e9szletek", 
+    "TransactionAddError": "Hiba", 
+    "TransactionAddLastUpdate": "Utols\u00f3 friss\u00edt\u00e9s", 
+    "TransactionAddRollbackDate": "Vissza\u00e1ll\u00edt\u00e1s d\u00e1tuma", 
+    "TransactionAddRollbackReason": "Rollback ok", 
+    "TransactionAddRolledBack": "Hengerelt vissza", 
+    "TransactionAddRolledBackBy": "Hengerelt vissza", 
+    "TransactionAddUserId": "Felhaszn\u00e1l\u00f3i azonos\u00edt\u00f3", 
+    "objectName": "transactionAdd", 
+    "welcomeExample": "\u00dcdv\u00f6z\u00f6lj\u00fck a {page} oldalt!"
+}

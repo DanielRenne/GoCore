@@ -1,0 +1,17 @@
+{
+    "CreateTransaction": "Opret transaktion", 
+    "TransactionAddCollections": "Samlinger", 
+    "TransactionAddCommitted": "Engageret", 
+    "TransactionAddCompleteDate": "Komplet dato", 
+    "TransactionAddCreateDate": "Opret dato", 
+    "TransactionAddDetails": "Detaljer", 
+    "TransactionAddError": "Fejl", 
+    "TransactionAddLastUpdate": "Sidste opdatering", 
+    "TransactionAddRollbackDate": "Rollback dato", 
+    "TransactionAddRollbackReason": "Rollback grund", 
+    "TransactionAddRolledBack": "Rullet tilbage", 
+    "TransactionAddRolledBackBy": "Rullet tilbage af", 
+    "TransactionAddUserId": "Bruger-id", 
+    "objectName": "transactionAdd", 
+    "welcomeExample": "Velkommen til {page} side!"
+}

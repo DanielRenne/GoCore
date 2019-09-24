@@ -1,0 +1,12 @@
+{
+    "AutoPaused": "!ko!Auto paused new logs due to scroll.", 
+    "AutoPausedNewData": "!ko!{dataByte} new logs are ready to view, just click the play button.", 
+    "ClearingLog": "!ko!Clearing Log in {sec} seconds", 
+    "LogClear2": "!ko!Log data on this screen will clear in {sec} seconds", 
+    "LogClear3": "!ko!Please wait, {sec} seconds and it will clear automatically", 
+    "MemUsage": "!ko!Memory Usage:", 
+    "Pause": "!ko!Pause", 
+    "Resume": "!ko!Resume", 
+    "objectName": "!ko!logs", 
+    "welcomeExample": "!ko!Welcome to the {page} page!"
+}

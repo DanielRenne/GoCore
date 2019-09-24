@@ -1,0 +1,23 @@
+{
+    "AddAppError": "Adicionar um novo AppError", 
+    "AppErrorListHeaderClientSide": "Do lado do cliente", 
+    "AppErrorListHeaderLastUpdateId": "\u00daltima atualiza\u00e7\u00e3o de identifica\u00e7\u00e3o", 
+    "AppErrorListHeaderMessage": "Mensagem", 
+    "AppErrorListHeaderStackShown": "Pilha mostrado", 
+    "AppErrorListHeaderUpdateDate": "Data de atualiza\u00e7\u00e3o", 
+    "AppErrorListHeaderUrl": "Url", 
+    "AppErrorListToolTipClientSide": "Do lado do cliente", 
+    "AppErrorListToolTipLastUpdateId": "\u00daltima atualiza\u00e7\u00e3o de identifica\u00e7\u00e3o", 
+    "AppErrorListToolTipMessage": "Mensagem", 
+    "AppErrorListToolTipStackShown": "Pilha mostrado", 
+    "AppErrorListToolTipUpdateDate": "Data de atualiza\u00e7\u00e3o", 
+    "AppErrorListToolTipUrl": "Url", 
+    "AreYouSure": "Tem certeza que deseja excluir {total} appErrors?", 
+    "AreYouSureInline": "Tem certeza de que deseja excluir este appError?", 
+    "ConfirmDeleteMessage": "Tem certeza de que deseja excluir este appError? Esta a\u00e7\u00e3o n\u00e3o pode ser desfeita.", 
+    "DeleteAppError": "Excluir appError", 
+    "EditAppError": "Editar appError", 
+    "ShowingAllAppErrors": "Mostrando Todas As AppErrors", 
+    "objectName": "appErrorList", 
+    "welcomeExample": "Bem-vindo ao {page} p\u00e1gina!"
+}

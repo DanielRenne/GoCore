@@ -1,0 +1,11 @@
+{
+    "RoleModifyAccountId": "Identyfikator konta", 
+    "RoleModifyCanDelete": "Mo\u017cesz usun\u0105\u0107", 
+    "RoleModifyCreateDate": "Data utworzenia", 
+    "RoleModifyLastUpdateId": "Ostatnia aktualizacja ID", 
+    "RoleModifyName": "Nazwa", 
+    "RoleModifyShortName": "Kr\u00f3tka nazwa", 
+    "RoleModifyUpdateDate": "Data aktualizacji", 
+    "objectName": "roleModify", 
+    "welcomeExample": "Zapraszamy do {page} strony!"
+}

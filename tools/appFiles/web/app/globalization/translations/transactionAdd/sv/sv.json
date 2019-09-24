@@ -1,0 +1,17 @@
+{
+    "CreateTransaction": "Skapa transaktion", 
+    "TransactionAddCollections": "Samlingar", 
+    "TransactionAddCommitted": "Engagerade", 
+    "TransactionAddCompleteDate": "Fullst\u00e4ndigt datum", 
+    "TransactionAddCreateDate": "Skapa dagen", 
+    "TransactionAddDetails": "Detaljer", 
+    "TransactionAddError": "Fel", 
+    "TransactionAddLastUpdate": "Senaste uppdateringen", 
+    "TransactionAddRollbackDate": "Rollback datum", 
+    "TransactionAddRollbackReason": "Rollback anledning", 
+    "TransactionAddRolledBack": "Rullade tillbaka", 
+    "TransactionAddRolledBackBy": "Rullade tillbaka", 
+    "TransactionAddUserId": "Anv\u00e4ndar-id", 
+    "objectName": "transactionAdd", 
+    "welcomeExample": "V\u00e4lkommen till {page} sida!"
+}

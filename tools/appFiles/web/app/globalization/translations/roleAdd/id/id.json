@@ -1,0 +1,12 @@
+{
+    "CreateRole": "Membuat peran", 
+    "RoleAddAccountId": "Akun id", 
+    "RoleAddCanDelete": "Dapat menghapus", 
+    "RoleAddCreateDate": "Membuat tanggal", 
+    "RoleAddLastUpdateId": "Last update id", 
+    "RoleAddName": "Nama", 
+    "RoleAddShortName": "Pendek nama", 
+    "RoleAddUpdateDate": "Tanggal Update", 
+    "objectName": "roleAdd", 
+    "welcomeExample": "Selamat datang {page} halaman!"
+}

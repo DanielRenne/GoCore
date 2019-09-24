@@ -1,0 +1,15 @@
+{
+    "FileObjectModifyAccountId": "Account-id", 
+    "FileObjectModifyContent": "Inhoud", 
+    "FileObjectModifyCreateDate": "Datum aanmaken", 
+    "FileObjectModifyLastUpdateId": "Laatste update id", 
+    "FileObjectModifyMD5": "MD 5", 
+    "FileObjectModifyModified": "Gewijzigd", 
+    "FileObjectModifyModifiedUnix": "Gemodificeerde unix", 
+    "FileObjectModifyName": "Naam", 
+    "FileObjectModifySize": "Grootte", 
+    "FileObjectModifyType": "Type", 
+    "FileObjectModifyUpdateDate": "Update datum", 
+    "objectName": "fileObjectModify", 
+    "welcomeExample": "Welkom op de {pagina} pagina!"
+}

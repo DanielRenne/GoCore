@@ -1,0 +1,40 @@
+{
+	"collections":
+	[
+		{
+			"name":"ServerSettings",
+			"schema":
+			{
+				"name": "ServerSetting",
+				"fields":
+				[
+					{
+						"name":"id",
+						"type":"int",
+						"index":"primary"
+					},
+					{
+						"name":"name",
+						"type":"string"
+					},
+					{
+						"name":"key",
+						"type":"string"
+					},
+					{
+						"name":"category",
+						"type":"string"
+					},
+					{
+						"name":"value",
+						"type":"string"
+					},
+					{
+						"name":"Any",
+						"type":"interface"
+					}
+				]
+			}
+		}
+	]
+}

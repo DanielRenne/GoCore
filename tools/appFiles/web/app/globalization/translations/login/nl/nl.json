@@ -1,0 +1,13 @@
+{
+    "AliasDeviceLabel": "* Alias van Apparaat", 
+    "Cancel": "Annuleren", 
+    "EnterAlias": "Voer een alias voor deze aangesloten apparaat", 
+    "ErrorNoAlias": "Voer a.u.b. een niet lege alias", 
+    "ErrorNoBuildings": "Geen gebouwen beschikbaar", 
+    "ErrorNoSites": "Geen plaatsen beschikbaar", 
+    "ResetPass": "Wachtwoord Opnieuw Instellen", 
+    "RoomSync": "Kamer Synchronisatie", 
+    "Synchronizing": "Synchroniseren", 
+    "UserCanceled": "Een gebruiker geannuleerd de actie voor het synchroniseren van deze kamer, gelieve opnieuw te proberen.", 
+    "Waiting": "Wachtend op Goedkeuring..."
+}

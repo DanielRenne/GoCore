@@ -1,0 +1,18 @@
+{
+    "AddFeatureGroup": "P\u0159idat nov\u00fd FeatureGroup", 
+    "AreYouSure": "Jsou si jisti, \u017ee chcete smazat {total} featureGroups?", 
+    "AreYouSureInline": "Jsou si jisti, \u017ee chcete smazat tento featureGroup?", 
+    "ConfirmDeleteMessage": "Jste si jisti, \u017ee chcete smazat tento featureGroup? Tuto akci nelze vr\u00e1tit zp\u011bt.", 
+    "CopyFeatureGroup": "Kop\u00edrov\u00e1n\u00ed featureGroup", 
+    "DeleteFeatureGroup": "Odstranit featureGroup", 
+    "EditFeatureGroup": "Edit featureGroup", 
+    "FeatureGroupListHeaderLastUpdateId": "Posledn\u00ed aktualizace id", 
+    "FeatureGroupListHeaderName": "Jm\u00e9no", 
+    "FeatureGroupListHeaderUpdateDate": "Datum aktualizace", 
+    "FeatureGroupListToolTipLastUpdateId": "Posledn\u00ed aktualizace id", 
+    "FeatureGroupListToolTipName": "Jm\u00e9no", 
+    "FeatureGroupListToolTipUpdateDate": "Datum aktualizace", 
+    "ShowingAllFeatureGroups": "Zobrazuji V\u0161echny FeatureGroups", 
+    "objectName": "featureGroupList", 
+    "welcomeExample": "V\u00edtejte na {page} str\u00e1nka!"
+}

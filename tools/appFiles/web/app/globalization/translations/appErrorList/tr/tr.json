@@ -1,0 +1,23 @@
+{
+    "AddAppError": "Yeni bir AppError Ekle ", 
+    "AppErrorListHeaderClientSide": "\u0130stemci taraf\u0131", 
+    "AppErrorListHeaderLastUpdateId": "Son g\u00fcncelleme kimli\u011fi", 
+    "AppErrorListHeaderMessage": "Mesaj", 
+    "AppErrorListHeaderStackShown": "Y\u0131\u011f\u0131n g\u00f6sterilir", 
+    "AppErrorListHeaderUpdateDate": "Tarih g\u00fcncelleme ", 
+    "AppErrorListHeaderUrl": "Url", 
+    "AppErrorListToolTipClientSide": "\u0130stemci taraf\u0131", 
+    "AppErrorListToolTipLastUpdateId": "Son g\u00fcncelleme kimli\u011fi", 
+    "AppErrorListToolTipMessage": "Mesaj", 
+    "AppErrorListToolTipStackShown": "Y\u0131\u011f\u0131n g\u00f6sterilir", 
+    "AppErrorListToolTipUpdateDate": "Tarih g\u00fcncelleme ", 
+    "AppErrorListToolTipUrl": "Url", 
+    "AreYouSure": "{total} appErrors silmek istedi\u011finizden emin misiniz?", 
+    "AreYouSureInline": "Bu appError silmek istedi\u011finizden emin misiniz?", 
+    "ConfirmDeleteMessage": "Bu appError silmek istiyor musunuz? Bu i\u015flem geri al\u0131namaz.", 
+    "DeleteAppError": "Sil appError", 
+    "EditAppError": "Edit appError", 
+    "ShowingAllAppErrors": "T\u00fcm AppErrors G\u00f6steriliyor ", 
+    "objectName": "appErrorList", 
+    "welcomeExample": "{page} sayfas\u0131na ho\u015f geldiniz!"
+}

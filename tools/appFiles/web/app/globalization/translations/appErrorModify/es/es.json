@@ -1,0 +1,13 @@
+{
+    "AppErrorModifyAccountId": "Id de la cuenta", 
+    "AppErrorModifyClientSide": "Lado del cliente", 
+    "AppErrorModifyCreateDate": "Fecha de creaci\u00f3n", 
+    "AppErrorModifyLastUpdateId": "\u00daltima actualizaci\u00f3n de identificaci\u00f3n", 
+    "AppErrorModifyMessage": "Mensaje", 
+    "AppErrorModifyStackShown": "La pila se muestra", 
+    "AppErrorModifyUpdateDate": "Fecha de actualizaci\u00f3n", 
+    "AppErrorModifyUrl": "Url", 
+    "AppErrorModifyUserId": "Id de usuario", 
+    "objectName": "appErrorModify", 
+    "welcomeExample": "Bienvenidos a la {page} p\u00e1gina!"
+}

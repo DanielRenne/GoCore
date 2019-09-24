@@ -1,0 +1,201 @@
+set -e
+GREEN="\[$(tput setaf 2)\]"
+NC='\033[0m' # No Color
+cd $GOPATH
+camel=$1
+camelUpper=$(echo $1 | python -c "data=raw_input();print data[:1].title() + data[1:]")
+#lower=$camel
+upper=$(tr '[:lower:]' '[:upper:]' <<< "$camel")
+#if [[ "$1" =~ [A-Z] ]]; then
+#  lower="$camelUpper"
+#fi
+base=src/github.com/DanielRenne/goCoreAppTemplate/
+markup=web/app/markup/$camel/
+trans=web/app/globalization/translations/$camel/en
+controllerbase=controllers
+brbase=br
+constantsbase=constants
+vmbase=viewModel
+jsbase=web/app/javascript
+jspagebase=$jsbase/pages
+js=$jspagebase/$camel
+
+# Start!
+
+if [[ "$5" != "nojs" ]]; then
+
+    mkdir -p $base$trans
+    echo "{" > $base$trans/US.json
+    echo "  \"objectName\": \"$camel\"," >> $base$trans/US.json
+    echo '  "welcomeExample": "Welcome to the {page} page!"' >> $base$trans/US.json
+    echo "}" >> $base$trans/US.json
+    mkdir -p $base$markup
+    echo '<div id="page"></div>' > "$base$markup/$camel.htm"
+
+    mkdir -p $base$js
+    cp $base$jspagebase/template/*-tmp* $base$js
+    mv "$base$js/{page}-tmp.js" "$base$js/$camel.js"
+    echo -e "Created ${GREEN}$base$js/$camel.js${NC}"
+    mv "$base$js/{page}-tmpComponents.js" "$base$js/${camel}Components.js"
+    echo -e "Created ${GREEN}$base$js/${camel}Components.js${NC}"
+    gsed -i "s/-CAMEL-/$camel/g" "$base$js/${camel}Components.js"
+    gsed -i "s/-CAPCAMEL-/$camelUpper/g" "$base$js/${camel}Components.js"
+    gsed -i "s/-CAMEL-/$camel/g" "$base$js/$camel.js"
+    gsed -i "s/-CAPCAMEL-/$camelUpper/g" "$base$js/$camel.js"
+fi
+
+
+camel2="$3"
+camel2Upper=$(echo $3 | python -c "data=raw_input();print data[:1].title() + data[1:]")
+upper2=$(tr '[:lower:]' '[:upper:]' <<< "$3")
+
+camel3="$4"
+camel3Upper=$(echo $4 | python -c "data=raw_input();print data[:1].title() + data[1:]")
+upper3=$(tr '[:lower:]' '[:upper:]' <<< "$4")
+
+if [[ "$2" == "crud_base" ]]; then
+    # constants
+    cp $base$jspagebase/template/constants/* $base$constantsbase
+    mv "$base$constantsbase/{page}" "$base$constantsbase/${camel3}.go"
+    gsed -i "s/-CAPITALIZED-/$upper3/g" "$base$constantsbase/${camel3}.go"
+    gsed -i "s/-CAPCAMEL-/$camel3Upper/g" "$base$constantsbase/${camel3}.go"
+    echo -e "Created ${GREEN}$base$constantsbase/${camel3}.go"
+
+    bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n "app" "${camel3Upper}DeleteSuccessful" "${camel3Upper} was deleted."
+    bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n "app" "${camel3Upper}DeleteMany" "Server ${camel2Upper} were deleted."
+    bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n "app" "Error${camel3Upper}Save" "Failed to save ${camel3Upper}."
+    bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n "app" "Error${camel3Upper}Delete" "Failed to delete ${camel3Upper}."
+    bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n "app" "${camel3Upper}SaveSuccess" "${camel3Upper} Saved Successfully."
+    bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n "app" "Error${camel3Upper}NoId" "No ${camel3Upper} Id submitted.  ${camel3Upper}  not found."
+    bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n "app" "Error${camel3Upper}NotFound" "Failed to find ${camel3Upper}."
+
+    if [ ! -f "$base$controllerbase/${camel3}.go" ]; then
+        cp $base$jspagebase/template/crud/BusinessRules "$base$controllerbase/${camel3}.go"
+        gsed -i "s/-CAPCAMEL-/$camel3Upper/g" "$base$controllerbase/${camel3}.go"
+        gsed -i "s/-CAPITALIZED-/$upper3/g" "$base$controllerbase/${camel3}.go"
+        gsed -i "s/-CAPCAMELPLURAL-/$camel2Upper/g" "$base$controllerbase/${camel3}.go"
+    fi
+
+    set +e
+    grep "$camel2Upper" "$base$brbase/br.go"
+    ret=$?
+    if [[ "$ret" -eq 1 ]]; then
+        gsed -i "s/\/\/NewBrVarsDontDeleteMe/\n\tvar $camelUpper ${camel2Upper}_Br\n\t\/\/NewBrVarsDontDeleteMe/g" "$base$brbase/br.go"
+    fi
+    set -e
+
+    if [ ! -f "$base$brbase/${camel3}.go" ]; then
+        cp $base$jspagebase/template/crud/BusinessRules2 "$base$brbase/${camel3}.go"
+        gsed -i "s/-CAPCAMEL-/$camel3Upper/g" "$base$brbase/${camel3}.go"
+        gsed -i "s/-CAPITALIZED-/$upper3/g" "$base$brbase/${camel3}.go"
+        gsed -i "s/-CAPCAMELPLURAL-/$camel2Upper/g" "$base$brbase/${camel3}.go"
+    fi
+fi
+
+
+if [[ "$2" == "crud" ]]; then
+    # Get/ Post logic
+    if [[ "$5" != "nojs" ]]; then
+        cp $base$jspagebase/template/crud/GetController $base$controllerbase/${camel2}GetController.go
+        cp $base$jspagebase/template/crud/PostController $base$controllerbase/${camel2}PostController.go
+        cp $base$jspagebase/template/crud/ImportViewModel $base$vmbase/${camel2}ImportViewModel.go
+
+        gsed -i "s/-CAPCAMEL-/$camel3Upper/g" "$base$controllerbase/${camel2}GetController.go"
+        gsed -i "s/-CAPCAMEL-/$camel3Upper/g" "$base$controllerbase/${camel2}PostController.go"
+        gsed -i "s/-CAPCAMEL-/$camel3Upper/g" "$base$vmbase/${camel2}ImportViewModel.go"
+
+        gsed -i "s/-CAPITALIZED-/$upper3/g" "$base$controllerbase/${camel2}GetController.go"
+        gsed -i "s/-CAPITALIZED-/$upper3/g" "$base$controllerbase/${camel2}PostController.go"
+        gsed -i "s/-CAPITALIZED-/$upper3/g" "$base$vmbase/${camel2}ImportViewModel.go"
+
+        #Special case needing a replacement of the plural
+        gsed -i "s/-CAPCAMELPLURAL-/$camel2Upper/g" "$base$controllerbase/${camel2}GetController.go"
+        gsed -i "s/-CAPCAMELPLURAL-/$camel2Upper/g" "$base$controllerbase/${camel2}PostController.go"
+        gsed -i "s/-CAPCAMELPLURAL-/$camel2Upper/g" "$base$vmbase/${camel2}ImportViewModel.go"
+    fi
+fi
+
+# viewModels
+
+cp $base$jspagebase/template/viewModels/* $base$vmbase
+mv "$base$vmbase/{page}Constants" "$base$vmbase/${camel}Constants.go"
+echo -e "Created ${GREEN}$base$vmbase/${camel}Constants.go${NC}"
+mv "$base$vmbase/{page}ViewModel" "$base$vmbase/${camel}ViewModel.go"
+echo -e "Created ${GREEN}$base$vmbase/${camel}ViewModel.go${NC}"
+gsed -i "s/-CAPITALIZED-/$upper/g" "$base$vmbase/${camel}Constants.go"
+gsed -i "s/-CAPCAMEL-/$camelUpper/g" "$base$vmbase/${camel}ViewModel.go"
+gsed -i "s/-CAPITALIZED-/$upper/g" "$base$vmbase/${camel}ViewModel.go"
+
+if [[ "$5" != "nojs" ]]; then
+    set +e
+    grep "VIEWMODEL_$upper" "$base$vmbase/constants.go"
+    ret=$?
+    if [[ "$ret" -eq 1 ]]; then
+        gsed -i "s/\/\/-DONT-REMOVE-NEW-CONST/\/\/-DONT-REMOVE-NEW-CONST\n\tVIEWMODEL_$upper = \"$camel\"/g" "$base$vmbase/constants.go"
+    fi
+
+    grep "VIEWMODEL_$upper" "$base$vmbase/viewModel.go"
+    ret=$?
+    if [[ "$ret" -eq 1 ]]; then
+        gsed -i "s/\/\/-DONT-REMOVE-NEW-CASE/\tcase VIEWMODEL_$upper:\n\t\tvar vm $camelUpper-ViewModel\n\t\treturn \&vm\n\t\n\/\/-DONT-REMOVE-NEW-CASE/g" "$base$vmbase/viewModel.go"
+        gsed -i "s/-ViewModel/ViewModel/g" "$base$vmbase/viewModel.go"
+    fi
+
+    grep "CONTROLLER_$upper" "$base$vmbase/routesViewModel.go"
+    ret=$?
+    if [[ "$ret" -eq 1 ]]; then
+        gsed -i "s/\/\/-DONT-REMOVE-NEW-STRUCT/\/\/-DONT-REMOVE-NEW-STRUCT\n\t\tCONTROLLER_$upper string \`json\:\"CONTROLLER_$upper\"\`/g" "$base$vmbase/routesViewModel.go"
+        gsed -i "s/\/\/-DONT-REMOVE-NEW-SETTER/\/\/-DONT-REMOVE-NEW-SETTER\n\t\tself\.Paths\.CONTROLLER_$upper             \= \"$camel\"/g" "$base$vmbase/routesViewModel.go"
+    fi
+fi
+
+set -e
+
+if [[ "$5" != "nojs" ]]; then
+    # Controllers
+    cp $base$jspagebase/template/controllers/* $base$controllerbase
+    mv "$base$controllerbase/{page}Controller" "$base$controllerbase/${camel}Controller.go"
+    echo -e "Created ${GREEN}$base$controllerbase/${camel}Controller.go${NC}"
+    mv "$base$controllerbase/{page}GetController" "$base$controllerbase/${camel}GetController.go"
+    echo -e "Created ${GREEN}$base$controllerbase/${camel}GetController.go${NC}"
+    mv "$base$controllerbase/{page}PostController" "$base$controllerbase/${camel}PostController.go"
+    echo -e "Created ${GREEN}$base$controllerbase/${camel}PostController.go${NC}"
+    gsed -i "s/-CAPCAMEL-/$camelUpper/g" "$base$controllerbase/${camel}Controller.go"
+    gsed -i "s/-CAPCAMEL-/$camelUpper/g" "$base$controllerbase/${camel}GetController.go"
+
+    set +e
+    grep "CONTROLLER_$upper" "$base$controllerbase/constants.go"
+    ret=$?
+    if [[ "$ret" -eq 1 ]]; then
+        gsed -i "s/\/\/-DONT-REMOVE-NEW-CONST/\/\/-DONT-REMOVE-NEW-CONST\n\tCONTROLLER_$upper = \"$camel\"/g" "$base$controllerbase/constants.go"
+    fi
+
+    grep "CONTROLLER_$upper" "$base$controllerbase/controllers.go"
+    ret=$?
+    if [[ "$ret" -eq 1 ]]; then
+        gsed -i "s/\/\/-DONT-REMOVE-NEW-CASE/case CONTROLLER_$upper:\n\t\treturn reflect\.ValueOf\(\&$camelUpper-Controller\{\}\)\n\/\/-DONT-REMOVE-NEW-CASE/g" "$base$controllerbase/controllers.go"
+        gsed -i "s/-Controller/Controller/g" "$base$controllerbase/controllers.go"
+    fi
+
+    grep "$camel/$camel" "$base$jsbase/App.js"
+    ret=$?
+    if [[ "$ret" -eq 1 ]]; then
+        echo "" >> $base$jsbase/App.js
+        echo "import $camelUpper from './pages/$camel/$camel'" >> $base$jsbase/App.js
+    fi
+    bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n app "Titles$camelUpper" "$camelUpper"
+    cd src/github.com/DanielRenne/goCoreAppTemplate
+    if ([[ "$2" != "crud" ]] && [[ "$2" != "crud_base" ]]); then
+        echo "320i9rj298r328j"
+        git add -A $controllerbase/*
+        git add -A $vmbase/*
+        git add -A $constantsbase/*
+        git add -A $jsbase/*
+        git add $markup$camel.htm
+        git add -A $trans/*
+        echo -e "${GREEN}Added git files in .git${NC}"
+    fi
+    bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/translation_seed "$1"
+    sleep 1
+    python $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/translate_all.py "$1"
+fi

@@ -1,0 +1,17 @@
+.Demo {
+  width: 100%;
+  padding: .8em 1em 0;
+  background: hsla(31, 15%, 50%, 0.1);
+  border-radius: 3px;
+}
+.Demo::after {
+  content: '\00a0'; /* &nbsp; */
+  display: block;
+  margin-top: 1em;
+  height: 0px;
+  visibility: hidden;
+}
+
+.Demo--spaced {
+  margin-bottom: var(--space);
+}

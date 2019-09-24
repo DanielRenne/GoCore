@@ -1,0 +1,139 @@
+#!/bin/bash
+
+SUDOCMD=" ALL = NOPASSWD: ALL"
+
+echo $USER$SUDOCMD | sudo tee -a /etc/sudoers > /dev/null
+
+sudo rm /var/lib/apt/lists/lock
+sudo rm /var/cache/apt/archives/lock
+sudo rm /var/lib/dpkg/lock
+
+sudo apt-get install -y vim
+sudo apt-get install -y git
+sudo apt-get install -y chromium-browser
+
+
+
+#Setup Node JS for compiling ES6 and running hot reload
+sudo apt-get install -y python-software-properties
+
+#Zesty 17.0
+#sudo bash -c 'echo "deb https://deb.nodesource.com/node_6.x yakkety main" >> /etc/apt/sources.list.d/nodesource.list'
+#sudo bash -c 'echo "deb-src https://deb.nodesource.com/node_6.x yakkety main" >> /etc/apt/sources.list.d/nodesource.list'
+#curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | sudo apt-key add -
+#sudo apt update
+#sudo apt install nodejs
+
+curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
+
+sudo apt-get install -y nodejs
+sudo apt-get install -y nodejs-legacy
+sudo apt-get install -y build-essential
+sudo apt-get install -y npm
+
+
+#Setup the Golang Runtime
+wget https://storage.googleapis.com/golang/go1.8.linux-amd64.tar.gz
+tar -xvf go1.8.linux-amd64.tar.gz
+sudo mv go /usr/local
+sudo ln -s /usr/local/go/bin/go /usr/bin/go
+
+
+
+#Set Environment Paths
+mkdir go
+echo 'export GOROOT=/usr/local/go' >>~/.profile
+echo 'export GOPATH=$HOME/go' >>~/.profile
+echo 'export PATH=$PATH:$GOROOT/bin:$GOPATH/bin:$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin' >>~/.profile
+
+source ~/.profile
+
+#Setup Local MongoDB
+sudo mkdir -p /data/db
+sudo dpkg --configure -a
+
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
+echo "deb http://repo.mongodb.org/apt/ubuntu "$(lsb_release -sc)"/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
+
+sudo apt-get update
+sudo apt-get install -y mongodb-org
+
+#Setup the mongodb.service file
+
+echo '[Unit]' | sudo tee -a /etc/systemd/system/mongodb.service > /dev/null
+echo 'Description=High-performance, schema-free document-oriented database' | sudo tee -a /etc/systemd/system/mongodb.service
+echo 'After=network.target' | sudo tee -a /etc/systemd/system/mongodb.service
+echo '' | sudo tee -a /etc/systemd/system/mongodb.service
+echo '[Service]' | sudo tee -a /etc/systemd/system/mongodb.service
+echo 'User=mongodb' | sudo tee -a /etc/systemd/system/mongodb.service
+echo 'ExecStart=/usr/bin/mongod --quiet --config /etc/mongod.conf' | sudo tee -a /etc/systemd/system/mongodb.service
+echo '' | sudo tee -a /etc/systemd/system/mongodb.service
+echo '[Install]' | sudo tee -a /etc/systemd/system/mongodb.service
+echo 'WantedBy=multi-user.target' | sudo tee -a /etc/systemd/system/mongodb.service
+
+sudo systemctl enable mongodb
+
+sudo systemctl start mongodb
+
+#Install Java
+sudo apt-get install -y default-jdk
+
+#Install the Say Program for Ubuntu
+sudo apt-get install -y gnustep-gui-runtime
+
+#Install a Git GUI tool
+sudo apt-get install -y git-cola
+
+#Clone the repo
+sudo git clone https://github.com/DanielRenne/goCoreAppTemplate ~/go/src/github.com/DanielRenne/goCoreAppTemplate
+
+sudo chown -R $USER ~/go/src
+
+#Install app's Dependencies
+/usr/local/go/bin/go install github.com/DanielRenne/goCoreAppTemplate/install_goCoreAppTemplate
+
+cd ~/go/bin
+./install_goCoreAppTemplate
+
+#Copy over a dev Web Config
+cp -R ~/go/src/github.com/DanielRenne/goCoreAppTemplate/webConfig.dev.json ~/go/src/github.com/DanielRenne/goCoreAppTemplate/webConfig.json
+
+cd ~/go/src/github.com/DanielRenne/goCoreAppTemplate/web/app
+
+npm install
+
+cd ~/go/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript
+sudo bash ./build.sh
+
+#Move the appbar to the bottom.
+gsettings set com.canonical.Unity.Launcher launcher-position Bottom
+
+##Move the Appbar back to the left if you care.
+#gsettings set com.canonical.Unity.Launcher launcher-position Left
+
+#Install & Open up the Atom Editor
+sudo add-apt-repository ppa:webupd8team/atom
+sudo apt-get install -y upx-ucl
+
+sudo apt update; sudo apt install atom
+apm install joefitzgerald/tester-go
+apm install joefitzgerald/navigator-go
+apm install linter
+apm install zmb3/gorename
+apm install zmb3/godoc
+apm install joefitzgerald/gometalinter-linter
+apm install joefitzgerald/gofmt
+apm install joefitzgerald/go-plus
+apm install joefitzgerald/go-get
+apm install go-debug
+apm install joefitzgerald/go-config
+apm install joefitzgerald/builder-go
+apm install joefitzgerald/autocomplete-go
+cd ~/go/src/github.com/DanielRenne/goCoreAppTemplate
+atom . &
+
+/usr/local/go/bin/go get github.com/DanielRenne/goWatch
+/usr/local/go/bin/go install github.com/DanielRenne/goWatch
+git config --global alias.up 'pull --rebase --autostash'
+
+bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/start_gocore

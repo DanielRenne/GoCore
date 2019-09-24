@@ -1,0 +1,10 @@
+{
+    "CreateFeatureGroup": "Olu\u015fturun featureGroup", 
+    "FeatureGroupAddBootstrapMeta": "Bootstrap meta", 
+    "FeatureGroupAddCreateDate": "Tarih olu\u015fturmak ", 
+    "FeatureGroupAddLastUpdateId": "Son g\u00fcncelleme kimli\u011fi", 
+    "FeatureGroupAddName": "Ad\u0131", 
+    "FeatureGroupAddUpdateDate": "Tarih g\u00fcncelleme ", 
+    "objectName": "featureGroupAdd", 
+    "welcomeExample": "{page} sayfas\u0131na ho\u015f geldiniz!"
+}

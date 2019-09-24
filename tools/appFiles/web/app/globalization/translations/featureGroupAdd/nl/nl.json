@@ -1,0 +1,10 @@
+{
+    "CreateFeatureGroup": "Maak featureGroup", 
+    "FeatureGroupAddBootstrapMeta": "Bootstrap meta", 
+    "FeatureGroupAddCreateDate": "Datum aanmaken", 
+    "FeatureGroupAddLastUpdateId": "Laatste update id", 
+    "FeatureGroupAddName": "Naam", 
+    "FeatureGroupAddUpdateDate": "Update datum", 
+    "objectName": "featureGroupAdd", 
+    "welcomeExample": "Welkom op de {pagina} pagina!"
+}

@@ -1,0 +1,16 @@
+{
+    "TransactionModifyCollections": "Gy\u0171jtem\u00e9nyek", 
+    "TransactionModifyCommitted": "Elk\u00f6telezett", 
+    "TransactionModifyCompleteDate": "Teljes d\u00e1tuma", 
+    "TransactionModifyCreateDate": "L\u00e9trehoz\u00e1s d\u00e1tuma", 
+    "TransactionModifyDetails": "R\u00e9szletek", 
+    "TransactionModifyError": "Hiba", 
+    "TransactionModifyLastUpdate": "Utols\u00f3 friss\u00edt\u00e9s", 
+    "TransactionModifyRollbackDate": "Vissza\u00e1ll\u00edt\u00e1s d\u00e1tuma", 
+    "TransactionModifyRollbackReason": "Rollback ok", 
+    "TransactionModifyRolledBack": "Hengerelt vissza", 
+    "TransactionModifyRolledBackBy": "Hengerelt vissza", 
+    "TransactionModifyUserId": "Felhaszn\u00e1l\u00f3i azonos\u00edt\u00f3", 
+    "objectName": "transactionModify", 
+    "welcomeExample": "\u00dcdv\u00f6z\u00f6lj\u00fck a {page} oldalt!"
+}

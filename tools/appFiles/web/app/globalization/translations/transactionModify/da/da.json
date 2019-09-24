@@ -1,0 +1,16 @@
+{
+    "TransactionModifyCollections": "Samlinger", 
+    "TransactionModifyCommitted": "Engageret", 
+    "TransactionModifyCompleteDate": "Komplet dato", 
+    "TransactionModifyCreateDate": "Opret dato", 
+    "TransactionModifyDetails": "Detaljer", 
+    "TransactionModifyError": "Fejl", 
+    "TransactionModifyLastUpdate": "Sidste opdatering", 
+    "TransactionModifyRollbackDate": "Rollback dato", 
+    "TransactionModifyRollbackReason": "Rollback grund", 
+    "TransactionModifyRolledBack": "Rullet tilbage", 
+    "TransactionModifyRolledBackBy": "Rullet tilbage af", 
+    "TransactionModifyUserId": "Bruger-id", 
+    "objectName": "transactionModify", 
+    "welcomeExample": "Velkommen til {page} side!"
+}

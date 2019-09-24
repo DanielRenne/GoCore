@@ -1,0 +1,23 @@
+{
+    "AddAppError": "Dodaj nowy AppError", 
+    "AppErrorListHeaderClientSide": "Na stronie klienta", 
+    "AppErrorListHeaderLastUpdateId": "Ostatnia aktualizacja ID", 
+    "AppErrorListHeaderMessage": "Komunikat", 
+    "AppErrorListHeaderStackShown": "Stos pokazano", 
+    "AppErrorListHeaderUpdateDate": "Data aktualizacji", 
+    "AppErrorListHeaderUrl": "Adres URL", 
+    "AppErrorListToolTipClientSide": "Na stronie klienta", 
+    "AppErrorListToolTipLastUpdateId": "Ostatnia aktualizacja ID", 
+    "AppErrorListToolTipMessage": "Komunikat", 
+    "AppErrorListToolTipStackShown": "Stos pokazano", 
+    "AppErrorListToolTipUpdateDate": "Data aktualizacji", 
+    "AppErrorListToolTipUrl": "Adres URL", 
+    "AreYouSure": "Jeste\u015b pewien, \u017ce chcesz usun\u0105\u0107 {total} appErrors?", 
+    "AreYouSureInline": "Jeste\u015b pewien, \u017ce chcesz usun\u0105\u0107 ten appError?", 
+    "ConfirmDeleteMessage": "Jeste\u015b pewien, \u017ce chcesz usun\u0105\u0107 ten appError? Czynno\u015bci tej nie mo\u017cna cofn\u0105\u0107.", 
+    "DeleteAppError": "Usun\u0105\u0107 appError", 
+    "EditAppError": "Edytowa\u0107 appError", 
+    "ShowingAllAppErrors": "Wy\u015bwietlono Wszystkie AppErrors", 
+    "objectName": "appErrorList", 
+    "welcomeExample": "Zapraszamy do {page} strony!"
+}

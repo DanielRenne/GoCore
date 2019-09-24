@@ -1,0 +1,15 @@
+{
+    "FileObjectModifyAccountId": "Konto-id", 
+    "FileObjectModifyContent": "Innhold", 
+    "FileObjectModifyCreateDate": "Opprette dato", 
+    "FileObjectModifyLastUpdateId": "Siste oppdatering id", 
+    "FileObjectModifyMD5": "MD 5", 
+    "FileObjectModifyModified": "Endret", 
+    "FileObjectModifyModifiedUnix": "Endret unix", 
+    "FileObjectModifyName": "Navn", 
+    "FileObjectModifySize": "St\u00f8rrelse", 
+    "FileObjectModifyType": "Type", 
+    "FileObjectModifyUpdateDate": "Du vil oppdatere dato", 
+    "objectName": "fileObjectModify", 
+    "welcomeExample": "Velkommen til {page} side!"
+}

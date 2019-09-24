@@ -1,0 +1,14 @@
+{
+    "AppErrorAddAccountId": "Id Account", 
+    "AppErrorAddClientSide": "Lato Client", 
+    "AppErrorAddCreateDate": "Data di creazione", 
+    "AppErrorAddLastUpdateId": "Ultimo aggiornamento id", 
+    "AppErrorAddMessage": "Messaggio", 
+    "AppErrorAddStackShown": "Stack illustrato", 
+    "AppErrorAddUpdateDate": "La data di aggiornamento", 
+    "AppErrorAddUrl": "Url", 
+    "AppErrorAddUserId": "Id utente", 
+    "CreateAppError": "Creare appError", 
+    "objectName": "appErrorAdd", 
+    "welcomeExample": "Benvenuti a {page} pagina!"
+}

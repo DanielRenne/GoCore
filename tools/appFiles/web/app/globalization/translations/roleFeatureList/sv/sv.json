@@ -1,0 +1,16 @@
+{
+    "AddRoleFeature": "L\u00e4gga till en ny RoleFeature", 
+    "AreYouSure": "Are you sure you wish to delete {total} roleFeatures?", 
+    "AreYouSureInline": "\u00c4r du s\u00e4ker p\u00e5 att du vill radera detta roleFeature?", 
+    "ConfirmDeleteMessage": "\u00c4r du s\u00e4ker p\u00e5 att du vill radera detta roleFeature? Denna \u00e5tg\u00e4rd kan inte \u00e5ngras.", 
+    "CopyRoleFeature": "Kopiera roleFeature", 
+    "DeleteRoleFeature": "Ta bort roleFeature", 
+    "EditRoleFeature": "Redigera roleFeature", 
+    "RoleFeatureListHeaderLastUpdateId": "Senaste uppdatering id", 
+    "RoleFeatureListHeaderUpdateDate": "Uppdatera datum", 
+    "RoleFeatureListToolTipLastUpdateId": "Senaste uppdatering id", 
+    "RoleFeatureListToolTipUpdateDate": "Uppdatera datum", 
+    "ShowingAllRoleFeatures": "Visar Alla RoleFeatures", 
+    "objectName": "roleFeatureList", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

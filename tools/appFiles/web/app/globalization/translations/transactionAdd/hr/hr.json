@@ -1,0 +1,17 @@
+{
+    "CreateTransaction": "Stvoriti transakciji", 
+    "TransactionAddCollections": "Zbirke", 
+    "TransactionAddCommitted": "Po\u010dinio", 
+    "TransactionAddCompleteDate": "Potpuna Datum", 
+    "TransactionAddCreateDate": "Datum osnivanja", 
+    "TransactionAddDetails": "Detalji", 
+    "TransactionAddError": "Gre\u0161ka", 
+    "TransactionAddLastUpdate": "Posljednja promjena", 
+    "TransactionAddRollbackDate": "Datum poni\u0161ti ", 
+    "TransactionAddRollbackReason": "Razlog staro", 
+    "TransactionAddRolledBack": "Vratit", 
+    "TransactionAddRolledBackBy": "Vratit", 
+    "TransactionAddUserId": "ID korisnika ", 
+    "objectName": "transactionAdd", 
+    "welcomeExample": "Dobrodo\u0161li na {page} stranice!"
+}

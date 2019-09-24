@@ -1,0 +1,80 @@
+/**
+ * 1. Avoid the IE 10-11 `min-height` bug.
+ * 2. Set `flex-shrink` to `0` to prevent some browsers from
+ *    letting these items shrink to smaller than their content's default
+ *    minimum size. See http://bit.ly/1Mn35US for details.
+ * 3. Use `%` instead of `vh` since `vh` is buggy in older mobile Safari.
+ */
+
+.GoCore {
+  display: flex;
+  height: 100%; /* 1, 3 */
+  flex-direction: column;
+}
+
+.GoCore-header,
+.GoCore-footer {
+  flex: none; /* 2 */
+}
+
+.GoCore-body {
+  display: flex;
+  flex: 1 0 auto; /* 2 */
+  flex-direction: column;
+  padding: 0;
+}
+
+@media (max-width: 767px) {
+  .GoCore-content {
+    margin-top: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    padding: 0px;
+    background: #ECEFF1;
+  }
+}
+
+.GoCore-nav {
+  order: -1;
+  padding: 0px 1em 1em 7px;
+  -webkit-box-shadow:1px 0px 1px #90A4AE;
+  -moz-box-shadow:1px 0px 1px #90A4AE;
+  box-shadow:1px 0px 1px #90A4AE;
+}
+
+.GoCore-sidebar {
+  padding: 0px 1em 1em 1em;
+  /*border-radius: 3px;*/
+  /*background: rgba(147, 128, 108, 0.1);*/
+}
+
+.GoCore-toolbar {
+  margin-top: 25px;
+  margin-right: 30px;
+}
+
+@media (--break-lg) {
+  .GoCore-body {
+    flex-direction: row;
+  }
+  .GoCore-content {
+    flex: 1 0 auto;
+    max-height: 800px;
+    flex-direction: column;
+    overflow-y: scroll;
+    margin: 0;
+  }
+  .GoCore-nav, .GoCore-sidebar {
+    flex: 0 0 17em;
+  }
+}
+
+h1.Paper-Title {
+  padding: .5em 0 .2em;
+  margin: 0 !important;
+  box-shadow: 0 1px 1px #90a4ae;
+}
+
+.site-navbar {
+  display: none;
+}

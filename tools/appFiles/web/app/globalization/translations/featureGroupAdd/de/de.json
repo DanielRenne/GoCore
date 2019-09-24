@@ -1,0 +1,10 @@
+{
+    "CreateFeatureGroup": "Erstellen featureGroup", 
+    "FeatureGroupAddBootstrapMeta": "Bootstrap-meta", 
+    "FeatureGroupAddCreateDate": "Datum erstellen", 
+    "FeatureGroupAddLastUpdateId": "Letztes update-id", 
+    "FeatureGroupAddName": "Name", 
+    "FeatureGroupAddUpdateDate": "Update-Datum", 
+    "objectName": "featureGroupAdd", 
+    "welcomeExample": "Willkommen auf {Seite} Seite!"
+}

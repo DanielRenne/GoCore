@@ -1,0 +1,87 @@
+pth=$GOPATH
+if [[ "$pth" == "" ]]; then
+    echo "You have no GOPATH environment variable.  Please install go and set it before running this app"
+    say "You have no GOPATH environment variable.  Please install go and set it before running this app.  Exiting now"
+    exit 1
+fi
+
+
+npm version > /dev/null  2>&1
+ret=$?
+if [[ "$ret" -eq 0 ]]; then
+    echo "npm install ok"
+else
+    echo "You need to install npm"
+    say "You need to install npm.  Exiting now"
+    exit 1
+fi
+
+envNode=$NODE_ENV
+if [[ "$envNode" == "" ]]; then
+    echo "Set NODE_ENV environment to development"
+    say "Set NODE_ENV environment to development.  Exiting now"
+    exit 1
+fi
+
+if [ ! -f "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/webConfig.json" ]; then
+    mkdir -p $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/plugins
+    cd $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin
+    chmod +x *
+fi
+
+cd $GOPATH
+go run src/github.com/DanielRenne/goCoreAppTemplate/buildgoCoreUpperAppTemplate/buildgoCoreUpperAppTemplate.go
+
+whoami=$(whoami)
+port=$(bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/get_port_local)
+if [[ "$whoami" == "root" ]] || [[ "$port" != "80" ]]; then
+    rm -rf /tmp/go-build* > /dev/null 2>&1
+else
+    sudo rm -rf /tmp/go-build* > /dev/null 2>&1
+fi
+bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/kill_go_watch
+
+set -e
+if [ ! -d "$GOPATH/src/github.com/DanielRenne/GoCore" ]; then
+    say "installing go core"
+    go get github.com/DanielRenne/GoCore/...
+    go install github.com/DanielRenne/GoCore/getCore
+    sleep 2
+    getCore
+    go install github.com/DanielRenne/GoCore/core/goCoreCreateApp
+fi
+
+if [ ! -d "$GOPATH/src/github.com/DanielRenne/GoCore/tools/appFiles/web" ]; then
+   getCore
+fi
+
+set +e
+
+if [ ! -d "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/node_modules" ]; then
+    say "npm install starting"
+    cd $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app
+    #https://github.com/sass/node-sass/issues/1847
+    #node-sass needs unsafe-perm
+    npm install --unsafe-perm
+    say "npm install ended"
+fi
+
+if [ ! -f "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/dist/javascript/go-core-app.js.gz" ]; then
+    say "copy dist tar balls starting"
+    cd $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript
+    bash build.sh
+    say "copy dist tar balls ending"
+fi
+
+
+echo "" > $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/app.log
+echo "" > $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/db.log
+echo "" > /tmp/go_watch.log
+echo "" > $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log
+
+if [[ "$whoami" == "root" ]] || [[ "$port" != "80" ]]; then
+    rm $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/mongo.log
+else
+    sudo rm $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/mongo.log
+fi
+bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/dev

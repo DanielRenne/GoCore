@@ -1,0 +1,11 @@
+{
+    "RoleModifyAccountId": "Id de compte", 
+    "RoleModifyCanDelete": "Pouvez supprimer", 
+    "RoleModifyCreateDate": "Date de cr\u00e9ation", 
+    "RoleModifyLastUpdateId": "Derni\u00e8re mise \u00e0 jour de l'id", 
+    "RoleModifyName": "Nom", 
+    "RoleModifyShortName": "Nom court", 
+    "RoleModifyUpdateDate": "Date de mise \u00e0 jour", 
+    "objectName": "roleModify", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

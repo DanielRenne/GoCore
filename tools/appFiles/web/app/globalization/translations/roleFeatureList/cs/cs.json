@@ -1,0 +1,16 @@
+{
+    "AddRoleFeature": "P\u0159idat nov\u00fd RoleFeature", 
+    "AreYouSure": "Jsou si jisti, \u017ee chcete smazat {total} roleFeatures?", 
+    "AreYouSureInline": "Jsou si jisti, \u017ee chcete smazat tento roleFeature?", 
+    "ConfirmDeleteMessage": "Jste si jisti, \u017ee chcete smazat tento roleFeature? Tuto akci nelze vr\u00e1tit zp\u011bt.", 
+    "CopyRoleFeature": "Kop\u00edrov\u00e1n\u00ed roleFeature", 
+    "DeleteRoleFeature": "Odstranit roleFeature", 
+    "EditRoleFeature": "Edit roleFeature", 
+    "RoleFeatureListHeaderLastUpdateId": "Posledn\u00ed aktualizace id", 
+    "RoleFeatureListHeaderUpdateDate": "Datum aktualizace", 
+    "RoleFeatureListToolTipLastUpdateId": "Posledn\u00ed aktualizace id", 
+    "RoleFeatureListToolTipUpdateDate": "Datum aktualizace", 
+    "ShowingAllRoleFeatures": "Zobrazuji V\u0161echny RoleFeatures", 
+    "objectName": "roleFeatureList", 
+    "welcomeExample": "V\u00edtejte na {page} str\u00e1nka!"
+}

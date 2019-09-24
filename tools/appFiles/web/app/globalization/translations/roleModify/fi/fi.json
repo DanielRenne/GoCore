@@ -1,0 +1,11 @@
+{
+    "RoleModifyAccountId": "Tilin tunnus", 
+    "RoleModifyCanDelete": "Voi poistaa", 
+    "RoleModifyCreateDate": "Luo p\u00e4iv\u00e4m\u00e4\u00e4r\u00e4", 
+    "RoleModifyLastUpdateId": "Viimeisin p\u00e4ivitys id", 
+    "RoleModifyName": "Nimi", 
+    "RoleModifyShortName": "Lyhyt nimi", 
+    "RoleModifyUpdateDate": "P\u00e4ivitys p\u00e4iv\u00e4m\u00e4\u00e4r\u00e4", 
+    "objectName": "roleModify", 
+    "welcomeExample": "Tervetuloa {page} - sivulla!"
+}

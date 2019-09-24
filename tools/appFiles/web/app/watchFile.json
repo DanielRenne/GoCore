@@ -1,0 +1,53 @@
+{
+  "config": {
+     "maxDelayBetweenMultipleFileChanges": 25,
+     "delayBetweenCommands": 3,
+     "massFileChangeCommand": ["../../bin/kill_golang", "../../bin/model_build","../../bin/start_golang"]
+  },
+  "watchers":[
+    {
+      "directories":[
+                     "../../../../DanielRenne/GoCore/buildCore",
+                     "../../../../DanielRenne/GoCore/doc",
+                     "../../../../DanielRenne/GoCore/core",
+                     "../../../../DanielRenne/GoCore/getCore",
+                     "../../../../DanielRenne/GoCore/installCore",
+                     "../../../../DanielRenne/GoCore/swagger",
+                     "../../../../DanielRenne/GoCore/tools",
+                     "../../payloads",
+                     "../../constants",
+                     "../../controllers",
+                     "../../queries/accountQueries.go",
+                     "../../queries/accountRoleQueries.go",
+                     "../../queries/activityLogs.go",
+                     "../../queries/passwordResets.go",
+                     "../../queries/passwords.go",
+                     "../../queries/queries.go",
+                     "../../queries/roleQueries.go",
+                     "../../queries/serverSettings.go",
+                     "../../queries/transactions.go",
+                     "../../queries/userQueries.go",
+                     "../../viewModel",
+                     "../../br",
+                     "../../constants",
+                     "../../password",
+                     "../../settings",
+                     "../../sessionFunctions",
+                     "../../cron",
+                     "../../webConfig.json",
+                     "../../models/v1/model/query.go",
+                     "../../models/v1/model/model.go",
+                     "../../models/v1/model/transaction.go",
+                     "../../models/v1/model/query.go",
+                     "../../models/v1/model/model.go",
+                     "../../models/v1/model/transaction.go"],
+      "tasks":["../../bin/kill_golang", "../../bin/start_golang"],
+      "extensions":[".go", ".json"]
+    },
+    {
+      "directories":["../../db/schemas/1.0.0", "../../db/goFiles", "../../db/bootstrap/accountRoles", "../../db/bootstrap/accounts",  "../../db/bootstrap/countries", "../../db/bootstrap/featureGroups", "../../db/bootstrap/features", "../../db/bootstrap/fileObjects",  "../../db/bootstrap/passwords", "../../db/bootstrap/roleFeatures", "../../db/bootstrap/roles",  "../../db/bootstrap/serverSettings", "../../db/bootstrap/users"],
+      "tasks":["../../bin/kill_golang", "../../bin/model_build","../../bin/start_golang"],
+      "extensions":[".json", ".go"]
+    }
+  ]
+}

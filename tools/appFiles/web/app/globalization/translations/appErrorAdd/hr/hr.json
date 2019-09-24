@@ -1,0 +1,14 @@
+{
+    "AppErrorAddAccountId": "Identifikator ra\u010duna", 
+    "AppErrorAddClientSide": "Na strani klijenta", 
+    "AppErrorAddCreateDate": "Datum osnivanja", 
+    "AppErrorAddLastUpdateId": "Posljednja obnova EID", 
+    "AppErrorAddMessage": "Poruka", 
+    "AppErrorAddStackShown": "Stog \u0161to je prikazano", 
+    "AppErrorAddUpdateDate": "Datum a\u017euriranja", 
+    "AppErrorAddUrl": "URL adresa", 
+    "AppErrorAddUserId": "ID korisnika ", 
+    "CreateAppError": "Stvoriti appError", 
+    "objectName": "appErrorAdd", 
+    "welcomeExample": "Dobrodo\u0161li na {page} stranice!"
+}

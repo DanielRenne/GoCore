@@ -1,0 +1,18 @@
+{
+    "AddFeatureGroup": "Adicionar um novo FeatureGroup", 
+    "AreYouSure": "Tem certeza que deseja excluir {total} featureGroups?", 
+    "AreYouSureInline": "Tem certeza de que deseja excluir este featureGroup?", 
+    "ConfirmDeleteMessage": "Tem certeza de que deseja excluir este featureGroup? Esta a\u00e7\u00e3o n\u00e3o pode ser desfeita.", 
+    "CopyFeatureGroup": "C\u00f3pia featureGroup", 
+    "DeleteFeatureGroup": "Excluir featureGroup", 
+    "EditFeatureGroup": "Editar featureGroup", 
+    "FeatureGroupListHeaderLastUpdateId": "\u00daltima atualiza\u00e7\u00e3o de identifica\u00e7\u00e3o", 
+    "FeatureGroupListHeaderName": "Nome", 
+    "FeatureGroupListHeaderUpdateDate": "Data de atualiza\u00e7\u00e3o", 
+    "FeatureGroupListToolTipLastUpdateId": "\u00daltima atualiza\u00e7\u00e3o de identifica\u00e7\u00e3o", 
+    "FeatureGroupListToolTipName": "Nome", 
+    "FeatureGroupListToolTipUpdateDate": "Data de atualiza\u00e7\u00e3o", 
+    "ShowingAllFeatureGroups": "Mostrando Todas As FeatureGroups", 
+    "objectName": "featureGroupList", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

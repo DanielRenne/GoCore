@@ -1,0 +1,13 @@
+{
+    "ConfirmPassword": "Bekr\u00e6ft Adgangskode", 
+    "ErrorPasswordNotValid": "Adgangskode skal v\u00e6re p\u00e5 mindst 8 tegn. Omfatter 1 r\u00e6kke, 1 store bogstaver.", 
+    "FieldRequired": "Feltet Er Kr\u00e6vet.", 
+    "NewPassword": "Ny Adgangskode", 
+    "OriginalPassword": "Oprindelige Adgangskode", 
+    "PasswordResetHeader": "Nulstilling af adgangskode til {Email}.", 
+    "PasswordResetMessage": "En nulstilling af adgangskoden til {Email} er blevet anmodet om. Klik {Link} for at nulstille din adgangskode. \n\nDette vil nulstille udl\u00f8ber inden for 48 timer.", 
+    "PasswordResetTitle": "GoCoreAppHumanName Password Reset", 
+    "PasswordsNoMatch": "Adgangskoder er ikke ens.", 
+    "ResetCompleted": "Denne anmodning er blevet afsluttet. Du anmode om en nulstilling af adgangskoden.", 
+    "Title": "Password Reset"
+}

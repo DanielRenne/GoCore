@@ -1,0 +1,13 @@
+{
+    "CreateFeature": "Membuat fitur", 
+    "FeatureAddBootstrapMeta": "Bootstrap meta", 
+    "FeatureAddCreateDate": "Membuat tanggal", 
+    "FeatureAddDescription": "Deskripsi", 
+    "FeatureAddFeatureGroupId": "Fitur group id", 
+    "FeatureAddKey": "Kunci", 
+    "FeatureAddLastUpdateId": "Last update id", 
+    "FeatureAddName": "Nama", 
+    "FeatureAddUpdateDate": "Tanggal Update", 
+    "objectName": "bertambah", 
+    "welcomeExample": "Selamat datang {page} halaman!"
+}

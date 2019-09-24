@@ -1,0 +1,11 @@
+{
+    "CreateRoleFeature": "!ja!Create roleFeature", 
+    "RoleFeatureAddBootstrapMeta": "!ja!Bootstrap meta", 
+    "RoleFeatureAddCreateDate": "!ja!Create date", 
+    "RoleFeatureAddFeatureId": "!ja!Feature id", 
+    "RoleFeatureAddLastUpdateId": "!ja!Last update id", 
+    "RoleFeatureAddRoleId": "!ja!Role id", 
+    "RoleFeatureAddUpdateDate": "!ja!Update date", 
+    "objectName": "!ja!roleFeatureAdd", 
+    "welcomeExample": "!ja!Welcome to the {page} page!"
+}

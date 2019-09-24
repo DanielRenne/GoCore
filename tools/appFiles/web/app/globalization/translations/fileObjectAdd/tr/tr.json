@@ -1,0 +1,16 @@
+{
+    "CreateFileObject": "Olu\u015fturun fileObject", 
+    "FileObjectAddAccountId": "Id hesab\u0131 ", 
+    "FileObjectAddContent": "\u0130\u00e7erik", 
+    "FileObjectAddCreateDate": "Tarih olu\u015fturmak ", 
+    "FileObjectAddLastUpdateId": "Son g\u00fcncelleme kimli\u011fi", 
+    "FileObjectAddMD5": "5 MD ", 
+    "FileObjectAddModified": "Modifiye", 
+    "FileObjectAddModifiedUnix": "Modifiye un\u0131x", 
+    "FileObjectAddName": "Ad\u0131", 
+    "FileObjectAddSize": "Boyutu", 
+    "FileObjectAddType": "Yaz\u0131n", 
+    "FileObjectAddUpdateDate": "Tarih g\u00fcncelleme ", 
+    "objectName": "fileObjectAdd", 
+    "welcomeExample": "{page} sayfas\u0131na ho\u015f geldiniz!"
+}

@@ -1,0 +1,13 @@
+{
+    "AddUserTooltip": "L\u00e4gg Till Anv\u00e4ndare", 
+    "ErrorUserListFailedParse": "Misslyckades med att tolka konto roll att \u00e5beropa.", 
+    "ErrorUserListFailedRevoke": "Underl\u00e5tit att \u00c5terkalla anv\u00e4ndarens konto.", 
+    "UserAddEditCompanyName": "F\u00f6retagets Namn", 
+    "UserListLastNameFirstName": "Efternamn, F\u00f6rnamn", 
+    "UserListPhoneNumber": "Telefonnummer", 
+    "UserListResendInvitationEmail": "Skicka E-Postmeddelandet Med Inbjudan", 
+    "UserListRevokeUser": "\u00c5terkalla denna anv\u00e4ndare fr\u00e5n ett konto.", 
+    "UserListRevokedUser": "Framg\u00e5ngsrikt \u00c5terkallas anv\u00e4ndaren fr\u00e5n ditt konto.", 
+    "UserListRole": "Roll", 
+    "UserListShowingAllUsers": "Visar Alla Anv\u00e4ndare"
+}

@@ -1,0 +1,13 @@
+{
+    "AddUserTooltip": "Felhaszn\u00e1l\u00f3 Hozz\u00e1ad\u00e1sa", 
+    "ErrorUserListFailedParse": "Nem siker\u00fclt \u00e9rtelmezni, figyelembe szerepet kell hivatkozni.", 
+    "ErrorUserListFailedRevoke": "Nem vette vissza a felhaszn\u00e1l\u00f3 a sz\u00e1mla.", 
+    "UserAddEditCompanyName": "C\u00e9g Neve", 
+    "UserListLastNameFirstName": "Vezet\u00e9kn\u00e9v, Keresztn\u00e9v", 
+    "UserListPhoneNumber": "Telefonsz\u00e1m", 
+    "UserListResendInvitationEmail": "\u00dajra Elk\u00fcldeni A Megh\u00edv\u00f3t E-Mail", 
+    "UserListRevokeUser": "Visszavonja a felhaszn\u00e1l\u00f3 a sz\u00e1mla.", 
+    "UserListRevokedUser": "Sikeresen Visszavont\u00e1k a felhaszn\u00e1l\u00f3 a sz\u00e1mla.", 
+    "UserListRole": "Szerep", 
+    "UserListShowingAllUsers": "Mutatja Az \u00d6sszes Felhaszn\u00e1l\u00f3"
+}

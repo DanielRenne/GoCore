@@ -1,0 +1,13 @@
+{
+    "CreateFeature": "Hozzon l\u00e9tre funkci\u00f3", 
+    "FeatureAddBootstrapMeta": "Bootstrap meta", 
+    "FeatureAddCreateDate": "L\u00e9trehoz\u00e1s d\u00e1tuma", 
+    "FeatureAddDescription": "Le\u00edr\u00e1s", 
+    "FeatureAddFeatureGroupId": "Funkci\u00f3 csoport azonos\u00edt\u00f3ja", 
+    "FeatureAddKey": "Kulcs", 
+    "FeatureAddLastUpdateId": "Utols\u00f3 friss\u00edt\u00e9s id", 
+    "FeatureAddName": "N\u00e9v", 
+    "FeatureAddUpdateDate": "Friss\u00edt\u00e9s d\u00e1tuma", 
+    "objectName": "featureAdd", 
+    "welcomeExample": "Welcome to the {page} page!"
+}

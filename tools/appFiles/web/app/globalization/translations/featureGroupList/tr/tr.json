@@ -1,0 +1,18 @@
+{
+    "AddFeatureGroup": "Yeni bir FeatureGroup Ekle ", 
+    "AreYouSure": "{total} featureGroups silmek istedi\u011finizden emin misiniz?", 
+    "AreYouSureInline": "Bu featureGroup silmek istedi\u011finizden emin misiniz?", 
+    "ConfirmDeleteMessage": "Bu featureGroup silmek istiyor musunuz? Bu i\u015flem geri al\u0131namaz.", 
+    "CopyFeatureGroup": "Kopya featureGroup", 
+    "DeleteFeatureGroup": "Sil featureGroup", 
+    "EditFeatureGroup": "Edit featureGroup", 
+    "FeatureGroupListHeaderLastUpdateId": "Son g\u00fcncelleme kimli\u011fi", 
+    "FeatureGroupListHeaderName": "Ad\u0131", 
+    "FeatureGroupListHeaderUpdateDate": "Tarih g\u00fcncelleme ", 
+    "FeatureGroupListToolTipLastUpdateId": "Son g\u00fcncelleme kimli\u011fi", 
+    "FeatureGroupListToolTipName": "Ad\u0131", 
+    "FeatureGroupListToolTipUpdateDate": "Tarih g\u00fcncelleme ", 
+    "ShowingAllFeatureGroups": "T\u00fcm FeatureGroups G\u00f6steriliyor ", 
+    "objectName": "featureGroupList", 
+    "welcomeExample": "{page} sayfas\u0131na ho\u015f geldiniz!"
+}

@@ -1,0 +1,15 @@
+{
+    "FileObjectModifyAccountId": "Akun id", 
+    "FileObjectModifyContent": "Kandungan", 
+    "FileObjectModifyCreateDate": "Membuat tanggal", 
+    "FileObjectModifyLastUpdateId": "Last update id", 
+    "FileObjectModifyMD5": "MD 5", 
+    "FileObjectModifyModified": "Modifikasi", 
+    "FileObjectModifyModifiedUnix": "Modifikasi unix", 
+    "FileObjectModifyName": "Nama", 
+    "FileObjectModifySize": "Ukuran", 
+    "FileObjectModifyType": "Jenis", 
+    "FileObjectModifyUpdateDate": "Tanggal Update", 
+    "objectName": "fileObjectModify", 
+    "welcomeExample": "Selamat datang {page} halaman!"
+}

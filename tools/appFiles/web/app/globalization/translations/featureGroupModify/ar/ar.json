@@ -1,0 +1,9 @@
+{
+    "FeatureGroupModifyBootstrapMeta": "!ar!Bootstrap meta", 
+    "FeatureGroupModifyCreateDate": "!ar!Create date", 
+    "FeatureGroupModifyLastUpdateId": "!ar!Last update id", 
+    "FeatureGroupModifyName": "!ar!Name", 
+    "FeatureGroupModifyUpdateDate": "!ar!Update date", 
+    "objectName": "!ar!featureGroupModify", 
+    "welcomeExample": "!ar!Welcome to the {page} page!"
+}
