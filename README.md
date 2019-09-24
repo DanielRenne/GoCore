@@ -23,15 +23,9 @@ Below are some targeted goals:
 ----------
 ## Getting Started ##
 
-### Install Golang 1.8 or greater and setup your GOPATH ###
-[Windows Golang Setup](http://www.wadewegner.com/2014/12/easy-go-programming-setup-for-windows/ "Windows Golang Setup")
+### Install Golang
 
-[Linux & MAC Setup](https://golang.org/doc/install/ "Linux & MAC Setup")
-
-### Set Your GOPATH to your Go Workspace
-
-### Add to your Operating Systems Path the GOPATH/bin directory.
-
+[Setup](https://golang.org/doc/install/ "Setup")
 
 ### Get GoCore
 1.  To start a new project with GoCore run the following steps in a new console window.
@@ -40,9 +34,11 @@ Below are some targeted goals:
 	
 	`go get github.com/DanielRenne/GoCore@v1.0.2`
 
+### Add to your Operating Systems Path the ~/go/bin directory
+
 ### Build GoCore App
 
-1.  A sample project is available to build a GoCore project.
+1.  A sample project generator is available to build a GoCore project.
 
 	`go install github.com/DanielRenne/GoCore/core/goCoreCreateApp`
 
