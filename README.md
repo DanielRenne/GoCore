@@ -37,6 +37,7 @@ Below are some targeted goals:
 1.  To start a new project with GoCore run the following steps in a new console window.
 	
 	`go mod init github.com/your_example/repo_project`
+	
 	`go get github.com/DanielRenne/GoCore@v1.0.2`
 
 ### Build GoCore App
