@@ -326,14 +326,13 @@ func download(url string, fileName string) error {
 		fmt.Println("Failed to create file handle:  " + errCreateFile.Error())
 		return errCreateFile
 	}
-
 	resp, errHttpGet := http.Get(url)
-	defer resp.Body.Close()
 
 	if errHttpGet != nil {
 		fmt.Println("Failed to Download file:  " + errHttpGet.Error())
 		return errHttpGet
 	}
+	defer resp.Body.Close()
 
 	_, errCopyOut := io.Copy(out, resp.Body)
 
