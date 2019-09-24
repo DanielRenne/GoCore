@@ -4,7 +4,6 @@ go 1.13
 
 require (
 	github.com/AsGz/httpAuthClient v0.0.0-20160217073259-f04e6143e1ca // indirect
-	github.com/DanielRenne/GoCore/core/app v0.0.1
 	github.com/DanielRenne/mangosServer v0.0.0-20160624034446-97d567a0f590 // indirect
 	github.com/Jeffail/gabs v0.9.0 // indirect
 	github.com/MakeNowJust/heredoc v0.0.0-20140704152643-1d91351acdc1 // indirect
