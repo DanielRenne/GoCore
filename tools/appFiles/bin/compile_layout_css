@@ -1,4 +1,0 @@
-set -e
-cd $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/css/flexbox-examples
-npm install
-gulp css

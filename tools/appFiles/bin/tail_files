@@ -1,7 +1,0 @@
-port=$(bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/get_port_local)
-if [[ "$whoami" == "root" ]] || [[ "$port" != "80" ]]; then
-    rm $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/plugins/*
-else
-    sudo rm $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/plugins/*
-fi
-tail -f $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/app.log $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/db.log /tmp/go_watch.log $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/plugins/*.log | grep -v '97;42m 200'

@@ -1,9 +1,0 @@
-bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/kill_all
-bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/build_full
-cd $GOPATH
-whoami=$(whoami)
-if [[ "$whoami" == "root" ]]; then
-    goCoreAppTemplate
-else
-    sudo goCoreAppTemplate
-fi
