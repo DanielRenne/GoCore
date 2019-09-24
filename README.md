@@ -32,7 +32,7 @@ Below are some targeted goals:
 	
 	`go mod init github.com/your_example/repo_project`
 	
-	`go get github.com/DanielRenne/GoCore@v1.0.2`
+	`go get github.com/DanielRenne/GoCore@v1.0.4`
 
 ### Add to your Operating Systems Path the ~/go/bin directory
 
