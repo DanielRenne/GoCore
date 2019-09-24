@@ -36,7 +36,7 @@ func copyFolder(path string) (wasCopied bool) {
 	if err != nil {
 		wasCopied = true
 		os.MkdirAll(serverSettings.APP_LOCATION+path, 0777)
-		extensions.CopyFolder(serverSettings.GOCORE_PATH+"/tools/appFiles"+path, serverSettings.APP_LOCATION+path)
+		extensions.CopyFolder("/tmp/tools/appFiles"+path, serverSettings.APP_LOCATION+path)
 		logger.Message("Created "+path+" in Application.", logger.GREEN)
 	}
 	return
@@ -95,9 +95,9 @@ func moveAppFiles() {
 	_, errNoWebConfig := os.Stat(serverSettings.APP_LOCATION + "/webConfig.json")
 	if errNoWebConfig != nil {
 		if string(databaseType) == "mongo" || string(databaseType) == "" {
-			extensions.CopyFile(serverSettings.GOCORE_PATH+"/tools/appFiles/webConfig.json", serverSettings.APP_LOCATION+"/webConfig.json")
+			extensions.CopyFile("/tmp/tools/appFiles/webConfig.json", serverSettings.APP_LOCATION+"/webConfig.json")
 		} else if string(databaseType) == "bolt" {
-			extensions.CopyFile(serverSettings.GOCORE_PATH+"/tools/appFiles/webConfig.bolt.json", serverSettings.APP_LOCATION+"/webConfig.json")
+			extensions.CopyFile("/tmp/tools/appFiles/webConfig.bolt.json", serverSettings.APP_LOCATION+"/webConfig.json")
 		}
 		if foundDbType {
 			createFile("/databaseType", string(databaseType))
@@ -107,13 +107,13 @@ func moveAppFiles() {
 
 	_, err = os.Stat(serverSettings.APP_LOCATION + "/webConfig.prod.json")
 	if err != nil {
-		extensions.CopyFile(serverSettings.GOCORE_PATH+"/tools/appFiles/webConfig.prod.json", serverSettings.APP_LOCATION+"/webConfig.prod.json")
+		extensions.CopyFile("/tmp/tools/appFiles/webConfig.prod.json", serverSettings.APP_LOCATION+"/webConfig.prod.json")
 		logger.Message("Copied webConfig.json to Application.", logger.GREEN)
 	}
 
 	_, err = os.Stat(serverSettings.APP_LOCATION + "/webConfig.dev.json")
 	if err != nil {
-		extensions.CopyFile(serverSettings.GOCORE_PATH+"/tools/appFiles/webConfig.dev.json", serverSettings.APP_LOCATION+"/webConfig.dev.json")
+		extensions.CopyFile("/tmp/tools/appFiles/webConfig.dev.json", serverSettings.APP_LOCATION+"/webConfig.dev.json")
 		logger.Message("Copied webConfig.json to Application.", logger.GREEN)
 	}
 
@@ -233,8 +233,8 @@ func moveAppFiles() {
 		os.MkdirAll(serverSettings.APP_LOCATION+"/db/bootstrap", 0777)
 		os.MkdirAll(serverSettings.APP_LOCATION+"/db/goFiles/v1", 0777)
 		extensions.WriteToFile("Put model class functions and overrides here", serverSettings.APP_LOCATION+"/db/goFiles/v1/.gitkeep", 0777)
-		extensions.CopyFolder(serverSettings.GOCORE_PATH+"/tools/appFiles/db/schemas", serverSettings.APP_LOCATION+"/db/schemas/1.0.0")
-		extensions.CopyFolder(serverSettings.GOCORE_PATH+"/tools/appFiles/db/bootstrap", serverSettings.APP_LOCATION+"/db/bootstrap")
+		extensions.CopyFolder("/tmp/tools/appFiles/db/schemas", serverSettings.APP_LOCATION+"/db/schemas/1.0.0")
+		extensions.CopyFolder("/tmp/tools/appFiles/db/bootstrap", serverSettings.APP_LOCATION+"/db/bootstrap")
 		logger.Message("Created db/schemas/1.0.0 in Application.", logger.GREEN)
 	}
 

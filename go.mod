@@ -20,7 +20,7 @@ require (
 	github.com/cloudfoundry/gosigar v0.0.0-20170626175820-d9ee2f6269ae // indirect
 	github.com/coreos/bbolt v1.3.1-coreos.6.0.20180318001526-af9db2027c98 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/davidrenne/heredoc v0.0.0-20161006151009-80dc836e596c // indirect
+	github.com/davidrenne/heredoc v0.0.0-20161006151009-80dc836e596c
 	github.com/davidrenne/professor v0.0.0-20180814210453-cc6399dacc55 // indirect
 	github.com/davidrenne/redmine v0.0.0-20180928085134-85281d99abe9 // indirect
 	github.com/davidrenne/reflections v0.0.0-20161019174303-010f7c1fcf36 // indirect
@@ -31,7 +31,7 @@ require (
 	github.com/djherbis/atime v1.0.1-0.20170215084934-89517e96e10b // indirect
 	github.com/djherbis/times v1.0.2-0.20170215082637-d25002f62be2 // indirect
 	github.com/fatih/camelcase v0.0.0-20160318181535-f6a740d52f96 // indirect
-	github.com/fatih/color v1.0.0 // indirect
+	github.com/fatih/color v1.0.0
 	github.com/fatih/structs v0.0.0-20160807235529-dc3312cb1a45 // indirect
 	github.com/felixge/tcpkeepalive v0.0.0-20160804073959-5bb0b2dea91e // indirect
 	github.com/foize/go.fifo v0.0.0-20130327144150-3a04cfeec121 // indirect
@@ -39,7 +39,7 @@ require (
 	github.com/gin-contrib/sse v0.0.0-20170109093832-22d885f9ecc7 // indirect
 	github.com/gin-gonic/contrib v0.0.0-20160703143648-547e518040cf // indirect
 	github.com/gin-gonic/gin v1.1.5-0.20170814063429-52c2ed34b325 // indirect
-	github.com/globalsign/mgo v0.0.0-20171106093149-5be15cc6a449 // indirect
+	github.com/globalsign/mgo v0.0.0-20171106093149-5be15cc6a449
 	github.com/go-errors/errors v0.0.0-20161205223245-8fa88b06e597 // indirect
 	github.com/go-humble/detect v0.1.1 // indirect
 	github.com/go-humble/router v0.3.0 // indirect
