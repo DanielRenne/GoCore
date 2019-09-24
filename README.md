@@ -35,20 +35,9 @@ Below are some targeted goals:
 
 ### Get GoCore
 1.  To start a new project with GoCore run the following steps in a new console window.
-
-	`go get github.com/DanielRenne/GoCore/...`
-
-NOTE:  You will see an output message (no buildable Go source files in ....  Please disregaurd.
-
-2.  GoCore comes with a getCore package which can be used to get all external dependencies and custom files as well as example applications.
-
-	`go install github.com/DanielRenne/GoCore/getCore`
-
-Then run
-
-    getCore
-
-### WARNING!  Please review all of these libraries and versions as getCore will remove all these folders and replace with [these files](https://github.com/DanielRenne/GoCoreDep/tree/master/src "these files")  we have vetted as working with GoCore  
+	
+	`go mod init github.com/your_example/repo_project`
+	`go get github.com/DanielRenne/GoCore@v1.0.2`
 
 ### Build GoCore App
 
