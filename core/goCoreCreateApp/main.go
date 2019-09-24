@@ -345,26 +345,26 @@ func main() {
 	err = cmd.Run()
 	errorOut("running go install on getAppTemplate", err, false)
 
-	cmd = exec.Command("go", "run", buildGoFile)
+	cmd = exec.Command("go", "run", "build"+camelUpper+"/build"+camelUpper+".go")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err = cmd.Run()
 	errorOut("running go run "+buildGoFile, err, false)
 
-	cmd = exec.Command("go", "run", appPath+"/install"+camelUpper+"/install"+camelUpper+".go")
+	cmd = exec.Command("go", "run", "install"+camelUpper+"/install"+camelUpper+".go")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err = cmd.Run()
 	errorOut("running "+appPath+"/install"+camelUpper, err, false)
 
-	err = os.Chdir(appPath + "/bin")
+	err = os.Chdir(basePath + "/" + appPath + "/bin")
 	errorOut("cd bin", err, false)
 
 	cmd = exec.Command("bash", "format")
 	err = cmd.Start()
 	errorOut("formatting all code", err, false)
 
-	err = os.Chdir(appPath)
+	err = os.Chdir(basePath + "/" + appPath)
 	errorOut("cd appPath", err, false)
 
 	if createGit == "y" {
@@ -427,7 +427,7 @@ func main() {
 			if useSSH == "n" {
 				logger.Message("\n\nRun this after completion.\n\ncd "+os.Getenv("GOPATH")+"/"+appPath+"\ngit push -u "+username+" origin master\n\n\nThen enter your password", logger.MAGENTA)
 			} else {
-				err = os.Chdir(appPath)
+				err = os.Chdir(basePath + "/" + appPath)
 				errorOut("cd appPath", err, false)
 				cmd = exec.Command("git", "push", "origin", "master")
 				cmd.Stdout = os.Stdout

@@ -10,7 +10,7 @@ require (
 	github.com/Masterminds/semver v1.2.2 // indirect
 	github.com/altipla-consulting/i18n-dateformatter v0.0.0-20150925092426-d7d6ed4b87fb // indirect
 	github.com/asaskevich/govalidator v0.0.0-20171002085717-ca5f9e638c83 // indirect
-	github.com/asdine/storm v0.0.0-20160730105259-c9a194eaf968 // indirect
+	github.com/asdine/storm v0.0.0-20160730105259-c9a194eaf968
 	github.com/aws/aws-sdk-go v1.10.40-0.20170906173017-58370dfb7321 // indirect
 	github.com/blang/semver v3.5.1+incompatible // indirect
 	github.com/bogdanovich/dns_resolver v0.0.0-20170211073258-a8e42bc6a5b6 // indirect
