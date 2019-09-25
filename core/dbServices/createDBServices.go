@@ -3,10 +3,13 @@ package dbServices
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
+	"net/http"
 
 	"github.com/DanielRenne/GoCore/core/extensions"
 	"github.com/DanielRenne/GoCore/core/serverSettings"
+
 	// "fmt"
 	"encoding/base64"
 	"io/ioutil"
@@ -262,8 +265,6 @@ func walkNoSQLVersion(path string, versionDir string) {
 
 	initializeModelFile()
 
-	var wg sync.WaitGroup
-
 	var scs schemasCreatedSync
 
 	scs.schemasCreated = make(map[string]NOSQLSchema, 0)
@@ -277,31 +278,26 @@ func walkNoSQLVersion(path string, versionDir string) {
 		var e error
 
 		if filepath.Ext(f.Name()) == ".json" {
-			wg.Add(1)
+			jsonData, err := ioutil.ReadFile(path)
+			if err != nil {
+				color.Red("Reading in walkNoSQLVersion of " + path + " failed:  " + err.Error())
+				e = err
+			}
 
-			go func() {
-				defer wg.Done()
-				jsonData, err := ioutil.ReadFile(path)
-				if err != nil {
-					color.Red("Reading in walkNoSQLVersion of " + path + " failed:  " + err.Error())
-					e = err
-				}
+			var schemaDB NOSQLSchemaDB
+			errUnmarshal := json.Unmarshal(jsonData, &schemaDB)
+			if errUnmarshal != nil {
+				color.Red("Parsing / Unmarshaling of " + path + " failed:  " + errUnmarshal.Error())
+				e = errUnmarshal
+			}
 
-				var schemaDB NOSQLSchemaDB
-				errUnmarshal := json.Unmarshal(jsonData, &schemaDB)
-				if errUnmarshal != nil {
-					color.Red("Parsing / Unmarshaling of " + path + " failed:  " + errUnmarshal.Error())
-					e = errUnmarshal
-				}
+			for _, col := range schemaDB.Collections {
+				allCollections.Lock()
+				allCollections.Collections = append(allCollections.Collections, col)
+				allCollections.Unlock()
+			}
 
-				for _, col := range schemaDB.Collections {
-					allCollections.Lock()
-					allCollections.Collections = append(allCollections.Collections, col)
-					allCollections.Unlock()
-				}
-
-				createNoSQLModel(schemaDB.Collections, serverSettings.WebConfig.DbConnection.Driver, versionDir, &scs)
-			}()
+			createNoSQLModel(schemaDB.Collections, serverSettings.WebConfig.DbConnection.Driver, versionDir, &scs)
 		}
 
 		return e
@@ -310,9 +306,34 @@ func walkNoSQLVersion(path string, versionDir string) {
 		color.Red("Walk of path failed:  " + err.Error())
 	}
 
-	wg.Wait()
-
 	finalizeModelFile(versionDir)
+}
+
+func download(url string, fileName string) error {
+
+	out, errCreateFile := os.Create(fileName)
+
+	if errCreateFile != nil {
+		fmt.Println("Failed to create file handle:  " + errCreateFile.Error())
+		return errCreateFile
+	}
+
+	resp, errHttpGet := http.Get(url)
+
+	if errHttpGet != nil {
+		fmt.Println("Failed to Download file:  " + errHttpGet.Error())
+		return errHttpGet
+	}
+	defer resp.Body.Close()
+
+	_, errCopyOut := io.Copy(out, resp.Body)
+
+	if errCopyOut != nil {
+		fmt.Println("Failed to Output to " + fileName + ":  " + errCopyOut.Error())
+		return errCopyOut
+	}
+	out.Close()
+	return nil
 }
 
 func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir string, scs *schemasCreatedSync) {
@@ -331,23 +352,27 @@ func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir s
 
 	//Copy Stub Files
 	if driver == DATABASE_DRIVER_MONGODB {
-		// copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/mongo/stubs/transaction.go", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/transaction.go")
-		copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/mongo/stubs/query", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/query.go")
-		////Support for Long Running Transactions Later Maybe
-		//copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/mongo/stubs/transactionObjects.go", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/transactionObjects.go")
+		download("https://raw.githubusercontent.com/DanielRenne/GoCore/master/core/dbServices/mongo/stubs/query", "/tmp/query")
+		copyNoSQLStub("/tmp/query", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/query.go")
 	} else if driver == DATABASE_DRIVER_BOLTDB {
-		copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/bolt/stubs/query", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/query.go")
-		copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/common/stubs/locales", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/locales.go")
+		download("https://raw.githubusercontent.com/DanielRenne/GoCore/master/core/dbServices/bolt/stubs/query", "/tmp/query")
+		download("https://raw.githubusercontent.com/DanielRenne/GoCore/master/core/dbServices/mongo/stubs/locales", "/tmp/locales")
+		copyNoSQLStub("/tmp/query", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/query.go")
+		copyNoSQLStub("/tmp/locales", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/locales.go")
 	}
+	download("https://raw.githubusercontent.com/DanielRenne/GoCore/master/core/dbServices/common/stubs/timeZone", "/tmp/timeZone")
+	download("https://raw.githubusercontent.com/DanielRenne/GoCore/master/core/dbServices/common/stubs/timeZoneLocations", "/tmp/timeZoneLocations")
+	download("https://raw.githubusercontent.com/DanielRenne/GoCore/master/core/dbServices/common/stubs/locales", "/tmp/locales")
 
-	copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/common/stubs/timeZone", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/timeZone.go")
-	copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/common/stubs/timeZoneLocations", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/timeZoneLocations.go")
-	copyNoSQLStub(serverSettings.GOCORE_PATH+"/core/dbServices/common/stubs/locales", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/locales.go")
+	copyNoSQLStub("/tmp/timeZone", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/timeZone.go")
+	copyNoSQLStub("/tmp/timeZoneLocations", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/timeZoneLocations.go")
+	copyNoSQLStub("/tmp/locales", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/locales.go")
 
 	var histTemplate []byte
 	if driver == DATABASE_DRIVER_MONGODB {
 		var err error
-		histTemplate, err = extensions.ReadFile(serverSettings.GOCORE_PATH + "/core/dbServices/mongo/stubs/histTemplate")
+		download("https://raw.githubusercontent.com/DanielRenne/GoCore/master/core/dbServices/mongo/stubs/histTemplate", "/tmp/histTemplate")
+		histTemplate, err = extensions.ReadFile("/tmp/histTemplate")
 
 		if err != nil {
 			color.Red("Error reading histTemplate.go:  " + err.Error())
@@ -363,7 +388,9 @@ func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir s
 	} else if driver == DATABASE_DRIVER_BOLTDB {
 		typeFile = "bolt"
 	}
-	transactionTemplate, err := extensions.ReadFile(serverSettings.GOCORE_PATH + "/core/dbServices/" + typeFile + "/stubs/transaction")
+	download("https://raw.githubusercontent.com/DanielRenne/GoCore/master/core/dbServices/"+typeFile+"/stubs/transaction", "/tmp/transaction")
+
+	transactionTemplate, err := extensions.ReadFile("/tmp/transaction")
 
 	if err != nil {
 		color.Red("Error reading transactionTemplate.go:  " + err.Error())
@@ -430,9 +457,11 @@ func initializeModelFile() {
 	var err error
 	var modelData []byte
 	if serverSettings.WebConfig.DbConnection.Driver == DATABASE_DRIVER_MONGODB {
-		modelData, err = extensions.ReadFile(serverSettings.GOCORE_PATH + "/core/dbServices/mongo/stubs/model")
+		download("https://raw.githubusercontent.com/DanielRenne/GoCore/master/core/dbServices/mongo/stubs/model", "/tmp/model")
+		modelData, err = extensions.ReadFile("/tmp/model")
 	} else {
-		modelData, err = extensions.ReadFile(serverSettings.GOCORE_PATH + "/core/dbServices/bolt/stubs/model")
+		download("https://raw.githubusercontent.com/DanielRenne/GoCore/master/core/dbServices/bolt/stubs/model", "/tmp/model")
+		modelData, err = extensions.ReadFile("/tmp/model")
 	}
 
 	if err != nil {

@@ -48,7 +48,7 @@ https://nodejs.org/en/download/
 	
 	`go mod init github.com/your_example/repo_project`
 	
-	`go get github.com/DanielRenne/GoCore@v1.0.4`
+	`go get github.com/DanielRenne/GoCore@v1.0.8`
 
 ### Add to your Operating Systems Path the ~/go/bin directory
 

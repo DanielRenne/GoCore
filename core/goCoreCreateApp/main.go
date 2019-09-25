@@ -352,7 +352,7 @@ func main() {
 	err = cmd.Run()
 	errorOut("running go mod init", err, false)
 
-	cmd = exec.Command("go", "get", "github.com/DanielRenne/GoCore@v1.0.6")
+	cmd = exec.Command("go", "get", "github.com/DanielRenne/GoCore@v1.0.8")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err = cmd.Run()
