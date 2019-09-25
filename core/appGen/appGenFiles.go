@@ -47,6 +47,8 @@ func replacePath(path string, newpath string, newGithubUser string, newProject s
 		if !info.IsDir() {
 			utils.ReplaceTokenInFile(pth, "DanielRenne/goCoreAppTemplate", newpath)
 			// we cant just globally replace DanielRenne with the new github username, so we use the special token DanielRenneFolder
+
+			utils.ReplaceTokenInFile(pth, "goCoreAppPath", newProject+"_path")
 			utils.ReplaceTokenInFile(pth, "DanielRenneFolder", newGithubUser)
 			//Finally any straggler templates such as XXXX.go for main need to be replaced
 			utils.ReplaceTokenInFile(pth, "goCoreAppTemplate", newProject)
@@ -130,7 +132,6 @@ func moveAppFiles() {
 		os.MkdirAll(serverSettings.APP_LOCATION+"/log/plugins", 0777)
 	}
 	var wasCopied bool
-	wasCopied = copyFolder("/vendorPackages")
 	wasCopied = copyFolder("/keys")
 	wasCopied = copyFolder("/web")
 	if wasCopied {
@@ -279,14 +280,13 @@ import (
 	"github.com/DanielRenne/GoCore/core/app"
 	"github.com/DanielRenne/GoCore/core/ginServer"
 	"github.com/DanielRenne/GoCore/core/logger"
-	_ "`+strings.Replace(serverSettings.APP_LOCATION, "src/", "", -1)+`/controllerRegistry"
-	_ "`+strings.Replace(serverSettings.APP_LOCATION, "src/", "", -1)+`/gitWebHooks"
-	"`+strings.Replace(serverSettings.APP_LOCATION, "src/", "", -1)+`/br"
-	"`+strings.Replace(serverSettings.APP_LOCATION, "src/", "", -1)+`/controllers"
-	"`+strings.Replace(serverSettings.APP_LOCATION, "src/", "", -1)+`/cron"
-	_ "`+strings.Replace(serverSettings.APP_LOCATION, "src/", "", -1)+`/models/v1/model"
-	"`+strings.Replace(serverSettings.APP_LOCATION, "src/", "", -1)+`/sessionFunctions"
-	"`+strings.Replace(serverSettings.APP_LOCATION, "src/", "", -1)+`/settings"
+	_ "github.com/`+project+`/controllerRegistry"
+	"github.com/`+project+`/br"
+	"github.com/`+project+`/controllers"
+	"github.com/`+project+`/cron"
+	_ "github.com/`+project+`/models/v1/model"
+	"github.com/`+project+`/sessionFunctions"
+	"github.com/`+project+`/settings"
 	"github.com/gin-gonic/gin"
 	"github.com/globalsign/mgo"
 )
@@ -302,7 +302,7 @@ func main() {
 		}
 	}()
 
-	err := app.Initialize("`+serverSettings.APP_LOCATION+`", "webConfig.json")
+	err := app.Initialize(os.Getenv("`+appName+`_path"), "webConfig.json")
 	settings.Initialize()
 	br.Schedules.UpdateLinuxToGMT()
 
@@ -314,7 +314,7 @@ func main() {
 		app.Run()
 	} else {
 		if settings.AppSettings.DeveloperGoTrace {
-			f, err := os.Create("`+serverSettings.APP_LOCATION+`/log/trace.log")
+			f, err := os.Create(os.Getenv("`+appName+`_path") + "/log/trace.log")
 			if err != nil {
 				panic(err)
 			}
@@ -326,7 +326,7 @@ func main() {
 			}
 			mgo.SetDebug(true)
 
-			file, _ := os.OpenFile("`+serverSettings.APP_LOCATION+`/log/studioMongo.log", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0777)
+			file, _ := os.OpenFile(os.Getenv("`+appName+`_path") + "/log/studioMongo.log", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0777)
 
 			var aLogger *log.Logger
 			aLogger = log.New(file, "", log.LstdFlags)
@@ -371,6 +371,7 @@ web/app/npm-debug.log*
 web/app/node_modules
 *.db
 /models/
+package-lock.json
 `+appName)
 
 	createFile("/README.md", `# `+appName+` [a [GoCore Application](https://github.com/DanielRenne/GoCore/ "GoCore Application")]
@@ -379,9 +380,7 @@ Add an elevator description to pitch of what this GoCore web app does here.
 
 ## Setting up a development environment for this application ##
 
-`+"`"+`go get github.com/`+githubName+`/`+appName+` && cd $GOPATH/src/github.com/`+githubName+`/`+appName+` && bash bin/start_app`+"`"+`
-
-### WARNING!  Please review all of these libraries and versions as this above command will remove all these folders and replace with [these files](https://github.com/DanielRenne/GoCoreDep/tree/master/src "these files")  we have vetted as working with GoCore
+`+"`"+`cd /tmp/ && git clone github.com/`+githubName+`/`+appName+` && export `+appName+`_path=/tmp/`+appName+` && cd `+appName+` && bash bin/start_app`+"`"+`
 
 Once your application is up and running login as username admin and password admin and start coding
 `)

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"os/user"
 	"strings"
 
 	"github.com/DanielRenne/GoCore/core/extensions"
@@ -131,7 +132,7 @@ func main() {
 	createGit = "y"
 	for {
 		reader := bufio.NewReader(os.Stdin)
-		fmt.Print("Create and commit initial git repository (only use if you have ssh keys) (y or n) (defaults y): ")
+		fmt.Print("Create and commit initial git repository (y or n) (defaults y): ")
 		createGit, _ = reader.ReadString('\n')
 		createGit = strings.Trim(createGit, "\n")
 		if createGit == "" {
@@ -304,6 +305,7 @@ package main
 
 import (
 	"flag"
+	"os"
 	"github.com/DanielRenne/GoCore/%s"
 )
 
@@ -311,21 +313,38 @@ func main() {
 	// allow -configFile=test.json to be passed to build different configs other than webConfig.json
 	configFile := flag.String("configFile", "webConfig.json", "Configuration File Name.  Ex...  webConfig.json")
 	flag.Parse()
-	%s.Initialize("%s", *configFile)
+	%s.Initialize(os.Getenv("%s_path"), *configFile)
 }
 
 `
 	buildGoFile := buildPath + "build" + camelUpper + ".go"
-	err = extensions.WriteAndGoFormat(heredoc.Docf(template, "buildCore", "buildCore", basePath+"/"+appPath), buildGoFile)
+	err = extensions.WriteAndGoFormat(heredoc.Docf(template, "buildCore", "buildCore", appName), buildGoFile)
 	errorOut("extensions.WriteAndGoFormat "+buildGoFile, err, false)
 
 	modelGoFile := modelBuildPath + "modelBuild" + camelUpper + ".go"
-	err = extensions.WriteAndGoFormat(heredoc.Docf(template, "modelBuild", "modelBuild"), modelGoFile)
+	err = extensions.WriteAndGoFormat(heredoc.Docf(template, "modelBuild", "modelBuild", appName), modelGoFile)
 	errorOut("extensions.WriteAndGoFormat "+modelGoFile, err, false)
 
 	talk("Copying app generation files")
 
 	cdPath(basePath + "/" + appPath)
+
+	os.Setenv(appName+"_path", basePath+"/"+appPath)
+
+	user, err := user.Current()
+	if err != nil {
+		errorOut("couldnt process user", err, false)
+	}
+
+	fBashProfile, err := os.OpenFile(user.HomeDir+"/.bash_profile",
+		os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		errorOut("couldnt create environment variable in the "+user.HomeDir+".bash_profile", err, false)
+	}
+	defer fBashProfile.Close()
+	if _, err := fBashProfile.WriteString("\nexport " + appName + "_path=" + basePath + "/" + appPath + "\n"); err != nil {
+		errorOut("couldnt create environment variable in .bash_profile", err, false)
+	}
 
 	cmd = exec.Command("go", "mod", "init", "github.com/"+username+"/"+appName)
 	cmd.Stdout = os.Stdout
@@ -333,7 +352,7 @@ func main() {
 	err = cmd.Run()
 	errorOut("running go mod init", err, false)
 
-	cmd = exec.Command("go", "get", "github.com/DanielRenne/GoCore@v1.0.5")
+	cmd = exec.Command("go", "get", "github.com/DanielRenne/GoCore@v1.0.6")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err = cmd.Run()
@@ -444,7 +463,7 @@ func main() {
 	err = cmd.Run()
 	errorOut("go install models `"+"go install "+strings.Replace(modelBuildPath, "src/", "", -1)+"`", err, false)
 
-	cmd = exec.Command("bash", appPath+"/bin/start_app")
+	cmd = exec.Command("bash", basePath+"/"+appPath+"/bin/start_app")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err = cmd.Run()
