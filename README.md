@@ -44,11 +44,15 @@ https://nodejs.org/en/download/
 [Setup](https://golang.org/doc/install/ "Setup")
 
 ### Get GoCore
-1.  To start a new project with GoCore run the following steps in a new console window.
+1.  To start a new project with go modules (1.13) GoCore run the following steps in a new console window.
 	
 	`go mod init github.com/your_example/repo_project`
 	
 	`go get github.com/DanielRenne/GoCore@v1.0.8`
+	
+1.5.  To start a new project with a version prior to go modules.
+	
+	`go get github.com/DanielRenne/GoCore...`
 
 ### Add to your Operating Systems Path the ~/go/bin directory
 
