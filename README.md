@@ -43,6 +43,21 @@ https://nodejs.org/en/download/
 
 [Setup](https://golang.org/doc/install/ "Setup")
 
+### Add your gopath bin directory to your PATH and set NODE_ENV=development
+
+`vim ~/.bash_profile`
+
+Add lines
+`
+export PATH="$PATH:/Users/davidrenne/go/bin"
+export NODE_ENV=development
+`
+
+Source it:
+
+`source ~/.bash_profile`
+
+
 ### Get GoCore
 1.  To start a new project with go modules (1.13) GoCore run the following steps in a new console window.
 	
@@ -61,6 +76,10 @@ https://nodejs.org/en/download/
 1.  A sample project generator is available to build a GoCore project.
 
 	`go install github.com/DanielRenne/GoCore/core/goCoreCreateApp`
+
+	And install the binary for fetching the project template files
+	
+	`go install github.com/DanielRenne/GoCore/getAppTemplate`
 
 Then run
 
