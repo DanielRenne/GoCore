@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"sync"
 )
 
@@ -94,13 +95,14 @@ type webConfigObj struct {
 var WebConfig webConfigObj
 var WebConfigMutex sync.RWMutex
 var APP_LOCATION string
+var DEPRECATED_GOCORE_PATH string
 var SWAGGER_UI_PATH string
 
 func Initialize(path string, configurationFile string) (err error) {
 
 	APP_LOCATION = path
 	SWAGGER_UI_PATH = APP_LOCATION + "/web/swagger/dist"
-
+	setDeprecatedGoCorePath()
 	fmt.Println("core serverSettings initialized.")
 
 	jsonData, err := ioutil.ReadFile(APP_LOCATION + "/" + configurationFile)
@@ -127,4 +129,11 @@ func Initialize(path string, configurationFile string) (err error) {
 	WebConfigMutex.Unlock()
 
 	return
+}
+
+//Sets the GoCore path for go core packages to reference.
+func setDeprecatedGoCorePath() {
+	// Do not rely on DEPRECATED_GOCORE_PATH, it is to be used only internally by dbServices/createDBServices.go for non internet model builds when those fail
+	goPath := os.Getenv("GOPATH")
+	DEPRECATED_GOCORE_PATH = goPath + "/src/github.com/DanielRenne/GoCore"
 }

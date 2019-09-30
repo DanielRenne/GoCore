@@ -162,6 +162,7 @@ type schemasCreatedSync struct {
 var allCollections collectionsSet
 
 var modelToWrite string
+var localModelBuild bool
 
 // AxisSorter sorts planets by axis.
 type SchemaNameSorter []NOSQLCollection
@@ -173,6 +174,11 @@ func (a SchemaNameSorter) Less(i, j int) bool { return a[i].Schema.Name < a[j].S
 // This array holds a list of the Schema's created for a model version.
 // It is used to NOT duplicate structs for the model.
 // When we process each version we clear the array out first, then add and check against it.
+
+func init() {
+	// to be used when developing locally only or if you are without internet and model build is failing
+	localModelBuild = false
+}
 
 func RunDBCreate() {
 
@@ -327,12 +333,12 @@ func download(url string, fileName string) error {
 	defer resp.Body.Close()
 
 	_, errCopyOut := io.Copy(out, resp.Body)
-
+	defer out.Close()
 	if errCopyOut != nil {
 		fmt.Println("Failed to Output to " + fileName + ":  " + errCopyOut.Error())
 		return errCopyOut
 	}
-	out.Close()
+
 	return nil
 }
 
@@ -352,27 +358,45 @@ func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir s
 
 	//Copy Stub Files
 	if driver == DATABASE_DRIVER_MONGODB {
-		download("https://raw.githubusercontent.com/DanielRenne/GoCore/master/core/dbServices/mongo/stubs/query", "/tmp/query")
-		copyNoSQLStub("/tmp/query", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/query.go")
+		if !localModelBuild {
+			download("https://raw.githubusercontent.com/DanielRenne/GoCore/master/core/dbServices/mongo/stubs/query", "/tmp/query")
+			copyNoSQLStub("/tmp/query", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/query.go")
+		} else {
+			copyNoSQLStub(serverSettings.DEPRECATED_GOCORE_PATH+"/core/dbServices/mongo/stubs/query", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/query.go")
+		}
 	} else if driver == DATABASE_DRIVER_BOLTDB {
-		download("https://raw.githubusercontent.com/DanielRenne/GoCore/master/core/dbServices/bolt/stubs/query", "/tmp/query")
-		download("https://raw.githubusercontent.com/DanielRenne/GoCore/master/core/dbServices/mongo/stubs/locales", "/tmp/locales")
-		copyNoSQLStub("/tmp/query", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/query.go")
-		copyNoSQLStub("/tmp/locales", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/locales.go")
+		if !localModelBuild {
+			download("https://raw.githubusercontent.com/DanielRenne/GoCore/master/core/dbServices/bolt/stubs/query", "/tmp/query")
+			download("https://raw.githubusercontent.com/DanielRenne/GoCore/master/core/dbServices/mongo/stubs/locales", "/tmp/locales")
+			copyNoSQLStub("/tmp/query", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/query.go")
+			copyNoSQLStub("/tmp/locales", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/locales.go")
+		} else {
+			copyNoSQLStub(serverSettings.DEPRECATED_GOCORE_PATH+"/core/dbServices/bolt/stubs/query", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/query.go")
+			copyNoSQLStub(serverSettings.DEPRECATED_GOCORE_PATH+"/core/dbServices/common/stubs/locales", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/locales.go")
+		}
 	}
-	download("https://raw.githubusercontent.com/DanielRenne/GoCore/master/core/dbServices/common/stubs/timeZone", "/tmp/timeZone")
-	download("https://raw.githubusercontent.com/DanielRenne/GoCore/master/core/dbServices/common/stubs/timeZoneLocations", "/tmp/timeZoneLocations")
-	download("https://raw.githubusercontent.com/DanielRenne/GoCore/master/core/dbServices/common/stubs/locales", "/tmp/locales")
-
-	copyNoSQLStub("/tmp/timeZone", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/timeZone.go")
-	copyNoSQLStub("/tmp/timeZoneLocations", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/timeZoneLocations.go")
-	copyNoSQLStub("/tmp/locales", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/locales.go")
+	if !localModelBuild {
+		download("https://raw.githubusercontent.com/DanielRenne/GoCore/master/core/dbServices/common/stubs/timeZone", "/tmp/timeZone")
+		download("https://raw.githubusercontent.com/DanielRenne/GoCore/master/core/dbServices/common/stubs/timeZoneLocations", "/tmp/timeZoneLocations")
+		download("https://raw.githubusercontent.com/DanielRenne/GoCore/master/core/dbServices/common/stubs/locales", "/tmp/locales")
+		copyNoSQLStub("/tmp/timeZone", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/timeZone.go")
+		copyNoSQLStub("/tmp/timeZoneLocations", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/timeZoneLocations.go")
+		copyNoSQLStub("/tmp/locales", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/locales.go")
+	} else {
+		copyNoSQLStub(serverSettings.DEPRECATED_GOCORE_PATH+"/core/dbServices/common/stubs/timeZone", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/timeZone.go")
+		copyNoSQLStub(serverSettings.DEPRECATED_GOCORE_PATH+"/core/dbServices/common/stubs/timeZoneLocations", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/timeZoneLocations.go")
+		copyNoSQLStub(serverSettings.DEPRECATED_GOCORE_PATH+"/core/dbServices/common/stubs/locales", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/locales.go")
+	}
 
 	var histTemplate []byte
 	if driver == DATABASE_DRIVER_MONGODB {
 		var err error
-		download("https://raw.githubusercontent.com/DanielRenne/GoCore/master/core/dbServices/mongo/stubs/histTemplate", "/tmp/histTemplate")
-		histTemplate, err = extensions.ReadFile("/tmp/histTemplate")
+		if !localModelBuild {
+			download("https://raw.githubusercontent.com/DanielRenne/GoCore/master/core/dbServices/mongo/stubs/histTemplate", "/tmp/histTemplate")
+			histTemplate, err = extensions.ReadFile("/tmp/histTemplate")
+		} else {
+			histTemplate, err = extensions.ReadFile(serverSettings.DEPRECATED_GOCORE_PATH + "/core/dbServices/mongo/stubs/histTemplate")
+		}
 
 		if err != nil {
 			color.Red("Error reading histTemplate.go:  " + err.Error())
@@ -388,13 +412,14 @@ func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir s
 	} else if driver == DATABASE_DRIVER_BOLTDB {
 		typeFile = "bolt"
 	}
-	download("https://raw.githubusercontent.com/DanielRenne/GoCore/master/core/dbServices/"+typeFile+"/stubs/transaction", "/tmp/transaction")
 
-	transactionTemplate, err := extensions.ReadFile("/tmp/transaction")
+	var transactionTemplate []byte
 
-	if err != nil {
-		color.Red("Error reading transactionTemplate.go:  " + err.Error())
-		return
+	if !localModelBuild {
+		download("https://raw.githubusercontent.com/DanielRenne/GoCore/master/core/dbServices/"+typeFile+"/stubs/transaction", "/tmp/transaction")
+		transactionTemplate, _ = extensions.ReadFile("/tmp/transaction")
+	} else {
+		transactionTemplate, _ = extensions.ReadFile(serverSettings.DEPRECATED_GOCORE_PATH + "/core/dbServices/" + typeFile + "/stubs/transaction")
 	}
 	transactionModified := string(transactionTemplate[:])
 
@@ -456,14 +481,22 @@ func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir s
 func initializeModelFile() {
 	var err error
 	var modelData []byte
-	if serverSettings.WebConfig.DbConnection.Driver == DATABASE_DRIVER_MONGODB {
-		download("https://raw.githubusercontent.com/DanielRenne/GoCore/master/core/dbServices/mongo/stubs/model", "/tmp/model")
-		modelData, err = extensions.ReadFile("/tmp/model")
-	} else {
-		download("https://raw.githubusercontent.com/DanielRenne/GoCore/master/core/dbServices/bolt/stubs/model", "/tmp/model")
-		modelData, err = extensions.ReadFile("/tmp/model")
-	}
 
+	if !localModelBuild {
+		if serverSettings.WebConfig.DbConnection.Driver == DATABASE_DRIVER_MONGODB {
+			download("https://raw.githubusercontent.com/DanielRenne/GoCore/master/core/dbServices/mongo/stubs/model", "/tmp/model")
+			modelData, err = extensions.ReadFile("/tmp/model")
+		} else {
+			download("https://raw.githubusercontent.com/DanielRenne/GoCore/master/core/dbServices/bolt/stubs/model", "/tmp/model")
+			modelData, err = extensions.ReadFile("/tmp/model")
+		}
+	} else {
+		if serverSettings.WebConfig.DbConnection.Driver == DATABASE_DRIVER_MONGODB {
+			modelData, err = extensions.ReadFile(serverSettings.DEPRECATED_GOCORE_PATH + "/core/dbServices/mongo/stubs/model")
+		} else {
+			modelData, err = extensions.ReadFile(serverSettings.DEPRECATED_GOCORE_PATH + "/core/dbServices/bolt/stubs/model")
+		}
+	}
 	if err != nil {
 		color.Red("Failed to read and append model.go:  " + err.Error())
 		return
