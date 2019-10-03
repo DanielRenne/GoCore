@@ -1103,6 +1103,7 @@ func genNoSQLRuntime(collection NOSQLCollection, schema NOSQLSchema, driver stri
 	val += genByFilter(collection, schema, driver)
 	val += genCountByFilter(collection, schema, driver)
 	val += genNOSQLQuery(collection, schema, driver)
+	val += genNOSQLRemoveAll(collection, schema, driver)
 	val += genNoSQLSchemaIndex(collection, schema, driver)
 	val += genNoSQLBootstrap(collection, schema, driver)
 	// val += genNoSQLSchemaRunTransaction(collection, schema, driver)
@@ -1121,6 +1122,43 @@ func genNoSQLRuntime(collection NOSQLCollection, schema NOSQLSchema, driver stri
 	val += genNoSQLSchemaReflectByFieldName(collection)
 	val += genNoSQLSchemaReflectBaseTypeByFieldName(collection)
 
+	return val
+}
+
+func genNOSQLRemoveAll(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
+
+	val := ""
+	//heredocs are concatenated like this because percent is a special thing and the modulus it will think its a tag
+
+	if driver == DATABASE_DRIVER_MONGODB {
+		val = heredoc.Docf(`
+			func (obj model%s) RemoveAll() {
+				var elapseMs int
+				for {
+					collection%sMutex.RLock()
+					collection := mongo%sCollection
+					bootstrapped := GoCore%sHasBootStrapped
+					collection%sMutex.RUnlock()
+
+					if collection != nil && bootstrapped {
+						break
+					}
+					elapseMs = elapseMs + 2
+					time.Sleep(time.Millisecond * 2)
+					if elapseMs `, strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name)) + "%" + heredoc.Docf(`10000 == 0 {
+						log.Println("%s has not bootstrapped and has yet to get a collection pointer")
+					}
+				}
+				collection%sMutex.RLock()
+				collection := mongo%sCollection
+				collection%sMutex.RUnlock()
+				collection.RemoveAll(bson.M{})
+				return
+			}
+		`, strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name))
+	} else if driver == DATABASE_DRIVER_BOLTDB {
+
+	}
 	return val
 }
 
