@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"os/user"
 	"strings"
 
 	"github.com/DanielRenne/GoCore/core/extensions"
@@ -18,8 +19,8 @@ func talk(msg string) {
 	logger.Message("Message: "+msg, logger.GREEN)
 }
 
-func cdGoPath() {
-	err := os.Chdir(os.Getenv("GOPATH"))
+func cdPath(path string) {
+	err := os.Chdir(path)
 	errorOut("cd gopath", err, false)
 }
 
@@ -48,6 +49,7 @@ func main() {
 	var useSSH string
 	var gitPassword string
 	var colorPalette string
+	var basePath string
 
 	logger.Message("Welcome to the GoCore createApp tool!  Thank you for using GoCore.", logger.YELLOW)
 	logger.Message("We hold these below truths to be self-evident", logger.WHITE)
@@ -69,6 +71,23 @@ func main() {
 			break
 		}
 	}
+
+	for {
+		reader := bufio.NewReader(os.Stdin)
+		fmt.Print("Path of application install (no trailing /): ")
+		basePath, _ = reader.ReadString('\n')
+		basePath = strings.Trim(basePath, "\n")
+		ok := false
+		if strings.Index(basePath, " ") == -1 {
+			ok = true
+		} else {
+			fmt.Println("No spaces please")
+		}
+		if ok {
+			break
+		}
+	}
+	err := os.MkdirAll(basePath, 0777)
 
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print("Title of all pages: ")
@@ -236,11 +255,11 @@ func main() {
 	//colorPalette, _ = reader.ReadString('\n')
 	//colorPalette = strings.Trim(colorPalette, "\n")
 
-	cdGoPath()
+	cdPath(basePath)
 
 	camelUpper := strings.ToTitle(string(appName[0])) + string(appName[1:])
 
-	err := extensions.WriteToFile(colorPalette, "/tmp/colorPalette", 0777)
+	err = extensions.WriteToFile(colorPalette, "/tmp/colorPalette", 0777)
 	errorOut("extensions.WriteToFile "+colorPalette+" to /tmp/colorPalette", err, false)
 
 	err = extensions.WriteToFile(humanTitle, "/tmp/humanTitle", 0777)
@@ -249,16 +268,16 @@ func main() {
 	err = extensions.WriteToFile(databaseType, "/tmp/databaseType", 0777)
 	errorOut("extensions.WriteToFile "+databaseType+" to /tmp/databaseType", err, false)
 
+	path := "github.com/" + username
+	err = os.MkdirAll(path, 0777)
+	errorOut("os.MkdirAll("+path+", 0644)", err, false)
+
 	talk("Getting all dependencies and the latest version of GoCore App Templates")
-	cmd := exec.Command("getCore")
+	cmd := exec.Command("getAppTemplate")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err = cmd.Run()
-	errorOut("running getCore", err, false)
-
-	path := "src/github.com/" + username
-	err = os.MkdirAll(path, 0777)
-	errorOut("os.MkdirAll("+path+", 0644)", err, false)
+	errorOut("running getAppTemplate", err, false)
 
 	fmt.Println("App name :", appName)
 	appPath := path + "/" + appName
@@ -286,6 +305,7 @@ package main
 
 import (
 	"flag"
+	"os"
 	"github.com/DanielRenne/GoCore/%s"
 )
 
@@ -293,42 +313,77 @@ func main() {
 	// allow -configFile=test.json to be passed to build different configs other than webConfig.json
 	configFile := flag.String("configFile", "webConfig.json", "Configuration File Name.  Ex...  webConfig.json")
 	flag.Parse()
-	%s.Initialize("src/github.com/` + username + "/" + appName + `", *configFile)
+	%s.Initialize(os.Getenv("%s_path"), *configFile)
 }
 
 `
 	buildGoFile := buildPath + "build" + camelUpper + ".go"
-	err = extensions.WriteAndGoFormat(heredoc.Docf(template, "buildCore", "buildCore"), buildGoFile)
+	err = extensions.WriteAndGoFormat(heredoc.Docf(template, "buildCore", "buildCore", appName), buildGoFile)
 	errorOut("extensions.WriteAndGoFormat "+buildGoFile, err, false)
 
 	modelGoFile := modelBuildPath + "modelBuild" + camelUpper + ".go"
-	err = extensions.WriteAndGoFormat(heredoc.Docf(template, "modelBuild", "modelBuild"), modelGoFile)
+	err = extensions.WriteAndGoFormat(heredoc.Docf(template, "modelBuild", "modelBuild", appName), modelGoFile)
 	errorOut("extensions.WriteAndGoFormat "+modelGoFile, err, false)
 
 	talk("Copying app generation files")
 
-	cmd = exec.Command("go", "run", buildGoFile)
+	cdPath(basePath + "/" + appPath)
+
+	os.Setenv(appName+"_path", basePath+"/"+appPath)
+
+	user, err := user.Current()
+	if err != nil {
+		errorOut("couldnt process user", err, false)
+	}
+
+	fBashProfile, err := os.OpenFile(user.HomeDir+"/.bash_profile",
+		os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		errorOut("couldnt create environment variable in the "+user.HomeDir+".bash_profile", err, false)
+	}
+	defer fBashProfile.Close()
+	if _, err := fBashProfile.WriteString("\nexport " + appName + "_path=" + basePath + "/" + appPath + "\n"); err != nil {
+		errorOut("couldnt create environment variable in .bash_profile", err, false)
+	}
+
+	cmd = exec.Command("go", "mod", "init", "github.com/"+username+"/"+appName)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err = cmd.Run()
+	errorOut("running go mod init", err, false)
+
+	cmd = exec.Command("go", "get", "github.com/DanielRenne/GoCore@v1.0.8")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err = cmd.Run()
+	errorOut("running go get on GoCore", err, false)
+
+	cmd = exec.Command("go", "install", "github.com/DanielRenne/GoCore/getAppTemplate")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err = cmd.Run()
+	errorOut("running go install on getAppTemplate", err, false)
+
+	cmd = exec.Command("go", "run", "build"+camelUpper+"/build"+camelUpper+".go")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err = cmd.Run()
 	errorOut("running go run "+buildGoFile, err, false)
 
-	cmd = exec.Command("go", "run", appPath+"/install"+camelUpper+"/install"+camelUpper+".go")
+	cmd = exec.Command("go", "run", "install"+camelUpper+"/install"+camelUpper+".go")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err = cmd.Run()
 	errorOut("running "+appPath+"/install"+camelUpper, err, false)
 
-	cdGoPath()
-	err = os.Chdir(appPath + "/bin")
+	err = os.Chdir(basePath + "/" + appPath + "/bin")
 	errorOut("cd bin", err, false)
 
 	cmd = exec.Command("bash", "format")
 	err = cmd.Start()
 	errorOut("formatting all code", err, false)
 
-	cdGoPath()
-	err = os.Chdir(appPath)
+	err = os.Chdir(basePath + "/" + appPath)
 	errorOut("cd appPath", err, false)
 
 	if createGit == "y" {
@@ -391,8 +446,7 @@ func main() {
 			if useSSH == "n" {
 				logger.Message("\n\nRun this after completion.\n\ncd "+os.Getenv("GOPATH")+"/"+appPath+"\ngit push -u "+username+" origin master\n\n\nThen enter your password", logger.MAGENTA)
 			} else {
-				cdGoPath()
-				err = os.Chdir(appPath)
+				err = os.Chdir(basePath + "/" + appPath)
 				errorOut("cd appPath", err, false)
 				cmd = exec.Command("git", "push", "origin", "master")
 				cmd.Stdout = os.Stdout
@@ -405,12 +459,11 @@ func main() {
 		}
 	}
 
-	cdGoPath()
 	cmd = exec.Command("go", "install", strings.Replace(modelBuildPath, "src/", "", -1))
 	err = cmd.Run()
 	errorOut("go install models `"+"go install "+strings.Replace(modelBuildPath, "src/", "", -1)+"`", err, false)
 
-	cmd = exec.Command("bash", appPath+"/bin/start_app")
+	cmd = exec.Command("bash", basePath+"/"+appPath+"/bin/start_app")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err = cmd.Run()

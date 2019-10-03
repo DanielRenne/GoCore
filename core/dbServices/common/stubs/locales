@@ -34,6 +34,7 @@ var Locales = []Locale{
 	{"Danish", "da"},
 	{"Finnish", "fi"},
 	{"Norwegian", "no"},
+	{"Debug", "dev"},
 }
 
 func GetDefaultLocale(language string) string {

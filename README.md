@@ -23,38 +23,63 @@ Below are some targeted goals:
 ----------
 ## Getting Started ##
 
-### Install Golang 1.8 or greater and setup your GOPATH ###
-[Windows Golang Setup](http://www.wadewegner.com/2014/12/easy-go-programming-setup-for-windows/ "Windows Golang Setup")
+### Install Homebrew ###
 
-[Linux & MAC Setup](https://golang.org/doc/install/ "Linux & MAC Setup")
+`/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"`
 
-### Set Your GOPATH to your Go Workspace
+### Install MongoDB ###
 
-### Add to your Operating Systems Path the GOPATH/bin directory.
+`brew tap mongodb/brew`
+
+`brew install mongodb-community`
+
+`brew services start mongodb/brew/mongodb-community`
+
+### Install NPM and Node JS ###
+
+https://nodejs.org/en/download/
+
+### Install Golang
+
+[Setup](https://golang.org/doc/install/ "Setup")
+
+### Add your gopath bin directory to your PATH and set NODE_ENV=development
+
+`vim ~/.bash_profile`
+
+Add lines
+`
+export PATH="$PATH:/Users/davidrenne/go/bin"
+export NODE_ENV=development
+`
+
+Source it:
+
+`source ~/.bash_profile`
 
 
 ### Get GoCore
-1.  To start a new project with GoCore run the following steps in a new console window.
+1.  To start a new project with go modules (1.13) GoCore run the following steps in a new console window.
+	
+	`go mod init github.com/your_example/repo_project`
+	
+	`go get github.com/DanielRenne/GoCore@v1.0.8`
+	
+1.5.  To start a new project with a version prior to go modules.
+	
+	`go get github.com/DanielRenne/GoCore...`
 
-	`go get github.com/DanielRenne/GoCore/...`
-
-NOTE:  You will see an output message (no buildable Go source files in ....  Please disregaurd.
-
-2.  GoCore comes with a getCore package which can be used to get all external dependencies and custom files as well as example applications.
-
-	`go install github.com/DanielRenne/GoCore/getCore`
-
-Then run
-
-    getCore
-
-### WARNING!  Please review all of these libraries and versions as getCore will remove all these folders and replace with [these files](https://github.com/DanielRenne/GoCoreDep/tree/master/src "these files")  we have vetted as working with GoCore  
+### Add to your Operating Systems Path the ~/go/bin directory
 
 ### Build GoCore App
 
-1.  A sample project is available to build a GoCore project.
+1.  A sample project generator is available to build a GoCore project.
 
 	`go install github.com/DanielRenne/GoCore/core/goCoreCreateApp`
+
+	And install the binary for fetching the project template files
+	
+	`go install github.com/DanielRenne/GoCore/getAppTemplate`
 
 Then run
 

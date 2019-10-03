@@ -28,56 +28,45 @@ type coreManifest struct {
 }
 
 func main() {
-	os.Chdir(os.Getenv("GOPATH"))
-	downloadManifest()
-	manifest, errManifest := readManifest()
-	if errManifest != nil {
-		fmt.Println("Failed to parse manifest file:  " + errManifest.Error())
-		return
-	}
 
-	v := getVersion(manifest)
-	fmt.Println("")
-	cleanupFiles()
+	appGenerationFileName := "appGeneration"
+	downloadRelease("https://github.com/davidrenne/GoCoreAppTemplate/archive/master.zip", appGenerationFileName+".zip")
 
-	downloadRelease(v.ReleaseURL, v.ReleaseFileName+".zip")
-
-	fmt.Println("Unzipping goCoreMaster.zip . . .")
+	fmt.Println("Unzipping appGenerationFileName.zip . . .")
 
 	excludedFiles := []string{}
-	excludeFiles(excludedFiles, v)
-
-	errUnzip := zip.Unzip(v.ReleaseFileName+".zip", v.ReleaseFileName, excludedFiles)
+	errUnzip := zip.Unzip(appGenerationFileName+".zip", appGenerationFileName, excludedFiles)
 
 	if errUnzip != nil {
-		fmt.Println("Failed to Unzip goCoreMaster.zip:  " + errUnzip.Error())
+		fmt.Println("Failed to Unzip appGenerationFileName.zip:  " + errUnzip.Error())
 		return
 	}
 
-	fmt.Println("Unzipped GoCoreDep Master successfully.")
+	fmt.Println("Unzipped appGeneration successfully.")
 
-	errRemoveRepoZip := os.Remove(v.ReleaseFileName + ".zip")
+	errRemoveRepoZip := os.Remove(appGenerationFileName + ".zip")
 
 	if errRemoveRepoZip != nil {
-		fmt.Println("Failed to Remove GoCore Repo Zip File:  " + errRemoveRepoZip.Error())
+		fmt.Println("Failed to Remove appGeneration zip File:  " + errRemoveRepoZip.Error())
 		return
 	}
-	cleanGoCore(v)
-	fmt.Println("\nMoving Files . . .")
+
+	os.RemoveAll("/tmp/tools/appFiles")
+	os.MkdirAll("/tmp/tools/appFiles", 0777)
 
 	//Copy the Files then Remove the Directory
-	extensions.CopyFolder(v.ReleaseFileName+"/"+v.ReleaseFileName, "")
+	fmt.Println(appGenerationFileName + "/master")
+	fmt.Println("/tmp/tools/appFiles")
+	extensions.CopyFolder(appGenerationFileName+"/GoCoreAppTemplate-master", "/tmp/tools/appFiles")
 
 	fmt.Println("Moved Files Successfully.")
 	fmt.Println("\nStarted Cleaning Files.")
-	errRemoveDecompressedFiles := extensions.RemoveDirectory(v.ReleaseFileName)
+	errRemoveDecompressedFiles := extensions.RemoveDirectory(appGenerationFileName)
 
 	if errRemoveDecompressedFiles != nil {
-		fmt.Println("Failed to Remove GoCore Decompressed Files:  " + errRemoveDecompressedFiles.Error())
+		fmt.Println("Failed to Remove appGeneration Files:  " + errRemoveDecompressedFiles.Error())
 		return
 	}
-
-	fmt.Println("Cleaned up Repo Files Successfully.")
 }
 
 func downloadRelease(url string, fileName string) {
