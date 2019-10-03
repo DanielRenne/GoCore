@@ -1,3 +1,9 @@
+package boltStubs
+
+var Query string
+
+func init() {
+Query = `
 package model
 
 import (
@@ -21,8 +27,9 @@ import (
 	"github.com/DanielRenne/GoCore/core/extensions"
 	"github.com/DanielRenne/GoCore/core/logger"
 	dateformatter "github.com/altipla-consulting/i18n-dateformatter"
-	"github.com/globalsign/mgo"
+	querySet "github.com/asdine/storm/q"
 	"github.com/globalsign/mgo/bson"
+	"github.com/asdine/storm"
 )
 
 const (
@@ -69,7 +76,6 @@ type view struct {
 }
 
 type Query struct {
-	q           *mgo.Query
 	m           bson.M
 	o           []bson.M
 	ao          map[string][]map[string][]bson.M
@@ -77,20 +83,17 @@ type Query struct {
 	limit       int
 	skip        int
 	sort        []string
-	collection  *mgo.Collection
 	entityName  string
+	collectionName  string
 	e           error
 	joins       map[string]joinType
 	format      DataFormat
 	renderViews bool
 	whiteListed []QueryFieldFilter
 	blackListed []QueryFieldFilter
-	filteredFields bool
 }
 
 type QueryIterator struct {
-	q    *Query
-	iter *mgo.Iter
 }
 
 type QueryFieldFilter struct {
@@ -99,9 +102,9 @@ type QueryFieldFilter struct {
 }
 
 type DataFormat struct {
-	Language      string `json:"Language"`
-	DateFormat    string `json:"DateFormat"`
-	LocalTimeZone string `json:"LocalTimeZone"`
+	Language      string `+"`"+`json:"Language"`+"`"+`
+	DateFormat    string `+"`"+`json:"DateFormat"`+"`"+`
+	LocalTimeZone string `+"`"+`json:"LocalTimeZone"`+"`"+`
 }
 
 func (obj *DataFormat) JSONString() (string, error) {
@@ -121,31 +124,6 @@ func Criteria(key string, value interface{}) map[string]interface{} {
 }
 
 func (self *QueryIterator) Next(x interface{}) (gotRecord bool, err error) {
-
-	// This callback is used for if the Ethernet port is unplugged
-	callback := func() (err error) {
-		gotRecord = self.iter.Next(x)
-		if gotRecord == false {
-			err = self.iter.Close()
-			return
-		}
-		err = self.q.processJoinsAndViews(x)
-		return
-	}
-
-	gotRecord = self.iter.Next(x)
-	if gotRecord == true {
-		err = self.q.processJoinsAndViews(x)
-		return
-	} else {
-		err = self.iter.Close()
-		if err != nil {
-			err = self.q.handleQueryError(err, callback)
-		} else {
-			return
-		}
-
-	}
 	return
 }
 
@@ -156,11 +134,7 @@ func (self *Query) ById(objectId interface{}, modelInstance interface{}) error {
 		return err
 	}
 
-	if !serverSettings.WebConfig.Application.LogQueries && serverSettings.WebConfig.Application.LogQueryTimes {
-		defer func() {
-			log.Println(logger.TimeTrackQuery(time.Now(), "q.ById("+objId.Hex()+")", self.collection, self.m, self.q))
-		}()
-	} else if serverSettings.WebConfig.Application.LogQueries {
+	if serverSettings.WebConfig.Application.LogQueries {
 		defer func() {
 			log.Println(logger.TimeTrack(time.Now(), "q.ById("+objId.Hex()+")"))
 		}()
@@ -169,52 +143,35 @@ func (self *Query) ById(objectId interface{}, modelInstance interface{}) error {
 	if !self.stopLog && serverSettings.WebConfig.Application.LogQueries {
 		self.LogQuery("q.ById(" + objId.Hex() + ")")
 	}
-	q := self.collection.FindId(objId)
 
-	cacheData := true
-	foundCache := false
-
-	if self.filteredFields {
-		cacheData = false
-	} else {
-		foundCache = dbServices.CollectionCache{}.Fetch(self.collection.Name, objId.Hex(), modelInstance)
-	}
+	foundCache := dbServices.CollectionCache{}.Fetch(self.collectionName, objId.Hex(), modelInstance)
 
 	if foundCache == false {
-		err = q.One(modelInstance)
+		err =  dbServices.BoltDB.One("Id", objId, modelInstance)
 	}
+
 
 	if err != nil {
 		// This callback is used for if the Ethernet port is unplugged
 		callback := func() error {
-			err = q.One(modelInstance)
+			err = dbServices.BoltDB.One("Id", objId, modelInstance)
 			if err != nil {
 				return err
 			}
-			if cacheData {
-
-				if modelInstance != nil && reflect.TypeOf(modelInstance).Name() == self.entityName {
-					dbServices.CollectionCache{}.Store(self.collection.Name, objId.Hex(), modelInstance)
-				}
-			}
-
 			return self.processJoinsAndViews(modelInstance)
 		}
 
 		return self.handleQueryError(err, callback)
 	}
 
-	if foundCache == false && cacheData {
-		if modelInstance != nil && reflect.TypeOf(modelInstance).Name() == self.entityName {
-			dbServices.CollectionCache{}.Store(self.collection.Name, objId.Hex(), modelInstance)
-		}
+	if foundCache == false {
+		dbServices.CollectionCache{}.Store(self.collectionName, objId.Hex(), modelInstance)
 	}
+
 	return self.processJoinsAndViews(modelInstance)
+
 }
 
-func (self *Query) GetCollection() *mgo.Collection {
-	return self.collection
-}
 
 func (self *Query) Join(criteria string) *Query {
 
@@ -268,7 +225,7 @@ func (self *Query) Or(criteria map[string]interface{}) *Query {
 			self.o = make([]bson.M, 0)
 		}
 
-		self.o[0]["_id"] = objId
+		self.o[0]["Id"] = objId
 		return self
 	} else {
 
@@ -305,7 +262,7 @@ func (self *Query) AddAndOr() *Query {
 		// first index is reserved for search criteria so we always will fill in a stub conditionally when no search is passed.
 		// Other results we should put in something just in case a filter is not passed so we dont have to litter the _id exists hack across all the code
 
-		self.OrFilter(len(self.ao["$and"])-1, Q("_id", Q("$exists", true)))
+		self.OrFilter(len(self.ao["$and"])-1, Q("Id", Q("$exists", true)))
 	}
 
 	return self
@@ -319,7 +276,7 @@ func (self *Query) AddAnd() *Query {
 		// first index is reserved for search criteria so we always will fill in a stub conditionally when no search is passed.
 		// Other results we should put in something just in case a filter is not passed so we dont have to litter the _id exists hack across all the code
 
-		self.AndFilter(len(self.ao["$and"])-1, Q("_id", Q("$exists", true)))
+		self.AndFilter(len(self.ao["$and"])-1, Q("Id", Q("$exists", true)))
 	}
 
 	return self
@@ -334,9 +291,6 @@ func (self *Query) AddBlankAndOr() *Query {
 
 func (self *Query) AndFilter(index int, criteria map[string]interface{}) *Query {
 	for key, val := range criteria {
-		if key == "Id" {
-			key = "_id"
-		}
 		self.ao["$and"][index]["$and"] = append(self.ao["$and"][index]["$and"], Q(key, val))
 	}
 	return self
@@ -344,19 +298,13 @@ func (self *Query) AndFilter(index int, criteria map[string]interface{}) *Query 
 
 func (self *Query) OrFilter(index int, criteria map[string]interface{}) *Query {
 	for key, val := range criteria {
-		if key == "Id" {
-			key = "_id"
-		}
 		self.ao["$and"][index]["$or"] = append(self.ao["$and"][index]["$or"], Q(key, val))
 	}
 	return self
 }
 
 func (self *Query) AndRange(index int, criteria map[string]Range) *Query {
-	for key, val := range criteria {
-		if key == "Id" {
-			key = "_id"
-		}
+	for _, val := range criteria {
 		self.ao["$and"][index]["$and"] = append(self.ao["$and"][index]["$and"], bson.M{"$gte": val.Min, "$lte": val.Max})
 	}
 
@@ -364,10 +312,7 @@ func (self *Query) AndRange(index int, criteria map[string]Range) *Query {
 }
 
 func (self *Query) OrRange(index int, criteria map[string]Range) *Query {
-	for key, val := range criteria {
-		if key == "Id" {
-			key = "_id"
-		}
+	for _, val := range criteria {
 		self.ao["$and"][index]["$or"] = append(self.ao["$and"][index]["$or"], bson.M{"$gte": val.Min, "$lte": val.Max})
 	}
 
@@ -375,80 +320,56 @@ func (self *Query) OrRange(index int, criteria map[string]Range) *Query {
 }
 
 func (self *Query) AndLessThanEqualTo(index int, criteria map[string]Min) *Query {
-	for key, val := range criteria {
-		if key == "Id" {
-			key = "_id"
-		}
+	for _, val := range criteria {
 		self.ao["$and"][index]["$and"] = append(self.ao["$and"][index]["$and"], bson.M{"$lte": val.Min})
 	}
 	return self
 }
 
 func (self *Query) OrLessThanEqualTo(index int, criteria map[string]Min) *Query {
-	for key, val := range criteria {
-		if key == "Id" {
-			key = "_id"
-		}
+	for _, val := range criteria {
 		self.ao["$and"][index]["$or"] = append(self.ao["$and"][index]["$or"], bson.M{"$lte": val.Min})
 	}
 	return self
 }
 
 func (self *Query) AndLessThan(index int, criteria map[string]Min) *Query {
-	for key, val := range criteria {
-		if key == "Id" {
-			key = "_id"
-		}
+	for _, val := range criteria {
 		self.ao["$and"][index]["$and"] = append(self.ao["$and"][index]["$and"], bson.M{"$lt": val.Min})
 	}
 	return self
 }
 
 func (self *Query) OrLessThan(index int, criteria map[string]Min) *Query {
-	for key, val := range criteria {
-		if key == "Id" {
-			key = "_id"
-		}
+	for _, val := range criteria {
 		self.ao["$and"][index]["$or"] = append(self.ao["$and"][index]["$or"], bson.M{"$lt": val.Min})
 	}
 	return self
 }
 
 func (self *Query) AndGreaterThanEqualTo(index int, criteria map[string]Max) *Query {
-	for key, val := range criteria {
-		if key == "Id" {
-			key = "_id"
-		}
+	for _, val := range criteria {
 		self.ao["$and"][index]["$and"] = append(self.ao["$and"][index]["$and"], bson.M{"$gte": val.Max})
 	}
 	return self
 }
 
 func (self *Query) OrGreaterThanEqualTo(index int, criteria map[string]Max) *Query {
-	for key, val := range criteria {
-		if key == "Id" {
-			key = "_id"
-		}
+	for _, val := range criteria {
 		self.ao["$and"][index]["$or"] = append(self.ao["$and"][index]["$or"], bson.M{"$gte": val.Max})
 	}
 	return self
 }
 
 func (self *Query) OrGreaterThan(index int, criteria map[string]Max) *Query {
-	for key, val := range criteria {
-		if key == "Id" {
-			key = "_id"
-		}
+	for _, val := range criteria {
 		self.ao["$and"][index]["$or"] = append(self.ao["$and"][index]["$or"], bson.M{"$gt": val.Max})
 	}
 	return self
 }
 
 func (self *Query) AndGreaterThan(index int, criteria map[string]Max) *Query {
-	for key, val := range criteria {
-		if key == "Id" {
-			key = "_id"
-		}
+	for _, val := range criteria {
 		self.ao["$and"][index]["$and"] = append(self.ao["$and"][index]["$and"], bson.M{"$gt": val.Max})
 	}
 	return self
@@ -505,7 +426,7 @@ func (self *Query) andOrInNot(index int, criteria map[string]interface{}, queryT
 
 				ids = append(ids, objId)
 			}
-			self.ao["$and"][index][andorType] = append(self.ao["$and"][index][andorType], Q("_id", bson.M{queryType: ids}))
+			self.ao["$and"][index][andorType] = append(self.ao["$and"][index][andorType], Q("Id", bson.M{queryType: ids}))
 		} else {
 			var valuesToQuery []interface{}
 
@@ -531,13 +452,13 @@ func (self *Query) Whitelist(collection string, fields []string) *Query {
 
 	idFound := false
 	for _, val := range fields {
-		if val == "_id" {
+		if val == "Id" {
 			idFound = true
 		}
 	}
 
 	if idFound == false {
-		qff.Fields = append(qff.Fields, "_id")
+		qff.Fields = append(qff.Fields, "Id")
 	}
 
 	self.whiteListed = append(self.whiteListed, qff)
@@ -557,56 +478,6 @@ func (self *Query) Where(field string, val interface{}) *Query {
 	return self.Filter(Q(field, val))
 }
 
-func (self *Query) Exists(criteria map[string]interface{}) *Query {
-
-	_, hasId := criteria["Id"]
-	if hasId {
-		if self.m == nil {
-			self.m = make(bson.M)
-		}
-
-		self.m["_id"] = Q("$exists", true)
-		return self
-	} else {
-
-		if self.m == nil {
-			self.m = make(bson.M)
-		}
-
-		for key, _ := range criteria {
-			if key != "" {
-				self.m[key] = Q("$exists", true)
-			}
-		}
-	}
-	return self
-}
-
-func (self *Query) NotExists(criteria map[string]interface{}) *Query {
-
-	_, hasId := criteria["Id"]
-	if hasId {
-		if self.m == nil {
-			self.m = make(bson.M)
-		}
-
-		self.m["_id"] = Q("$exists", false)
-		return self
-	} else {
-
-		if self.m == nil {
-			self.m = make(bson.M)
-		}
-
-		for key, _ := range criteria {
-			if key != "" {
-				self.m[key] = Q("$exists", false)
-			}
-		}
-	}
-	return self
-}
-
 func (self *Query) Filter(criteria map[string]interface{}) *Query {
 
 	val, hasId := criteria["Id"]
@@ -622,7 +493,7 @@ func (self *Query) Filter(criteria map[string]interface{}) *Query {
 			self.m = make(bson.M)
 		}
 
-		self.m["_id"] = objId
+		self.m["Id"] = objId
 		return self
 	} else {
 
@@ -702,7 +573,7 @@ func (self *Query) inNot(criteria map[string]interface{}, queryType string) {
 				ids = append(ids, objId)
 			}
 
-			self.m["_id"] = bson.M{queryType: ids}
+			self.m["Id"] = bson.M{queryType: ids}
 
 		} else {
 			var valuesToQuery []interface{}
@@ -815,11 +686,7 @@ func (self *Query) Skip(val int) *Query {
 }
 
 func (self *Query) All(x interface{}) error {
-	if !serverSettings.WebConfig.Application.LogQueries && serverSettings.WebConfig.Application.LogQueryTimes {
-		defer func() {
-			log.Println(logger.TimeTrackQuery(time.Now(), "q.All()", self.collection, self.m, self.q))
-		}()
-	} else if serverSettings.WebConfig.Application.LogQueries {
+	if serverSettings.WebConfig.Application.LogQueries {
 		defer func() {
 			log.Println(logger.TimeTrack(time.Now(), "q.All()"))
 		}()
@@ -834,12 +701,12 @@ func (self *Query) All(x interface{}) error {
 		self.LogQuery("q.All()")
 	}
 
-	err := q.All(x)
+	err := q.Find(x)
 
-	if err != nil {
+	if err != nil && err.Error() != "not found" {
 		// This callback is used for if the Ethernet port is unplugged
 		callback := func() error {
-			err = q.All(x)
+			err = q.Find(x)
 			if err != nil {
 				return err
 			}
@@ -852,11 +719,7 @@ func (self *Query) All(x interface{}) error {
 }
 
 func (self *Query) One(x interface{}) error {
-	if !serverSettings.WebConfig.Application.LogQueries && serverSettings.WebConfig.Application.LogQueryTimes {
-		defer func() {
-			log.Println(logger.TimeTrackQuery(time.Now(), "q.One()", self.collection, self.m, self.q))
-		}()
-	} else if serverSettings.WebConfig.Application.LogQueries {
+	if serverSettings.WebConfig.Application.LogQueries {
 		defer func() {
 			log.Println(logger.TimeTrack(time.Now(), "q.One()"))
 		}()
@@ -871,40 +734,27 @@ func (self *Query) One(x interface{}) error {
 		self.LogQuery("q.One()")
 	}
 
-	err := q.One(x)
+	err := q.First(x)
 
 	if err != nil {
 
 		// This callback is used for if the Ethernet port is unplugged
 		callback := func() error {
-			err = q.One(x)
+			err = q.First(x)
 			if err != nil {
 				return err
-			}
-			cnt, _ := q.Count()
-			if cnt != 1 {
-				return errors.New("Did not return exactly one row.  Returned " + extensions.IntToString(cnt))
 			}
 			return self.processJoinsAndViews(x)
 		}
 
 		return self.handleQueryError(err, callback)
 	}
-	cnt, _ := q.Count()
-	if cnt != 1 {
-		return errors.New("Did not return exactly one row.  Returned " + extensions.IntToString(cnt))
-	}
 
 	return self.processJoinsAndViews(x)
 }
 
 func (self *Query) GetOrCreate(x interface{}, t *Transaction) (err error) {
-
-	count, err := self.Count(x)
-
-	if err != nil {
-		return
-	}
+	count := self.TotalRows()
 
 	if count == 1 {
 		err = self.One(x)
@@ -948,33 +798,42 @@ func (self *Query) GetOrCreate(x interface{}, t *Transaction) (err error) {
 	return
 }
 
+func GetInterfaceSlice(obj interface{}) ([]interface{}, error) {
+	s := reflect.ValueOf(obj)
+
+	if s.Kind() == reflect.Ptr {
+		// Remove pointer to get to value of slice
+		s = reflect.Indirect(reflect.ValueOf(obj))
+	}
+
+	if s.Kind() != reflect.Slice {
+		err := errors.New("Failed to cast interface to []interface{}.")
+		objArray := make([]interface{}, 0)
+		return objArray, err
+	}
+
+	objArray := make([]interface{}, s.Len())
+
+	for i := 0; i < s.Len(); i++ {
+		objArray[i] = s.Index(i).Interface()
+	}
+	return objArray, nil
+}
+
+
 func (self *Query) TotalRows() int {
-	if !serverSettings.WebConfig.Application.LogQueries && serverSettings.WebConfig.Application.LogQueryTimes {
-		defer func() {
-			log.Println(logger.TimeTrackQuery(time.Now(), "q.TotalRows()", self.collection, self.m, self.q))
-		}()
-	} else if serverSettings.WebConfig.Application.LogQueries {
+	if serverSettings.WebConfig.Application.LogQueries {
 		defer func() {
 			log.Println(logger.TimeTrack(time.Now(), "q.TotalRows()"))
 		}()
 	}
-
-	q := self.GenerateQuery()
-
-	if !self.stopLog && serverSettings.WebConfig.Application.LogQueries {
-		self.LogQuery("q.Length()")
-	}
-	count, _ := q.Count()
-
-	return count
+	var rowCount []string
+	totalRows, _ := self.Count(rowCount)
+	return totalRows
 }
 
 func (self *Query) Count(x interface{}) (int, error) {
-	if !serverSettings.WebConfig.Application.LogQueries && serverSettings.WebConfig.Application.LogQueryTimes {
-		defer func() {
-			log.Println(logger.TimeTrackQuery(time.Now(), "q.Count()", self.collection, self.m, self.q))
-		}()
-	} else if serverSettings.WebConfig.Application.LogQueries {
+	if serverSettings.WebConfig.Application.LogQueries {
 		defer func() {
 			log.Println(logger.TimeTrack(time.Now(), "q.Count()"))
 		}()
@@ -983,29 +842,20 @@ func (self *Query) Count(x interface{}) (int, error) {
 		return 0, self.e
 	}
 
-	q := self.GenerateQuery()
-
-	count, err := q.Count()
-
+	err := self.All(x)
 	if err != nil {
-
-		// This callback is used for if the Ethernet port is unplugged
-		callback := func() error {
-			count, err = q.Count()
-			return err
-		}
-
-		return count, self.handleQueryError(err, callback)
+		return 0, err
 	}
-	return count, err
+
+	xSlice, err := GetInterfaceSlice(x)
+	if err != nil {
+		return 0, err
+	}
+	return len(xSlice), err
 }
 
 func (self *Query) Distinct(key string, x interface{}) error {
-	if !serverSettings.WebConfig.Application.LogQueries && serverSettings.WebConfig.Application.LogQueryTimes {
-		defer func() {
-			log.Println(logger.TimeTrackQuery(time.Now(), "q.Distinct()", self.collection, self.m, self.q))
-		}()
-	} else if serverSettings.WebConfig.Application.LogQueries {
+	if serverSettings.WebConfig.Application.LogQueries {
 		defer func() {
 			log.Println(logger.TimeTrack(time.Now(), "q.Distinct()"))
 		}()
@@ -1021,13 +871,13 @@ func (self *Query) Distinct(key string, x interface{}) error {
 		self.LogQuery("q.Distinct()")
 	}
 
-	err := q.Distinct(key, x)
+	err := q.Find(x)
 
 	if err != nil {
 
 		// This callback is used for if the Ethernet port is unplugged
 		callback := func() error {
-			err = q.Distinct(key, x)
+			err = q.Find(x)
 			if err != nil {
 				return err
 			}
@@ -1159,20 +1009,20 @@ func (self *Query) getJoins(x reflect.Value) (joins []join, err error) {
 			j.joinType = allJoin.Type
 
 			//Add WhiteList Fields
-			for i := range self.whiteListed {
-				wl := &self.whiteListed[i]
-				if wl.CollectionName == j.collectionName {
-					j.whiteListedFields = wl.Fields
-				}
-			}
+			// for i := range self.whiteListed {
+			// 	wl := &self.whiteListed[i]
+			// 	if wl.CollectionName == j.collectionName {
+			// 		j.whiteListedFields = wl.Fields
+			// 	}
+			// }
 
 			//Add Blacklist Fields
-			for i := range self.blackListed {
-				bl := &self.blackListed[i]
-				if bl.CollectionName == j.collectionName {
-					j.blackListedFields = bl.Fields
-				}
-			}
+			// for i := range self.blackListed {
+			// 	bl := &self.blackListed[i]
+			// 	if bl.CollectionName == j.collectionName {
+			// 		j.blackListedFields = bl.Fields
+			// 	}
+			// }
 
 			joins = append(joins, j)
 		}
@@ -1204,20 +1054,20 @@ func (self *Query) getJoins(x reflect.Value) (joins []join, err error) {
 			j.joinType = val.Type
 
 			//Add WhiteList Fields
-			for i := range self.whiteListed {
-				wl := &self.whiteListed[i]
-				if wl.CollectionName == j.collectionName {
-					j.whiteListedFields = wl.Fields
-				}
-			}
+			// for i := range self.whiteListed {
+			// 	wl := &self.whiteListed[i]
+			// 	if wl.CollectionName == j.collectionName {
+			// 		j.whiteListedFields = wl.Fields
+			// 	}
+			// }
 
 			//Add Blacklist Fields
-			for i := range self.blackListed {
-				bl := &self.blackListed[i]
-				if bl.CollectionName == j.collectionName {
-					j.blackListedFields = bl.Fields
-				}
-			}
+			// for i := range self.blackListed {
+			// 	bl := &self.blackListed[i]
+			// 	if bl.CollectionName == j.collectionName {
+			// 		j.blackListedFields = bl.Fields
+			// 	}
+			// }
 
 			joins = append(joins, j)
 		}
@@ -1565,9 +1415,9 @@ func (self *Query) substituteDateFormat(dateFormat string) string {
 func (self *Query) LogQuery(functionName string) {
 	if serverSettings.WebConfig.Application.LogQueryStackTraces {
 		caller := stacktrace.Errorf("GoCore caller:")
-		core.Debug.Dump("Desc-> Called Function query.go#"+functionName, "Desc->Caller for Query:", caller.ErrorStack(), core.Debug.GetDump("Desc->Collection", self.collection, "Desc->Limit", self.limit, "Desc->Skip", self.skip, "Desc->Sort", self.sort, "Desc->mgo Query", self.q, "Desc->Queryset", self.m , "Desc->Joins", self.joins))
+		core.Debug.Dump("Desc-> Called Function query.go#"+functionName, "Desc->Caller for Query:", caller.ErrorStack(), core.Debug.GetDump("Desc->Limit", self.limit, "Desc->Skip", self.skip, "Desc->Sort", self.sort, "Desc->Queryset", self.m, "Desc->Count", self.joins))
 	} else {
-		core.Debug.Dump("Desc-> Called Function query.go#"+functionName, core.Debug.GetDump("Desc->Collection", self.collection, "Desc->Limit", self.limit, "Desc->Skip", self.skip, "Desc->Sort", self.sort, "Desc->mgo Query", self.q, "Desc->Queryset", self.m, "Desc->Joins", self.joins))
+		core.Debug.Dump("Desc-> Called Function query.go#"+functionName, core.Debug.GetDump("Desc->Limit", self.limit, "Desc->Skip", self.skip, "Desc->Sort", self.sort, "Desc->Queryset", self.m, "Desc->Count", "Desc->Joins", self.joins))
 	}
 }
 
@@ -1616,27 +1466,443 @@ func (self *Query) isDBConnectionError(err error) bool {
 }
 
 func (self *Query) Iter() (qi *QueryIterator) {
-	qi = new(QueryIterator)
-	qi.q = self
-	qi.iter = self.GenerateQuery().Iter()
+	logger.Message(`+"`"+`Iter() not implmented in bolt, use:
+
+		model.CollectionName.Query().GenerateQuery().Each(new(model.RecordName), func(record interface{}) error {
+		r := record.(*model.RecordName)
+
+		})`+"`"+`, logger.RED)
 	return
 }
 
-func (self *Query) GenerateQuery() *mgo.Query {
+func (self *Query) GenerateQuery() storm.Query {
+	var q storm.Query
+	logInfo := false
+	if self.o != nil {
+		var filters []querySet.Matcher
+		for _, v := range self.o {
+			if logInfo {
+				log.Println("8r89983r9923u")
+			}
+			for kk, vv := range v {
+				if kk == "_id" {
+					kk = "Id"
+				}
+				typeOfInterface := reflect.TypeOf(vv).String()
+				if typeOfInterface == "bson.M" {
+					for operator, val := range vv.(bson.M) {
+						if logInfo {
+							log.Println(operator, val, kk, vv)
+						}
+						if operator == "$in" || operator == "$nin" {
+							valType := reflect.TypeOf(val).String()
+							if valType == "[]interface {}" {
+								fieldType := ResolveField(self.entityName, kk)
+								if fieldType == "string" || fieldType == "stringArray" {
+									var output []string
+									output = make([]string, 0)
+									if fieldType == "stringArray" {
+										output = val.([]string)
+									} else {
+										for _, vvv := range val.([]interface{}) {
+											output = append(output, vvv.(string))
+										}
+									}
+									if operator == "$nin" {
+										filters = append(filters, querySet.Not(querySet.In(kk, output)))
+									} else {
+										filters = append(filters, querySet.In(kk, output))
+									}
+								} else if fieldType == "int" || fieldType == "intArray" {
+									var output []int
+									output = make([]int, 0)
+									if fieldType == "intArray" {
+										output = val.([]int)
+									} else {
+										for _, vvv := range val.([]interface{}) {
+											output = append(output, vvv.(int))
+										}
+									}
+									if operator == "$nin" {
+										filters = append(filters, querySet.Not(querySet.In(kk, output)))
+									} else {
+										filters = append(filters, querySet.In(kk, output))
+									}
+								} else if fieldType == "float64" || fieldType == "float64Array" {
+									var output []float64
+									output = make([]float64, 0)
+									if fieldType == "float64Array" {
+										output = val.([]float64)
+									} else {
+										for _, vvv := range val.([]interface{}) {
+											output = append(output, vvv.(float64))
+										}
+									}
+									if operator == "$nin" {
+										filters = append(filters, querySet.Not(querySet.In(kk, output)))
+									} else {
+										filters = append(filters, querySet.In(kk, output))
+									}
+								} else if fieldType == "byteArray" {
+									var output []byte
+									output = make([]byte, 0)
+									output = val.([]byte)
+									if kk == "$nin" {
+										filters = append(filters, querySet.Not(querySet.In(kk, output)))
+									} else {
+										filters = append(filters, querySet.In(kk, output))
+									}
+								}
+							} else {
+								if operator == "$nin" {
+									filters = append(filters, querySet.Not(querySet.In(kk, val)))
+								} else {
+									filters = append(filters, querySet.In(kk, val))
+								}
+							}
+						} else if operator == "$regex" {
+							valType := reflect.TypeOf(val).String()
+							if valType == "bson.RegEx" {
+								re, ok := val.(bson.RegEx)
+								if ok {
+									filters = append(filters, querySet.Re(kk, "(?i)"+re.Pattern))
+								}
+							}
+						} else if operator == "$lte" {
+							filters = append(filters, querySet.Lte(kk, val))
+						} else if operator == "$lt" {
+							filters = append(filters, querySet.Lt(kk, val))
+						} else if operator == "$gt" {
+							filters = append(filters, querySet.Gt(kk, val))
+						} else if operator == "$gte" {
+							filters = append(filters, querySet.Gte(kk, val))
+						}
+					}
+				}
+			}
+		}
+		q = dbServices.BoltDB.Select(querySet.Or(filters...))
+	} else if self.m != nil {
+		var filters []querySet.Matcher
+		if logInfo {
+			log.Println("start of filter")
+		}
+		for k, v := range self.m {
+			if k == "_id" {
+				k = "Id"
+			}
+			if logInfo {
+				log.Println("filtering[" + k + "]" + fmt.Sprintf("%+v", v) + " type=" + reflect.TypeOf(v).String())
+			}
+			typeOfInterface := reflect.TypeOf(v).String()
 
-	q := self.collection.Find(bson.M{})
+			if typeOfInterface == "bson.M" {
+				for kk, vv := range v.(bson.M) {
+					if kk == "$in" || kk == "$nin" {
+						valType := reflect.TypeOf(vv).String()
+						if valType == "[]interface {}" {
+							fieldType := ResolveField(self.entityName, k)
+							if fieldType == "string" || fieldType == "stringArray" {
+								var output []string
+								output = make([]string, 0)
+								if fieldType == "stringArray" {
+									output = vv.([]string)
+								} else {
+									for _, vvv := range vv.([]interface{}) {
+										output = append(output, vvv.(string))
+									}
+								}
+								if kk == "$nin" {
+									filters = append(filters, querySet.Not(querySet.In(k, output)))
+								} else {
+									filters = append(filters, querySet.In(k, output))
+								}
+							} else if fieldType == "int" || fieldType == "intArray" {
+								var output []int
+								output = make([]int, 0)
+								if fieldType == "intArray" {
+									output = vv.([]int)
+								} else {
+									for _, vvv := range vv.([]interface{}) {
+										output = append(output, vvv.(int))
+									}
+								}
+								if kk == "$nin" {
+									filters = append(filters, querySet.Not(querySet.In(k, output)))
+								} else {
+									filters = append(filters, querySet.In(k, output))
+								}
+							} else if fieldType == "float64" || fieldType == "float64Array" {
+								var output []float64
+								output = make([]float64, 0)
+								if fieldType == "float64Array" {
+									output = vv.([]float64)
+								} else {
+									for _, vvv := range vv.([]interface{}) {
+										output = append(output, vvv.(float64))
+									}
+								}
+								if kk == "$nin" {
+									filters = append(filters, querySet.Not(querySet.In(k, output)))
+								} else {
+									filters = append(filters, querySet.In(k, output))
+								}
+							} else if fieldType == "byteArray" {
+								var output []byte
+								output = make([]byte, 0)
+								output = vv.([]byte)
+								if kk == "$nin" {
+									filters = append(filters, querySet.Not(querySet.In(k, output)))
+								} else {
+									filters = append(filters, querySet.In(k, output))
+								}
+							}
+						} else {
+							if kk == "$nin" {
+								filters = append(filters, querySet.Not(querySet.In(k, vv)))
+							} else {
+								filters = append(filters, querySet.In(k, vv))
+							}
+						}
+					} else if kk == "$regex" {
+						valType := reflect.TypeOf(vv).String()
+						if valType == "bson.RegEx" {
+							re, ok := vv.(bson.RegEx)
+							if ok {
+								filters = append(filters, querySet.Re(kk, "(?i)"+re.Pattern))
+							}
+						}
+					} else if kk == "$lte" {
+						filters = append(filters, querySet.Lte(k, vv))
+					} else if kk == "$lt" {
+						filters = append(filters, querySet.Lt(k, vv))
+					} else if kk == "$gt" {
+						filters = append(filters, querySet.Gt(k, vv))
+					} else if kk == "$gte" {
+						filters = append(filters, querySet.Gte(k, vv))
+					}
+				}
+			} else {
+				filters = append(filters, querySet.Eq(k, v))
+			}
+		}
+		if logInfo {
+			log.Println("end of filter", filters)
+		}
+		q = dbServices.BoltDB.Select(filters...)
+	} else if self.ao != nil {
+		if logInfo {
+			log.Println("aodave", fmt.Sprintf("%+v", self.ao))
+		}
+		var filtersAll []querySet.Matcher
+		for k := range self.ao {
+			if k == "$and" {
+				for k2 := range self.ao[k] {
+					if logInfo {
+						log.Println("aodave-kk", fmt.Sprintf("%+v", k2))
+					}
+					for kkk := range self.ao[k][k2] {
+						if logInfo {
+							log.Println("aodave-kkk", fmt.Sprintf("%+v", kkk))
+						}
+						var filters []querySet.Matcher
+						for kkkk := range self.ao[k][k2][kkk] {
+							bsonM := self.ao[k][k2][kkk][kkkk]
 
-	if self.q != nil {
-		q = self.q
+							if logInfo {
+								log.Println("aodave-kkkk", fmt.Sprintf("%+v", bsonM))
+							}
+							typeOfInterface := reflect.TypeOf(bsonM).String()
+
+							if logInfo {
+								log.Println("aodave-typeOfInterface", typeOfInterface)
+							}
+							if typeOfInterface == "bson.M" {
+								for field, value := range bsonM {
+									if field == "_id" {
+										field = "Id"
+									}
+									typeOfInterface := reflect.TypeOf(value).String()
+
+									if logInfo {
+										log.Println("aodave-typeOfInterface", fmt.Sprintf("%+v", typeOfInterface))
+										log.Println("aodave-field", fmt.Sprintf("%+v", field))
+										log.Println("aodave-value", fmt.Sprintf("%+v", value))
+									}
+
+									if typeOfInterface == "bson.M" || typeOfInterface == "map[string]interface {}" {
+										var val map[string]interface{}
+										var ok bool
+										if typeOfInterface == "map[string]interface {}" {
+											val, ok = value.(map[string]interface{})
+										} else {
+											val, ok = value.(bson.M)
+										}
+										if ok {
+											for kk, vv := range val {
+
+												if logInfo {
+													log.Println("aodave-kk", fmt.Sprintf("%+v", kk))
+													log.Println("aodave-vv", fmt.Sprintf("%+v", vv))
+												}
+												if kk == "$in" || kk == "$nin" {
+													valType := reflect.TypeOf(vv).String()
+
+													if logInfo {
+														log.Println("aodave-in", valType)
+													}
+													if valType == "[]interface {}" {
+														fieldType := ResolveField(self.entityName, field)
+
+														if logInfo {
+															log.Println("aodave-in", fieldType)
+														}
+														if fieldType == "string" || fieldType == "stringArray" {
+															var output []string
+															output = make([]string, 0)
+															if fieldType == "stringArray" {
+																output = vv.([]string)
+															} else {
+																for _, vvv := range vv.([]interface{}) {
+																	output = append(output, vvv.(string))
+																}
+															}
+
+															if logInfo {
+																log.Println("aodave-in - output", output)
+															}
+															if kk == "$nin" {
+																filters = append(filters, querySet.Not(querySet.In(field, output)))
+															} else {
+																filters = append(filters, querySet.In(field, output))
+															}
+														} else if fieldType == "int" || fieldType == "intArray" {
+															var output []int
+															output = make([]int, 0)
+															if fieldType == "intArray" {
+																output = vv.([]int)
+															} else {
+																for _, vvv := range vv.([]interface{}) {
+																	output = append(output, vvv.(int))
+																}
+															}
+															if kk == "$nin" {
+																filters = append(filters, querySet.Not(querySet.In(field, output)))
+															} else {
+																filters = append(filters, querySet.In(field, output))
+															}
+														} else if fieldType == "float64" || fieldType == "float64Array" {
+															var output []float64
+															output = make([]float64, 0)
+															if fieldType == "float64Array" {
+																output = vv.([]float64)
+															} else {
+																for _, vvv := range vv.([]interface{}) {
+																	output = append(output, vvv.(float64))
+																}
+															}
+															if kk == "$nin" {
+																filters = append(filters, querySet.Not(querySet.In(field, output)))
+															} else {
+																filters = append(filters, querySet.In(field, output))
+															}
+														} else if fieldType == "byteArray" {
+															var output []byte
+															output = make([]byte, 0)
+															output = vv.([]byte)
+															if kk == "$nin" {
+																filters = append(filters, querySet.Not(querySet.In(field, output)))
+															} else {
+																filters = append(filters, querySet.In(field, output))
+															}
+														}
+													} else {
+														if kk == "$nin" {
+															filters = append(filters, querySet.Not(querySet.In(field, vv)))
+														} else {
+															filters = append(filters, querySet.In(field, vv))
+														}
+													}
+												} else if kk == "$regex" && field != "Id" {
+													fieldType := ResolveField(self.entityName, field)
+
+													if logInfo {
+														log.Println("aodave-regex", fieldType)
+													}
+													if fieldType == "string" {
+														valType := reflect.TypeOf(vv).String()
+														if valType == "bson.RegEx" {
+															re, ok := vv.(bson.RegEx)
+															if ok {
+																filters = append(filters, querySet.Re(field, "(?i)"+re.Pattern))
+															}
+														}
+													} else {
+
+														if logInfo {
+															log.Println("aodave-regex-invalid type must be string", fieldType)
+														}
+													}
+												} else if kk == "$lte" {
+													filters = append(filters, querySet.Lte(field, vv))
+												} else if kk == "$lt" {
+													filters = append(filters, querySet.Lt(field, vv))
+												} else if kk == "$gt" {
+													filters = append(filters, querySet.Gt(field, vv))
+												} else if kk == "$exists" {
+													filters = append(filters, querySet.True())
+												} else if kk == "$gte" {
+													filters = append(filters, querySet.Gte(field, vv))
+												} else {
+													filters = append(filters, querySet.Eq(field, vv))
+												}
+											}
+										} else {
+											filters = append(filters, querySet.True())
+											if logInfo {
+												log.Println("aodave-interface cast not ok")
+											}
+										}
+									} else {
+
+										if logInfo {
+											log.Println("aodave-is regular filter", fmt.Sprintf("%+v", value))
+										}
+										filters = append(filters, querySet.Eq(field, value))
+									}
+								}
+							} else {
+								filters = append(filters, querySet.Eq(k, bsonM))
+							}
+						}
+						if kkk == "$or" {
+							filtersAll = append(filtersAll, querySet.Or(filters...))
+
+							if logInfo {
+								log.Println("aodave-orfilters", fmt.Sprintf("%+v", filters))
+							}
+						} else if kkk == "$and" {
+							filtersAll = append(filtersAll, querySet.And(filters...))
+
+							if logInfo {
+								log.Println("aodave-andfilters", fmt.Sprintf("%+v", filters))
+							}
+						}
+					}
+				}
+			}
+
+			if logInfo {
+				log.Println("aodave-k", fmt.Sprintf("%+v", k))
+			}
+		}
+		q = dbServices.BoltDB.Select(querySet.And(filtersAll...))
+	} else {
+		q = dbServices.BoltDB.Select(querySet.True())
 	}
 
-	if self.ao != nil {
-		core.Debug.Dump(self.ao)
-		q = self.collection.Find(self.ao)
-	} else if self.m != nil {
-		q = self.collection.Find(self.m)
-	} else if self.o != nil {
-		q = self.collection.Find(bson.M{"$or": self.o})
+	if logInfo {
+		log.Println("self.entityName=" + self.entityName)
 	}
 
 	if self.limit > 0 {
@@ -1648,20 +1914,44 @@ func (self *Query) GenerateQuery() *mgo.Query {
 	}
 
 	if len(self.sort) > 0 {
-		q = q.Sort(self.sort...)
-	}
-
-	//Add WhiteList Fields
-	for i := range self.whiteListed {
-		wl := &self.whiteListed[i]
-		if wl.CollectionName == self.entityName {
-			q = q.Select(whiteList(wl.Fields))
-			self.filteredFields = true
+		if logInfo {
+			log.Println("sort info", self.sort)
+		}
+		for i := range self.sort {
+			field := self.sort[i]
+			if len(field) > 0 {
+				if field[:1] == "-" {
+					q = q.Reverse()
+					field = field[1:]
+					if logInfo {
+						log.Println("sort info", "is reversed")
+					}
+				}
+				fieldType := ResolveField(self.entityName, field)
+				if fieldType != "" {
+					if logInfo {
+						log.Println("sort info", field)
+					}
+					q = q.OrderBy(field)
+				} else {
+					if logInfo {
+						log.Println("sort info", "couldnt resolve field on collection")
+					}
+				}
+			}
 		}
 	}
 
+	//Add WhiteList Fields
+	//for i := range self.whiteListed {
+	//	wl := &self.whiteListed[i]
+	//	if wl.CollectionName == self.entityName {
+	//		q = q.Select(whiteList(wl.Fields))
+	//	}
+	//}
+
 	//Add Blacklist Fields
-	for i := range self.blackListed {
+	/*for i := range self.blackListed {
 		bl := &self.blackListed[i]
 		if bl.CollectionName == self.entityName {
 
@@ -1683,16 +1973,13 @@ func (self *Query) GenerateQuery() *mgo.Query {
 					}
 					if addField {
 						whiteListFields = append(whiteListFields, reflectedFields[i].Name)
-						self.filteredFields = true
 					}
 				}
 			}
 
 			q = q.Select(whiteList(whiteListFields))
-			self.filteredFields = true
 		}
-	}
-
+	}*/
 	return q
 }
 
@@ -1709,10 +1996,6 @@ func (self *Query) getIdHex(val interface{}) (bson.ObjectId, error) {
 	myIdType := reflect.TypeOf(val)
 	myIdInstance := reflect.ValueOf(val)
 	myIdInstanceHex := myIdInstance.MethodByName("Hex")
-
-	if myIdType.Name() != "ObjectId" && (myIdType.Kind() == reflect.String && bson.IsObjectIdHex(val.(string)) == false) {
-		return bson.NewObjectId(), errors.New(ERROR_INVALID_ID_VALUE)
-	}
 
 	if myIdType.Name() != "ObjectId" && myIdType.Kind() == reflect.String && val.(string) != "" {
 		return bson.ObjectIdHex(val.(string)), nil
@@ -1766,4 +2049,6 @@ func (self *Query) printStruct(s reflect.Value) string {
 		}
 	}
 	return fields
+}
+`
 }

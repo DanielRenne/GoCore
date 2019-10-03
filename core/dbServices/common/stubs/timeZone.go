@@ -1,3 +1,10 @@
+package commonStubs
+
+var TimeZone string
+
+func init() {
+
+	TimeZone = `
 package model
 
 import (
@@ -56,4 +63,6 @@ func TimeZoneCode(c string) ([]Timezone, error) {
 		return z, errors.New("no timezones found")
 	}
 	return z, nil
+}
+`
 }

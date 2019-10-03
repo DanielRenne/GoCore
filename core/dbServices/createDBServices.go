@@ -3,12 +3,13 @@ package dbServices
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"log"
-	"net/http"
 
 	"github.com/DanielRenne/GoCore/core/extensions"
 	"github.com/DanielRenne/GoCore/core/serverSettings"
+	"github.com/DanielRenne/GoCore/core/dbServices/mongo/stubs"
+	"github.com/DanielRenne/GoCore/core/dbServices/bolt/stubs"
+	"github.com/DanielRenne/GoCore/core/dbServices/common/stubs"
 
 	// "fmt"
 	"encoding/base64"
@@ -162,7 +163,6 @@ type schemasCreatedSync struct {
 var allCollections collectionsSet
 
 var modelToWrite string
-var localModelBuild bool
 
 // AxisSorter sorts planets by axis.
 type SchemaNameSorter []NOSQLCollection
@@ -174,11 +174,6 @@ func (a SchemaNameSorter) Less(i, j int) bool { return a[i].Schema.Name < a[j].S
 // This array holds a list of the Schema's created for a model version.
 // It is used to NOT duplicate structs for the model.
 // When we process each version we clear the array out first, then add and check against it.
-
-func init() {
-	// to be used when developing locally only or if you are without internet and model build is failing
-	localModelBuild = false
-}
 
 func RunDBCreate() {
 
@@ -315,33 +310,6 @@ func walkNoSQLVersion(path string, versionDir string) {
 	finalizeModelFile(versionDir)
 }
 
-func download(url string, fileName string) error {
-
-	out, errCreateFile := os.Create(fileName)
-
-	if errCreateFile != nil {
-		fmt.Println("Failed to create file handle:  " + errCreateFile.Error())
-		return errCreateFile
-	}
-
-	resp, errHttpGet := http.Get(url)
-
-	if errHttpGet != nil {
-		fmt.Println("Failed to Download file:  " + errHttpGet.Error())
-		return errHttpGet
-	}
-	defer resp.Body.Close()
-
-	_, errCopyOut := io.Copy(out, resp.Body)
-	defer out.Close()
-	if errCopyOut != nil {
-		fmt.Println("Failed to Output to " + fileName + ":  " + errCopyOut.Error())
-		return errCopyOut
-	}
-
-	return nil
-}
-
 func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir string, scs *schemasCreatedSync) {
 
 	//Clean the Model and API Directory
@@ -358,45 +326,18 @@ func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir s
 
 	//Copy Stub Files
 	if driver == DATABASE_DRIVER_MONGODB {
-		if !localModelBuild {
-			download("https://raw.githubusercontent.com/DanielRenne/GoCore/master/core/dbServices/mongo/stubs/query", "/tmp/query")
-			copyNoSQLStub("/tmp/query", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/query.go")
-		} else {
-			copyNoSQLStub(serverSettings.DEPRECATED_GOCORE_PATH+"/core/dbServices/mongo/stubs/query", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/query.go")
-		}
+		writeNoSQLStub(mongoStubs.Query, serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/query.go")
 	} else if driver == DATABASE_DRIVER_BOLTDB {
-		if !localModelBuild {
-			download("https://raw.githubusercontent.com/DanielRenne/GoCore/master/core/dbServices/bolt/stubs/query", "/tmp/query")
-			download("https://raw.githubusercontent.com/DanielRenne/GoCore/master/core/dbServices/mongo/stubs/locales", "/tmp/locales")
-			copyNoSQLStub("/tmp/query", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/query.go")
-			copyNoSQLStub("/tmp/locales", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/locales.go")
-		} else {
-			copyNoSQLStub(serverSettings.DEPRECATED_GOCORE_PATH+"/core/dbServices/bolt/stubs/query", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/query.go")
-			copyNoSQLStub(serverSettings.DEPRECATED_GOCORE_PATH+"/core/dbServices/common/stubs/locales", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/locales.go")
-		}
+		writeNoSQLStub(boltStubs.Query, serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/query.go")
 	}
-	if !localModelBuild {
-		download("https://raw.githubusercontent.com/DanielRenne/GoCore/master/core/dbServices/common/stubs/timeZone", "/tmp/timeZone")
-		download("https://raw.githubusercontent.com/DanielRenne/GoCore/master/core/dbServices/common/stubs/timeZoneLocations", "/tmp/timeZoneLocations")
-		download("https://raw.githubusercontent.com/DanielRenne/GoCore/master/core/dbServices/common/stubs/locales", "/tmp/locales")
-		copyNoSQLStub("/tmp/timeZone", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/timeZone.go")
-		copyNoSQLStub("/tmp/timeZoneLocations", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/timeZoneLocations.go")
-		copyNoSQLStub("/tmp/locales", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/locales.go")
-	} else {
-		copyNoSQLStub(serverSettings.DEPRECATED_GOCORE_PATH+"/core/dbServices/common/stubs/timeZone", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/timeZone.go")
-		copyNoSQLStub(serverSettings.DEPRECATED_GOCORE_PATH+"/core/dbServices/common/stubs/timeZoneLocations", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/timeZoneLocations.go")
-		copyNoSQLStub(serverSettings.DEPRECATED_GOCORE_PATH+"/core/dbServices/common/stubs/locales", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/locales.go")
-	}
+	writeNoSQLStub(commonStubs.TimeZone, serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/timeZone.go")
+	writeNoSQLStub(commonStubs.TimeZoneLocations, serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/timeZoneLocations.go")
+	writeNoSQLStub(commonStubs.Locales, serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/locales.go")
 
 	var histTemplate []byte
 	if driver == DATABASE_DRIVER_MONGODB {
 		var err error
-		if !localModelBuild {
-			download("https://raw.githubusercontent.com/DanielRenne/GoCore/master/core/dbServices/mongo/stubs/histTemplate", "/tmp/histTemplate")
-			histTemplate, err = extensions.ReadFile("/tmp/histTemplate")
-		} else {
-			histTemplate, err = extensions.ReadFile(serverSettings.DEPRECATED_GOCORE_PATH + "/core/dbServices/mongo/stubs/histTemplate")
-		}
+		histTemplate = []byte(mongoStubs.HistTemplate)
 
 		if err != nil {
 			color.Red("Error reading histTemplate.go:  " + err.Error())
@@ -405,21 +346,12 @@ func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir s
 
 	}
 
-	var typeFile string
-
-	if driver == DATABASE_DRIVER_MONGODB {
-		typeFile = "mongo"
-	} else if driver == DATABASE_DRIVER_BOLTDB {
-		typeFile = "bolt"
-	}
-
 	var transactionTemplate []byte
 
-	if !localModelBuild {
-		download("https://raw.githubusercontent.com/DanielRenne/GoCore/master/core/dbServices/"+typeFile+"/stubs/transaction", "/tmp/transaction")
-		transactionTemplate, _ = extensions.ReadFile("/tmp/transaction")
-	} else {
-		transactionTemplate, _ = extensions.ReadFile(serverSettings.DEPRECATED_GOCORE_PATH + "/core/dbServices/" + typeFile + "/stubs/transaction")
+	if driver == DATABASE_DRIVER_MONGODB {
+		transactionTemplate = []byte(mongoStubs.Transaction)
+	} else if driver == DATABASE_DRIVER_BOLTDB {
+		transactionTemplate = []byte(boltStubs.Transaction)
 	}
 	transactionModified := string(transactionTemplate[:])
 
@@ -479,30 +411,12 @@ func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir s
 }
 
 func initializeModelFile() {
-	var err error
-	var modelData []byte
-
-	if !localModelBuild {
-		if serverSettings.WebConfig.DbConnection.Driver == DATABASE_DRIVER_MONGODB {
-			download("https://raw.githubusercontent.com/DanielRenne/GoCore/master/core/dbServices/mongo/stubs/model", "/tmp/model")
-			modelData, err = extensions.ReadFile("/tmp/model")
-		} else {
-			download("https://raw.githubusercontent.com/DanielRenne/GoCore/master/core/dbServices/bolt/stubs/model", "/tmp/model")
-			modelData, err = extensions.ReadFile("/tmp/model")
-		}
+	if serverSettings.WebConfig.DbConnection.Driver == DATABASE_DRIVER_MONGODB {
+		modelToWrite = mongoStubs.Model
 	} else {
-		if serverSettings.WebConfig.DbConnection.Driver == DATABASE_DRIVER_MONGODB {
-			modelData, err = extensions.ReadFile(serverSettings.DEPRECATED_GOCORE_PATH + "/core/dbServices/mongo/stubs/model")
-		} else {
-			modelData, err = extensions.ReadFile(serverSettings.DEPRECATED_GOCORE_PATH + "/core/dbServices/bolt/stubs/model")
-		}
-	}
-	if err != nil {
-		color.Red("Failed to read and append model.go:  " + err.Error())
-		return
+		modelToWrite = boltStubs.Model
 	}
 
-	modelToWrite = string(modelData[:])
 	modelToWrite += "\n"
 
 }

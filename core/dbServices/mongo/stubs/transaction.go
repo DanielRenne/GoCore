@@ -1,14 +1,20 @@
+package mongoStubs
+
+var Transaction string
+
+func init() {
+	Transaction = `
 package model
 
 import (
 	// "encoding/base64"
 	"encoding/json"
-	//"errors"
-	//"log"
+	"errors"
+	"log"
 	"time"
 
-	//"github.com/DanielRenne/GoCore/core/dbServices"
-	//"github.com/DanielRenne/GoCore/core"
+	"github.com/DanielRenne/GoCore/core/dbServices"
+	"github.com/DanielRenne/GoCore/core"
 
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
@@ -22,32 +28,107 @@ type modelTransactions struct{}
 var mongoTransactionsCollection *mgo.Collection
 var collectionTransactionMutex *sync.RWMutex
 
+func init() {
+	collectionTransactionMutex = &sync.RWMutex{}
+	go func() {
+
+		for {
+			mdb := dbServices.ReadMongoDB()
+			if mdb != nil {
+				initTransactions()
+				return
+			}
+			time.Sleep(time.Millisecond * 5)
+		}
+	}()
+}
+
+func initTransactions() {
+	mdb := dbServices.ReadMongoDB()
+	log.Println("Building Indexes for MongoDB collection Transactions:")
+	collectionTransactionMutex.Lock()
+	mongoTransactionsCollection = mdb.C("Transactions")
+	collectionTransactionMutex.Unlock()
+	ci := mgo.CollectionInfo{ForceIdIndex: true}
+	collectionTransactionMutex.RLock()
+	mongoTransactionsCollection.Create(&ci)
+	collectionTransactionMutex.RUnlock()
+	var obj modelTransactions
+	obj.Index()
+}
+
+// type Transaction struct {
+// 	Id  bson.ObjectId ` + "`" + `json:"id" bson:"_id,omitempty"` + "`" + `
+// 	Trx string        ` + "`" + `json:"trx" bson:"trx"` + "`" + `
+// 	Nm  string        ` + "`" + `json:"nm" bson:"nm"` + "`" + `
+// 	OId string        ` + "`" + `json:"oId" bson:"oId"` + "`" + `
+// 	Dta string        ` + "`" + `json:"dta" bson:"dta"` + "`" + `
+// 	UId string        ` + "`" + `json:"uId" bson:"uId"` + "`" + `
+// 	Typ int           ` + "`" + `json:"typ" bson:"typ"` + "`" + `
+// }
+
 type Transaction struct {
-	Id             bson.ObjectId `json:"id" bson:"_id,omitempty"`
-	UserId         string        `json:"userId" dbIndex:"index" bson:"userId"`
-	CreateDate     time.Time     `json:"createDate" bson:"createDate"`
-	LastUpdate     time.Time     `json:"lastUpdate" bson:"lastUpdate"`
-	CompleteDate   time.Time     `json:"completeDate" bson:"completeDate"`
-	RollbackDate   time.Time     `json:"rollbackDate" bson:"rollbackDate"`
-	Committed      bool          `json:"committed" bson:"committed"`
-	Error          string        `json:"error" bson:"error"`
-	Collections    []string      `json:"collections" bson:"collections"`
-	Details        string        `json:"details" bson:"details"`
-	RolledBack     bool          `json:"rolledBack" bson:"rolledBack"`
-	RolledBackBy   string        `json:"rolledBackBy" bson:"rolledBackBy"`
-	RollbackReason string        `json:"rollbackReason" bson:"rollbackReason"`
+	Id             bson.ObjectId ` + "`" + `json:"id" bson:"_id,omitempty"` + "`" + `
+	UserId         string        ` + "`" + `json:"userId" dbIndex:"index" bson:"userId"` + "`" + `
+	CreateDate     time.Time     ` + "`" + `json:"createDate" bson:"createDate"` + "`" + `
+	LastUpdate     time.Time     ` + "`" + `json:"lastUpdate" bson:"lastUpdate"` + "`" + `
+	CompleteDate   time.Time     ` + "`" + `json:"completeDate" bson:"completeDate"` + "`" + `
+	RollbackDate   time.Time     ` + "`" + `json:"rollbackDate" bson:"rollbackDate"` + "`" + `
+	Committed      bool          ` + "`" + `json:"committed" bson:"committed"` + "`" + `
+	Error          string        ` + "`" + `json:"error" bson:"error"` + "`" + `
+	Collections    []string      ` + "`" + `json:"collections" bson:"collections"` + "`" + `
+	Details        string        ` + "`" + `json:"details" bson:"details"` + "`" + `
+	RolledBack     bool          ` + "`" + `json:"rolledBack" bson:"rolledBack"` + "`" + `
+	RolledBackBy   string        ` + "`" + `json:"rolledBackBy" bson:"rolledBackBy"` + "`" + `
+	RollbackReason string        ` + "`" + `json:"rollbackReason" bson:"rollbackReason"` + "`" + `
 
 	Joins struct {
-		User *User `json:"User,omitempty" join:"Users,User,UserId"`
-	} `json:"Joins" bson:"-"`
+		User *User ` + "`" + `json:"User,omitempty" join:"Users,User,UserId"` + "`" + `
+	} ` + "`" + `json:"Joins" bson:"-"` + "`" + `
 }
 
 func (obj modelTransactions) Query() *Query {
 	var query Query
+
+	for {
+		collectionTransactionMutex.RLock()
+		collection := mongoTransactionsCollection
+		collectionTransactionMutex.RUnlock()
+
+		if collection != nil {
+			break
+		}
+		time.Sleep(time.Millisecond * 2)
+	}
+
+	collectionTransactionMutex.RLock()
+	query.collection = mongoTransactionsCollection
+	collectionTransactionMutex.RUnlock()
+
 	return &query
 }
 
 func (obj *modelTransactions) Index() error {
+	for key, value := range dbServices.GetDBIndexes(Transaction{}) {
+		index := mgo.Index{
+			Key:        []string{key},
+			Unique:     false,
+			Background: true,
+		}
+
+		if value == "unique" {
+			index.Unique = true
+		}
+
+		collectionTransactionMutex.RLock()
+		err := mongoTransactionsCollection.EnsureIndex(index)
+		collectionTransactionMutex.RUnlock()
+		if err != nil {
+			log.Println("Failed to create index for Transaction." + key + ":  " + err.Error())
+		} else {
+			log.Println("Successfully created index for Transaction." + key)
+		}
+	}
 	return nil
 }
 
@@ -60,7 +141,6 @@ func (obj *modelTransactions) New(userId string) (*Transaction, error) {
 }
 
 func (self *Transaction) Save() error {
-    /*
 	collectionTransactionMutex.RLock()
 	collection := mongoTransactionsCollection
 	collectionTransactionMutex.RUnlock()
@@ -78,23 +158,19 @@ func (self *Transaction) Save() error {
 	}
 	if changeInfo.UpsertedId != nil {
 		self.Id = changeInfo.UpsertedId.(bson.ObjectId)
-	}*/
+	}
 	return nil
 }
 
 func (self *Transaction) Delete() error {
-    /*
 	collectionTransactionMutex.RLock()
 	collection := mongoTransactionsCollection
 	collectionTransactionMutex.RUnlock()
 	return collection.Remove(self)
-    */
-    return nil
 }
 
 func (self *Transaction) Begin() error {
 
-    /*
 	self.Id = bson.NewObjectId()
 	self.CreateDate = time.Now()
 	self.LastUpdate = time.Now()
@@ -106,14 +182,12 @@ func (self *Transaction) Begin() error {
 	persistObj.startTime = time.Now()
 	transactionQueue.queue[self.Id.Hex()] = &persistObj
 	transactionQueue.Unlock()
-    */
 
 	return nil
 }
 
 func (self *Transaction) Resume() error {
 
-    /*
 	self.LastUpdate = time.Now()
 
 	err := self.Save()
@@ -134,14 +208,12 @@ func (self *Transaction) Resume() error {
 	//Load the queue up with the original Data and the new data.
 
 	transactionQueue.Unlock()
-*/
 
 	return nil
 }
 
 func (self *Transaction) Commit() error {
 
-    /*
 	transactionQueue.RLock()
 	tPersist, ok := transactionQueue.queue[self.Id.Hex()]
 	transactionQueue.RUnlock()
@@ -245,14 +317,11 @@ func (self *Transaction) Commit() error {
 	self.Save()
 
 	return errors.New(rollBackErrorMessage)
-    */
-    return nil
 
 }
 
 func (self *Transaction) Rollback(userId string, reason string) error {
 
-    /*
 	for _, collection := range self.Collections {
 		col := ResolveHistoryCollection(collection)
 		if col == nil {
@@ -270,7 +339,7 @@ func (self *Transaction) Rollback(userId string, reason string) error {
 	self.RollbackReason = reason
 	self.RolledBackBy = userId
 	self.Save()
-    */
+
 	return nil
 }
 
@@ -291,4 +360,6 @@ func (obj *Transaction) BSONString() (string, error) {
 func (obj *Transaction) BSONBytes() (in []byte, err error) {
 	err = bson.Unmarshal(in, obj)
 	return
+}
+`
 }

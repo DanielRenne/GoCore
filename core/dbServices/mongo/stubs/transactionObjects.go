@@ -1,3 +1,9 @@
+package mongoStubs
+
+var TransactionObjects string
+
+func init() {
+	TransactionObjects = `
 package model
 
 import (
@@ -34,12 +40,12 @@ func init() {
 }
 
 type TransactionObject struct {
-	Id         bson.ObjectId `json:"id" bson:"_id,omitempty"`
-	TId        string        `json:"tId" dbIndex:"index" bson:"tId"`
-	DataType   int           `json:"dataType" bson:"dataType"`
-	Collection string        `json:"collection" bson:"collection"`
-	Data       string        `json:"data" bson:"data"`
-	ChgType    int           `json:"chgType" bson:"chgType"`
+	Id         bson.ObjectId ` + "`" + `json:"id" bson:"_id,omitempty"` + "`" + `
+	TId        string        ` + "`" + `json:"tId" dbIndex:"index" bson:"tId"` + "`" + `
+	DataType   int           ` + "`" + `json:"dataType" bson:"dataType"` + "`" + `
+	Collection string        ` + "`" + `json:"collection" bson:"collection"` + "`" + `
+	Data       string        ` + "`" + `json:"data" bson:"data"` + "`" + `
+	ChgType    int           ` + "`" + `json:"chgType" bson:"chgType"` + "`" + `
 }
 
 func (self *TransactionObjects) Single(field string, value interface{}) (retObj TransactionObject, e error) {
@@ -291,4 +297,6 @@ func (obj *TransactionObject) JSONString() (string, error) {
 
 func (obj *TransactionObject) JSONBytes() ([]byte, error) {
 	return json.Marshal(obj)
+}
+`
 }

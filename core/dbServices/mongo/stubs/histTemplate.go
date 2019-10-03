@@ -1,3 +1,9 @@
+package mongoStubs
+
+var HistTemplate string
+
+func init() {
+	HistTemplate = `
 package model
 
 import (
@@ -48,12 +54,12 @@ func initHistCollection() {
 }
 
 type HistEntity struct {
-	Id         bson.ObjectId `json:"id" bson:"_id,omitempty"`
-	TId        string        `json:"tId" dbIndex:"index" bson:"tId"`
-	ObjId      string        `json:"objId" dbIndex:"index" bson:"objId"`
-	Data       string        `json:"data" bson:"data"`
-	Type       int           `json:"type" bson:"type"`
-	CreateDate time.Time     `json:"createDate" dbIndex:"index" bson:"createDate"`
+	Id         bson.ObjectId ` + "`" + `json:"id" bson:"_id,omitempty"` + "`" + `
+	TId        string        ` + "`" + `json:"tId" dbIndex:"index" bson:"tId"` + "`" + `
+	ObjId      string        ` + "`" + `json:"objId" dbIndex:"index" bson:"objId"` + "`" + `
+	Data       string        ` + "`" + `json:"data" bson:"data"` + "`" + `
+	Type       int           ` + "`" + `json:"type" bson:"type"` + "`" + `
+	CreateDate time.Time     ` + "`" + `json:"createDate" dbIndex:"index" bson:"createDate"` + "`" + `
 }
 
 func (obj modelHistCollection) Query() *Query {
@@ -215,4 +221,6 @@ func (obj *HistEntity) BSONBytes() (in []byte, err error) {
 
 func (self *HistEntity) GetId() string {
 	return self.Id.Hex()
+}
+`
 }

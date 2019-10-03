@@ -1,10 +1,17 @@
+package commonStubs
+
+var Locales string
+
+func init() {
+
+Locales = `
 package model
 
 import "strings"
 
 type Locale struct {
-	Language string `json:"Language"`
-	Value    string `json:"Value"`
+	Language string `+"`"+`json:"Language"`+"`"+`
+	Value    string `+"`"+`json:"Value"`+"`"+`
 }
 
 var Locales = []Locale{
@@ -123,4 +130,6 @@ func GetDefaultLocale(language string) string {
 		return "no"
 	}
 	return "en"
+}
+`
 }
