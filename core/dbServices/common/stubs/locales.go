@@ -4,14 +4,14 @@ var Locales string
 
 func init() {
 
-Locales = `
+	Locales = `
 package model
 
 import "strings"
 
 type Locale struct {
-	Language string `+"`"+`json:"Language"`+"`"+`
-	Value    string `+"`"+`json:"Value"`+"`"+`
+	Language string ` + "`" + `json:"Language"` + "`" + `
+	Value    string ` + "`" + `json:"Value"` + "`" + `
 }
 
 var Locales = []Locale{

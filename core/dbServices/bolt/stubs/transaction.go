@@ -3,7 +3,7 @@ package boltStubs
 var Transaction string
 
 func init() {
-Transaction = `
+	Transaction = `
 package model
 
 import (
@@ -29,23 +29,23 @@ var mongoTransactionsCollection *mgo.Collection
 var collectionTransactionMutex *sync.RWMutex
 
 type Transaction struct {
-	Id             bson.ObjectId `+"`"+`json:"id" bson:"_id,omitempty"`+"`"+`
-	UserId         string        `+"`"+`json:"userId" dbIndex:"index" bson:"userId"`+"`"+`
-	CreateDate     time.Time     `+"`"+`json:"createDate" bson:"createDate"`+"`"+`
-	LastUpdate     time.Time     `+"`"+`json:"lastUpdate" bson:"lastUpdate"`+"`"+`
-	CompleteDate   time.Time     `+"`"+`json:"completeDate" bson:"completeDate"`+"`"+`
-	RollbackDate   time.Time     `+"`"+`json:"rollbackDate" bson:"rollbackDate"`+"`"+`
-	Committed      bool          `+"`"+`json:"committed" bson:"committed"`+"`"+`
-	Error          string        `+"`"+`json:"error" bson:"error"`+"`"+`
-	Collections    []string      `+"`"+`json:"collections" bson:"collections"`+"`"+`
-	Details        string        `+"`"+`json:"details" bson:"details"`+"`"+`
-	RolledBack     bool          `+"`"+`json:"rolledBack" bson:"rolledBack"`+"`"+`
-	RolledBackBy   string        `+"`"+`json:"rolledBackBy" bson:"rolledBackBy"`+"`"+`
-	RollbackReason string        `+"`"+`json:"rollbackReason" bson:"rollbackReason"`+"`"+`
+	Id             bson.ObjectId ` + "`" + `json:"id" bson:"_id,omitempty"` + "`" + `
+	UserId         string        ` + "`" + `json:"userId" dbIndex:"index" bson:"userId"` + "`" + `
+	CreateDate     time.Time     ` + "`" + `json:"createDate" bson:"createDate"` + "`" + `
+	LastUpdate     time.Time     ` + "`" + `json:"lastUpdate" bson:"lastUpdate"` + "`" + `
+	CompleteDate   time.Time     ` + "`" + `json:"completeDate" bson:"completeDate"` + "`" + `
+	RollbackDate   time.Time     ` + "`" + `json:"rollbackDate" bson:"rollbackDate"` + "`" + `
+	Committed      bool          ` + "`" + `json:"committed" bson:"committed"` + "`" + `
+	Error          string        ` + "`" + `json:"error" bson:"error"` + "`" + `
+	Collections    []string      ` + "`" + `json:"collections" bson:"collections"` + "`" + `
+	Details        string        ` + "`" + `json:"details" bson:"details"` + "`" + `
+	RolledBack     bool          ` + "`" + `json:"rolledBack" bson:"rolledBack"` + "`" + `
+	RolledBackBy   string        ` + "`" + `json:"rolledBackBy" bson:"rolledBackBy"` + "`" + `
+	RollbackReason string        ` + "`" + `json:"rollbackReason" bson:"rollbackReason"` + "`" + `
 
 	Joins struct {
-		User *User `+"`"+`json:"User,omitempty" join:"Users,User,UserId"`+"`"+`
-	} `+"`"+`json:"Joins" bson:"-"`+"`"+`
+		User *User ` + "`" + `json:"User,omitempty" join:"Users,User,UserId"` + "`" + `
+	} ` + "`" + `json:"Joins" bson:"-"` + "`" + `
 }
 
 func (obj modelTransactions) Query() *Query {

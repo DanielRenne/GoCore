@@ -4,7 +4,7 @@ var Model string
 
 func init() {
 
-Model = `
+	Model = `
 package model
 
 import (
@@ -69,14 +69,14 @@ type collection interface {
 }
 
 type BootstrapMeta struct {
-	Version      int      `+"`"+`json:"Version" bson:"Version"`+"`"+`
-	Domain       string   `+"`"+`json:"Domain" bson:"Domain"`+"`"+`
-	ReleaseMode  string   `+"`"+`json:"ReleaseMode" bson:"ReleaseMode"`+"`"+`
-	ProductName  string   `+"`"+`json:"ProductName" bson:"ProductName"`+"`"+`
-	Domains      []string `+"`"+`json:"Domains" bson:"Domains"`+"`"+`
-	ProductNames []string `+"`"+`json:"ProductNames" bson:"ProductNames"`+"`"+`
-	DeleteRow    bool     `+"`"+`json:"DeleteRow" bson:"DeleteRow"`+"`"+`
-	AlwaysUpdate bool     `+"`"+`json:"AlwaysUpdate" bson:"AlwaysUpdate"`+"`"+`
+	Version      int      ` + "`" + `json:"Version" bson:"Version"` + "`" + `
+	Domain       string   ` + "`" + `json:"Domain" bson:"Domain"` + "`" + `
+	ReleaseMode  string   ` + "`" + `json:"ReleaseMode" bson:"ReleaseMode"` + "`" + `
+	ProductName  string   ` + "`" + `json:"ProductName" bson:"ProductName"` + "`" + `
+	Domains      []string ` + "`" + `json:"Domains" bson:"Domains"` + "`" + `
+	ProductNames []string ` + "`" + `json:"ProductNames" bson:"ProductNames"` + "`" + `
+	DeleteRow    bool     ` + "`" + `json:"DeleteRow" bson:"DeleteRow"` + "`" + `
+	AlwaysUpdate bool     ` + "`" + `json:"AlwaysUpdate" bson:"AlwaysUpdate"` + "`" + `
 }
 
 type BootstrapSync struct {

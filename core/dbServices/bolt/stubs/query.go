@@ -3,7 +3,7 @@ package boltStubs
 var Query string
 
 func init() {
-Query = `
+	Query = `
 package model
 
 import (
@@ -102,9 +102,9 @@ type QueryFieldFilter struct {
 }
 
 type DataFormat struct {
-	Language      string `+"`"+`json:"Language"`+"`"+`
-	DateFormat    string `+"`"+`json:"DateFormat"`+"`"+`
-	LocalTimeZone string `+"`"+`json:"LocalTimeZone"`+"`"+`
+	Language      string ` + "`" + `json:"Language"` + "`" + `
+	DateFormat    string ` + "`" + `json:"DateFormat"` + "`" + `
+	LocalTimeZone string ` + "`" + `json:"LocalTimeZone"` + "`" + `
 }
 
 func (obj *DataFormat) JSONString() (string, error) {
@@ -1466,12 +1466,12 @@ func (self *Query) isDBConnectionError(err error) bool {
 }
 
 func (self *Query) Iter() (qi *QueryIterator) {
-	logger.Message(`+"`"+`Iter() not implmented in bolt, use:
+	logger.Message(` + "`" + `Iter() not implmented in bolt, use:
 
 		model.CollectionName.Query().GenerateQuery().Each(new(model.RecordName), func(record interface{}) error {
 		r := record.(*model.RecordName)
 
-		})`+"`"+`, logger.RED)
+		})` + "`" + `, logger.RED)
 	return
 }
 

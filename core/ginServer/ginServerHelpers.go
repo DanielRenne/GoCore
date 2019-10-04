@@ -32,9 +32,9 @@ func GetSessionKey(c *gin.Context, key string) (sessionKey string) {
 	//https://github.com/gin-gonic/gin/issues/700
 	// defer needed to catch session.Get concurrent map read write.
 	defer func() {
-	    if r := recover(); r != nil {
-	        return
-	    }
+		if r := recover(); r != nil {
+			return
+		}
 	}()
 	session := sessions.Default(c)
 	if strings.Contains(c.Request.Host, ".com") {

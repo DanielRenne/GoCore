@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/DanielRenne/GoCore/core/extensions"
-	"github.com/DanielRenne/GoCore/core/serverSettings"
-	"github.com/DanielRenne/GoCore/core/dbServices/mongo/stubs"
 	"github.com/DanielRenne/GoCore/core/dbServices/bolt/stubs"
 	"github.com/DanielRenne/GoCore/core/dbServices/common/stubs"
+	"github.com/DanielRenne/GoCore/core/dbServices/mongo/stubs"
+	"github.com/DanielRenne/GoCore/core/extensions"
+	"github.com/DanielRenne/GoCore/core/serverSettings"
 
 	// "fmt"
 	"encoding/base64"
