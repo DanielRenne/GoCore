@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/DanielRenne/GoCore/core/dbServices/bolt/stubs"
-	"github.com/DanielRenne/GoCore/core/dbServices/common/stubs"
-	"github.com/DanielRenne/GoCore/core/dbServices/mongo/stubs"
+	boltStubs "github.com/DanielRenne/GoCore/core/dbServices/bolt/stubs"
+	commonStubs "github.com/DanielRenne/GoCore/core/dbServices/common/stubs"
+	mongoStubs "github.com/DanielRenne/GoCore/core/dbServices/mongo/stubs"
 	"github.com/DanielRenne/GoCore/core/extensions"
 	"github.com/DanielRenne/GoCore/core/serverSettings"
 
@@ -425,6 +425,19 @@ func finalizeModelFile(versionDir string) {
 	allCollections.RLock()
 	sort.Sort(SchemaNameSorter(allCollections.Collections))
 	allCollections.RUnlock()
+
+	modelToWrite += "// Each goCore application should probably call this once on server setup to iterate through all records in the system and re-save it so that new fields can be injected into the data and your javascript always will be able to access any record\n\n"
+	modelToWrite += "func UpdateAllRecordsToLatestSchema() {\n\n"
+
+	for _, collection := range allCollections.Collections {
+		modelToWrite += "var " + collection.Schema.Name + " []" + strings.Title(collection.Schema.Name) + "\n"
+		modelToWrite += strings.Title(collection.Name) + ".Query().All(& " + collection.Schema.Name + ")\n"
+		modelToWrite += "for _, row := range " + collection.Schema.Name + " {\n"
+		modelToWrite += "row.Save()\n"
+		modelToWrite += "}\n"
+	}
+
+	modelToWrite += "}\n\n"
 
 	modelToWrite += "func ResolveEntity(key string) modelEntity{\n\n"
 	modelToWrite += "switch key{\n"
