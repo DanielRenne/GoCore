@@ -124,7 +124,6 @@ type NOSQLSchema struct {
 type NOSQLCollection struct {
 	Name       string      `json:"name"`
 	ClearTable bool        `json:"clearTable"`
-	IsSharable bool        `json:"isSharable"`
 	Schema     NOSQLSchema `json:"schema"`
 	FieldTypes map[string]FieldType
 }
@@ -374,23 +373,11 @@ func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir s
 			//Create the Transaction History Table for the Collection
 			histName := strings.Title(collection.Name) + "History"
 			histModified := strings.Replace(string(histTemplate[:]), "HistCollection", histName, -1)
-			if collection.IsSharable {
-				histModified = strings.Replace(histModified, "//CollectionVariable", heredoc.Docf(`
-			collection%sMutex.Lock()
-			if serverSettings.WebConfig.HasDbAuth {
-				mongo%sCollection = dbServices.MongoDBAuth.C("%s")
-			} else {
-				mongo%sCollection = dbServices.MongoDB.C("%s")
-			}
-			collection%sMutex.Unlock()
-			`, histName, histName, histName, histName, histName, histName), -1)
-			} else {
-				histModified = strings.Replace(histModified, "//CollectionVariable", heredoc.Docf(`
+			histModified = strings.Replace(histModified, "//CollectionVariable", heredoc.Docf(`
 			collection%sMutex.Lock()
 			mongo%sCollection = dbServices.MongoDB.C("%s")
 			collection%sMutex.Unlock()
 			`, histName, histName, histName, histName), -1)
-			}
 			histModified = strings.Replace(histModified, "HistEntity", strings.Title(collection.Schema.Name)+"HistoryRecord", -1)
 			histModified = strings.Replace(histModified, "OriginalEntity", strings.Title(collection.Schema.Name), -1)
 			if serverSettings.WebConfig.DbConnection.AuditHistorySizeMax > 0 {
@@ -714,8 +701,7 @@ func genNoSQLCollection(collection NOSQLCollection, schema NOSQLSchema, driver s
 		val += "go func() {\n\n"
 		val += "for{\n"
 		val += "mdb := dbServices.ReadMongoDB()\n"
-		val += "mdba := dbServices.ReadMongoDBAuth()\n"
-		val += "if (mdb != nil && !serverSettings.WebConfig.HasDbAuth) || (serverSettings.WebConfig.HasDbAuth && mdba != nil) {\n"
+		val += "if mdb != nil {\n"
 		val += "init" + strings.Title(collection.Name) + "()\n"
 		val += "return\n"
 		val += "}\n"
@@ -728,20 +714,9 @@ func genNoSQLCollection(collection NOSQLCollection, schema NOSQLSchema, driver s
 		val += "log.Println(\"Building Indexes for MongoDB collection " + collection.Name + ":\")\n"
 		val += "mdb := dbServices.ReadMongoDB()\n"
 
-		if collection.IsSharable {
-			val += "mdba := dbServices.ReadMongoDBAuth()\n"
-			val += "collection" + strings.Title(collection.Name) + "Mutex.Lock()\n"
-			val += "if serverSettings.WebConfig.HasDbAuth {\n"
-			val += "mongo" + strings.Title(collection.Name) + "Collection = mdba.C(\"" + collection.Name + "\")\n"
-			val += "} else {\n"
-			val += "mongo" + strings.Title(collection.Name) + "Collection = mdb.C(\"" + collection.Name + "\")\n"
-			val += "}\n"
-			val += "collection" + strings.Title(collection.Name) + "Mutex.Unlock()\n"
-		} else {
-			val += "collection" + strings.Title(collection.Name) + "Mutex.Lock()\n"
-			val += "mongo" + strings.Title(collection.Name) + "Collection = mdb.C(\"" + collection.Name + "\")\n"
-			val += "collection" + strings.Title(collection.Name) + "Mutex.Unlock()\n"
-		}
+		val += "collection" + strings.Title(collection.Name) + "Mutex.Lock()\n"
+		val += "mongo" + strings.Title(collection.Name) + "Collection = mdb.C(\"" + collection.Name + "\")\n"
+		val += "collection" + strings.Title(collection.Name) + "Mutex.Unlock()\n"
 
 		val += "ci := mgo.CollectionInfo{ForceIdIndex: true}\n"
 		val += "collection" + strings.Title(collection.Name) + "Mutex.RLock()\n"
@@ -1170,7 +1145,17 @@ func genNOSQLRemoveAll(collection NOSQLCollection, schema NOSQLSchema, driver st
 			}
 		`, strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name))
 	} else if driver == DATABASE_DRIVER_BOLTDB {
-
+		val = `
+			func (obj model`+strings.Title(collection.Name)+`) RemoveAll() {
+				x, errDelete := obj.All()
+				if errDelete == nil {
+					for _, row := range x {
+						row.Delete()
+					}
+				}
+				return
+			}
+		`
 	}
 	return val
 }
@@ -2036,8 +2021,16 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 	val += "cnt = 1\n"
 	val += "}\n\n"
 
-	if collection.ClearTable {
+	if collection.ClearTable && driver == DATABASE_DRIVER_MONGODB {
 		val += "query.collection.DropCollection()\n"
+		val += "cnt = 0\n"
+	} else if collection.ClearTable && driver == DATABASE_DRIVER_BOLTDB {
+		val += "x, errDelete := obj.All()\n"
+		val += "if errDelete == nil {\n"
+		val += "for _, row := range x {\n"
+		val += "row.Delete()\n"
+		val += "}\n"
+		val += "}\n"
 		val += "cnt = 0\n"
 	}
 

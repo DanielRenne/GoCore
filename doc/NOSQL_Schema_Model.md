@@ -6,13 +6,13 @@ With buildDB.go GoCore will build a model & orm  for your application.  The obje
 
 For NOSQL Document systems documents are typically stored as JSON and part of a collection or bucket.  The GoCore generated model structs & fields are all tagged with json in order to marshal and unmarshal json via the go runtime.
 
-Schemas are to be defined within a directory beneath db/[Applicaiton Name]/schemas/[Version (1.0.0)].  
+Schemas are to be defined within a directory beneath db/[Applicaiton Name]/schemas/[Version (1.0.0)].
 
 GoCore uses standard semantic versioning of Major, Minor, and Revision numbers to properly implement swagger api definitions.  Schema files must be located within the versioned directory.
 
 Any file with a .json extension will be processed to create a NOSQL model.  NOTE:  Additional sub directories are recursively walked and processed to support larger application organization.
 
-Each schema json file starts with and array of collections.  Each collection must have a name and schema.  The schema for the collection is the document you want to store to the NOSQL DB.  Each schema contains a name and fields array.  Each schema can support a secondary database connection for mongo in which you can share important collections like users/accounts.  You can use this by setting `isSharable` to true on the collections you want to support and then configure a second database connection on your slave and set `authServer` to `true` to read and write to that database for those collections.
+Each schema json file starts with and array of collections.  Each collection must have a name and schema.  The schema for the collection is the document you want to store to the NOSQL DB.  Each schema contains a name and fields array.
 
 Each Field requires a name and type.  Each field can optionally contain an index, omitEmpty, and schema.  A schema definition is required for type object or objectArray.  GoCore will recursively process object and objectArrays to build type structs.
 
@@ -61,13 +61,13 @@ Optional Fields:
 	format: string
 		Formats view fields only based on the key string.  See format keys....
 	validation: object
-		Validates the field on a SaveWithTran.  Adds a copy of the complete schema object fields as strings in an Errors struct.  See Validation fields... 
-	noPersist:  
+		Validates the field on a SaveWithTran.  Adds a copy of the complete schema object fields as strings in an Errors struct.  See Validation fields...
+	noPersist:
 		This will instruct the field to not be persisted to MongoDB.
 	join: object
 		Provides references to establish foriegn collection objects.  See join fields....
-	 
-	
+
+
 
 Validation Fields:
 
@@ -85,7 +85,7 @@ Validation Fields:
 		The maximum length of the field.
 	lengthMin: string
 		The minimum length of the field.
-		
+
 Join Fields:
 
 	collectionName:  string
@@ -98,46 +98,46 @@ Join Fields:
 		Alternate foreign field name to join against.  Default is Id.
 	isMany: bool
 		If true the join will query for an array of results.
-		
+
 Join Many vs Join One:
 
 	Join One will result in a single record of the intended model.
-	
+
 	Join Many will result in a struct with the following structure:
-	
+
 		{
 			Count int
 			Items *[]model.Entity
 		}
-	
-	Calling .Join("Entities.Count") will only resolve a database count from the database.  
-	Items will remain a nil pointer.  
+
+	Calling .Join("Entities.Count") will only resolve a database count from the database.
+	Items will remain a nil pointer.
 	A call to .Join("Entities") will resolve both the Count and Items.
-		
-		
+
+
 
 Format Keys:
 
 	------Boolean Formats----------------
-	
+
 	YesNo: Sets "Yes" for true and "No" for false
 	yesno: Sets "yes" for true and "no" for false
 	enableddisabled:  Sets "enabled" for true and "disabled" for false
 	EnabledDisabled:  Sets "Enabled" for true and "Disabled" for false
 	TrueFalse:  Sets "True" for true and "False" for false.
-	
+
 	------Date & Time Formats ------------
-	
+
 	DateNumeric:  Date in numeric format adjusted for locale format ex..  01/01/1979
 	DateLong:  Date in Long format ex..  Monday, January 1, 1979
 	DateShort:  Date in short format ex.. January 1, 1979
-	DateMonthYearShort:  Date in Short Month format ex..  Jan 1, 1979 
+	DateMonthYearShort:  Date in Short Month format ex..  Jan 1, 1979
 	DateTime:  Combination of DateNumeric and Time ex..  01/01/1979 01:25:30 AM
 	DateTimeMilitary:  Combination of DateNumeric and Military Time ex..  01/01/1979 15:04:05
 	Time:  Standard Time
 	TimeMilitary:  Military Time
 	TimeFromNow:  Time from now in seconds, minutes, days, weeks, months, years
-	
+
 
 Below is an example of an example schema:
 
@@ -187,7 +187,7 @@ Below is an example of an example schema:
 									}
 								]
 							}
-	
+
 						},
 						{
 							"name":"field7",
@@ -204,7 +204,7 @@ Below is an example of an example schema:
 						{
 							"name":"field10",
 							"type":"boolArray"
-						},			
+						},
 						{
 							"name":"field12",
 							"type":"objectArray",
@@ -246,9 +246,9 @@ Example Code:
 		"myApp/model"
 		"fmt"
 	)
-	
+
 	func init(){
-	
+
 		var persons model.Persons
 
 		person, err := persons.Single("name", "Dan")
@@ -258,7 +258,7 @@ Example Code:
 			return
 		}
 		fmt.Println(person.Name)
-		
+
 	}
 
 ### func (obj *Persons) Search(field string, value string) (retObj []Person, e error)
@@ -272,9 +272,9 @@ Example Code:
 		"myApp/model"
 		"fmt"
 	)
-	
+
 	func init(){
-	
+
 		var persons model.Persons
 
 		somePeople, err := persons.Search("name", "Dan")
@@ -283,10 +283,10 @@ Example Code:
 			fmt.Println(err.Error())
 			return
 		}
-		for _, people := range somePeople{ 
+		for _, people := range somePeople{
 			fmt.Println(person.Name)
 		}
-		
+
 	}
 
 
@@ -301,9 +301,9 @@ Example Code:
 		"myApp/model"
 		"fmt"
 	)
-	
+
 	func init(){
-	
+
 		var persons model.Persons
 
 		somePeople err:= persons.SearchAdvanced("name", "Dan", 10, 0)
@@ -312,10 +312,10 @@ Example Code:
 			fmt.Println(err.Error())
 			return
 		}
-		for _, people := range somePeople{ 
+		for _, people := range somePeople{
 			fmt.Println(person.Name)
 		}
-		
+
 	}
 
 ### func (obj *Persons) All() (retObj []Person, e error)
@@ -329,9 +329,9 @@ Example Code:
 		"myApp/model"
 		"fmt"
 	)
-	
+
 	func init(){
-	
+
 		var persons model.Persons
 
 		somePeople, err:= persons.All()
@@ -340,11 +340,11 @@ Example Code:
 			fmt.Println(err.Error())
 			return
 		}
-		
-		for _, people := range somePeople{ 
+
+		for _, people := range somePeople{
 			fmt.Println(person.Name)
 		}
-		
+
 	}
 
 ### func (obj *Persons) AllAdvanced(limit int, skip int) (retObj []Person, e error)
@@ -358,27 +358,27 @@ Example Code:
 		"myApp/model"
 		"fmt"
 	)
-	
+
 	func init(){
-	
+
 		var persons model.Persons
 
 		somePeople, err := persons.AllAdvanced(10, 0)
-		
+
 		if err != nil{
 			fmt.Println(err.Error())
 			return
 		}
 
-		for _, people := range somePeople{ 
+		for _, people := range somePeople{
 			fmt.Println(person.Name)
 		}
-		
+
 	}
 
 ### func (obj *Persons) AllByIndex(index string) (retObj []Person, e error)
 
-Returns an array of type Person for the entire collection sorted by index.  
+Returns an array of type Person for the entire collection sorted by index.
 
 Example Code:
 
@@ -386,22 +386,22 @@ Example Code:
 		"myApp/model"
 		"fmt"
 	)
-	
+
 	func init(){
-	
+
 		var persons model.Persons
 
 		somePeople, err:= persons.AllByIndex("name")
-		
+
 		if err != nil{
 			fmt.Println(err.Error())
 			return
 		}
 
-		for _, people := range somePeople{ 
+		for _, people := range somePeople{
 			fmt.Println(person.Name)
 		}
-		
+
 	}
 
 ### func (obj *Persons) AllByIndexAdvanced(index string, limit int, skip int) (retObj []Person, e error)
@@ -414,9 +414,9 @@ Example Code:
 		"myApp/model"
 		"fmt"
 	)
-	
+
 	func init(){
-	
+
 		var persons model.Persons
 
 		somePeople, err:= persons.AllByIndexAdvanced("name", 10, 0)
@@ -426,15 +426,15 @@ Example Code:
 			return
 		}
 
-		for _, people := range somePeople{ 
+		for _, people := range somePeople{
 			fmt.Println(person.Name)
 		}
-		
+
 	}
 
 ### func (obj *Persons) Range(min, max, field string) (retObj []Person, e error)
 
-Returns an array of type Person for the field by including a range from and to.  The range can be any type that represents the field properly.  
+Returns an array of type Person for the field by including a range from and to.  The range can be any type that represents the field properly.
 
 Example Code:
 
@@ -442,9 +442,9 @@ Example Code:
 		"myApp/model"
 		"fmt"
 	)
-	
+
 	func init(){
-	
+
 		var persons model.Persons
 
 		somePeople, err := persons.Range("Bobby", "Dan", "name")
@@ -452,15 +452,15 @@ Example Code:
 		if err != nil{
 			fmt.Println(err.Error())
 			return
-		}		
+		}
 
-		for _, people := range somePeople{ 
+		for _, people := range somePeople{
 			fmt.Println(person.Name)
 		}
-		
+
 	}
 
-### func (obj *Persons) RangeAdvanced(min, max, field string, limit int, skip int) (retObj []Person, e error) 
+### func (obj *Persons) RangeAdvanced(min, max, field string, limit int, skip int) (retObj []Person, e error)
 
 Returns an array of type Person for the field by including a range from and to.  The range can be any type that represents the field properly.    Additionally a limit of records can be returned.  Additionally records can be skipped.
 
@@ -470,22 +470,22 @@ Example Code:
 		"myApp/model"
 		"fmt"
 	)
-	
+
 	func init(){
-	
+
 		var persons model.Persons
 
 		somePeople, err := persons.RangeAdvanced("Bobby", "Dan", "name", 10, 0)
-		
+
 		if err != nil{
 			fmt.Println(err.Error())
 			return
 		}
 
-		for _, people := range somePeople{ 
+		for _, people := range somePeople{
 			fmt.Println(person.Name)
 		}
-		
+
 	}
 
 
@@ -499,9 +499,9 @@ Example Code:
 		"myApp/model"
 		"fmt"
 	)
-	
+
 	func init(){
-	
+
 		var persons model.Persons
 
 		err := persons.Index()
@@ -509,10 +509,10 @@ Example Code:
 		if err != nil{
 			fmt.Println(err.Error())
 		}
-		
+
 	}
 
-### func (obj *Persons) RunTransaction(objects []Person) error 
+### func (obj *Persons) RunTransaction(objects []Person) error
 
 Runs all Person objects passed into a transaction.  If any errors occur the transaction is rolled back and error is returned.
 
@@ -522,9 +522,9 @@ Example Code:
 		"myApp/model"
 		"fmt"
 	)
-	
+
 	func init(){
-	
+
 		var persons model.Persons
 
 		err := persons.RunTransaction([]Person{Person{Name:"Dan"}, Person{Name:"Bobby"}})
@@ -532,10 +532,10 @@ Example Code:
 		if err != nil{
 			fmt.Println(err.Error())
 		}
-		
+
 	}
 
-### func (obj *Persons) New() *Person 
+### func (obj *Persons) New() *Person
 
 Returns an zero-valued Person struct.
 
@@ -545,15 +545,15 @@ Example Code:
 		"myApp/model"
 		"fmt"
 	)
-	
+
 	func init(){
-	
+
 		var persons model.Persons
 
 		p := persons.New()
 
 		fmt.Println(p.Name)
-		
+
 	}
 
 # Document API
@@ -577,20 +577,20 @@ Example Code:
 		"myApp/model"
 		"fmt"
 	)
-	
+
 	func init(){
-	
+
 		var person model.Person
 
 		person.Name = "David"
 
-		
+
 		err := person.Save()
 
 		if err != nil{
 			fmt.Println(err.Error())
 		}
-		
+
 	}
 
 ### func (obj *Person) Delete() error
@@ -603,20 +603,20 @@ Example Code:
 		"myApp/model"
 		"fmt"
 	)
-	
+
 	func init(){
-	
+
 		var persons model.Persons
 
 		person := persons.Single("name", "Dan")
 
-		
+
 		err := person.Delete()
 
 		if err != nil{
 			fmt.Println(err.Error())
 		}
-		
+
 	}
 
 ### func (obj *Person) JSONString() (string, error)
@@ -629,14 +629,14 @@ Example Code:
 		"myApp/model"
 		"fmt"
 	)
-	
+
 	func init(){
-	
+
 		var person model.Person
 
 		person.Name = "David"
 
-		
+
 		value, err := person.JSONString()
 
 		if err != nil{
@@ -661,14 +661,14 @@ Example Code:
 		"myApp/model"
 		"fmt"
 	)
-	
+
 	func init(){
-	
+
 		var person model.Person
 
 		person.Name = "David"
 
-		
+
 		value, err := person.JSONBytes()
 
 		if err != nil{
@@ -700,9 +700,9 @@ Example Code:
 		"myApp/model"
 		"fmt"
 	)
-	
+
 	func init(){
-	
+
 		var bucket model.Bucket
 
 		bucket.Name = "Items"
@@ -720,7 +720,7 @@ Example Code:
 			fmt.Println(err.Error())
 			return
 		}
-		
+
 	}
 
 ### func (obj *Bucket) GetKeyValue(key interface{}, value interface{}) error
@@ -733,9 +733,9 @@ Example Code:
 		"myApp/model"
 		"fmt"
 	)
-	
+
 	func init(){
-	
+
 		var bucket model.Bucket
 
 		bucket.Name = "Items"
@@ -750,7 +750,7 @@ Example Code:
 		}
 
 		fmt.Println(s)
-		
+
 	}
 
 ### func (obj *Bucket) DeleteKey(key interface{}) error
@@ -763,9 +763,9 @@ Example Code:
 		"myApp/model"
 		"fmt"
 	)
-	
+
 	func init(){
-	
+
 		var bucket model.Bucket{}
 
 		bucket.Name = "Items"
@@ -780,5 +780,5 @@ Example Code:
 		}
 
 		fmt.Println(s)
-		
+
 	}

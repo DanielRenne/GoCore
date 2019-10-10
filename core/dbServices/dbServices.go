@@ -21,9 +21,7 @@ var DBMutex *sync.RWMutex
 var DB *sql.DB
 var BoltDB *storm.DB
 var MongoSession *mgo.Session
-var MongoSessionAuth *mgo.Session
 var MongoDB *mgo.Database
-var MongoDBAuth *mgo.Database
 
 var mongoDBOverride string
 var mongoDBNameOverride string
@@ -47,13 +45,6 @@ func OverrideMongoDBConnection(connectionString string, dbName string) {
 func ReadMongoDB() (mdb *mgo.Database) {
 	DBMutex.RLock()
 	mdb = MongoDB
-	DBMutex.RUnlock()
-	return mdb
-}
-
-func ReadMongoDBAuth() (mdb *mgo.Database) {
-	DBMutex.RLock()
-	mdb = MongoDBAuth
 	DBMutex.RUnlock()
 	return mdb
 }
@@ -197,19 +188,6 @@ func openMongo() error {
 		}
 
 	}
-
-	if serverSettings.WebConfig.HasDbAuth && serverSettings.WebConfig.DbAuthConnection.AuthServer {
-
-		DBMutex.Lock()
-		MongoSessionAuth, err = mgo.Dial(connectionString) // open an connection -> Dial function
-		DBMutex.Unlock()
-
-		if err != nil { //  if you have a
-			color.Red("Failed to create or open mongo Database at " + connectionString + "\n\t" + err.Error())
-			return err
-		}
-	}
-
 	return connectMongoDB()
 }
 
@@ -225,12 +203,6 @@ func connectMongoDB() error {
 
 	MongoDB = MongoSession.DB(dbName)
 	color.Green("Mongo Database Connected Successfully.")
-	if serverSettings.WebConfig.HasDbAuth {
-		MongoSessionAuth.SetMode(mgo.Monotonic, true) // Optional. Switch the session to a monotonic behavior.
-		MongoSessionAuth.SetSyncTimeout(2000 * time.Millisecond)
-		MongoDBAuth = MongoSession.DB(serverSettings.WebConfig.DbAuthConnection.Database)
-		color.Green("Mongo Authentication Database Connected Successfully.")
-	}
 	DBMutex.Unlock()
 	return nil
 }

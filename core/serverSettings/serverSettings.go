@@ -87,8 +87,6 @@ type webConfigObj struct {
 	DbConnections    []dbConnection `json:"dbConnections"`
 	Application      Application    `json:"application"`
 	DbConnection     dbConnection
-	DbAuthConnection dbConnection
-	HasDbAuth        bool
 }
 
 var WebConfig webConfigObj
@@ -116,12 +114,7 @@ func Initialize(path string, configurationFile string) (err error) {
 	}
 
 	for _, dbConnection := range WebConfig.DbConnections {
-		if dbConnection.AuthServer {
-			WebConfig.HasDbAuth = true
-			WebConfig.DbAuthConnection = dbConnection
-		} else {
-			WebConfig.DbConnection = dbConnection
-		}
+		WebConfig.DbConnection = dbConnection
 	}
 	WebConfigMutex.Unlock()
 
