@@ -9,13 +9,13 @@ Below are some targeted goals:
 * Http & Https Redirection & HTTP 2.0 with Golang 1.8 and [gin-gonic/gin](https://github.com/gin-gonic/gin)
 * Extension packages for common functions including:
 	* File IO Management & Manipulation
-	* Zip File Compression & Decompression 
+	* Zip File Compression & Decompression
 
 ----------
 
 * Database extensions and drivers for the following:
 	* Supported databases:
-		* MongoDB 
+		* MongoDB
 		* BoltDB
 	* Create SQL Schema (DDL) from JSON Configuration.
 	* Create Golang ORM packages for RDBMS Transactions & Queries.
@@ -60,13 +60,13 @@ Source it:
 
 ### Get GoCore
 1.  To start a new project with go modules (1.13) GoCore run the following steps in a new console window.
-	
+
 	`go mod init github.com/your_example/repo_project`
-	
-	`go get github.com/DanielRenne/GoCore@v1.0.8`
-	
+
+	`go get github.com/DanielRenne/GoCore@v1.0.9`
+
 1.5.  To start a new project with a version prior to go modules.
-	
+
 	`go get github.com/DanielRenne/GoCore...`
 
 ### Add to your Operating Systems Path the ~/go/bin directory
@@ -78,7 +78,7 @@ Source it:
 	`go install github.com/DanielRenne/GoCore/core/goCoreCreateApp`
 
 	And install the binary for fetching the project template files
-	
+
 	`go install github.com/DanielRenne/GoCore/getAppTemplate`
 
 Then run
@@ -118,7 +118,7 @@ Additional Info on Golang https:  [https://www.kaihag.com/https-and-go/](https:/
 
 ## Building a Database Model with SQLite3
 
-####NOTE: Because SQLite3 requires gcc externally we separated the driver for compiling reasons.  Windows users we recommend installing gcc as a prerequisite for the sqlite3 golang module to compile via [tdb-gcc](http://tdm-gcc.tdragon.net/download).  Be sure to install 64 bit for 64 bit machines. 
+####NOTE: Because SQLite3 requires gcc externally we separated the driver for compiling reasons.  Windows users we recommend installing gcc as a prerequisite for the sqlite3 golang module to compile via [tdb-gcc](http://tdm-gcc.tdragon.net/download).  Be sure to install 64 bit for 64 bit machines.
 
 ####More SQLite tools to verify your data in Windows [SQLite Studio](http://sqlitestudio.pl/)
 
@@ -128,7 +128,7 @@ To create a SQLite3 Database schema and model package for your application run t
 
 Then run
 
-	buildCoreLite  
+	buildCoreLite
 
 ## References
 
