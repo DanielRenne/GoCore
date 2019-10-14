@@ -63,7 +63,7 @@ Source it:
 
 	`go mod init github.com/your_example/repo_project`
 
-	`go get github.com/DanielRenne/GoCore@v1.0.9`
+	`go get github.com/DanielRenne/GoCore`
 
 1.5.  To start a new project with a version prior to go modules.
 
