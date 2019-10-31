@@ -3,7 +3,7 @@ package mongoStubs
 var Model string
 
 func init() {
-	Model = `	
+	Model = `
 package model
 
 import (

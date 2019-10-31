@@ -1146,7 +1146,7 @@ func genNOSQLRemoveAll(collection NOSQLCollection, schema NOSQLSchema, driver st
 		`, strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name))
 	} else if driver == DATABASE_DRIVER_BOLTDB {
 		val = `
-			func (obj model`+strings.Title(collection.Name)+`) RemoveAll() {
+			func (obj model` + strings.Title(collection.Name) + `) RemoveAll() {
 				x, errDelete := obj.All()
 				if errDelete == nil {
 					for _, row := range x {
@@ -1440,6 +1440,12 @@ func genNoSQLSchemaSave(collection NOSQLCollection, schema NOSQLSchema, driver s
 		val += "self.Id = changeInfo.UpsertedId.(bson.ObjectId)\n"
 		val += "}\n"
 		val += "dbServices.CollectionCache{}.Remove(\"" + strings.Title(collection.Name) + "\",self.Id.Hex())\n"
+		val += "if store.OnChangeRecord != nil && len(store.OnRecordUpdate) > 0 {\n"
+		val += "if store.OnRecordUpdate[0] == \"*\" || utils.InArray(\"" + strings.Title(collection.Name) + "\", store.OnRecordUpdate) {\n"
+		val += "  value := reflect.ValueOf(&self)\n"
+		val += "  store.OnChangeRecord(\"" + strings.Title(collection.Name) + "\", self.Id.Hex(), value.Interface())\n"
+		val += "}\n"
+		val += "}\n"
 		val += "pubsub.Publish(\"" + strings.Title(collection.Name) + ".Save\", self)\n"
 		val += "return nil\n"
 	}

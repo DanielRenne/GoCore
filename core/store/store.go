@@ -24,6 +24,10 @@ type pathValue struct {
 	Value interface{} `json:"Value"`
 }
 
+//OnRecordUpdate allows an application to publish all changes of a record
+var OnRecordUpdate []string
+var OnChangeRecord func(key string, id string, x interface{})
+
 //OnChange provides inserts, updates, and deletes to the store key.
 var OnChange func(key string, id string, path string, x interface{}, err error)
 
