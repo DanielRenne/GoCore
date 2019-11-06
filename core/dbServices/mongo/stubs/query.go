@@ -495,12 +495,11 @@ func (self *Query) andOrInNot(index int, criteria map[string]interface{}, queryT
 				for i := 0; i < values.Len(); i++ {
 					val := values.Index(i).Interface()
 					objId, err := self.getIdHex(val)
-					if err != nil {
-						self.e = err
-						continue
+					// if no errors on Id parse, append, else drop it
+					if err == nil {
+						ids = append(ids, objId)
 					}
 
-					ids = append(ids, objId)
 				}
 			} else {
 				objId, err := self.getIdHex(value)
@@ -691,12 +690,11 @@ func (self *Query) inNot(criteria map[string]interface{}, queryType string) {
 				for i := 0; i < values.Len(); i++ {
 					val := values.Index(i).Interface()
 					objId, err := self.getIdHex(val)
-					if err != nil {
-						self.e = err
-						continue
-					}
 
-					ids = append(ids, objId)
+					// if no errors on Id parse, append, else drop it
+					if err == nil {
+						ids = append(ids, objId)
+					}
 				}
 			} else {
 				objId, err := self.getIdHex(value)
