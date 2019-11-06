@@ -66,6 +66,15 @@ func (obj *AtomicInt) Decrement() int {
 	return obj.value
 }
 
+// Add allows for the value to safely be add by n
+func (obj *AtomicInt) Add(n int) int {
+	obj.valueSync.Lock()
+	defer obj.valueSync.Unlock()
+
+	obj.value += n
+	return obj.value
+}
+
 //AtomicUInt16 provides an uint16 object that is lock safe.
 type AtomicUInt16 struct {
 	valueSync sync.RWMutex
