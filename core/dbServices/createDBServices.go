@@ -1634,21 +1634,10 @@ func genNoSQLSchemaSaveByTran(collection NOSQLCollection, schema NOSQLSchema, dr
 		histRecord.CreateDate = time.Now()
 		//Get the Original Record if it is a Update
 		if isUpdate {
-			for i := range transactionQueue.queue[t.Id.Hex()].newItems {
-				if transactionQueue.queue[t.Id.Hex()].newItems[i].entity.GetId() == self.Id.Hex() {
-					transactionQueue.queue[t.Id.Hex()].newItems[i] = eTransactionNew
-					return nil
-				}
-			}
-			// Last ditch effort in case of garbage collector error in pointers
-			for _, encounteredId := range transactionQueue.ids[t.Id.Hex()] {
-				if encounteredId == self.Id.Hex() {
-					_, ok := transactionQueue.queue[t.Id.Hex()].newItems["` + strings.Title(schema.Name) + `_" + self.Id.Hex()]
-					if ok {
-						transactionQueue.queue[t.Id.Hex()].newItems["` + strings.Title(schema.Name) + `_" + self.Id.Hex()] = eTransactionNew
-					}
-					return nil
-				}
+
+			_, ok := transactionQueue.queue[t.Id.Hex()].newItems["` + strings.Title(schema.Name) + `_" + self.Id.Hex()]
+			if ok {
+				transactionQueue.queue[t.Id.Hex()].newItems["` + strings.Title(schema.Name) + `_" + self.Id.Hex()] = eTransactionNew
 			}
 			histRecord.Type = TRANSACTION_CHANGETYPE_UPDATE
 			eTransactionNew.changeType = TRANSACTION_CHANGETYPE_UPDATE
