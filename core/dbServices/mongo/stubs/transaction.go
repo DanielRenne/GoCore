@@ -12,6 +12,7 @@ import (
 	"errors"
 	"log"
 	"time"
+	"strings"
 
 	"github.com/DanielRenne/GoCore/core/dbServices"
 	"github.com/DanielRenne/GoCore/core"
@@ -226,8 +227,34 @@ func (self *Transaction) Commit() error {
 	rollBack := false
 	var rollBackErrorMessage string
 
-
-	for _, entityTran := range tPersist.newItems {
+	affectedRecordCount := make(map[string]int, 0)
+	for bsonId, entityTran := range tPersist.newItems {
+		pieces := strings.Split(bsonId, "_")
+		// Concatenate a human readable map of counts of what we just did
+		typeAction := "(s) were updated/inserted -> "
+		if entityTran.changeType == TRANSACTION_CHANGETYPE_DELETE {
+			typeAction = "(s) were deleted -> "
+		}
+		if len(pieces) == 2 {
+			_, ok := affectedRecordCount[pieces[0] + typeAction]
+			if ok {
+				affectedRecordCount[pieces[0] + typeAction]++
+			} else {
+				affectedRecordCount[pieces[0] + typeAction] = 1
+			}
+		}
+		/*
+			//Future debugging on collections
+			if pieces[0] == "Control" {
+				log.Println("entity for controls (" + typeAction + ")->", entityTran.entity.GetId())
+				log.Println("entity->", entityTran.entity)
+				newControlIds = append(newControlIds, "\""+entityTran.entity.GetId()+"\"")
+			}
+			if pieces[0] == "Variable" {
+				log.Println("entity for variables (" + typeAction + ")->", entityTran.entity.GetId())
+				log.Println("entity->", entityTran.entity)
+			}
+		*/
 		if entityTran.changeType == TRANSACTION_CHANGETYPE_DELETE {
 			err := entityTran.entity.Delete()
 			if err != nil && err.Error() != "not found" {
@@ -245,6 +272,8 @@ func (self *Transaction) Commit() error {
 		}
 		entityTran.committed = true
 	}
+	log.Println("Transaction Id " + self.Id.Hex() + " committed these record counts")
+	log.Printf("%+v", affectedRecordCount)
 
 	//Attempt to persist the Historical Records
 	if !rollBack {

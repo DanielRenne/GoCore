@@ -57,6 +57,7 @@ type modelEntity interface {
 	Reflect() []Field
 	JoinFields(string, *Query, int) error
 	GetId() string
+	DoesIdExist(interface{}) bool
 }
 
 type modelCollection interface {
@@ -91,8 +92,8 @@ type tQueue struct {
 
 type transactionsToPersist struct {
 	t             *Transaction
-	newItems      []entityTransaction
-	originalItems []entityTransaction
+	newItems      map[string]entityTransaction
+	originalItems map[string]entityTransaction
 	startTime     time.Time
 }
 
@@ -116,18 +117,6 @@ func init() {
 	transactionQueue.ids = make(map[string][]string)
 	transactionQueue.queue = make(map[string]*transactionsToPersist)
 	go clearTransactionQueue()
-}
-
-func (self *transactionsToPersist) UpdateEntity(e modelEntity) (updated bool) {
-	for i, _ := range self.newItems {
-		item := &self.newItems[i]
-		if item.entity.GetId() == e.GetId() {
-			item.entity = e
-			updated = true
-			return
-		}
-	}
-	return
 }
 
 func Q(k string, v interface{}) map[string]interface{} {

@@ -1087,6 +1087,7 @@ func genNoSQLRuntime(collection NOSQLCollection, schema NOSQLSchema, driver stri
 	}
 
 	val += genById(collection, schema, driver)
+	val += genDoesIdExist(collection, schema, driver)
 	val += genNewByReflection(collection, schema, driver)
 	val += genByFilter(collection, schema, driver)
 	val += genCountByFilter(collection, schema, driver)
@@ -1468,6 +1469,21 @@ func genById(collection NOSQLCollection, schema NOSQLSchema, driver string) stri
 `
 }
 
+func genDoesIdExist(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
+	return `func (obj *` + strings.Title(schema.Name) + `) DoesIdExist(objectID interface{}) bool {
+		var retObj ` + strings.Title(schema.Name) + `
+		row := model` + strings.Title(collection.Name) + `{}
+		q := row.Query()
+		err := q.ById(objectID, &retObj)
+		if err == nil {
+			return true
+		} else {
+			return false
+		}
+	}
+`
+}
+
 func genNewByReflection(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
 	val := ""
 	val += "func (obj model" + strings.Title(collection.Name) + ") NewByReflection() (value reflect.Value) {\n"
@@ -1544,7 +1560,6 @@ func genByFilter(collection NOSQLCollection, schema NOSQLSchema, driver string) 
 }
 
 func genNoSQLSchemaSaveByTran(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
-	showLog := false
 	val := ""
 	val += "func (self *" + strings.Title(schema.Name) + ") SaveWithTran(t *Transaction) error {\n\n"
 	val += "return self.CreateWithTran(t, false)\n"
@@ -1558,142 +1573,106 @@ func genNoSQLSchemaSaveByTran(collection NOSQLCollection, schema NOSQLSchema, dr
 		val += "dbServices.CollectionCache{}.Remove(\"" + strings.Title(collection.Name) + "\",self.Id.Hex())\n"
 		val += "return self.Save()\n"
 	case DATABASE_DRIVER_MONGODB:
-		val += "transactionQueue.Lock()\n"
-		val += "defer func() {\n"
-		val += "  transactionQueue.Unlock()\n"
-		val += "}()\n"
-		if showLog {
-			val += "	log.Println(\"in with: \" + self.Id.Hex())\n"
+		val += `
+		transactionQueue.Lock()
+		defer func() {
+			transactionQueue.Unlock()
+		}()
+
+
+		collection` + strings.Title(collection.Name) + `Mutex.RLock()
+		collection := mongo` + strings.Title(collection.Name) + `Collection
+		collection` + strings.Title(collection.Name) + `Mutex.RUnlock()
+		if collection == nil {
+			init` + strings.Title(collection.Name) + `()
 		}
-		val += "collection" + strings.Title(collection.Name) + "Mutex.RLock()\n"
-		val += "collection := mongo" + strings.Title(collection.Name) + "Collection\n"
-		val += "collection" + strings.Title(collection.Name) + "Mutex.RUnlock()\n"
-		val += "if collection == nil {\n"
-		val += "init" + strings.Title(collection.Name) + "()\n"
-		val += "}\n"
-		val += "//Validate the Model first.  If it fails then clean up the transaction in memory\n"
-		val += "err := self.ValidateAndClean()\n"
-		val += "if err != nil {\n"
-		val += "delete(transactionQueue.queue, t.Id.Hex())\n"
-		val += "return err\n"
-		val += "}\n"
-
-		val += "_, ok := transactionQueue.queue[t.Id.Hex()]\n"
-		val += "if ok == false {\n"
-		val += "	return errors.New(dbServices.ERROR_CODE_TRANSACTION_NOT_PRESENT)\n"
-		val += "}\n\n"
-
-		val += "t.Collections = append(t.Collections, \"" + strings.Title(collection.Name) + "History\")\n"
-
-		val += "isUpdate := true\n"
-		val += "if self.Id.Hex() == \"\"{\n"
-		val += "	isUpdate = false\n"
-		val += "	self.Id = bson.NewObjectId()\n"
-		val += "  self.CreateDate = time.Now()\n"
-		val += "}\n"
-
-		val += "dbServices.CollectionCache{}.Remove(\"" + strings.Title(collection.Name) + "\",self.Id.Hex())\n"
-
-		val += "if forceCreate {\n"
-		val += "	isUpdate = false\n"
-		val += "}\n"
-
-		val += "	self.UpdateDate = time.Now()\n"
-		val += "	self.LastUpdateId = t.UserId\n"
-
-		val += "newBson, err := self.BSONString()\n\n"
-
-		val += "if err != nil {\n"
-		if showLog {
-			val += "	log.Println(\"exit bson\")\n"
+		//Validate the Model first.  If it fails then clean up the transaction in memory
+		err := self.ValidateAndClean()
+		if err != nil {
+			delete(transactionQueue.queue, t.Id.Hex())
+			return err
 		}
-		val += "	return err\n"
-		val += "}\n\n"
 
-		val += "var eTransactionNew entityTransaction\n"
-		val += "eTransactionNew.changeType = TRANSACTION_CHANGETYPE_INSERT\n"
-		val += "eTransactionNew.entity = self\n\n"
-
-		val += "var histRecord " + strings.Title(schema.Name) + "HistoryRecord\n"
-		val += "histRecord.TId = t.Id.Hex()\n"
-		val += "histRecord.Data = newBson\n"
-		val += "histRecord.Type = TRANSACTION_CHANGETYPE_INSERT\n\n"
-		val += "histRecord.ObjId = self.Id.Hex()\n"
-		val += "histRecord.CreateDate = time.Now()\n"
-
-		if showLog {
-			val += "for i := range transactionQueue.queue[t.Id.Hex()].newItems {\n"
-			val += "log.Println(\"" + strings.Title(schema.Name) + "\" + transactionQueue.queue[t.Id.Hex()].newItems[i].entity.GetId())\n"
-			val += "}\n"
+		_, ok := transactionQueue.queue[t.Id.Hex()]
+		if ok == false {
+			return errors.New(dbServices.ERROR_CODE_TRANSACTION_NOT_PRESENT)
 		}
-		val += "//Get the Original Record if it is a Update\n"
-		val += "if isUpdate {\n\n"
 
-		val += "//For items in memory return and dont run ById\n"
-		val += "for i := range transactionQueue.queue[t.Id.Hex()].newItems {\n"
-		val += "  if transactionQueue.queue[t.Id.Hex()].newItems[i].entity.GetId() == self.Id.Hex() {\n"
-		val += "    transactionQueue.queue[t.Id.Hex()].newItems[i].entity = self\n"
-		if showLog {
-			val += "	log.Println(\"exit found it\" + self.Id.Hex())\n"
+		t.Collections = append(t.Collections, "` + strings.Title(collection.Name) + `History")
+		isUpdate := true
+		if self.Id.Hex() == "" {
+			isUpdate = false
+			self.Id = bson.NewObjectId()
+			self.CreateDate = time.Now()
 		}
-		val += "    return nil\n"
-		val += "  }\n"
-		val += "}\n"
-
-		val += "// Last ditch effort in case of garbage collector error in pointers\n"
-		val += "for _, encounteredId := range transactionQueue.ids[t.Id.Hex()] {\n"
-		if showLog {
-			val += "  log.Println(encounteredId)\n"
+		if len(transactionQueue.queue[t.Id.Hex()].originalItems) == 0 {
+			transactionQueue.queue[t.Id.Hex()].originalItems = make(map[string]entityTransaction, 0)
 		}
-		val += "  if encounteredId == self.Id.Hex() {\n"
-		if showLog {
-			val += "  log.Println(\"found encontered id append newItems\")\n"
+		if len(transactionQueue.queue[t.Id.Hex()].newItems) == 0 {
+			transactionQueue.queue[t.Id.Hex()].newItems = make(map[string]entityTransaction, 0)
 		}
-		val += "    transactionQueue.queue[t.Id.Hex()].newItems = append(transactionQueue.queue[t.Id.Hex()].newItems, eTransactionNew)\n"
-		val += "    return nil\n"
-		val += "  }\n"
-		val += "}\n"
-
-		val += "	histRecord.Type = TRANSACTION_CHANGETYPE_UPDATE\n"
-
-		val += "	eTransactionNew.changeType = TRANSACTION_CHANGETYPE_UPDATE\n\n"
-
-		val += "var original " + strings.Title(schema.Name) + "\n"
-		val += "err := " + strings.Title(collection.Name) + ".Query().ById(self.Id, &original)\n\n"
-
-		val += "if err != nil {\n"
-		if showLog {
-			val += "	log.Println(\"exit 12441241\")\n"
+		dbServices.CollectionCache{}.Remove("` + strings.Title(collection.Name) + `",self.Id.Hex())
+		if forceCreate {
+			isUpdate = false
 		}
-		val += "	return err\n"
-		val += "}\n\n"
-
-		val += "	originalBson, err := original.BSONString()\n\n"
-
-		val += "	if err != nil {\n"
-		if showLog {
-			val += "	log.Println(\"exit t32t32\")\n"
+		self.UpdateDate = time.Now()
+		self.LastUpdateId = t.UserId
+		newBson, err := self.BSONString()
+		if err != nil {
+			return err
 		}
-		val += "		return err\n"
-		val += "	}\n\n"
 
-		val += "	histRecord.Data = originalBson\n\n"
+		var eTransactionNew entityTransaction
+		eTransactionNew.changeType = TRANSACTION_CHANGETYPE_INSERT
+		eTransactionNew.entity = self
+		var histRecord ` + strings.Title(schema.Name) + `HistoryRecord
+		histRecord.TId = t.Id.Hex()
+		histRecord.Data = newBson
+		histRecord.Type = TRANSACTION_CHANGETYPE_INSERT
 
-		val += "}\n\n"
-
-		val += "var eTransactionOriginal entityTransaction\n"
-		val += "eTransactionOriginal.entity = &histRecord\n\n"
-
-		val += "transactionQueue.ids[t.Id.Hex()] = append(transactionQueue.ids[t.Id.Hex()], eTransactionNew.entity.GetId())\n"
-		val += "transactionQueue.queue[t.Id.Hex()].originalItems = append(transactionQueue.queue[t.Id.Hex()].originalItems, eTransactionOriginal)\n"
-		val += "transactionQueue.queue[t.Id.Hex()].newItems = append(transactionQueue.queue[t.Id.Hex()].newItems, eTransactionNew)\n\n"
-
-		if showLog {
-			val += "	log.Println(\"exit end\")\n"
+		histRecord.ObjId = self.Id.Hex()
+		histRecord.CreateDate = time.Now()
+		//Get the Original Record if it is a Update
+		if isUpdate {
+			for i := range transactionQueue.queue[t.Id.Hex()].newItems {
+				if transactionQueue.queue[t.Id.Hex()].newItems[i].entity.GetId() == self.Id.Hex() {
+					transactionQueue.queue[t.Id.Hex()].newItems[i] = eTransactionNew
+					return nil
+				}
+			}
+			// Last ditch effort in case of garbage collector error in pointers
+			for _, encounteredId := range transactionQueue.ids[t.Id.Hex()] {
+				if encounteredId == self.Id.Hex() {
+					_, ok := transactionQueue.queue[t.Id.Hex()].newItems["` + strings.Title(schema.Name) + `_" + self.Id.Hex()]
+					if ok {
+						transactionQueue.queue[t.Id.Hex()].newItems["` + strings.Title(schema.Name) + `_" + self.Id.Hex()] = eTransactionNew
+					}
+					return nil
+				}
+			}
+			histRecord.Type = TRANSACTION_CHANGETYPE_UPDATE
+			eTransactionNew.changeType = TRANSACTION_CHANGETYPE_UPDATE
+			var original ` + strings.Title(schema.Name) + `
+			err := ` + strings.Title(collection.Name) + `.Query().ById(self.Id, &original)
+			if err == nil {
+				// Found a match of an existing record, lets save history now on it
+				originalBson, err := original.BSONString()
+				if err != nil {
+					return err
+				}
+				histRecord.Data = originalBson
+			}
 		}
-		val += "return nil\n"
+		var eTransactionOriginal entityTransaction
+		eTransactionOriginal.entity = &histRecord
+		transactionQueue.ids[t.Id.Hex()] = append(transactionQueue.ids[t.Id.Hex()], eTransactionNew.entity.GetId())
+		transactionQueue.queue[t.Id.Hex()].newItems["` + strings.Title(schema.Name) + `_" + self.Id.Hex()] = eTransactionNew
+		transactionQueue.queue[t.Id.Hex()].originalItems["` + strings.Title(schema.Name) + `_" + self.Id.Hex()] = eTransactionOriginal
+		return nil
 	}
-	val += "}\n\n"
+`
+	}
+
 	return val
 }
 
@@ -2322,8 +2301,14 @@ func genNoSQLSchemaDeleteWithTran(collection NOSQLCollection, schema NOSQLSchema
 
 		val += "t.Collections = append(t.Collections, \"" + strings.Title(collection.Name) + "History\")\n"
 
-		val += "transactionQueue.queue[t.Id.Hex()].originalItems = append(transactionQueue.queue[t.Id.Hex()].originalItems, eTransactionOriginal)\n"
-		val += "transactionQueue.queue[t.Id.Hex()].newItems = append(transactionQueue.queue[t.Id.Hex()].newItems, eTransactionNew)\n\n"
+		val += "if len(transactionQueue.queue[t.Id.Hex()].originalItems) == 0 {\n"
+		val += "	transactionQueue.queue[t.Id.Hex()].originalItems = make(map[string]entityTransaction, 0)\n"
+		val += "}\n"
+		val += "if len(transactionQueue.queue[t.Id.Hex()].newItems) == 0 {\n"
+		val += "	transactionQueue.queue[t.Id.Hex()].newItems = make(map[string]entityTransaction, 0)\n"
+		val += "}\n"
+		val += "transactionQueue.queue[t.Id.Hex()].newItems[\"" + strings.Title(collection.Name) + "_\" + self.Id.Hex()] = eTransactionNew\n\n"
+		val += "transactionQueue.queue[t.Id.Hex()].originalItems[\"" + strings.Title(collection.Name) + "_\" + self.Id.Hex()] = eTransactionOriginal\n\n"
 		val += "transactionQueue.ids[t.Id.Hex()] = append(transactionQueue.ids[t.Id.Hex()], eTransactionNew.entity.GetId())\n"
 
 		val += "return nil"

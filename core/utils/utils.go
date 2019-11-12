@@ -72,6 +72,15 @@ func InArray(a string, list []string) bool {
 	return false
 }
 
+func InIntArray(a int, list []int) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
+}
+
 func Array(values ...string) []string {
 	var out []string
 	for _, value := range values {
