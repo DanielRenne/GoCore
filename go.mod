@@ -21,9 +21,9 @@ require (
 	github.com/coreos/bbolt v1.3.1-coreos.6.0.20180318001526-af9db2027c98 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/davidrenne/heredoc v0.0.0-20161006151009-80dc836e596c
-	github.com/davidrenne/professor v0.0.0-20180814210453-cc6399dacc55 // indirect
+	github.com/davidrenne/professor v0.0.0-20180814210453-cc6399dacc55
 	github.com/davidrenne/redmine v0.0.0-20180928085134-85281d99abe9 // indirect
-	github.com/davidrenne/reflections v0.0.0-20161019174303-010f7c1fcf36 // indirect
+	github.com/davidrenne/reflections v0.0.0-20161019174303-010f7c1fcf36
 	github.com/davidrenne/zeroconf v0.0.0-20180321143614-6d4d3bb3ecab // indirect
 	github.com/dchest/uniuri v0.0.0-20160212164326-8902c56451e9 // indirect
 	github.com/dgrijalva/jwt-go v3.0.1-0.20160729164851-63734eae1ef5+incompatible // indirect
@@ -37,15 +37,15 @@ require (
 	github.com/foize/go.fifo v0.0.0-20130327144150-3a04cfeec121 // indirect
 	github.com/garyburd/redigo v1.0.1-0.20160810234951-ffa8d46ada78 // indirect
 	github.com/gin-contrib/sse v0.0.0-20170109093832-22d885f9ecc7 // indirect
-	github.com/gin-gonic/contrib v0.0.0-20160703143648-547e518040cf // indirect
-	github.com/gin-gonic/gin v1.1.5-0.20170814063429-52c2ed34b325 // indirect
+	github.com/gin-gonic/contrib v0.0.0-20160703143648-547e518040cf
+	github.com/gin-gonic/gin v1.1.5-0.20170814063429-52c2ed34b325
 	github.com/globalsign/mgo v0.0.0-20171106093149-5be15cc6a449
-	github.com/go-errors/errors v0.0.0-20161205223245-8fa88b06e597 // indirect
+	github.com/go-errors/errors v0.0.0-20161205223245-8fa88b06e597
 	github.com/go-humble/detect v0.1.1 // indirect
 	github.com/go-humble/router v0.3.0 // indirect
 	github.com/go-mangos/mangos v1.2.1-0.20170412215926-e3181ec4a2a5 // indirect
 	github.com/go-stack/stack v1.5.2 // indirect
-	github.com/golang/groupcache v0.0.0-20170109205448-72d04f9fcdec // indirect
+	github.com/golang/groupcache v0.0.0-20170109205448-72d04f9fcdec
 	github.com/golang/protobuf v0.0.0-20160815223629-7390af9dcd3c // indirect
 	github.com/golang/text v0.0.0-20161007060404-ede1cb9f9f2f // indirect
 	github.com/gomodule/redigo v2.0.0+incompatible // indirect
@@ -53,7 +53,7 @@ require (
 	github.com/gorilla/context v0.0.0-20160816184700-01ef6ff48fdc // indirect
 	github.com/gorilla/securecookie v1.1.1 // indirect
 	github.com/gorilla/sessions v0.0.0-20160816185042-1bbba13ba476 // indirect
-	github.com/gorilla/websocket v1.0.1-0.20161112142712-e8f0f8aaa98d // indirect
+	github.com/gorilla/websocket v1.0.1-0.20161112142712-e8f0f8aaa98d
 	github.com/hpcloud/tail v1.0.1-0.20170207023346-faf842bde7ed // indirect
 	github.com/json-iterator/go v1.1.6 // indirect
 	github.com/juju/errors v0.0.0-20160809030848-6f54ff631840 // indirect
@@ -83,7 +83,7 @@ require (
 	github.com/ttacon/builder v0.0.0-20141230023516-7f152c3cf471 // indirect
 	github.com/ttacon/libphonenumber v0.0.0-20160629174823-33d0ea1f9ace // indirect
 	github.com/ugorji/go v0.0.0-20170918222552-54210f4e076c // indirect
-	github.com/utrack/gin-csrf v0.0.0-20150831070702-63c0ef5eca6c // indirect
+	github.com/utrack/gin-csrf v0.0.0-20150831070702-63c0ef5eca6c
 	github.com/ziutek/utils v0.0.0-20131202123950-d8fe304b0db2 // indirect
 	golang.org/x/crypto v0.0.0-20190829043050-9756ffdc2472 // indirect
 	golang.org/x/image v0.0.0-20190910094157-69e4b8554b2a // indirect
@@ -94,7 +94,7 @@ require (
 	gopkg.in/fsnotify.v1 v1.4.7 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/go-playground/validator.v8 v8.18.2 // indirect
-	gopkg.in/go-playground/webhooks.v5 v5.1.0 // indirect
+	gopkg.in/go-playground/webhooks.v5 v5.1.0
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
 	gopkg.in/yaml.v2 v2.2.2 // indirect
 	honnef.co/go/js/dom v0.0.0-20190526011328-ebc4cf92d81f // indirect

@@ -46,10 +46,18 @@ type socketAPIResponse struct {
 
 func processGETAPI(c *gin.Context) {
 
+	controller := c.Query("controller")
+	action := c.Query("action")
+	uriParams := c.Query("uriParams")
+
+	log.Println("process GET API " + controller + " " + action)
+
 	defer func() {
 		if r := recover(); r != nil {
+
+			log.Println("Failed to processGETAPI:  Controller:  " + controller + " Action: " + action + " " + fmt.Sprintf("%+v", r))
 			log.Println("Panic Stack: " + string(debug.Stack()))
-			log.Println("Recover Error:  " + fmt.Sprintf("%+v", r))
+
 			var e ErrorResponse
 			e.Error.Message = "Recover Error:  " + fmt.Sprintf("%+v", r)
 			c.JSON(http.StatusInternalServerError, e)
@@ -59,10 +67,6 @@ func processGETAPI(c *gin.Context) {
 
 	var e ErrorResponse
 	e.Error = new(errorObj)
-
-	controller := c.Query("controller")
-	action := c.Query("action")
-	uriParams := c.Query("uriParams")
 
 	if action == "" {
 		action = "Root"

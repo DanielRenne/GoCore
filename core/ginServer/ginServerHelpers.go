@@ -41,6 +41,8 @@ func GetSessionKey(c *gin.Context, key string) (sessionKey string) {
 		session.Options(sessions.Options{MaxAge: 86400 * serverSettings.WebConfig.Application.SessionExpirationDays,
 			Secure: serverSettings.WebConfig.Application.SessionSecureCookie,
 			Domain: ginCookieDomain})
+	} else {
+		session.Options(sessions.Options{Path: "/", MaxAge: 86400 * serverSettings.WebConfig.Application.SessionExpirationDays})
 	}
 	value := session.Get(key)
 	if value == nil {
@@ -55,9 +57,11 @@ func GetSessionKey(c *gin.Context, key string) (sessionKey string) {
 func SetSessionKey(c *gin.Context, key string, value string) {
 	session := sessions.Default(c)
 	if strings.Contains(c.Request.Host, ".com") {
-		session.Options(sessions.Options{MaxAge: 86400 * serverSettings.WebConfig.Application.SessionExpirationDays,
+		session.Options(sessions.Options{Path: "/", MaxAge: 86400 * serverSettings.WebConfig.Application.SessionExpirationDays,
 			Secure: serverSettings.WebConfig.Application.SessionSecureCookie,
 			Domain: ginCookieDomain})
+	} else {
+		session.Options(sessions.Options{Path: "/", MaxAge: 86400 * serverSettings.WebConfig.Application.SessionExpirationDays})
 	}
 	session.Set(key, value)
 	session.Save()
@@ -69,6 +73,8 @@ func SaveSession(c *gin.Context) {
 		session.Options(sessions.Options{MaxAge: 86400 * serverSettings.WebConfig.Application.SessionExpirationDays,
 			Secure: serverSettings.WebConfig.Application.SessionSecureCookie,
 			Domain: ginCookieDomain})
+	} else {
+		session.Options(sessions.Options{Path: "/", MaxAge: 86400 * serverSettings.WebConfig.Application.SessionExpirationDays})
 	}
 	session.Save()
 }
@@ -79,6 +85,8 @@ func ClearSession(c *gin.Context) {
 		session.Options(sessions.Options{MaxAge: 86400 * serverSettings.WebConfig.Application.SessionExpirationDays,
 			Secure: serverSettings.WebConfig.Application.SessionSecureCookie,
 			Domain: ginCookieDomain})
+	} else {
+		session.Options(sessions.Options{Path: "/", MaxAge: 86400 * serverSettings.WebConfig.Application.SessionExpirationDays})
 	}
 	session.Clear()
 }
