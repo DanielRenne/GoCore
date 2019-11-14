@@ -29,7 +29,7 @@ func init() {
 	go func() {
 
 		for {
-			mdb := dbServices.ReadMongoDB() 
+			mdb := dbServices.ReadMongoDB()
 			if mdb != nil {
 				initHistCollection()
 				return
@@ -134,6 +134,18 @@ func (obj *modelHistCollection) Index() error {
 
 func (obj *modelHistCollection) New() *HistEntity {
 	return &HistEntity{}
+}
+
+func (obj *HistEntity) DoesIdExist(objectID interface{}) bool {
+	var retObj HistEntity
+	row := modelHistCollection{}
+	q := row.Query()
+	err := q.ById(objectID, &retObj)
+	if err == nil {
+		return true
+	} else {
+		return false
+	}
 }
 
 func (self *HistEntity) Save() error {
