@@ -293,7 +293,15 @@ func Run() {
 
 	log.Println("GoCore Application Started")
 
-	ginServer.Router.Run(":" + strconv.Itoa(serverSettings.WebConfig.Application.HttpPort))
+	s := &http.Server{
+		Addr:         ":" + strconv.Itoa(serverSettings.WebConfig.Application.HttpPort),
+		Handler:      ginServer.Router,
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 10 * time.Second,
+	}
+	s.ListenAndServe()
+
+	// ginServer.Router.Run(":" + strconv.Itoa(serverSettings.WebConfig.Application.HttpPort))
 
 	// go ginServer.Router.GET("/", func(c *gin.Context) {
 	// 	c.Redirect(http.StatusMovedPermanently, "https://"+serverSettings.WebConfig.Application.Domain+":"+strconv.Itoa(serverSettings.WebConfig.Application.HttpsPort))
