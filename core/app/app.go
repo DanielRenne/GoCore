@@ -296,8 +296,8 @@ func Run() {
 	s := &http.Server{
 		Addr:         ":" + strconv.Itoa(serverSettings.WebConfig.Application.HttpPort),
 		Handler:      ginServer.Router,
-		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 10 * time.Second,
+		ReadTimeout:  60 * time.Second,
+		WriteTimeout: 60 * time.Second,
 	}
 	s.ListenAndServe()
 
