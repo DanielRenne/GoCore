@@ -213,7 +213,13 @@ func RunLite(port int) {
 
 	log.Println("GoCore Application Started")
 
-	ginServer.Router.Run(":" + strconv.Itoa(port))
+	s := &http.Server{
+		Addr:         ":" + strconv.Itoa(port),
+		Handler:      ginServer.Router,
+		ReadTimeout:  60 * time.Second,
+		WriteTimeout: 60 * time.Second,
+	}
+	s.ListenAndServe()
 
 }
 
