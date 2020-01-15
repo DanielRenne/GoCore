@@ -216,8 +216,8 @@ func RunLite(port int) {
 	s := &http.Server{
 		Addr:         ":" + strconv.Itoa(port),
 		Handler:      ginServer.Router,
-		ReadTimeout:  60 * time.Second,
-		WriteTimeout: 60 * time.Second,
+		ReadTimeout:  120 * time.Second,
+		WriteTimeout: 120 * time.Second,
 	}
 	s.ListenAndServe()
 
@@ -302,8 +302,8 @@ func Run() {
 	s := &http.Server{
 		Addr:         ":" + strconv.Itoa(serverSettings.WebConfig.Application.HttpPort),
 		Handler:      ginServer.Router,
-		ReadTimeout:  60 * time.Second,
-		WriteTimeout: 60 * time.Second,
+		ReadTimeout:  120 * time.Second,
+		WriteTimeout: 120 * time.Second,
 	}
 	s.ListenAndServe()
 
