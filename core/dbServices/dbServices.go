@@ -1,9 +1,11 @@
 package dbServices
 
 import (
+	"crypto/tls"
 	"database/sql"
 	"fmt"
 	"log"
+	"net"
 	"os"
 	"path"
 	"time"
@@ -166,14 +168,37 @@ func openMongo() error {
 		connectionString = mongoDBOverride
 	}
 
+	dialInfo, err := mgo.ParseURL(connectionString)
+	if err != nil {
+		log.Println(err)
+	}
+
+	dialInfo.DialServer = func(addr *mgo.ServerAddr) (net.Conn, error) {
+		if serverSettings.WebConfig.DbConnection.EnableTLS {
+			tlsConfig := &tls.Config{}
+			conn, err := tls.Dial("tcp", addr.String(), tlsConfig)
+			if err != nil {
+				log.Println(err)
+			}
+			return conn, err
+		} else {
+			conn, err := net.Dial("tcp", addr.String())
+			if err != nil {
+				log.Println(err)
+			}
+			return conn, err
+		}
+
+	}
+
 	DBMutex.Lock()
-	MongoSession, err = mgo.Dial(connectionString) // open an connection -> Dial function
+	MongoSession, err = mgo.DialWithInfo(dialInfo) // open an connection -> Dial function
 	DBMutex.Unlock()
 
 	if err != nil {
 		for i := 0; i < 5; i++ {
 			DBMutex.Lock()
-			MongoSession, err = mgo.Dial(connectionString) // open an connection -> Dial function
+			MongoSession, err = mgo.DialWithInfo(dialInfo) // open an connection -> Dial function
 			DBMutex.Unlock()
 			if err == nil {
 				break

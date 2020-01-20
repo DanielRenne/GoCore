@@ -15,6 +15,7 @@ type htmlTemplates struct {
 
 type dbConnection struct {
 	ConnectionString    string `json:"connectionString"`
+	EnableTLS           bool   `json:"enableTLS"`
 	Driver              string `json:"driver"`
 	Database            string `json:"database"`
 	AuthServer          bool   `json:"authServer"`
@@ -84,9 +85,9 @@ type Application struct {
 }
 
 type webConfigObj struct {
-	DbConnections    []dbConnection `json:"dbConnections"`
-	Application      Application    `json:"application"`
-	DbConnection     dbConnection
+	DbConnections []dbConnection `json:"dbConnections"`
+	Application   Application    `json:"application"`
+	DbConnection  dbConnection
 }
 
 var WebConfig webConfigObj
