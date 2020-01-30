@@ -168,13 +168,20 @@ func openMongo() error {
 		connectionString = mongoDBOverride
 	}
 
+	overrideConnectionString := os.Getenv("MGO_CONNECTION_STRING")
+	if overrideConnectionString != "" {
+		connectionString = overrideConnectionString
+	}
+
+	mgoTLSEnabled := os.Getenv("MGO_TLS_ENABLED")
+
 	dialInfo, err := mgo.ParseURL(connectionString)
 	if err != nil {
 		log.Println(err)
 	}
 
 	dialInfo.DialServer = func(addr *mgo.ServerAddr) (net.Conn, error) {
-		if serverSettings.WebConfig.DbConnection.EnableTLS {
+		if serverSettings.WebConfig.DbConnection.EnableTLS || mgoTLSEnabled == "1" {
 			tlsConfig := &tls.Config{}
 			conn, err := tls.Dial("tcp", addr.String(), tlsConfig)
 			if err != nil {
@@ -224,6 +231,11 @@ func connectMongoDB() error {
 	dbName := serverSettings.WebConfig.DbConnection.Database
 	if mongoDBNameOverride != "" {
 		dbName = mongoDBNameOverride
+	}
+
+	overrideDBName := os.Getenv("MGO_DB_NAME")
+	if overrideDBName != "" {
+		dbName = overrideDBName
 	}
 
 	MongoDB = MongoSession.DB(dbName)
