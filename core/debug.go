@@ -124,7 +124,7 @@ func (self *core_debug) ErrLineAndFile(err error) (s string) {
 
 func (self *core_debug) Dump(valuesOriginal ...interface{}) {
 	t := time.Now()
-	l := "!!!!!!!!!!!!! DEBUG " + t.String() + "!!!!!!!!!!!!!\n\n"
+	l := "!!!!!!!!!!!!! DEBUG " + t.Format("2006-01-02 15:04:05.000000") + "!!!!!!!!!!!!!\n\n"
 	Logger.Println(l)
 
 	serverSettings.WebConfigMutex.RLock()
@@ -155,7 +155,7 @@ func (self *core_debug) Dump(valuesOriginal ...interface{}) {
 		TransactionLogMutex.Unlock()
 	}
 	serverSettings.WebConfigMutex.RUnlock()
-	l = "!!!!!!!!!!!!! ENDDEBUG " + t.String() + "!!!!!!!!!!!!!"
+	l = "!!!!!!!!!!!!! ENDDEBUG " + t.Format("2006-01-02 15:04:05.000000") + "!!!!!!!!!!!!!"
 	Logger.Println(l)
 	serverSettings.WebConfigMutex.RLock()
 	if serverSettings.WebConfig.Application.ReleaseMode == "development" {

@@ -100,6 +100,14 @@ func (cc CollectionCache) Store(collection string, id string, value interface{})
 }
 
 //Count returns the length of the cache.
+func (cc CollectionCache) DeleteAll() {
+	collectionCache.Range(func(key interface{}, value interface{}) bool {
+		cc.removeByKey(key)
+		return true
+	})
+}
+
+//Count returns the length of the cache.
 func (cc CollectionCache) Count() (value int) {
 	value = collectionCacheCount.Get()
 	return
