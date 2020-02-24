@@ -668,6 +668,13 @@ func BootstrapMongoDump(directoryName string, collectionName string) (err error)
 	} else if runtime.GOOS == "darwin" {
 		commandPath = "mongoimport"
 	}
+
+	if os.Getenv("MGO_COMMAND_ARGS") != "" {
+		args := strings.Fields(commandPath + " " + os.Getenv("MGO_COMMAND_ARGS") + " --collection " + collectionName + " --file " + path + " --upsert")
+		err = exec.Command(args[0], args[1:]...).Run()
+		return
+	}
+
 	err = exec.Command(commandPath, "--db", dbName, "--collection", collectionName, "--file", path, "--upsert").Run()
 	return
 
