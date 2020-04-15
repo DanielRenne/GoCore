@@ -162,7 +162,7 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-var WebSocketConnections WebSocketConnectionCollection
+var WebSocketConnections sync.Map
 var webSocketConnectionsMeta sync.Map
 var WebSocketCallbacks sync.Map
 var WebSocketRemovalCallback WebSocketRemoval
@@ -415,23 +415,23 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context) {
 		}
 	}, "GoCore/app.go->webSocketHandler[Reader]")
 
-	WebSocketConnections.Append(wsConn)
-
+	WebSocketConnections.Store(wsConn.Id, wsConn)
 }
 
 func CloseAllSockets() {
 
 	items := []*WebSocketConnection{}
 
-	for item := range WebSocketConnections.Iter() {
-		wsConn := item.Conn
-		items = append(items, wsConn)
-	}
+	WebSocketConnections.Range(func(key interface{}, value interface{}) bool {
+		conn, _ := value.(*WebSocketConnection)
+		items = append(items, conn)
+		return true
+	})
 
 	for i := range items {
 		connection := items[i]
 		connection.Connection.UnderlyingConn().Close()
-		// deleteWebSocket(connection)
+		WebSocketConnections.Delete(connection.Id)
 	}
 
 }
@@ -499,8 +499,6 @@ func ReplyToWebSocket(conn *WebSocketConnection, data []byte) {
 
 	}()
 
-	// deadLockChan := make(chan int)
-
 	go func() {
 
 		unlocked := false
@@ -514,20 +512,10 @@ func ReplyToWebSocket(conn *WebSocketConnection, data []byte) {
 		}()
 		conn.WriteLock.Lock()
 		conn.Connection.WriteMessage(websocket.TextMessage, data)
-		unlocked = true
 		conn.WriteLock.Unlock()
-		// deadLockChan <- 0
+		unlocked = true
+
 	}()
-
-	// go func() {
-	// 	select {
-	// 	case <-deadLockChan:
-	// 	case <-time.After(3 * time.Second):
-	// 		CustomLog("Socket Reply JSON Deadlock", "Disconnecting socket.")
-	// 		deleteWebSocket(conn)
-	// 	}
-	// }()
-
 }
 
 func ReplyToWebSocketJSON(conn *WebSocketConnection, v interface{}) {
@@ -535,13 +523,9 @@ func ReplyToWebSocketJSON(conn *WebSocketConnection, v interface{}) {
 	defer func() {
 		if recover := recover(); recover != nil {
 			log.Println("Panic Recovered at ReplyToWebSocketJSON():  ", recover)
-			time.Sleep(time.Millisecond * 3000)
-			ReplyToWebSocketJSON(conn, v)
 			return
 		}
 	}()
-
-	// deadLockChan := make(chan int)
 
 	go func() {
 
@@ -559,19 +543,9 @@ func ReplyToWebSocketJSON(conn *WebSocketConnection, v interface{}) {
 		conn.Connection.SetWriteDeadline(time.Now().Add(time.Duration(10000) * time.Millisecond))
 		conn.WriteLock.Lock()
 		conn.Connection.WriteJSON(v)
-		unlocked = true
 		conn.WriteLock.Unlock()
-		// deadLockChan <- 0
+		unlocked = true
 	}()
-
-	// go func() {
-	// 	select {
-	// 	case <-deadLockChan:
-	// 	case <-time.After(3 * time.Second):
-	// 		CustomLog("Socket Reply JSON Deadlock", "Disconnecting socket.")
-	// 		deleteWebSocket(conn)
-	// 	}
-	// }()
 
 }
 
@@ -584,8 +558,6 @@ func ReplyToWebSocketPubSub(conn *WebSocketConnection, key string, v interface{}
 	var payload WebSocketPubSubPayload
 	payload.Key = key
 	payload.Content = v
-
-	// deadLockChan := make(chan int)
 
 	go func() {
 
@@ -602,19 +574,10 @@ func ReplyToWebSocketPubSub(conn *WebSocketConnection, key string, v interface{}
 		conn.Connection.SetWriteDeadline(time.Now().Add(time.Duration(10000) * time.Millisecond))
 		conn.WriteLock.Lock()
 		conn.Connection.WriteJSON(payload)
-		unlocked = true
 		conn.WriteLock.Unlock()
-		// deadLockChan <- 0
-	}()
+		unlocked = true
 
-	// go func() {
-	// 	select {
-	// 	case <-deadLockChan:
-	// 	case <-time.After(3 * time.Second):
-	// 		CustomLog("Socket Broadcast Data Deadlock", "Disconnecting socket.")
-	// 		deleteWebSocket(conn)
-	// 	}
-	// }()
+	}()
 
 }
 
@@ -623,16 +586,12 @@ func BroadcastWebSocketData(data []byte) {
 	defer func() {
 		if recover := recover(); recover != nil {
 			log.Println("Panic Recovered at WebSocketConnections():  ", recover)
-			time.Sleep(time.Millisecond * 3000)
-			BroadcastWebSocketData(data)
 			return
 		}
 	}()
 
-	for item := range WebSocketConnections.Iter() {
-
-		// deadLockChan := make(chan int)
-		conn := item.Conn
+	WebSocketConnections.Range(func(key interface{}, value interface{}) bool {
+		conn, _ := value.(*WebSocketConnection)
 
 		go func() {
 
@@ -647,20 +606,13 @@ func BroadcastWebSocketData(data []byte) {
 			}()
 			conn.WriteLock.Lock()
 			conn.Connection.WriteMessage(websocket.BinaryMessage, data)
-			unlocked = true
 			conn.WriteLock.Unlock()
+			unlocked = true
 			// deadLockChan <- 0
 		}()
-
-		// go func() {
-		// 	select {
-		// 	case <-deadLockChan:
-		// 	case <-time.After(3 * time.Second):
-		// 		CustomLog("Socket Broadcast Data Deadlock", "Disconnecting socket.")
-		// 		deleteWebSocket(conn)
-		// 	}
-		// }()
-	}
+		return true
+	})
+	return
 }
 
 func BroadcastWebSocketJSON(v interface{}) {
@@ -673,10 +625,8 @@ func BroadcastWebSocketJSON(v interface{}) {
 		}
 	}()
 
-	for item := range WebSocketConnections.Iter() {
-
-		// deadLockChan := make(chan int)
-		conn := item.Conn
+	WebSocketConnections.Range(func(key interface{}, value interface{}) bool {
+		conn, _ := value.(*WebSocketConnection)
 
 		go func() {
 
@@ -693,28 +643,18 @@ func BroadcastWebSocketJSON(v interface{}) {
 			conn.Connection.SetWriteDeadline(time.Now().Add(time.Duration(10000) * time.Millisecond))
 			conn.WriteLock.Lock()
 			conn.Connection.WriteJSON(v)
-			unlocked = true
 			conn.WriteLock.Unlock()
-			// deadLockChan <- 0
+			unlocked = true
 		}()
+		return true
+	})
 
-		// go func() {
-		// 	select {
-		// 	case <-deadLockChan:
-		// 	case <-time.After(3 * time.Second):
-		// 		CustomLog("Socket Broadcast JSON Deadlock", "Disconnecting socket.")
-		// 		deleteWebSocket(conn)
-		// 	}
-		// }()
-	}
 }
 
 func PublishWebSocketJSON(key string, v interface{}) {
 	defer func() {
 		if recover := recover(); recover != nil {
 			log.Println("Panic Recovered at PublishWebSocketJSON():  ", recover)
-			time.Sleep(time.Millisecond * 3000)
-			PublishWebSocketJSON(key, v)
 			return
 		}
 	}()
@@ -722,15 +662,8 @@ func PublishWebSocketJSON(key string, v interface{}) {
 	payload.Key = key
 	payload.Content = v
 
-	//Serialize and Deserialize to prevent Race Conditions from caller.
-	// data, _ := json.Marshal(payload)
-	// json.Unmarshal(data, &payload)
-
-	for item := range WebSocketConnections.Iter() {
-
-		// deadLockChan := make(chan int)
-		conn := item.Conn
-
+	WebSocketConnections.Range(func(key interface{}, value interface{}) bool {
+		conn, _ := value.(*WebSocketConnection)
 		go func() {
 
 			unlocked := false
@@ -739,27 +672,19 @@ func PublishWebSocketJSON(key string, v interface{}) {
 					if !unlocked {
 						conn.WriteLock.Unlock()
 					}
-					CustomLog("app->PublishWebSocketJSON", "Panic Recovered at PublishWebSocketJSON():  "+fmt.Sprintf("%+v", recover))
+					CustomLog("app->PublishWebSocketJSON", "Panic Recovered at PublishWebSocketJSON():  "+fmt.Sprintf("%+v", recover)+" payload: "+fmt.Sprintf("%+v", payload))
 				}
 			}()
 
 			conn.Connection.SetWriteDeadline(time.Now().Add(time.Duration(10000) * time.Millisecond))
 			conn.WriteLock.Lock()
 			conn.Connection.WriteJSON(payload)
-			unlocked = true
 			conn.WriteLock.Unlock()
+			unlocked = true
 			// deadLockChan <- 0
 		}()
-
-		// go func() {
-		// 	select {
-		// 	case <-deadLockChan:
-		// 	case <-time.After(3 * time.Second):
-		// 		CustomLog("Socket Publishing JSON Deadlock", "Disconnecting socket.")
-		// 		deleteWebSocket(conn)
-		// 	}
-		// }()
-	}
+		return true
+	})
 }
 
 func SetWebSocketTimeout(timeout int) {
@@ -802,70 +727,53 @@ func SetWebSocketTimeout(timeout int) {
 
 func deleteWebSocket(c *WebSocketConnection) {
 
-	// return
-	index := -1
-	idToRemove := ""
-
-	for item := range WebSocketConnections.Iter() {
-		wsConn := item.Conn
-		if wsConn.Id == c.Id {
-			index = item.Index
-			idToRemove = item.Conn.Id
-		}
-	}
-
-	if index > -1 {
-		go func() {
-			defer func() {
-				if recover := recover(); recover != nil {
-					CustomLog("app->deleteWebSocket", "Panic Recovered at deleteWebSocket():  "+fmt.Sprintf("%+v", recover))
-					return
-				}
-			}()
-
-			if CustomLog != nil {
-				CustomLog("app->deleteWebSocket", "Deleting Web Socket from client:  "+c.Connection.RemoteAddr().String())
-			}
-
-			WebSocketConnections.Lock()
-			defer WebSocketConnections.Unlock()
-			WebSocketConnections.Connections = removeWebSocket(WebSocketConnections.Connections, index)
-
-			if store.OnChange != nil {
-				go func() {
-					defer func() {
-						if recover := recover(); recover != nil {
-							log.Println("Panic Recovered at store.OnChange():  ", recover)
-							return
-						}
-					}()
-
-					store.OnChange(store.WebSocketStoreKey, "", store.PathRemove, nil, nil)
-				}()
-			}
-
-			if WebSocketRemovalCallback != nil {
-				info, ok := GetWebSocketMeta(c.Id)
-				if ok {
-					go func(c *WebSocketConnection) {
-						defer func() {
-							if recover := recover(); recover != nil {
-								log.Println("Panic Recovered at deleteWebSocket():  ", recover)
-								return
-							}
-						}()
-						WebSocketRemovalCallback(*info)
-					}(c)
-				}
-
-			}
-
-			if idToRemove != "" {
-				RemoveWebSocketMeta(idToRemove)
+	go func() {
+		defer func() {
+			if recover := recover(); recover != nil {
+				CustomLog("app->deleteWebSocket", "Panic Recovered at deleteWebSocket():  "+fmt.Sprintf("%+v", recover))
+				return
 			}
 		}()
 
-	}
+		if CustomLog != nil {
+			CustomLog("app->deleteWebSocket", "Deleting Web Socket from client:  "+c.Connection.RemoteAddr().String())
+		}
+
+		WebSocketConnections.Delete(c.Id)
+
+		if store.OnChange != nil {
+			go func() {
+				defer func() {
+					if recover := recover(); recover != nil {
+						log.Println("Panic Recovered at store.OnChange():  ", recover)
+						return
+					}
+				}()
+
+				store.OnChange(store.WebSocketStoreKey, "", store.PathRemove, nil, nil)
+			}()
+		}
+
+		if WebSocketRemovalCallback != nil {
+			info, ok := GetWebSocketMeta(c.Id)
+			if ok {
+				go func(c *WebSocketConnection) {
+					defer func() {
+						if recover := recover(); recover != nil {
+							log.Println("Panic Recovered at deleteWebSocket():  ", recover)
+							return
+						}
+					}()
+					WebSocketRemovalCallback(*info)
+				}(c)
+			}
+
+		}
+
+		RemoveWebSocketMeta(c.Id)
+
+	}()
+
 }
 
 func GetWebSocketMeta(id string) (info *WebSocketConnectionMeta, ok bool) {
