@@ -39,9 +39,20 @@ Below are some targeted goals:
 
 https://nodejs.org/en/download/
 
-### Install Golang
+### Install Webpack ###
+
+npm install --global webpack@v2.6.1
+
+### Install Golang ###
 
 [Setup](https://golang.org/doc/install/ "Setup")
+
+### Edit sudoers ###
+
+sudo vim /etc/sudoers
+
+yourusername   ALL = NOPASSWD: ALL
+
 
 ### Add your gopath bin directory to your PATH and set NODE_ENV=development
 
@@ -67,7 +78,7 @@ Source it:
 
 1.5.  To start a new project with a version prior to go modules.
 
-	`go get github.com/DanielRenne/GoCore...`
+	`go get github.com/DanielRenne/GoCore/...`
 
 ### Add to your Operating Systems Path the ~/go/bin directory
 
