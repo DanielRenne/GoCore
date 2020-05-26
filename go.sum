@@ -97,8 +97,6 @@ github.com/go-mangos/mangos v1.2.1-0.20170412215926-e3181ec4a2a5 h1:wX6dyDxYbNrs
 github.com/go-mangos/mangos v1.2.1-0.20170412215926-e3181ec4a2a5/go.mod h1:YdIQuRLk16QkCaBzTrcXSxmOvvbzi6UE+JXQonzD/pc=
 github.com/go-stack/stack v1.5.2 h1:5sTB/0oZM2O31k/N1IRwxxVXzLIt5NF2Aqx/2gWI9OY=
 github.com/go-stack/stack v1.5.2/go.mod h1:v0f6uXyyMGvRgIKkXu+yp6POWl0qKG85gN/melR3HDY=
-github.com/golang/groupcache v0.0.0-20170109205448-72d04f9fcdec h1:fqoLQDVusPGPoMTzj+LZWHjulT9mySUYmEv5aqsqQ6g=
-github.com/golang/groupcache v0.0.0-20170109205448-72d04f9fcdec/go.mod h1:cIg4eruTrX1D+g88fzRXU5OdNfaM+9IcxsU14FzY7Hc=
 github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e h1:1r7pUrabqp18hOBcwBwiTsbnFeTZHV9eER/QT5JVZxY=
 github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e/go.mod h1:cIg4eruTrX1D+g88fzRXU5OdNfaM+9IcxsU14FzY7Hc=
 github.com/golang/protobuf v0.0.0-20160815223629-7390af9dcd3c h1:+6xhI2v1yg36zjqJVs1kqhFDlNf2F5v5LiU32qJYYyc=
