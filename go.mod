@@ -45,7 +45,7 @@ require (
 	github.com/go-humble/router v0.3.0 // indirect
 	github.com/go-mangos/mangos v1.2.1-0.20170412215926-e3181ec4a2a5 // indirect
 	github.com/go-stack/stack v1.5.2 // indirect
-	github.com/golang/groupcache v0.0.0-20170109205448-72d04f9fcdec
+	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/golang/protobuf v0.0.0-20160815223629-7390af9dcd3c // indirect
 	github.com/golang/text v0.0.0-20161007060404-ede1cb9f9f2f // indirect
 	github.com/gomodule/redigo v2.0.0+incompatible // indirect

@@ -3,6 +3,7 @@
 package fileCache
 
 import (
+	"context"
 	"log"
 	"os"
 	"sync"
@@ -332,7 +333,7 @@ func DeleteAllManifestFileCache() (err error) {
 
 // Returns the html by path (key) from group cache
 func GetHTMLFile(path string) (string, error) {
-	var ctx groupcache.Context
+	var ctx context.Context
 	var data []byte
 	err := htmlFileCache.Get(ctx, path, groupcache.AllocatingByteSliceSink(&data))
 	if err != nil {
@@ -344,7 +345,7 @@ func GetHTMLFile(path string) (string, error) {
 
 //Returns binary data by path(key) from group cache
 func GetFile(path string) ([]byte, error) {
-	var ctx groupcache.Context
+	var ctx context.Context
 	var data []byte
 	err := htmlFileCache.Get(ctx, path, groupcache.AllocatingByteSliceSink(&data))
 	if err != nil {
@@ -356,7 +357,7 @@ func GetFile(path string) ([]byte, error) {
 
 // Gets a value by Key from group cache
 func GetString(key string) (string, error) {
-	var ctx groupcache.Context
+	var ctx context.Context
 	var data []byte
 	err := stringCache.Get(ctx, key, groupcache.AllocatingByteSliceSink(&data))
 	if err != nil {
@@ -369,7 +370,7 @@ func GetString(key string) (string, error) {
 // Sets a Key value pair in group cache
 func SetString(key string, value string) error {
 
-	var ctx groupcache.Context
+	var ctx context.Context
 	setTempStringCache(key, value)
 	var data []byte
 	return stringCache.Get(ctx, key, groupcache.AllocatingByteSliceSink(&data))
@@ -396,7 +397,7 @@ func initializeGroupCache(domain string) {
 }
 
 // Handles group cache callback on getting http file cache requests.
-func handleHtmlFileCache(ctx groupcache.Context, key string, dest groupcache.Sink) error {
+func handleHtmlFileCache(ctx context.Context, key string, dest groupcache.Sink) error {
 	fileName := key
 	data, err := extensions.ReadFile(fileName)
 	if err != nil {
@@ -408,7 +409,7 @@ func handleHtmlFileCache(ctx groupcache.Context, key string, dest groupcache.Sin
 }
 
 // Handles group cache callback on getting a string key value pair.
-func handleStringCache(ctx groupcache.Context, key string, dest groupcache.Sink) error {
+func handleStringCache(ctx context.Context, key string, dest groupcache.Sink) error {
 
 	stringKey := key
 	value := getTempStringCache(stringKey)
