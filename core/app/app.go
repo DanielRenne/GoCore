@@ -8,6 +8,7 @@ import (
 	randMath "math/rand"
 	"net/http"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -386,6 +387,13 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context) {
 						}
 					}()
 
+					precheckString := string(p)
+
+					//Temp change for crashing web service.
+					if strings.ContainsAny(precheckString, "ProxyGateway") || strings.ContainsAny(precheckString, "ProxyWebSocket") {
+						return
+					}
+
 					meta, ok := GetWebSocketMeta(uuid)
 					if ok {
 						meta.LastResponseTime.Set(time.Now())
@@ -619,8 +627,6 @@ func BroadcastWebSocketJSON(v interface{}) {
 	defer func() {
 		if recover := recover(); recover != nil {
 			log.Println("Panic Recovered at BroadcastWebSocketJSON():  ", recover)
-			time.Sleep(time.Millisecond * 3000)
-			BroadcastWebSocketJSON(v)
 			return
 		}
 	}()
