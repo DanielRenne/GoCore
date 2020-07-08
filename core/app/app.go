@@ -390,7 +390,7 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context) {
 					precheckString := string(p)
 
 					//Temp change for crashing web service.
-					if strings.ContainsAny(precheckString, "ProxyGateway") || strings.ContainsAny(precheckString, "ProxyWebSocket") {
+					if strings.Contains(precheckString, "ProxyGateway") || strings.Contains(precheckString, "ProxyWebSocket") {
 						return
 					}
 
