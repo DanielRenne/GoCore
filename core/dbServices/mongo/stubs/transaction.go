@@ -280,12 +280,12 @@ func (self *Transaction) Commit() error {
 
 		for _, entityTran := range tPersist.originalItems {
 
-			err := entityTran.entity.Save()
-			if err != nil {
-				rollBack = true
-				rollBackErrorMessage = "Failed to persist object in history collection.  Rolling back transaction id " + self.Id.Hex() + ".\n" + err.Error()
-				break
-			}
+			//err := entityTran.entity.Save()
+			//if err != nil {
+			//	rollBack = true
+			//	rollBackErrorMessage = "Failed to persist object in history collection.  Rolling back transaction id " + self.Id.Hex() + ".\n" + err.Error()
+			//	break
+			//}
 			entityTran.committed = true
 		}
 	}

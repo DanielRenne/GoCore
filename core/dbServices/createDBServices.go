@@ -1572,6 +1572,7 @@ func genNoSQLSchemaSaveByTran(collection NOSQLCollection, schema NOSQLSchema, dr
 	case DATABASE_DRIVER_BOLTDB:
 		val += "dbServices.CollectionCache{}.Remove(\"" + strings.Title(collection.Name) + "\",self.Id.Hex())\n"
 		val += "return self.Save()\n"
+		val += "}\n"
 	case DATABASE_DRIVER_MONGODB:
 		val += `
 		transactionQueue.Lock()
