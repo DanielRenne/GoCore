@@ -29,6 +29,7 @@ import (
 type WebSocketRemoval func(info WebSocketConnectionMeta)
 type customLog func(desc string, message string)
 
+var BroadcastSockets bool
 var CustomLog customLog
 
 type WebSocketConnection struct {
@@ -167,6 +168,10 @@ var WebSocketConnections sync.Map
 var webSocketConnectionsMeta sync.Map
 var WebSocketCallbacks sync.Map
 var WebSocketRemovalCallback WebSocketRemoval
+
+func init() {
+	BroadcastSockets = true
+}
 
 func Initialize(path string, config string) (err error) {
 	err = serverSettings.Initialize(path, config)
@@ -535,6 +540,9 @@ func ReplyToWebSocketJSON(conn *WebSocketConnection, v interface{}) {
 		}
 	}()
 
+	if !BroadcastSockets {
+		return
+	}
 	go func() {
 
 		unlocked := false
@@ -563,6 +571,9 @@ func ReplyToWebSocketPubSub(conn *WebSocketConnection, key string, v interface{}
 		}
 	}()
 
+	if !BroadcastSockets {
+		return
+	}
 	var payload WebSocketPubSubPayload
 	payload.Key = key
 	payload.Content = v
@@ -598,6 +609,9 @@ func BroadcastWebSocketData(data []byte) {
 		}
 	}()
 
+	if !BroadcastSockets {
+		return
+	}
 	WebSocketConnections.Range(func(key interface{}, value interface{}) bool {
 		conn, _ := value.(*WebSocketConnection)
 
@@ -631,6 +645,9 @@ func BroadcastWebSocketJSON(v interface{}) {
 		}
 	}()
 
+	if !BroadcastSockets {
+		return
+	}
 	WebSocketConnections.Range(func(key interface{}, value interface{}) bool {
 		conn, _ := value.(*WebSocketConnection)
 
@@ -664,6 +681,9 @@ func PublishWebSocketJSON(key string, v interface{}) {
 			return
 		}
 	}()
+	if !BroadcastSockets {
+		return
+	}
 	var payload WebSocketPubSubPayload
 	payload.Key = key
 	payload.Content = v
