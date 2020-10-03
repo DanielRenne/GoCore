@@ -267,6 +267,10 @@ func processRequest(controller string, action string, data []byte, c *gin.Contex
 		}
 	}
 
+	if paramCnt == 2 {
+		in = append(in, reflect.ValueOf(c))
+	}
+
 	value := method.Call(in)
 	if len(value) > 0 {
 		y := value[0].Interface()
