@@ -419,8 +419,8 @@ func finalizeModelFile(versionDir string) {
 	for _, collection := range allCollections.Collections {
 		modelToWrite += "var " + collection.Schema.Name + " []" + strings.Title(collection.Schema.Name) + "\n"
 		modelToWrite += strings.Title(collection.Name) + ".Query().All(& " + collection.Schema.Name + ")\n"
-		modelToWrite += "for _, row := range " + collection.Schema.Name + " {\n"
-		modelToWrite += "row.Save()\n"
+		modelToWrite += "for i := range " + collection.Schema.Name + " {\n"
+		modelToWrite += collection.Schema.Name + "[i].Save()\n"
 		modelToWrite += "}\n"
 	}
 
