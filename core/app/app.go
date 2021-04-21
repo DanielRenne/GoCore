@@ -7,6 +7,7 @@ import (
 	"log"
 	randMath "math/rand"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"sync"
@@ -305,10 +306,18 @@ func Run() {
 
 	log.Println("GoCore Application Started")
 
+	port := strconv.Itoa(serverSettings.WebConfig.Application.HttpPort)
+	envPort := os.Getenv("PORT")
+	if envPort != "" {
+		port = envPort
+	}
+
+	log.Println("Application Listening on port " + port)
+
 	s := &http.Server{
-		Addr:         ":" + strconv.Itoa(serverSettings.WebConfig.Application.HttpPort),
+		Addr:         ":" + port,
 		Handler:      ginServer.Router,
-		ReadTimeout:  300 * time.Second,
+		ReadTimeout:  900 * time.Second,
 		WriteTimeout: 300 * time.Second,
 	}
 	s.ListenAndServe()
