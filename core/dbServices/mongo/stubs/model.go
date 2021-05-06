@@ -117,6 +117,72 @@ func init() {
 	transactionQueue.ids = make(map[string][]string)
 	transactionQueue.queue = make(map[string]*transactionsToPersist)
 	go clearTransactionQueue()
+	go setupCollections()
+}
+
+func setupCollections() {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Println("Panic Recovered at model.setupCollections(): " + fmt.Sprintf("%+v", r))
+			return
+		}
+	}()
+
+	for {
+
+		mdb := dbServices.ReadMongoDB()
+		if mdb != nil {
+
+			//Make a connection to the Version Collection
+			versionsCollection := mdb.C("Version")
+
+			type Version struct {
+				Id bson.ObjectId ` + "`bson:\"_id\"`" + `
+				Value string ` + "`bson:\"Value\"`" + `
+			}
+
+			var version Version
+			versionsCollection.FindId(bson.ObjectIdHex("60942d9bab99e73ea651f967")).One(&version)
+
+			log.Printf("VERSION VERSION VERSION VERSION VERSION VERSION VERSION %+v", version)
+
+			collectionNames := GetCollectionNames()
+
+			for _, name := range collectionNames {
+				for {
+					collection, ok := store.GetCollection(name)
+					if ok {
+						// log.Println("Initializing" + name )
+						collection.SetCollection(mdb)
+						if store.Version == "" {
+							collection.Index()
+							collection.Bootstrap()
+						} else if version.Value != store.Version {
+							collection.Index()
+							collection.Bootstrap()
+						} else {
+							collection.BootStrapComplete()
+						}
+						break
+					}
+					time.Sleep(time.Millisecond * 1000)
+				}
+			}
+			if store.Version == "" {
+				UpdateAllRecordsToLatestSchema()
+			} else if version.Value != store.Version {
+				UpdateAllRecordsToLatestSchema()
+			}
+
+			version.Id = bson.ObjectIdHex("60942d9bab99e73ea651f967")
+			version.Value = store.Version
+			versionsCollection.UpsertId(version.Id, &version)
+			break
+		}
+
+		time.Sleep(time.Millisecond * 5)
+	}
+
 }
 
 func Q(k string, v interface{}) map[string]interface{} {
