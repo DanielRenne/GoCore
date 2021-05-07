@@ -144,7 +144,7 @@ func setupCollections() {
 			var version Version
 			versionsCollection.FindId(bson.ObjectIdHex("60942d9bab99e73ea651f967")).One(&version)
 
-			log.Printf("VERSION VERSION VERSION VERSION VERSION VERSION VERSION %+v", version)
+			// log.Printf("VERSION VERSION VERSION VERSION VERSION VERSION VERSION %+v", version)
 
 			collectionNames := GetCollectionNames()
 
@@ -168,12 +168,33 @@ func setupCollections() {
 					time.Sleep(time.Millisecond * 1000)
 				}
 			}
+
+			collectionHistoryNames := GetCollectionHistoryNames()
+
+			for _, name := range collectionHistoryNames {
+				for {
+					collection, ok := store.GetCollectionHistory(name)
+					if ok {
+						// log.Println("Initializing" + name )
+						collection.SetCollection(mdb)
+						if store.Version == "" {
+							collection.Index()
+						} else if version.Value != store.Version {
+							collection.Index()
+						}
+						break
+					}
+					time.Sleep(time.Millisecond * 1000)
+				}
+			}
+
 			if store.Version == "" {
 				UpdateAllRecordsToLatestSchema()
 			} else if version.Value != store.Version {
 				UpdateAllRecordsToLatestSchema()
 			}
 
+			log.Printf("APPLYING VERSION %+v TO DATABASE", version)
 			version.Id = bson.ObjectIdHex("60942d9bab99e73ea651f967")
 			version.Value = store.Version
 			versionsCollection.UpsertId(version.Id, &version)

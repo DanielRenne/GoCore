@@ -9,6 +9,7 @@ import (
 )
 
 var registry sync.Map
+var registryHistory sync.Map
 var Version string
 
 type collectionStore interface {
@@ -25,6 +26,11 @@ type collectionStore interface {
 	Index() error
 }
 
+type collectionHistoryStore interface {
+	SetCollection(mdb *mgo.Database)
+	Index() error
+}
+
 //RegisterStore will register a new store to the store registry.
 func RegisterStore(x interface{}) {
 	key := strings.Replace(getType(x), "model", "", -1)
@@ -36,6 +42,21 @@ func GetCollection(key string) (x collectionStore, ok bool) {
 	obj, ok := registry.Load(key)
 	if ok {
 		x = obj.(collectionStore)
+	}
+	return
+}
+
+//RegisterStore will register a new store to the store registry.
+func RegisterHistoryStore(x interface{}) {
+	key := strings.Replace(getType(x), "model", "", -1)
+	registryHistory.Store(key, x)
+}
+
+//GetCollection will return the collection by key string.
+func GetCollectionHistory(key string) (x collectionHistoryStore, ok bool) {
+	obj, ok := registryHistory.Load(key)
+	if ok {
+		x = obj.(collectionHistoryStore)
 	}
 	return
 }
