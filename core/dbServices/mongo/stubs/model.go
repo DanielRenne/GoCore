@@ -194,10 +194,14 @@ func setupCollections() {
 				UpdateAllRecordsToLatestSchema()
 			}
 
-			log.Printf("APPLYING VERSION %+v TO DATABASE", version)
-			version.Id = bson.ObjectIdHex("60942d9bab99e73ea651f967")
-			version.Value = store.Version
-			versionsCollection.UpsertId(version.Id, &version)
+			if store.Version != "" {
+
+				version.Id = bson.ObjectIdHex("60942d9bab99e73ea651f967")
+				version.Value = store.Version
+				versionsCollection.UpsertId(version.Id, &version)
+				log.Printf("APPLIED VERSION %+v TO DATABASE", version)
+			}
+
 			break
 		}
 
