@@ -142,7 +142,7 @@ func setupCollections() {
 			}
 
 			var version Version
-			versionsCollection.FindId(bson.ObjectIdHex("60942d9bab99e73ea651f967")).One(&version)
+			errFindVersion := versionsCollection.FindId(bson.ObjectIdHex("60942d9bab99e73ea651f967")).One(&version)
 
 			// log.Printf("VERSION VERSION VERSION VERSION VERSION VERSION VERSION %+v", version)
 
@@ -152,9 +152,12 @@ func setupCollections() {
 				for {
 					collection, ok := store.GetCollection(name)
 					if ok {
-						// log.Println("Initializing" + name )
+						log.Println("Initializing Collection " + name + " Binary Version:  " + store.Version +  " DB Version: " + version.Value)
 						collection.SetCollection(mdb)
-						if store.Version == "" {
+						if errFindVersion != nil {
+							collection.Index()
+							collection.Bootstrap()
+						} else if store.Version == "" {
 							collection.Index()
 							collection.Bootstrap()
 						} else if version.Value != store.Version {
