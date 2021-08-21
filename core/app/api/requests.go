@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"reflect"
 	"runtime/debug"
+	"strconv"
 	"strings"
 
 	"github.com/DanielRenne/GoCore/core/app"
@@ -131,7 +132,15 @@ func processHTTPResponse(y interface{}, e ErrorResponse, httpStatus int, c *gin.
 	if y == nil {
 		c.JSON(httpStatus, e)
 	} else {
-		c.JSON(httpStatus, y)
+		data, ok := y.([]byte)
+		if ok {
+			c.Writer.Header().Set("Content-Type", "application/octet-stream")
+			c.Writer.Header().Set("Content-Length", strconv.Itoa((len(data))))
+			c.Writer.Write(data)
+		} else {
+			c.JSON(httpStatus, y)
+		}
+
 	}
 }
 
@@ -265,6 +274,10 @@ func processRequest(controller string, action string, data []byte, c *gin.Contex
 			var tmp string
 			in = append(in, reflect.ValueOf(tmp))
 		}
+	}
+
+	if paramCnt == 2 {
+		in = append(in, c)
 	}
 
 	value := method.Call(in)
