@@ -16,6 +16,7 @@ import (
 
 	"github.com/DanielRenne/GoCore/core/dbServices"
 	"github.com/DanielRenne/GoCore/core"
+	"github.com/DanielRenne/GoCore/core/store"
 
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
@@ -30,32 +31,8 @@ var mongoTransactionsCollection *mgo.Collection
 var collectionTransactionMutex *sync.RWMutex
 
 func init() {
+	store.RegisterHistoryStore(&Transactions)
 	collectionTransactionMutex = &sync.RWMutex{}
-	go func() {
-
-		for {
-			mdb := dbServices.ReadMongoDB()
-			if mdb != nil {
-				initTransactions()
-				return
-			}
-			time.Sleep(time.Millisecond * 5)
-		}
-	}()
-}
-
-func initTransactions() {
-	mdb := dbServices.ReadMongoDB()
-	log.Println("Building Indexes for MongoDB collection Transactions:")
-	collectionTransactionMutex.Lock()
-	mongoTransactionsCollection = mdb.C("Transactions")
-	collectionTransactionMutex.Unlock()
-	ci := mgo.CollectionInfo{ForceIdIndex: true}
-	collectionTransactionMutex.RLock()
-	mongoTransactionsCollection.Create(&ci)
-	collectionTransactionMutex.RUnlock()
-	var obj modelTransactions
-	obj.Index()
 }
 
 // type Transaction struct {
@@ -88,6 +65,15 @@ type Transaction struct {
 	} ` + "`" + `json:"Joins" bson:"-"` + "`" + `
 }
 
+func (obj modelTransactions) SetCollection(mdb *mgo.Database) {
+
+	collectionTransactionMutex.Lock()
+	mongoTransactionsCollection = mdb.C("Transactions")
+	ci := mgo.CollectionInfo{ForceIdIndex: true}
+	mongoTransactionsCollection.Create(&ci)
+	collectionTransactionMutex.Unlock()
+}
+
 func (obj modelTransactions) Query() *Query {
 	var query Query
 
@@ -110,6 +96,7 @@ func (obj modelTransactions) Query() *Query {
 }
 
 func (obj *modelTransactions) Index() error {
+	log.Println("Building Indexes for MongoDB collection Transactions:")
 	for key, value := range dbServices.GetDBIndexes(Transaction{}) {
 		index := mgo.Index{
 			Key:        []string{key},
@@ -145,9 +132,7 @@ func (self *Transaction) Save() error {
 	collectionTransactionMutex.RLock()
 	collection := mongoTransactionsCollection
 	collectionTransactionMutex.RUnlock()
-	if collection == nil {
-		initTransactions()
-	}
+
 	objectId := bson.NewObjectId()
 	if self.Id != "" {
 		objectId = self.Id

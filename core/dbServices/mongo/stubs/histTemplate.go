@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/DanielRenne/GoCore/core/dbServices"
+	"github.com/DanielRenne/GoCore/core/store"
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
 	"sync"
@@ -25,28 +26,8 @@ var mongoHistCollectionCollection *mgo.Collection
 var collectionHistCollectionMutex *sync.RWMutex
 
 func init() {
+	store.RegisterHistoryStore(&HistCollection)
 	collectionHistCollectionMutex = &sync.RWMutex{}
-	go func() {
-
-		for {
-			mdb := dbServices.ReadMongoDB()
-			if mdb != nil {
-				initHistCollection()
-				return
-			}
-			time.Sleep(time.Millisecond * 5)
-		}
-	}()
-}
-
-func initHistCollection() {
-	log.Println("Building Indexes for MongoDB collection HistCollection:")
-	//CollectionVariable
-	ci := mgo.CollectionInfo{ForceIdIndex: true}
-	collectionHistCollectionMutex.RLock()
-	mongoHistCollectionCollection.Create(&ci)
-	collectionHistCollectionMutex.RUnlock()
-	HistCollection.Index()
 }
 
 type HistEntity struct {
@@ -56,6 +37,14 @@ type HistEntity struct {
 	Data       string        ` + "`" + `json:"data" bson:"data"` + "`" + `
 	Type       int           ` + "`" + `json:"type" bson:"type"` + "`" + `
 	CreateDate time.Time     ` + "`" + `json:"createDate" dbIndex:"index" bson:"createDate"` + "`" + `
+}
+
+func (obj modelHistCollection) SetCollection(mdb *mgo.Database) {
+	collectionHistCollectionMutex.Lock()
+	mongoHistCollectionCollection = mdb.C("HistCollection")
+	ci := mgo.CollectionInfo{ForceIdIndex: true}
+	mongoHistCollectionCollection.Create(&ci)
+	collectionHistCollectionMutex.Unlock()
 }
 
 func (obj modelHistCollection) Query() *Query {
@@ -109,6 +98,7 @@ func (self *modelHistCollection) Rollback(transactionId string) error {
 }
 
 func (obj *modelHistCollection) Index() error {
+	log.Println("Building Indexes for MongoDB collection HistCollection:")
 	for key, value := range dbServices.GetDBIndexes(HistEntity{}) {
 		index := mgo.Index{
 			Key:        []string{key},
@@ -149,12 +139,6 @@ func (obj *HistEntity) DoesIdExist(objectID interface{}) bool {
 }
 
 func (self *HistEntity) Save() error {
-	collectionHistCollectionMutex.RLock()
-	collection := mongoHistCollectionCollection
-	collectionHistCollectionMutex.RUnlock()
-	if collection == nil {
-		initHistCollection()
-	}
 	objectId := bson.NewObjectId()
 	if self.Id != "" {
 		objectId = self.Id

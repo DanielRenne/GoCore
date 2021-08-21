@@ -413,14 +413,31 @@ func finalizeModelFile(versionDir string) {
 	sort.Sort(SchemaNameSorter(allCollections.Collections))
 	allCollections.RUnlock()
 
+	modelToWrite += "//GetCollectionNames returns a name of all collections\n\n"
+	modelToWrite += "func GetCollectionNames() (names []string) {\n\n"
+	for _, collection := range allCollections.Collections {
+		modelToWrite += "names = append(names,\"" + collection.Name + "\")\n"
+	}
+	modelToWrite += "return\n\n"
+	modelToWrite += "}\n\n"
+
+	modelToWrite += "//GetCollectionHistoryNames returns a name of all collections history tables\n\n"
+	modelToWrite += "func GetCollectionHistoryNames() (names []string) {\n\n"
+	for _, collection := range allCollections.Collections {
+		modelToWrite += "names = append(names,\"" + collection.Name + "History\")\n"
+	}
+	modelToWrite += "names = append(names,\"Transactions\")\n"
+	modelToWrite += "return\n\n"
+	modelToWrite += "}\n\n"
+
 	modelToWrite += "// Each goCore application should probably call this once on server setup to iterate through all records in the system and re-save it so that new fields can be injected into the data and your javascript always will be able to access any record\n\n"
 	modelToWrite += "func UpdateAllRecordsToLatestSchema() {\n\n"
 
 	for _, collection := range allCollections.Collections {
 		modelToWrite += "var " + collection.Schema.Name + " []" + strings.Title(collection.Schema.Name) + "\n"
 		modelToWrite += strings.Title(collection.Name) + ".Query().All(& " + collection.Schema.Name + ")\n"
-		modelToWrite += "for _, row := range " + collection.Schema.Name + " {\n"
-		modelToWrite += "row.Save()\n"
+		modelToWrite += "for i := range " + collection.Schema.Name + " {\n"
+		modelToWrite += collection.Schema.Name + "[i].Save()\n"
 		modelToWrite += "}\n"
 	}
 
@@ -578,7 +595,7 @@ func generateNoSQLModel(schema NOSQLSchema, collection NOSQLCollection, driver s
 	case DATABASE_DRIVER_BOLTDB:
 		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/logger", "github.com/DanielRenne/GoCore/core/pubsub", "github.com/DanielRenne/GoCore/core/serverSettings", "github.com/DanielRenne/GoCore/core/dbServices", "github.com/globalsign/mgo/bson", "encoding/json", "errors", "time", "github.com/asdine/storm", "reflect", "sync", "log", "encoding/base64", "github.com/DanielRenne/GoCore/core/utils", "fmt", "github.com/DanielRenne/GoCore/core/fileCache", "github.com/DanielRenne/GoCore/core", "encoding/hex", "github.com/DanielRenne/GoCore/core/store", "crypto/md5"})
 	case DATABASE_DRIVER_MONGODB:
-		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "github.com/DanielRenne/GoCore/core/pubsub", "github.com/DanielRenne/GoCore/core/serverSettings", "encoding/json", "github.com/globalsign/mgo", "github.com/globalsign/mgo/bson", "log", "time", "errors", "encoding/base64", "reflect", "github.com/DanielRenne/GoCore/core/utils", "fmt", "github.com/DanielRenne/GoCore/core/logger", "github.com/DanielRenne/GoCore/core", "github.com/DanielRenne/GoCore/core/fileCache", "github.com/DanielRenne/GoCore/core/store", "crypto/md5", "encoding/hex", "sync"})
+		val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "github.com/DanielRenne/GoCore/core/pubsub", "github.com/DanielRenne/GoCore/core/serverSettings", "encoding/json", "github.com/globalsign/mgo", "github.com/globalsign/mgo/bson", "log", "time", "errors", "encoding/base64", "reflect", "github.com/DanielRenne/GoCore/core/utils", "fmt", "github.com/DanielRenne/GoCore/core/logger", "github.com/DanielRenne/GoCore/core", "github.com/DanielRenne/GoCore/core/fileCache", "github.com/DanielRenne/GoCore/core/store", "github.com/DanielRenne/GoCore/core/atomicTypes", "crypto/md5", "encoding/hex", "sync"})
 		// val += extensions.GenPackageImport("model", []string{"github.com/DanielRenne/GoCore/core/dbServices", "encoding/json", "gopkg.in/mgo.v2/bson", "log", "time"})
 	}
 
@@ -692,40 +709,40 @@ func genNoSQLCollection(collection NOSQLCollection, schema NOSQLSchema, driver s
 	val += " Items *[]" + strings.Title(schema.Name) + " `json:\"Items\"`\n"
 	val += "}\n\n"
 
-	val += "var GoCore" + strings.Title(collection.Name) + "HasBootStrapped bool\n\n"
+	val += "var GoCore" + strings.Title(collection.Name) + "HasBootStrapped atomicTypes.AtomicBool\n\n"
 	if driver == DATABASE_DRIVER_MONGODB {
 
 		val += "var mongo" + strings.Title(collection.Name) + "Collection *mgo.Collection\n"
 		val += "func init(){\n"
-		val += "collection" + strings.Title(collection.Name) + "Mutex = &sync.RWMutex{}\n\n"
-		val += "go func() {\n\n"
-		val += "for{\n"
-		val += "mdb := dbServices.ReadMongoDB()\n"
-		val += "if mdb != nil {\n"
-		val += "init" + strings.Title(collection.Name) + "()\n"
-		val += "return\n"
-		val += "}\n"
-		val += "time.Sleep(time.Millisecond * 5)\n"
-		val += "}\n"
-		val += "}()\n"
-		val += "}\n\n"
-
-		val += "func init" + strings.Title(collection.Name) + "(){\n"
-		val += "log.Println(\"Building Indexes for MongoDB collection " + collection.Name + ":\")\n"
-		val += "mdb := dbServices.ReadMongoDB()\n"
-
-		val += "collection" + strings.Title(collection.Name) + "Mutex.Lock()\n"
-		val += "mongo" + strings.Title(collection.Name) + "Collection = mdb.C(\"" + collection.Name + "\")\n"
-		val += "collection" + strings.Title(collection.Name) + "Mutex.Unlock()\n"
-
-		val += "ci := mgo.CollectionInfo{ForceIdIndex: true}\n"
-		val += "collection" + strings.Title(collection.Name) + "Mutex.RLock()\n"
-		val += "mongo" + strings.Title(collection.Name) + "Collection.Create(&ci)\n"
-		val += "collection" + strings.Title(collection.Name) + "Mutex.RUnlock()\n"
-		val += strings.Title(collection.Name) + ".Index()\n"
-		val += strings.Title(collection.Name) + ".Bootstrap()\n"
 		val += "store.RegisterStore(" + strings.Title(collection.Name) + ")\n"
+		val += "collection" + strings.Title(collection.Name) + "Mutex = &sync.RWMutex{}\n"
+		// val += "go func() {\n\n"
+		// val += "for{\n"
+		// val += "mdb := dbServices.ReadMongoDB()\n"
+		// val += "if mdb != nil {\n"
+		// val += "init" + strings.Title(collection.Name) + "()\n"
+		// val += "return\n"
+		// val += "}\n"
+		// val += "time.Sleep(time.Millisecond * 5)\n"
+		// val += "}\n"
+		// val += "}()\n"
 		val += "}\n\n"
+
+		// val += "func init" + strings.Title(collection.Name) + "(){\n"
+		// val += "log.Println(\"Building Indexes for MongoDB collection " + collection.Name + ":\")\n"
+		// val += "mdb := dbServices.ReadMongoDB()\n"
+
+		// val += "collection" + strings.Title(collection.Name) + "Mutex.Lock()\n"
+		// val += "mongo" + strings.Title(collection.Name) + "Collection = mdb.C(\"" + collection.Name + "\")\n"
+		// val += "collection" + strings.Title(collection.Name) + "Mutex.Unlock()\n"
+
+		// val += "ci := mgo.CollectionInfo{ForceIdIndex: true}\n"
+		// val += "collection" + strings.Title(collection.Name) + "Mutex.RLock()\n"
+		// val += "mongo" + strings.Title(collection.Name) + "Collection.Create(&ci)\n"
+		// val += "collection" + strings.Title(collection.Name) + "Mutex.RUnlock()\n"
+		// val += strings.Title(collection.Name) + ".Index()\n"
+		// val += strings.Title(collection.Name) + ".Bootstrap()\n"
+		// val += "}\n\n"
 	} else if driver == DATABASE_DRIVER_BOLTDB {
 		val += "func init(){\n"
 		val += "collection" + strings.Title(collection.Name) + "Mutex = &sync.RWMutex{}\n\n"
@@ -1086,6 +1103,8 @@ func genNoSQLRuntime(collection NOSQLCollection, schema NOSQLSchema, driver stri
 		val += genNoSQLSchemaRange(collection, schema, driver)
 	}
 
+	val += genSetCollection(collection)
+
 	val += genById(collection, schema, driver)
 	val += genDoesIdExist(collection, schema, driver)
 	val += genNewByReflection(collection, schema, driver)
@@ -1123,28 +1142,23 @@ func genNOSQLRemoveAll(collection NOSQLCollection, schema NOSQLSchema, driver st
 		val = heredoc.Docf(`
 			func (obj model%s) RemoveAll() {
 				var elapseMs int
+				collection := mongo%sCollection
 				for {
-					collection%sMutex.RLock()
-					collection := mongo%sCollection
-					bootstrapped := GoCore%sHasBootStrapped
-					collection%sMutex.RUnlock()
+					bootstrapped := GoCore%sHasBootStrapped.Get()
 
 					if collection != nil && bootstrapped {
 						break
 					}
 					elapseMs = elapseMs + 2
 					time.Sleep(time.Millisecond * 2)
-					if elapseMs `, strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name)) + "%" + heredoc.Docf(`10000 == 0 {
+					if elapseMs `, strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name)) + "%" + heredoc.Docf(`10000 == 0 {
 						log.Println("%s has not bootstrapped and has yet to get a collection pointer")
 					}
 				}
-				collection%sMutex.RLock()
-				collection := mongo%sCollection
-				collection%sMutex.RUnlock()
 				collection.RemoveAll(bson.M{})
 				return
 			}
-		`, strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name))
+		`, strings.Title(collection.Name))
 	} else if driver == DATABASE_DRIVER_BOLTDB {
 		val = `
 			func (obj model` + strings.Title(collection.Name) + `) RemoveAll() {
@@ -1174,7 +1188,7 @@ func genNOSQLQuery(collection NOSQLCollection, schema NOSQLSchema, driver string
 				for {
 					collection%sMutex.RLock()
 					collection := mongo%sCollection
-					bootstrapped := GoCore%sHasBootStrapped
+					bootstrapped := GoCore%sHasBootStrapped.Get()
 					collection%sMutex.RUnlock()
 
 					if collection != nil && bootstrapped {
@@ -1200,10 +1214,8 @@ func genNOSQLQuery(collection NOSQLCollection, schema NOSQLSchema, driver string
 				query := new(Query)
 				var elapseMs int
 				for {
-					collection%sMutex.RLock()
-					bootstrapped := GoCore%sHasBootStrapped
-					collection%sMutex.RUnlock()
 
+					bootstrapped := GoCore%sHasBootStrapped.Get()
 					if bootstrapped {
 						break
 					}
@@ -1422,9 +1434,9 @@ func genNoSQLSchemaSave(collection NOSQLCollection, schema NOSQLSchema, driver s
 		val += "collection" + strings.Title(collection.Name) + "Mutex.RLock()\n"
 		val += "collection := mongo" + strings.Title(collection.Name) + "Collection\n"
 		val += "collection" + strings.Title(collection.Name) + "Mutex.RUnlock()\n"
-		val += "if collection == nil {\n"
-		val += "init" + strings.Title(collection.Name) + "()\n"
-		val += "}\n"
+		// val += "if collection == nil {\n"
+		// val += "init" + strings.Title(collection.Name) + "()\n"
+		// val += "}\n"
 		val += "t := time.Now()\n"
 		val += "objectId := self.Id\n"
 		val += "if self.Id == \"\"{\n"
@@ -1452,6 +1464,18 @@ func genNoSQLSchemaSave(collection NOSQLCollection, schema NOSQLSchema, driver s
 	}
 	val += "}\n\n"
 	return val
+}
+
+func genSetCollection(collection NOSQLCollection) string {
+	return `func (obj model` + strings.Title(collection.Name) + `) SetCollection(mdb *mgo.Database) {
+		collection` + strings.Title(collection.Name) + `Mutex.Lock()
+		mongo` + strings.Title(collection.Name) + `Collection = mdb.C("` + strings.Title(collection.Name) + `")
+		ci := mgo.CollectionInfo{ForceIdIndex: true}
+		mongo` + strings.Title(collection.Name) + `Collection.Create(&ci)
+		collection` + strings.Title(collection.Name) + `Mutex.Unlock()
+	}
+
+`
 }
 
 func genById(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
@@ -1581,12 +1605,12 @@ func genNoSQLSchemaSaveByTran(collection NOSQLCollection, schema NOSQLSchema, dr
 		}()
 
 
-		collection` + strings.Title(collection.Name) + `Mutex.RLock()
-		collection := mongo` + strings.Title(collection.Name) + `Collection
-		collection` + strings.Title(collection.Name) + `Mutex.RUnlock()
-		if collection == nil {
-			init` + strings.Title(collection.Name) + `()
-		}
+		// collection` + strings.Title(collection.Name) + `Mutex.RLock()
+		// collection := mongo` + strings.Title(collection.Name) + `Collection
+		// collection` + strings.Title(collection.Name) + `Mutex.RUnlock()
+		// if collection == nil {
+		// 	init` + strings.Title(collection.Name) + `()
+		// }
 		//Validate the Model first.  If it fails then clean up the transaction in memory
 		err := self.ValidateAndClean()
 		if err != nil {
@@ -1928,7 +1952,7 @@ func genNoSQLSchemaIndex(collection NOSQLCollection, schema NOSQLSchema, driver 
 	case DATABASE_DRIVER_BOLTDB:
 		val += "return dbServices.BoltDB.Init(&" + strings.Title(schema.Name) + "{})\n"
 	case DATABASE_DRIVER_MONGODB:
-
+		val += "log.Println(\"Building Indexes for MongoDB collection " + collection.Name + ":\")\n"
 		val += "for key, value := range dbServices.GetDBIndexes(" + strings.Title(schema.Name) + "{}) {\n"
 		val += "index := mgo.Index{\n"
 		val += "Key:        []string{key},\n"
@@ -1963,9 +1987,7 @@ func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver st
 	val := ""
 
 	val += "func (obj model" + strings.Title(collection.Name) + ") BootStrapComplete() {\n"
-	val += "	collection" + strings.Title(collection.Name) + "Mutex.Lock()\n"
-	val += "	GoCore" + strings.Title(collection.Name) + "HasBootStrapped = true\n"
-	val += "	collection" + strings.Title(collection.Name) + "Mutex.Unlock()\n"
+	val += "	GoCore" + strings.Title(collection.Name) + "HasBootStrapped.Set(true)\n"
 	val += "}\n"
 
 	val += "func (obj model" + strings.Title(collection.Name) + ") Bootstrap() error {\n"

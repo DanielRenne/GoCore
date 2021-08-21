@@ -7,6 +7,7 @@ import (
 	"log"
 	randMath "math/rand"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"sync"
@@ -29,6 +30,7 @@ import (
 type WebSocketRemoval func(info WebSocketConnectionMeta)
 type customLog func(desc string, message string)
 
+var BroadcastSockets bool
 var CustomLog customLog
 
 type WebSocketConnection struct {
@@ -168,6 +170,10 @@ var webSocketConnectionsMeta sync.Map
 var WebSocketCallbacks sync.Map
 var WebSocketRemovalCallback WebSocketRemoval
 
+func init() {
+	BroadcastSockets = true
+}
+
 func Initialize(path string, config string) (err error) {
 	err = serverSettings.Initialize(path, config)
 	if err != nil {
@@ -300,10 +306,18 @@ func Run() {
 
 	log.Println("GoCore Application Started")
 
+	port := strconv.Itoa(serverSettings.WebConfig.Application.HttpPort)
+	envPort := os.Getenv("PORT")
+	if envPort != "" {
+		port = envPort
+	}
+
+	log.Println("Application Listening on port " + port)
+
 	s := &http.Server{
-		Addr:         ":" + strconv.Itoa(serverSettings.WebConfig.Application.HttpPort),
+		Addr:         ":" + port,
 		Handler:      ginServer.Router,
-		ReadTimeout:  300 * time.Second,
+		ReadTimeout:  900 * time.Second,
 		WriteTimeout: 300 * time.Second,
 	}
 	s.ListenAndServe()
@@ -535,6 +549,9 @@ func ReplyToWebSocketJSON(conn *WebSocketConnection, v interface{}) {
 		}
 	}()
 
+	if !BroadcastSockets {
+		return
+	}
 	go func() {
 
 		unlocked := false
@@ -563,6 +580,9 @@ func ReplyToWebSocketPubSub(conn *WebSocketConnection, key string, v interface{}
 		}
 	}()
 
+	if !BroadcastSockets {
+		return
+	}
 	var payload WebSocketPubSubPayload
 	payload.Key = key
 	payload.Content = v
@@ -598,6 +618,9 @@ func BroadcastWebSocketData(data []byte) {
 		}
 	}()
 
+	if !BroadcastSockets {
+		return
+	}
 	WebSocketConnections.Range(func(key interface{}, value interface{}) bool {
 		conn, _ := value.(*WebSocketConnection)
 
@@ -631,6 +654,9 @@ func BroadcastWebSocketJSON(v interface{}) {
 		}
 	}()
 
+	if !BroadcastSockets {
+		return
+	}
 	WebSocketConnections.Range(func(key interface{}, value interface{}) bool {
 		conn, _ := value.(*WebSocketConnection)
 
@@ -664,6 +690,9 @@ func PublishWebSocketJSON(key string, v interface{}) {
 			return
 		}
 	}()
+	if !BroadcastSockets {
+		return
+	}
 	var payload WebSocketPubSubPayload
 	payload.Key = key
 	payload.Content = v

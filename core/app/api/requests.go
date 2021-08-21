@@ -277,7 +277,7 @@ func processRequest(controller string, action string, data []byte, c *gin.Contex
 	}
 
 	if paramCnt == 2 {
-		in = append(in, c)
+		in = append(in, reflect.ValueOf(c))
 	}
 
 	value := method.Call(in)

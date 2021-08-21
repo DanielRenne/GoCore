@@ -425,6 +425,8 @@ func Set(key string, id string, path string, x interface{}, logger func(string, 
 					if propInterface != nil {
 						propType := reflect.TypeOf(propInterface).String()
 
+						// logger("PropType", fmt.Sprintf("%+v", propType))
+
 						if propType == "int" {
 							floatVal, ok := x.(float64)
 							if ok {
@@ -443,10 +445,10 @@ func Set(key string, id string, path string, x interface{}, logger func(string, 
 							if ok {
 								x = extensions.StringToFloat(floatVal, 0)
 							}
+						} else if propType == "[]int" {
+							x = interfaceToIntArray(x)
 						}
 					}
-
-					// logger("Trying to set", fmt.Sprintf("%+v", x))
 
 					if arrayIndex == -1 {
 						valueToSet, err2 := collection.ReflectByFieldName(fieldName, x)
@@ -828,4 +830,19 @@ func Remove(key string, id string) (err error) {
 		OnChange(key, idValues[0].Interface().(string), "", nil, nil)
 	}
 	return
+}
+
+func interfaceToIntArray(slice interface{}) (items []int) {
+	s := reflect.ValueOf(slice)
+	if s.Kind() != reflect.Slice {
+		return
+	}
+
+	ret := make([]int, s.Len())
+
+	for i := 0; i < s.Len(); i++ {
+		ret[i] = int(s.Index(i).Interface().(float64))
+	}
+
+	return ret
 }
