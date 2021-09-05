@@ -129,6 +129,8 @@ func processPOSTAPI(c *gin.Context) {
 
 func processHTTPResponse(y interface{}, e ErrorResponse, httpStatus int, c *gin.Context) {
 
+	c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+
 	if y == nil {
 		c.JSON(httpStatus, e)
 	} else {
