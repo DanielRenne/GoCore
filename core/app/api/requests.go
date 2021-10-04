@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"reflect"
 	"runtime/debug"
+	"strconv"
 	"strings"
 
 	"github.com/DanielRenne/GoCore/core/app"
@@ -116,7 +117,7 @@ func processPOSTAPI(c *gin.Context) {
 	body, _ := ginServer.GetRequestBody(c)
 
 	// if serverSettings.WebConfig.Application.AllowCrossOriginRequests {
-	c.Header("Access-Control-Allow-Origin", "127.0.0.1")
+	c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 	// }
 
 	response := func(y interface{}, e ErrorResponse, httpStatus int) {
@@ -128,10 +129,20 @@ func processPOSTAPI(c *gin.Context) {
 
 func processHTTPResponse(y interface{}, e ErrorResponse, httpStatus int, c *gin.Context) {
 
+	c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+
 	if y == nil {
 		c.JSON(httpStatus, e)
 	} else {
-		c.JSON(httpStatus, y)
+		data, ok := y.([]byte)
+		if ok {
+			c.Writer.Header().Set("Content-Type", "application/octet-stream")
+			c.Writer.Header().Set("Content-Length", strconv.Itoa((len(data))))
+			c.Writer.Write(data)
+		} else {
+			c.JSON(httpStatus, y)
+		}
+
 	}
 }
 
