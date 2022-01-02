@@ -199,8 +199,8 @@ func Initialize(path string, config string) (err error) {
 	return
 }
 
-func InitializeLite() (err error) {
-	ginServer.InitializeLite(gin.ReleaseMode)
+func InitializeLite(secureHeaders bool, allowedHosts []string) (err error) {
+	ginServer.InitializeLite(gin.ReleaseMode, secureHeaders, allowedHosts)
 	fileCache.Initialize()
 	return
 }
