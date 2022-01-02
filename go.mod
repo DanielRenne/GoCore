@@ -36,9 +36,9 @@ require (
 	github.com/felixge/tcpkeepalive v0.0.0-20160804073959-5bb0b2dea91e // indirect
 	github.com/foize/go.fifo v0.0.0-20130327144150-3a04cfeec121 // indirect
 	github.com/garyburd/redigo v1.0.1-0.20160810234951-ffa8d46ada78 // indirect
-	github.com/gin-contrib/sse v0.0.0-20170109093832-22d885f9ecc7 // indirect
+	github.com/gin-contrib/secure v0.0.1 // indirect
 	github.com/gin-gonic/contrib v0.0.0-20160703143648-547e518040cf
-	github.com/gin-gonic/gin v1.1.5-0.20170814063429-52c2ed34b325
+	github.com/gin-gonic/gin v1.5.0
 	github.com/globalsign/mgo v0.0.0-20171106093149-5be15cc6a449
 	github.com/go-errors/errors v0.0.0-20161205223245-8fa88b06e597
 	github.com/go-humble/detect v0.1.1 // indirect
@@ -46,7 +46,6 @@ require (
 	github.com/go-mangos/mangos v1.2.1-0.20170412215926-e3181ec4a2a5 // indirect
 	github.com/go-stack/stack v1.5.2 // indirect
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e
-	github.com/golang/protobuf v0.0.0-20160815223629-7390af9dcd3c // indirect
 	github.com/golang/text v0.0.0-20161007060404-ede1cb9f9f2f // indirect
 	github.com/gomodule/redigo v2.0.0+incompatible // indirect
 	github.com/gopherjs/gopherjs v0.0.0-20190915194858-d3ddacdb130f // indirect
@@ -55,7 +54,6 @@ require (
 	github.com/gorilla/sessions v0.0.0-20160816185042-1bbba13ba476 // indirect
 	github.com/gorilla/websocket v1.0.1-0.20161112142712-e8f0f8aaa98d
 	github.com/hpcloud/tail v1.0.1-0.20170207023346-faf842bde7ed // indirect
-	github.com/json-iterator/go v1.1.6 // indirect
 	github.com/juju/errors v0.0.0-20160809030848-6f54ff631840 // indirect
 	github.com/kennygrant/sanitize v0.0.0-20161014094249-7fdd72ab5809 // indirect
 	github.com/kisielk/errcheck v0.0.0-20170317173429-23699b7e2cbf // indirect
@@ -63,7 +61,6 @@ require (
 	github.com/manucorporat/sse v0.0.0-20160126180136-ee05b128a739 // indirect
 	github.com/matryer/runner v0.0.0-20160928080134-cf38584beeb2 // indirect
 	github.com/mattn/go-colorable v0.0.6 // indirect
-	github.com/mattn/go-isatty v0.0.2 // indirect
 	github.com/mgutz/str v1.2.0 // indirect
 	github.com/miekg/dns v0.0.0-20170930185408-946bd9fbed05 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
@@ -78,11 +75,9 @@ require (
 	github.com/sendgrid/sendgrid-go v3.3.2-0.20161108233408-d087004b4d47+incompatible // indirect
 	github.com/shirou/gopsutil v2.16.13-0.20170221131156-c14b242c603c+incompatible // indirect
 	github.com/stretchr/objx v0.1.0 // indirect
-	github.com/stretchr/testify v1.1.4-0.20160615092844-d77da356e56a // indirect
 	github.com/tatsushid/go-fastping v0.0.0-20160109021039-d7bb493dee3e // indirect
 	github.com/ttacon/builder v0.0.0-20141230023516-7f152c3cf471 // indirect
 	github.com/ttacon/libphonenumber v0.0.0-20160629174823-33d0ea1f9ace // indirect
-	github.com/ugorji/go v0.0.0-20170918222552-54210f4e076c // indirect
 	github.com/utrack/gin-csrf v0.0.0-20150831070702-63c0ef5eca6c
 	github.com/ziutek/utils v0.0.0-20131202123950-d8fe304b0db2 // indirect
 	golang.org/x/crypto v0.0.0-20190829043050-9756ffdc2472 // indirect

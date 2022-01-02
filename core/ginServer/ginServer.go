@@ -6,6 +6,7 @@ import (
 	"github.com/DanielRenne/GoCore/core/serverSettings"
 	"github.com/davidrenne/professor"
 	"github.com/fatih/color"
+	"github.com/gin-contrib/secure"
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 	csrf "github.com/utrack/gin-csrf"
@@ -80,9 +81,26 @@ func Initialize(mode string, cookieDomain string) {
 	initializedRouterGroups = nil
 }
 
-func InitializeLite(mode string) {
+func InitializeLite(mode string, secureHeaders bool, allowedHosts []string) {
 	gin.SetMode(mode)
 	Router = gin.Default()
+
+	if secureHeaders {
+		Router.Use(secure.New(secure.Config{
+			AllowedHosts:          allowedHosts,
+			SSLRedirect:           true,
+			STSSeconds:            315360000,
+			STSIncludeSubdomains:  true,
+			FrameDeny:             true,
+			ContentTypeNosniff:    true,
+			BrowserXssFilter:      true,
+			ContentSecurityPolicy: "default-src 'self'",
+			IENoOpen:              true,
+			ReferrerPolicy:        "strict-origin-when-cross-origin",
+			SSLProxyHeaders:       map[string]string{"X-Forwarded-Proto": "https"},
+		}))
+	}
+
 	hasInitialized = true
 
 	for _, group := range initializedRouterGroups {
