@@ -2,6 +2,7 @@ package app
 
 import (
 	"crypto/rand"
+	"crypto/tls"
 	"fmt"
 	"io"
 	"log"
@@ -301,7 +302,28 @@ func Run() {
 			}
 		}()
 
-		ginServer.Router.RunTLS(":"+strconv.Itoa(serverSettings.WebConfig.Application.HttpsPort), serverSettings.APP_LOCATION+"/keys/cert.pem", serverSettings.APP_LOCATION+"/keys/key.pem")
+		s := &http.Server{
+			Addr: ":" + strconv.Itoa(serverSettings.WebConfig.Application.HttpsPort),
+			TLSConfig: &tls.Config{
+				PreferServerCipherSuites: true,
+				CurvePreferences: []tls.CurveID{
+					tls.CurveP256,
+					tls.X25519,
+				},
+				MinVersion: tls.VersionTLS12,
+			},
+			Handler:      ginServer.Router,
+			ReadTimeout:  900 * time.Second,
+			WriteTimeout: 300 * time.Second,
+		}
+
+		err := s.ListenAndServeTLS(serverSettings.APP_LOCATION+"/keys/cert.pem", serverSettings.APP_LOCATION+"/keys/key.pem")
+		if err != nil {
+			log.Println("Application failed to ListenAndServeTLS:  " + err.Error())
+		} else {
+			log.Println("Application Listening on TLS port " + strconv.Itoa(serverSettings.WebConfig.Application.HttpsPort))
+		}
+
 	}()
 
 	log.Println("GoCore Application Started")
