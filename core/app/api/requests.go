@@ -273,8 +273,7 @@ func processRequest(controller string, action string, data []byte, c *gin.Contex
 
 			in = append(in, param.Elem())
 		} else {
-			var tmp string
-			in = append(in, reflect.ValueOf(tmp))
+			in = append(in, reflect.ValueOf(c))
 		}
 	}
 
