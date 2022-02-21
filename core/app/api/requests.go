@@ -237,12 +237,6 @@ func processRequest(controller string, action string, data []byte, c *gin.Contex
 	paramType := methodType.In(0)
 	genericType := reflect.TypeOf((*interface{})(nil))
 
-	if len(data) == 0 {
-		e.Error.Message = "No data posted.  Method expects a parameter of data."
-		results(nil, e, http.StatusBadRequest)
-		return
-	}
-
 	if paramType == genericType || paramType.String() == "interface {}" {
 
 		var x interface{}
