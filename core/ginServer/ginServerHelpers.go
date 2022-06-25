@@ -260,6 +260,12 @@ func RespondGzipCSSFile(data []byte, modTime time.Time, c *gin.Context) {
 	c.Writer.Write(data)
 }
 
+func RespondCSSFile(data []byte, modTime time.Time, c *gin.Context) {
+	c.Header("Content-Type", "text/css")
+	CheckLastModified(c.Writer, c.Request, modTime)
+	c.Writer.Write(data)
+}
+
 func ReadPngFile(path string, c *gin.Context) {
 	c.Header("Content-Type", "image/png")
 	c.File(path)
