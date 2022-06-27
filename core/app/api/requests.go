@@ -132,6 +132,9 @@ func processHTTPResponse(y interface{}, e ErrorResponse, httpStatus int, c *gin.
 	c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 
 	if y == nil {
+		if c.Writer.Status() == http.StatusFound || c.Writer.Status() == http.StatusMovedPermanently {
+			return
+		}
 		c.JSON(httpStatus, e)
 	} else {
 		data, ok := y.([]byte)
