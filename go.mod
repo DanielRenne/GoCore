@@ -93,5 +93,6 @@ require (
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
 	gopkg.in/yaml.v2 v2.2.2 // indirect
 	honnef.co/go/js/dom v0.0.0-20190526011328-ebc4cf92d81f // indirect
+	github.com/forPelevin/gomoji v1.1.5 // indirect
 	xojoc.pw/useragent v0.0.0-20170215185434-52903803fc66 // indirect
 )
