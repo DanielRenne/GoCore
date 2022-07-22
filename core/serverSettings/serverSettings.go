@@ -82,6 +82,7 @@ type Application struct {
 	LogGophers               bool          `json:"logGophers"`
 	CoreDebugStackTrace      bool          `json:"coreDebugStackTrace"`
 	AllowCrossOriginRequests bool          `json:"allowCrossOriginRequests"`
+	SecondaryWebsocketPath   string        `json:"secondaryWebsocketPath"`
 }
 
 type webConfigObj struct {

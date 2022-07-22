@@ -74,85 +74,6 @@ func (obj *WebSocketConnectionMeta) GetConnection() (conn *WebSocketConnection) 
 	return
 }
 
-type WebSocketConnectionCollection struct {
-	sync.RWMutex
-	Connections []*WebSocketConnection
-}
-
-type ConcurrentWebSocketConnectionItem struct {
-	Index int
-	Conn  *WebSocketConnection
-}
-
-func (wscc *WebSocketConnectionCollection) Append(item *WebSocketConnection) {
-	wscc.Lock()
-	defer wscc.Unlock()
-	wscc.Connections = append(wscc.Connections, item)
-
-	if store.OnChange != nil {
-		go func() {
-			defer func() {
-				if recover := recover(); recover != nil {
-					log.Println("Panic Recovered at store.OnChange():  ", recover)
-					return
-				}
-			}()
-
-			store.OnChange(store.WebSocketStoreKey, "", store.PathAdd, nil, nil)
-		}()
-	}
-}
-
-func (wscc *WebSocketConnectionCollection) Iter() <-chan ConcurrentWebSocketConnectionItem {
-	c := make(chan ConcurrentWebSocketConnectionItem)
-
-	f := func() {
-		wscc.RLock()
-		defer wscc.RUnlock()
-		for index := range wscc.Connections {
-			value := wscc.Connections[index]
-			c <- ConcurrentWebSocketConnectionItem{index, value}
-		}
-		close(c)
-	}
-	go f()
-
-	return c
-}
-
-type WebSocketCallbackSync struct {
-	sync.RWMutex
-	callbacks []WebSocketCallback
-}
-
-type ConcurrentWebSocketCallbackItem struct {
-	Index    int
-	Callback WebSocketCallback
-}
-
-func (self *WebSocketCallbackSync) Append(item WebSocketCallback) {
-	self.RLock()
-	defer self.RUnlock()
-	self.callbacks = append(self.callbacks, item)
-}
-
-func (self *WebSocketCallbackSync) Iter() <-chan ConcurrentWebSocketCallbackItem {
-	c := make(chan ConcurrentWebSocketCallbackItem)
-
-	f := func() {
-		self.Lock()
-		defer self.Unlock()
-		for index := range self.callbacks {
-			value := self.callbacks[index]
-			c <- ConcurrentWebSocketCallbackItem{index, value}
-		}
-		close(c)
-	}
-	go f()
-
-	return c
-}
-
 type WebSocketPubSubPayload struct {
 	Key     string      `json:"Key"`
 	Content interface{} `json:"Content"`
@@ -167,9 +88,13 @@ var upgrader = websocket.Upgrader{
 }
 
 var WebSocketConnections sync.Map
+var WebSocketSecondaryConnections sync.Map
 var webSocketConnectionsMeta sync.Map
-var WebSocketCallbacks sync.Map
+var webSocketSecondaryConnectionsMeta sync.Map
+var webSocketCallbacks sync.Map
+var webSocketSecondaryCallbacks sync.Map
 var WebSocketRemovalCallback WebSocketRemoval
+var WebSocketSecondaryRemovalCallback WebSocketRemoval
 
 func init() {
 	BroadcastSockets = true
@@ -216,8 +141,15 @@ func RunLite(port int) {
 	}()
 
 	ginServer.Router.GET("/ws", func(c *gin.Context) {
-		webSocketHandler(c.Writer, c.Request, c)
+		webSocketHandler(c.Writer, c.Request, c, false)
 	})
+
+	secondaryPath := serverSettings.WebConfig.Application.SecondaryWebsocketPath
+	if secondaryPath != "" {
+		ginServer.Router.GET(secondaryPath, func(c *gin.Context) {
+			webSocketHandler(c.Writer, c.Request, c, true)
+		})
+	}
 
 	log.Println("GoCore Application Started")
 
@@ -288,8 +220,15 @@ func Run() {
 		ginServer.Router.Static("/web", serverSettings.APP_LOCATION+"/web")
 
 		ginServer.Router.GET("/ws", func(c *gin.Context) {
-			webSocketHandler(c.Writer, c.Request, c)
+			webSocketHandler(c.Writer, c.Request, c, false)
 		})
+
+		secondaryPath := serverSettings.WebConfig.Application.SecondaryWebsocketPath
+		if secondaryPath != "" {
+			ginServer.Router.GET(secondaryPath, func(c *gin.Context) {
+				webSocketHandler(c.Writer, c.Request, c, true)
+			})
+		}
 	}
 
 	initializeStaticRoutes()
@@ -352,14 +291,14 @@ func Run() {
 
 }
 
-func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context) {
+func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context, secondary bool) {
 
 	// return
 	defer func() {
 		if recover := recover(); recover != nil {
 			log.Println("Panic Recovered at webSocketHandler():  ", recover)
 			time.Sleep(time.Millisecond * 3000)
-			webSocketHandler(w, r, c)
+			webSocketHandler(w, r, c, secondary)
 			return
 		}
 	}()
@@ -396,12 +335,17 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context) {
 	socketMeta := new(WebSocketConnectionMeta)
 	socketMeta.Conn = wsConn
 	socketMeta.LastResponseTime.Set(time.Now())
-
-	SetWebSocketMeta(uuid, socketMeta)
-
-	if CustomLog != nil {
-		CustomLog("app->webSocketHandler", "Added Web Socket Connection from "+wsConn.Connection.RemoteAddr().String())
+	if !secondary {
+		SetWebSocketMeta(uuid, socketMeta)
+	} else {
+		SetSecondaryWebSocketMeta(uuid, socketMeta)
 	}
+
+	logMsg := "Added Web Socket Connection from " + wsConn.Connection.RemoteAddr().String()
+	if CustomLog != nil {
+		CustomLog("app->webSocketHandler", logMsg)
+	}
+	log.Println(logMsg)
 
 	//Reader
 	go logger.GoRoutineLogger(func() {
@@ -429,14 +373,27 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context) {
 					if strings.Contains(precheckString, "ProxyGateway") || strings.Contains(precheckString, "ProxyWebSocket") {
 						return
 					}
-
-					meta, ok := GetWebSocketMeta(uuid)
-					if ok {
-						meta.LastResponseTime.Set(time.Now())
-						SetWebSocketMeta(uuid, meta)
+					var meta *WebSocketConnectionMeta
+					var ok bool
+					var callbacks sync.Map
+					if !secondary {
+						meta, ok = GetWebSocketMeta(uuid)
+						callbacks = webSocketCallbacks
+					} else {
+						meta, ok = GetSecondaryWebSocketMeta(uuid)
+						callbacks = webSocketSecondaryCallbacks
 					}
 
-					WebSocketCallbacks.Range(func(key interface{}, value interface{}) bool {
+					if ok {
+						meta.LastResponseTime.Set(time.Now())
+						if !secondary {
+							SetWebSocketMeta(uuid, socketMeta)
+						} else {
+							SetSecondaryWebSocketMeta(uuid, socketMeta)
+						}
+					}
+
+					callbacks.Range(func(key interface{}, value interface{}) bool {
 						callback, parsed := value.(WebSocketCallback)
 						if parsed {
 							// if strings.Contains(meta.ContextString, "{\"Page\"") {
@@ -453,20 +410,37 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context) {
 				if CustomLog != nil {
 					CustomLog("app->deleteWebSocket", "Deleting Web Socket from read Timeout:  "+err.Error()+":  "+wsConn.Connection.RemoteAddr().String())
 				}
-				deleteWebSocket(wsConn)
+				deleteWebSocket(wsConn, secondary)
 				return
 			}
 		}
 	}, "GoCore/app.go->webSocketHandler[Reader]")
 
-	WebSocketConnections.Store(wsConn.Id, wsConn)
+	if !secondary {
+		WebSocketConnections.Store(wsConn.Id, wsConn)
+	} else {
+		WebSocketSecondaryConnections.Store(wsConn.Id, wsConn)
+	}
 }
 
 func CloseAllSockets() {
+	closeAllSockets(false)
+}
+
+func CloseAllSecondarySockets() {
+	closeAllSockets(true)
+}
+
+func closeAllSockets(secondary bool) {
 
 	items := []*WebSocketConnection{}
-
-	WebSocketConnections.Range(func(key interface{}, value interface{}) bool {
+	var websockets sync.Map
+	if !secondary {
+		websockets = WebSocketConnections
+	} else {
+		websockets = WebSocketSecondaryConnections
+	}
+	websockets.Range(func(key interface{}, value interface{}) bool {
 		conn, _ := value.(*WebSocketConnection)
 		items = append(items, conn)
 		return true
@@ -475,7 +449,7 @@ func CloseAllSockets() {
 	for i := range items {
 		connection := items[i]
 		connection.Connection.UnderlyingConn().Close()
-		WebSocketConnections.Delete(connection.Id)
+		websockets.Delete(connection.Id)
 	}
 
 }
@@ -531,7 +505,12 @@ func initializeStaticRoutes() {
 
 func RegisterWebSocketDataCallback(callback WebSocketCallback) {
 	uuid, _ := extensions.NewUUID()
-	WebSocketCallbacks.Store(uuid, callback)
+	webSocketCallbacks.Store(uuid, callback)
+}
+
+func RegisterSecondaryWebSocketDataCallback(callback WebSocketCallback) {
+	uuid, _ := extensions.NewUUID()
+	webSocketSecondaryCallbacks.Store(uuid, callback)
 }
 
 func ReplyToWebSocket(conn *WebSocketConnection, data []byte) {
@@ -632,6 +611,14 @@ func ReplyToWebSocketPubSub(conn *WebSocketConnection, key string, v interface{}
 }
 
 func BroadcastWebSocketData(data []byte) {
+	broadcastWebSocketData(data, false)
+}
+
+func BroadcastSecondaryWebSocketData(data []byte) {
+	broadcastWebSocketData(data, true)
+}
+
+func broadcastWebSocketData(data []byte, secondary bool) {
 
 	defer func() {
 		if recover := recover(); recover != nil {
@@ -643,7 +630,13 @@ func BroadcastWebSocketData(data []byte) {
 	if !BroadcastSockets {
 		return
 	}
-	WebSocketConnections.Range(func(key interface{}, value interface{}) bool {
+	var websockets sync.Map
+	if !secondary {
+		websockets = WebSocketConnections
+	} else {
+		websockets = WebSocketSecondaryConnections
+	}
+	websockets.Range(func(key interface{}, value interface{}) bool {
 		conn, _ := value.(*WebSocketConnection)
 
 		go func() {
@@ -669,6 +662,14 @@ func BroadcastWebSocketData(data []byte) {
 }
 
 func BroadcastWebSocketJSON(v interface{}) {
+	broadcastWebSocketJSON(v, false)
+}
+
+func BroadcastSecondaryWebSocketJSON(v interface{}) {
+	broadcastWebSocketJSON(v, true)
+}
+
+func broadcastWebSocketJSON(v interface{}, secondary bool) {
 	defer func() {
 		if recover := recover(); recover != nil {
 			log.Println("Panic Recovered at BroadcastWebSocketJSON():  ", recover)
@@ -679,7 +680,14 @@ func BroadcastWebSocketJSON(v interface{}) {
 	if !BroadcastSockets {
 		return
 	}
-	WebSocketConnections.Range(func(key interface{}, value interface{}) bool {
+
+	var websockets sync.Map
+	if !secondary {
+		websockets = WebSocketConnections
+	} else {
+		websockets = WebSocketSecondaryConnections
+	}
+	websockets.Range(func(key interface{}, value interface{}) bool {
 		conn, _ := value.(*WebSocketConnection)
 
 		go func() {
@@ -706,6 +714,14 @@ func BroadcastWebSocketJSON(v interface{}) {
 }
 
 func PublishWebSocketJSON(key string, v interface{}) {
+	publishWebSocketJSON(key, v, false)
+}
+
+func PublishSecondaryWebSocketJSON(key string, v interface{}) {
+	publishWebSocketJSON(key, v, true)
+}
+
+func publishWebSocketJSON(key string, v interface{}, secondary bool) {
 	defer func() {
 		if recover := recover(); recover != nil {
 			log.Println("Panic Recovered at PublishWebSocketJSON():  ", recover)
@@ -718,8 +734,13 @@ func PublishWebSocketJSON(key string, v interface{}) {
 	var payload WebSocketPubSubPayload
 	payload.Key = key
 	payload.Content = v
-
-	WebSocketConnections.Range(func(key interface{}, value interface{}) bool {
+	var websockets sync.Map
+	if !secondary {
+		websockets = WebSocketConnections
+	} else {
+		websockets = WebSocketSecondaryConnections
+	}
+	websockets.Range(func(key interface{}, value interface{}) bool {
 		conn, _ := value.(*WebSocketConnection)
 		go func() {
 
@@ -745,11 +766,19 @@ func PublishWebSocketJSON(key string, v interface{}) {
 }
 
 func SetWebSocketTimeout(timeout int) {
+	setWebSocketTimeout(timeout, false)
+}
+
+func SetSecondaryWebSocketTimeout(timeout int) {
+	setWebSocketTimeout(timeout, true)
+}
+
+func setWebSocketTimeout(timeout int, secondary bool) {
 	defer func() {
 		if recover := recover(); recover != nil {
 			log.Println("Panic Recovered at SetWebSocketTimeout():  ", recover)
 			time.Sleep(time.Millisecond * 3000)
-			SetWebSocketTimeout(timeout)
+			setWebSocketTimeout(timeout, secondary)
 			return
 		}
 	}()
@@ -759,7 +788,13 @@ func SetWebSocketTimeout(timeout int) {
 	// }
 
 	for {
-		webSocketConnectionsMeta.Range(func(key interface{}, value interface{}) bool {
+		var websockets sync.Map
+		if !secondary {
+			websockets = webSocketSecondaryConnectionsMeta
+		} else {
+			websockets = webSocketConnectionsMeta
+		}
+		websockets.Range(func(key interface{}, value interface{}) bool {
 			meta, ok := value.(*WebSocketConnectionMeta)
 			if ok {
 				duration := time.Millisecond * time.Duration(timeout)
@@ -772,7 +807,7 @@ func SetWebSocketTimeout(timeout int) {
 						CustomLog("app->SetWebSocketTimeout", "Removed Websocket due to timeout from :  "+meta.Conn.Connection.RemoteAddr().String())
 					}
 					log.Println("Removed Websocket due to timeout from :  " + meta.GetConnection().Connection.RemoteAddr().String())
-					deleteWebSocket(meta.GetConnection())
+					deleteWebSocket(meta.GetConnection(), secondary)
 				}
 			}
 			return true
@@ -782,9 +817,13 @@ func SetWebSocketTimeout(timeout int) {
 
 }
 
-func deleteWebSocket(c *WebSocketConnection) {
+func deleteWebSocket(c *WebSocketConnection, secondary bool) {
 
 	go func() {
+		secondaryLog := ""
+		if secondary {
+			secondaryLog = "(secondary) "
+		}
 		defer func() {
 			if recover := recover(); recover != nil {
 				CustomLog("app->deleteWebSocket", "Panic Recovered at deleteWebSocket():  "+fmt.Sprintf("%+v", recover))
@@ -792,42 +831,48 @@ func deleteWebSocket(c *WebSocketConnection) {
 			}
 		}()
 
+		logDeletion := "Deleting " + secondaryLog + "Web Socket from client:  " + c.Connection.RemoteAddr().String()
 		if CustomLog != nil {
-			CustomLog("app->deleteWebSocket", "Deleting Web Socket from client:  "+c.Connection.RemoteAddr().String())
+			CustomLog("app->deleteWebSocket", logDeletion)
 		}
+		log.Println(logDeletion)
 
-		WebSocketConnections.Delete(c.Id)
+		if !secondary {
+			WebSocketConnections.Delete(c.Id)
 
-		if store.OnChange != nil {
-			go func() {
-				defer func() {
-					if recover := recover(); recover != nil {
-						log.Println("Panic Recovered at store.OnChange():  ", recover)
-						return
-					}
-				}()
-
-				store.OnChange(store.WebSocketStoreKey, "", store.PathRemove, nil, nil)
-			}()
-		}
-
-		if WebSocketRemovalCallback != nil {
-			info, ok := GetWebSocketMeta(c.Id)
-			if ok {
-				go func(c *WebSocketConnection) {
+			if store.OnChange != nil {
+				go func() {
 					defer func() {
 						if recover := recover(); recover != nil {
-							log.Println("Panic Recovered at deleteWebSocket():  ", recover)
+							log.Println("Panic Recovered at store.OnChange():  ", recover)
 							return
 						}
 					}()
-					WebSocketRemovalCallback(*info)
-				}(c)
+
+					store.OnChange(store.WebSocketStoreKey, "", store.PathRemove, nil, nil)
+				}()
 			}
 
-		}
+			if WebSocketRemovalCallback != nil {
+				info, ok := GetWebSocketMeta(c.Id)
+				if ok {
+					go func(c *WebSocketConnection) {
+						defer func() {
+							if recover := recover(); recover != nil {
+								log.Println("Panic Recovered at deleteWebSocket():  ", recover)
+								return
+							}
+						}()
+						WebSocketRemovalCallback(*info)
+					}(c)
+				}
+			}
 
-		RemoveWebSocketMeta(c.Id)
+			RemoveWebSocketMeta(c.Id)
+		} else {
+			WebSocketSecondaryConnections.Delete(c.Id)
+			RemoveSecondaryWebSocketMeta(c.Id)
+		}
 
 	}()
 
@@ -852,6 +897,27 @@ func RemoveWebSocketMeta(id string) {
 
 func GetAllWebSocketMeta() (items *sync.Map) {
 	return &webSocketConnectionsMeta
+}
+
+func GetSecondaryWebSocketMeta(id string) (info *WebSocketConnectionMeta, ok bool) {
+	result, ok := webSocketSecondaryConnectionsMeta.Load(id)
+	if ok {
+		info = result.(*WebSocketConnectionMeta)
+		return
+	}
+	return
+}
+
+func SetSecondaryWebSocketMeta(id string, info *WebSocketConnectionMeta) {
+	webSocketSecondaryConnectionsMeta.Store(id, info)
+}
+
+func RemoveSecondaryWebSocketMeta(id string) {
+	webSocketSecondaryConnectionsMeta.Delete(id)
+}
+
+func GetAllSecondaryWebSocketMeta() (items *sync.Map) {
+	return &webSocketSecondaryConnectionsMeta
 }
 
 func removeWebSocket(s []*WebSocketConnection, i int) []*WebSocketConnection {
