@@ -795,6 +795,7 @@ func deleteWebSocket(c *WebSocketConnection) {
 		if CustomLog != nil {
 			CustomLog("app->deleteWebSocket", "Deleting Web Socket from client:  "+c.Connection.RemoteAddr().String())
 		}
+		c.Connection.Close()
 
 		WebSocketConnections.Delete(c.Id)
 
