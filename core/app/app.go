@@ -3,6 +3,7 @@ package app
 import (
 	"crypto/rand"
 	"crypto/tls"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -33,6 +34,8 @@ type customLog func(desc string, message string)
 
 var BroadcastSockets bool
 var CustomLog customLog
+var totalWriteFailures sync.Map
+var mutex sync.RWMutex
 
 type WebSocketConnection struct {
 	sync.RWMutex
@@ -65,6 +68,161 @@ type WebSocketConnectionMeta struct {
 	TimeoutOverride  atomicTypes.AtomicInt
 }
 
+func init() {
+	RegisterWebSocketDataCallback(handleWebSocketData)
+	RegisterSecondaryWebSocketDataCallback(handleWebSocketSecondaryData)
+	BroadcastSockets = true
+
+	go func() {
+		for {
+			go func() {
+				defer func() {
+					if recover := recover(); recover != nil {
+						log.Println("Panic Recovered at ReplyToWebSocketSynchronous():  ", recover)
+						return
+					}
+				}()
+				start := time.Now()
+				totalPrimary := 0
+				totalPrimaryDeleted := 0
+				totalSecondary := 0
+				totalSecondaryDeleted := 0
+				GetAllWebSocketMeta().Range(func(key interface{}, value interface{}) bool {
+					totalPrimary++
+					meta, ok := value.(*WebSocketConnectionMeta)
+					if ok {
+						err := ReplyToWebSocketSynchronous(meta.Conn, []byte("."))
+						if err != nil {
+							val, ok := totalWriteFailures.Load(meta.Conn.Id)
+							total := 0
+							if ok {
+								intVal, ok := val.(int)
+								if ok {
+									total = intVal + 1
+									totalWriteFailures.Store(meta.Conn.Id, total)
+								}
+							} else {
+								total = 1
+								totalWriteFailures.Store(meta.Conn.Id, total)
+							}
+							if total == 5 {
+								totalWriteFailures.Store(meta.Conn.Id, 0)
+								totalPrimaryDeleted++
+								deleteWebSocket(meta.Conn, false, "Write single byte of '.' failed 5 times: "+err.Error())
+							}
+						}
+					}
+					return true
+				})
+				GetAllSecondaryWebSocketMeta().Range(func(key interface{}, value interface{}) bool {
+					totalSecondary++
+					meta, ok := value.(*WebSocketConnectionMeta)
+					if ok {
+						err := ReplyToWebSocketSynchronous(meta.Conn, []byte("."))
+						if err != nil {
+							val, ok := totalWriteFailures.Load(meta.Conn.Id)
+							total := 0
+							if ok {
+								intVal, ok := val.(int)
+								if ok {
+									total = intVal + 1
+									totalWriteFailures.Store(meta.Conn.Id, total)
+								}
+							} else {
+								total = 1
+								totalWriteFailures.Store(meta.Conn.Id, total)
+							}
+							if total == 5 {
+								totalSecondaryDeleted++
+								deleteWebSocket(meta.Conn, true, "Write single byte of '.' failed 5 times: "+err.Error())
+							}
+						}
+					}
+					return true
+				})
+				t := time.Since(start)
+				report := " took : " + extensions.Int64ToString(t.Milliseconds()) + "ms (Primary Total " + extensions.IntToString(totalPrimary) + " - deleted " + extensions.IntToString(totalPrimaryDeleted) + ") (Secondary Total " + extensions.IntToString(totalSecondary) + " - deleted " + extensions.IntToString(totalSecondaryDeleted) + ") "
+				if CustomLog != nil {
+					CustomLog("app->webSocketSendByte", report)
+				}
+				log.Println("app->webSocketSendByte: " + report)
+			}()
+			time.Sleep(time.Second * 10)
+		}
+	}()
+}
+
+type WebSocketUpdateIdPayload struct {
+	GoCoreEvent     string `json:"GoCoreEvent"`
+	NewID           string `json:"NewID"`
+	ResponseMessage string `json:"ResponseMessage"`
+	ResponseErrors  bool   `json:"ResponseErrors"`
+}
+
+type WebSocketEventPayload struct {
+	GoCoreEvent    string `json:"GoCoreEvent"`
+	ResponseErrors bool   `json:"ResponseErrors"`
+}
+
+func handleWebSocketData(conn *WebSocketConnection, c *gin.Context, messageType int, id string, data []byte) {
+	handleWebSocketBase(conn, c, messageType, id, data, false)
+}
+
+func handleWebSocketSecondaryData(conn *WebSocketConnection, c *gin.Context, messageType int, id string, data []byte) {
+	handleWebSocketBase(conn, c, messageType, id, data, true)
+}
+
+func handleWebSocketBase(conn *WebSocketConnection, c *gin.Context, messageType int, id string, data []byte, secondary bool) {
+	if strings.Index(string(data), "GoCoreEvent") == -1 {
+		// bail on any payload without a GoCoreEvent
+		return
+	}
+	var request WebSocketEventPayload
+	errMarshal := json.Unmarshal(data, &request)
+	if errMarshal != nil {
+		request.GoCoreEvent = "Could not unmarshal JSON passed to websocket"
+		request.ResponseErrors = true
+		ReplyToWebSocketJSON(conn, request)
+		return
+	}
+	if request.GoCoreEvent == "UpdateId" {
+		// Websockets can update to IDs that the user cares about for easy identification to write to the particular socket you want.
+		// Just Write to the socket a WebSocketUpdateIdPayload json instance with an Event == "UpdateId"
+		var request WebSocketUpdateIdPayload
+		errMarshal := json.Unmarshal(data, &request)
+		if errMarshal != nil {
+			request.GoCoreEvent = "UpdateId"
+			request.ResponseErrors = true
+			ReplyToWebSocketJSON(conn, request)
+			return
+		}
+
+		var socket *WebSocketConnectionMeta
+		var ok bool
+		if !secondary {
+			socket, ok = GetWebSocketMeta(id)
+		} else {
+			socket, ok = GetSecondaryWebSocketMeta(id)
+		}
+		if ok {
+			socket.Conn.Id = request.NewID
+			if !secondary {
+				RemoveWebSocketMeta(id)
+				SetWebSocketMeta(socket.Conn.Id, socket)
+			} else {
+				RemoveSecondaryWebSocketMeta(id)
+				SetSecondaryWebSocketMeta(socket.Conn.Id, socket)
+			}
+			request.ResponseErrors = false
+			ReplyToWebSocketJSON(conn, request)
+		} else {
+			request.ResponseMessage = "Could not find original ID (" + id + ") in memory of websocketMeta"
+			request.ResponseErrors = true
+			ReplyToWebSocketJSON(conn, request)
+		}
+	}
+}
+
 func (obj *WebSocketConnectionMeta) SetTimeoutOverride(timeout int) {
 	obj.TimeoutOverride.Set(timeout)
 }
@@ -95,10 +253,6 @@ var webSocketCallbacks sync.Map
 var webSocketSecondaryCallbacks sync.Map
 var WebSocketRemovalCallback WebSocketRemoval
 var WebSocketSecondaryRemovalCallback WebSocketRemoval
-
-func init() {
-	BroadcastSockets = true
-}
 
 func Initialize(path string, config string) (err error) {
 	err = serverSettings.Initialize(path, config)
@@ -399,7 +553,7 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context, se
 							// if strings.Contains(meta.ContextString, "{\"Page\"") {
 							// 	CustomLog("Websocket Request", string(p))
 							// }
-							callback(wsConn, c, messageType, uuid, p)
+							callback(wsConn, c, messageType, wsConn.Id, p)
 						}
 						return true
 					})
@@ -408,9 +562,9 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context, se
 
 			} else {
 				if CustomLog != nil {
-					CustomLog("app->deleteWebSocket", "Deleting Web Socket from read Timeout:  "+err.Error()+":  "+wsConn.Connection.RemoteAddr().String())
+					CustomLog("app->deleteWebSocket", "Deleting Web Socket "+wsConn.Id+" from read Timeout:  "+err.Error()+":  "+wsConn.Connection.RemoteAddr().String())
 				}
-				deleteWebSocket(wsConn, secondary)
+				deleteWebSocket(wsConn, secondary, "Reader returned error: "+err.Error())
 				return
 			}
 		}
@@ -435,6 +589,7 @@ func closeAllSockets(secondary bool) {
 
 	items := []*WebSocketConnection{}
 	var websockets sync.Map
+	mutex.Lock()
 	if !secondary {
 		websockets = WebSocketConnections
 	} else {
@@ -448,9 +603,10 @@ func closeAllSockets(secondary bool) {
 
 	for i := range items {
 		connection := items[i]
-		connection.Connection.UnderlyingConn().Close()
+		connection.Connection.Close()
 		websockets.Delete(connection.Id)
 	}
+	mutex.Unlock()
 
 }
 
@@ -513,6 +669,22 @@ func RegisterSecondaryWebSocketDataCallback(callback WebSocketCallback) {
 	webSocketSecondaryCallbacks.Store(uuid, callback)
 }
 
+func ReplyToWebSocketSynchronous(conn *WebSocketConnection, data []byte) (err error) {
+	defer func() {
+		if recover := recover(); recover != nil {
+			log.Println("Panic Recovered at ReplyToWebSocketSynchronous():  ", recover)
+			return
+		}
+
+	}()
+
+	conn.WriteLock.Lock()
+	conn.Connection.SetWriteDeadline(time.Now().Add(time.Duration(10000) * time.Millisecond))
+	err = conn.Connection.WriteMessage(websocket.TextMessage, data)
+	conn.WriteLock.Unlock()
+	return
+}
+
 func ReplyToWebSocket(conn *WebSocketConnection, data []byte) {
 	defer func() {
 		if recover := recover(); recover != nil {
@@ -566,8 +738,8 @@ func ReplyToWebSocketJSON(conn *WebSocketConnection, v interface{}) {
 			}
 		}()
 
-		conn.Connection.SetWriteDeadline(time.Now().Add(time.Duration(10000) * time.Millisecond))
 		conn.WriteLock.Lock()
+		conn.Connection.SetWriteDeadline(time.Now().Add(time.Duration(10000) * time.Millisecond))
 		conn.Connection.WriteJSON(v)
 		conn.WriteLock.Unlock()
 		unlocked = true
@@ -600,8 +772,8 @@ func ReplyToWebSocketPubSub(conn *WebSocketConnection, key string, v interface{}
 			}
 		}()
 
-		conn.Connection.SetWriteDeadline(time.Now().Add(time.Duration(10000) * time.Millisecond))
 		conn.WriteLock.Lock()
+		conn.Connection.SetWriteDeadline(time.Now().Add(time.Duration(10000) * time.Millisecond))
 		conn.Connection.WriteJSON(payload)
 		conn.WriteLock.Unlock()
 		unlocked = true
@@ -630,6 +802,7 @@ func broadcastWebSocketData(data []byte, secondary bool) {
 	if !BroadcastSockets {
 		return
 	}
+	mutex.Lock()
 	var websockets sync.Map
 	if !secondary {
 		websockets = WebSocketConnections
@@ -658,6 +831,7 @@ func broadcastWebSocketData(data []byte, secondary bool) {
 		}()
 		return true
 	})
+	mutex.Unlock()
 	return
 }
 
@@ -681,6 +855,7 @@ func broadcastWebSocketJSON(v interface{}, secondary bool) {
 		return
 	}
 
+	mutex.Lock()
 	var websockets sync.Map
 	if !secondary {
 		websockets = WebSocketConnections
@@ -702,15 +877,15 @@ func broadcastWebSocketJSON(v interface{}, secondary bool) {
 				}
 			}()
 
-			conn.Connection.SetWriteDeadline(time.Now().Add(time.Duration(10000) * time.Millisecond))
 			conn.WriteLock.Lock()
+			conn.Connection.SetWriteDeadline(time.Now().Add(time.Duration(10000) * time.Millisecond))
 			conn.Connection.WriteJSON(v)
 			conn.WriteLock.Unlock()
 			unlocked = true
 		}()
 		return true
 	})
-
+	mutex.Unlock()
 }
 
 func PublishWebSocketJSON(key string, v interface{}) {
@@ -735,6 +910,7 @@ func publishWebSocketJSON(key string, v interface{}, secondary bool) {
 	payload.Key = key
 	payload.Content = v
 	var websockets sync.Map
+	mutex.Lock()
 	if !secondary {
 		websockets = WebSocketConnections
 	} else {
@@ -754,8 +930,8 @@ func publishWebSocketJSON(key string, v interface{}, secondary bool) {
 				}
 			}()
 
-			conn.Connection.SetWriteDeadline(time.Now().Add(time.Duration(10000) * time.Millisecond))
 			conn.WriteLock.Lock()
+			conn.Connection.SetWriteDeadline(time.Now().Add(time.Duration(10000) * time.Millisecond))
 			conn.Connection.WriteJSON(payload)
 			conn.WriteLock.Unlock()
 			unlocked = true
@@ -763,6 +939,7 @@ func publishWebSocketJSON(key string, v interface{}, secondary bool) {
 		}()
 		return true
 	})
+	mutex.Unlock()
 }
 
 func SetWebSocketTimeout(timeout int) {
@@ -789,10 +966,12 @@ func setWebSocketTimeout(timeout int, secondary bool) {
 
 	for {
 		var websockets sync.Map
+		mutex.Lock()
+		// even with this mutex, there still is a fatal error: concurrent map iteration and map write in this loop
 		if !secondary {
-			websockets = webSocketSecondaryConnectionsMeta
-		} else {
 			websockets = webSocketConnectionsMeta
+		} else {
+			websockets = webSocketSecondaryConnectionsMeta
 		}
 		websockets.Range(func(key interface{}, value interface{}) bool {
 			meta, ok := value.(*WebSocketConnectionMeta)
@@ -807,17 +986,18 @@ func setWebSocketTimeout(timeout int, secondary bool) {
 						CustomLog("app->SetWebSocketTimeout", "Removed Websocket due to timeout from :  "+meta.Conn.Connection.RemoteAddr().String())
 					}
 					log.Println("Removed Websocket due to timeout from :  " + meta.GetConnection().Connection.RemoteAddr().String())
-					deleteWebSocket(meta.GetConnection(), secondary)
+					deleteWebSocket(meta.GetConnection(), secondary, "Last Response Timeout")
 				}
 			}
 			return true
 		})
-		time.Sleep(time.Millisecond * 2500)
+		mutex.Unlock()
+		time.Sleep(time.Second * 10)
 	}
 
 }
 
-func deleteWebSocket(c *WebSocketConnection, secondary bool) {
+func deleteWebSocket(c *WebSocketConnection, secondary bool, reason string) {
 
 	go func() {
 		secondaryLog := ""
@@ -830,8 +1010,9 @@ func deleteWebSocket(c *WebSocketConnection, secondary bool) {
 				return
 			}
 		}()
+		c.Connection.Close()
 
-		logDeletion := "Deleting " + secondaryLog + "Web Socket from client:  " + c.Connection.RemoteAddr().String()
+		logDeletion := "Deleting " + secondaryLog + "Web Socket from client:  " + c.Connection.RemoteAddr().String() + " Reason: " + reason
 		if CustomLog != nil {
 			CustomLog("app->deleteWebSocket", logDeletion)
 		}
