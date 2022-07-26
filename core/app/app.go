@@ -10,6 +10,7 @@ import (
 	randMath "math/rand"
 	"net/http"
 	"os"
+	"runtime/debug"
 	"strconv"
 	"strings"
 	"sync"
@@ -307,17 +308,25 @@ func RunLite(port int) {
 
 	log.Println("GoCore Application Started")
 
-	s := &http.Server{
-		Addr:         ":" + strconv.Itoa(port),
-		Handler:      ginServer.Router,
-		ReadTimeout:  300 * time.Second,
-		WriteTimeout: 300 * time.Second,
-	}
-	err := s.ListenAndServe()
-	if err != nil {
-		log.Println("GoCore Cannot open port " + strconv.Itoa(port) + " Reason: " + err.Error())
-		os.Exit(1)
-	}
+	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				log.Println("\n\nPanic Stack main listen and serve: " + string(debug.Stack()))
+				return
+			}
+		}()
+		s := &http.Server{
+			Addr:         ":" + strconv.Itoa(port),
+			Handler:      ginServer.Router,
+			ReadTimeout:  300 * time.Second,
+			WriteTimeout: 300 * time.Second,
+		}
+		err := s.ListenAndServe()
+		if err != nil {
+			log.Println("GoCore Cannot open port " + strconv.Itoa(port) + " Reason: " + err.Error())
+			os.Exit(1)
+		}
+	}()
 
 }
 
@@ -369,6 +378,12 @@ func Run() {
 			port = serverSettings.WebConfig.Application.GitWebHookPort
 		}
 		go func() {
+			defer func() {
+				if r := recover(); r != nil {
+					log.Println("\n\nPanic Stack: " + string(debug.Stack()))
+					return
+				}
+			}()
 			err := http.ListenAndServe(":"+port, nil)
 			if err != nil {
 				log.Println("GoCore Cannot open port " + port + " Reason: " + err.Error())
@@ -439,6 +454,13 @@ func Run() {
 	}
 
 	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				log.Println("\n\nPanic Stack main Listen and serve: " + string(debug.Stack()))
+				return
+			}
+		}()
+
 		s := &http.Server{
 			Addr:         ":" + port,
 			Handler:      ginServer.Router,
