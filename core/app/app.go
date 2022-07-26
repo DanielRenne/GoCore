@@ -313,7 +313,11 @@ func RunLite(port int) {
 		ReadTimeout:  300 * time.Second,
 		WriteTimeout: 300 * time.Second,
 	}
-	s.ListenAndServe()
+	err := s.ListenAndServe()
+	if err != nil {
+		log.Println("GoCore Cannot open port " + strconv.Itoa(port) + " Reason: " + err.Error())
+		os.Exit(1)
+	}
 
 }
 
@@ -364,7 +368,13 @@ func Run() {
 		if serverSettings.WebConfig.Application.GitWebHookPort != "" {
 			port = serverSettings.WebConfig.Application.GitWebHookPort
 		}
-		go http.ListenAndServe(":"+port, nil)
+		go func() {
+			err := http.ListenAndServe(":"+port, nil)
+			if err != nil {
+				log.Println("GoCore Cannot open port " + port + " Reason: " + err.Error())
+				os.Exit(1)
+			}
+		}()
 	}
 
 	if serverSettings.WebConfig.Application.WebServiceOnly == false {
@@ -412,7 +422,8 @@ func Run() {
 
 		err := s.ListenAndServeTLS(serverSettings.APP_LOCATION+"/keys/cert.pem", serverSettings.APP_LOCATION+"/keys/key.pem")
 		if err != nil {
-			log.Println("Application failed to ListenAndServeTLS:  " + err.Error())
+			log.Println("GoCore Application failed to ListenAndServeTLS:  " + err.Error())
+			os.Exit(1)
 		} else {
 			log.Println("Application Listening on TLS port " + strconv.Itoa(serverSettings.WebConfig.Application.HttpsPort))
 		}
@@ -427,15 +438,21 @@ func Run() {
 		port = envPort
 	}
 
-	log.Println("Application Listening on port " + port)
-
-	s := &http.Server{
-		Addr:         ":" + port,
-		Handler:      ginServer.Router,
-		ReadTimeout:  900 * time.Second,
-		WriteTimeout: 300 * time.Second,
-	}
-	s.ListenAndServe()
+	go func() {
+		s := &http.Server{
+			Addr:         ":" + port,
+			Handler:      ginServer.Router,
+			ReadTimeout:  900 * time.Second,
+			WriteTimeout: 300 * time.Second,
+		}
+		err := s.ListenAndServe()
+		if err != nil {
+			log.Println("GoCore Application failed to listen on port (" + port + "):  " + err.Error())
+			os.Exit(1)
+		} else {
+			log.Println("Application Listening on port " + port)
+		}
+	}()
 
 	// ginServer.Router.Run(":" + strconv.Itoa(serverSettings.WebConfig.Application.HttpPort))
 
