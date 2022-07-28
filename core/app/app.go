@@ -308,25 +308,17 @@ func RunLite(port int) {
 
 	log.Println("GoCore Application Started")
 
-	go func() {
-		defer func() {
-			if r := recover(); r != nil {
-				log.Println("\n\nPanic Stack main listen and serve: " + string(debug.Stack()))
-				return
-			}
-		}()
-		s := &http.Server{
-			Addr:         ":" + strconv.Itoa(port),
-			Handler:      ginServer.Router,
-			ReadTimeout:  300 * time.Second,
-			WriteTimeout: 300 * time.Second,
-		}
-		err := s.ListenAndServe()
-		if err != nil {
-			log.Println("GoCore Cannot open port " + strconv.Itoa(port) + " Reason: " + err.Error())
-			os.Exit(1)
-		}
-	}()
+	s := &http.Server{
+		Addr:         ":" + strconv.Itoa(port),
+		Handler:      ginServer.Router,
+		ReadTimeout:  300 * time.Second,
+		WriteTimeout: 300 * time.Second,
+	}
+	err := s.ListenAndServe()
+	if err != nil {
+		log.Println("GoCore Cannot open port " + strconv.Itoa(port) + " Reason: " + err.Error())
+		os.Exit(1)
+	}
 
 }
 
@@ -452,36 +444,17 @@ func Run() {
 	if envPort != "" {
 		port = envPort
 	}
-
-	go func() {
-		defer func() {
-			if r := recover(); r != nil {
-				log.Println("\n\nPanic Stack main Listen and serve: " + string(debug.Stack()))
-				return
-			}
-		}()
-
-		s := &http.Server{
-			Addr:         ":" + port,
-			Handler:      ginServer.Router,
-			ReadTimeout:  900 * time.Second,
-			WriteTimeout: 300 * time.Second,
-		}
-		err := s.ListenAndServe()
-		if err != nil {
-			log.Println("GoCore Application failed to listen on port (" + port + "):  " + err.Error())
-			os.Exit(1)
-		} else {
-			log.Println("Application Listening on port " + port)
-		}
-	}()
-
-	// ginServer.Router.Run(":" + strconv.Itoa(serverSettings.WebConfig.Application.HttpPort))
-
-	// go ginServer.Router.GET("/", func(c *gin.Context) {
-	// 	c.Redirect(http.StatusMovedPermanently, "https://"+serverSettings.WebConfig.Application.Domain+":"+strconv.Itoa(serverSettings.WebConfig.Application.HttpsPort))
-	// })
-
+	s := &http.Server{
+		Addr:         ":" + port,
+		Handler:      ginServer.Router,
+		ReadTimeout:  900 * time.Second,
+		WriteTimeout: 300 * time.Second,
+	}
+	err := s.ListenAndServe()
+	if err != nil {
+		log.Println("GoCore Application failed to listen on port (" + port + "):  " + err.Error())
+		os.Exit(1)
+	}
 }
 
 func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context, secondary bool) {
