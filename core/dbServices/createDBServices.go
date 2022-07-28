@@ -1416,6 +1416,9 @@ func genNoSQLSchemaReflectBaseTypeByFieldName(collection NOSQLCollection) string
 func genNoSQLSchemaSave(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
 	val := ""
 	val += "func (self *" + strings.Title(schema.Name) + ") Save() error {\n"
+	val += "if !AllowWrites {\n"
+	val += "	return nil\n"
+	val += "}\n"
 	switch driver {
 	case DATABASE_DRIVER_BOLTDB:
 		val += "t := time.Now()\n"

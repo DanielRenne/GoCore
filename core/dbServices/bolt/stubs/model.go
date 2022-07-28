@@ -113,8 +113,10 @@ type Field struct {
 }
 
 var transactionQueue tQueue
+var AllowWrites bool
 
 func init() {
+	AllowWrites = true
 	transactionQueue.ids = make(map[string][]string)
 	transactionQueue.queue = make(map[string]*transactionsToPersist)
 	go clearTransactionQueue()
