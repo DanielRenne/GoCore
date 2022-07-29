@@ -28,6 +28,10 @@ import (
 	"gopkg.in/go-playground/webhooks.v5/github"
 )
 
+func main() {
+
+}
+
 type WebSocketRemoval func(info WebSocketConnectionMeta)
 type customLog func(desc string, message string)
 
