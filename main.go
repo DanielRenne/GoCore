@@ -17,7 +17,6 @@ import (
 	_ "github.com/DanielRenne/GoCore/core/fileCache"
 	_ "github.com/DanielRenne/GoCore/core/ginServer"
 	_ "github.com/DanielRenne/GoCore/core/gitWebHooks"
-	_ "github.com/DanielRenne/GoCore/core/goCoreCreateApp"
 	_ "github.com/DanielRenne/GoCore/core/httpExtensions"
 	_ "github.com/DanielRenne/GoCore/core/logger"
 	_ "github.com/DanielRenne/GoCore/core/pubsub"

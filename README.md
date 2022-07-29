@@ -86,7 +86,7 @@ Source it:
 
 1.  A sample project generator is available to build a GoCore project.
 
-	`go install github.com/DanielRenne/GoCore/core/goCoreCreateApp`
+	`go install github.com/DanielRenne/GoCore/goCoreCreateApp`
 
 	And install the binary for fetching the project template files
 
