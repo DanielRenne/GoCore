@@ -5,4 +5,4 @@ git tag "v$version"
 git push origin "v$version"
 echo "Tag pushed, whats your title/description for the release?"
 read title
-gh release create "v$version" --title "$title"
+gh release create "$version" --title "$title" --generate-notes
