@@ -241,8 +241,7 @@ func Run() {
 			return
 		}
 	}()
-
-	if serverSettings.WebConfig.Application.MountGitWebHooks == true {
+	if serverSettings.WebConfig.Application.MountGitWebHooks == true && serverSettings.WebConfig.Application.GitWebHookPath != "" {
 		hook, _ := github.New(github.Options.Secret(serverSettings.WebConfig.Application.GitWebHookSecretKey))
 		http.HandleFunc(serverSettings.WebConfig.Application.GitWebHookPath, func(w http.ResponseWriter, r *http.Request) {
 
@@ -294,37 +293,39 @@ func Run() {
 
 	initializeStaticRoutes()
 
-	go func() {
-		defer func() {
-			if r := recover(); r != nil {
-				log.Println("Panic Recovered at Run TLS():  ", r)
-				return
-			}
-		}()
+	if extensions.DoesFileExist(serverSettings.APP_LOCATION+"/keys/cert.pem") && extensions.DoesFileExist(serverSettings.APP_LOCATION+"/keys/key.pem") {
+		go func() {
+			defer func() {
+				if r := recover(); r != nil {
+					log.Println("Panic Recovered at Run TLS():  ", r)
+					return
+				}
+			}()
 
-		s := &http.Server{
-			Addr: ":" + strconv.Itoa(serverSettings.WebConfig.Application.HttpsPort),
-			TLSConfig: &tls.Config{
-				PreferServerCipherSuites: true,
-				CurvePreferences: []tls.CurveID{
-					tls.CurveP256,
-					tls.X25519,
+			s := &http.Server{
+				Addr: ":" + strconv.Itoa(serverSettings.WebConfig.Application.HttpsPort),
+				TLSConfig: &tls.Config{
+					PreferServerCipherSuites: true,
+					CurvePreferences: []tls.CurveID{
+						tls.CurveP256,
+						tls.X25519,
+					},
+					MinVersion: tls.VersionTLS12,
 				},
-				MinVersion: tls.VersionTLS12,
-			},
-			Handler:      ginServer.Router,
-			ReadTimeout:  900 * time.Second,
-			WriteTimeout: 300 * time.Second,
-		}
+				Handler:      ginServer.Router,
+				ReadTimeout:  900 * time.Second,
+				WriteTimeout: 300 * time.Second,
+			}
 
-		err := s.ListenAndServeTLS(serverSettings.APP_LOCATION+"/keys/cert.pem", serverSettings.APP_LOCATION+"/keys/key.pem")
-		if err != nil {
-			log.Println("Application failed to ListenAndServeTLS:  " + err.Error())
-		} else {
-			log.Println("Application Listening on TLS port " + strconv.Itoa(serverSettings.WebConfig.Application.HttpsPort))
-		}
+			err := s.ListenAndServeTLS(serverSettings.APP_LOCATION+"/keys/cert.pem", serverSettings.APP_LOCATION+"/keys/key.pem")
+			if err != nil {
+				log.Println("Application failed to ListenAndServeTLS:  " + err.Error())
+			} else {
+				log.Println("Application Listening on TLS port " + strconv.Itoa(serverSettings.WebConfig.Application.HttpsPort))
+			}
 
-	}()
+		}()
+	}
 
 	log.Println("GoCore Application Started")
 
@@ -343,12 +344,6 @@ func Run() {
 		WriteTimeout: 300 * time.Second,
 	}
 	s.ListenAndServe()
-
-	// ginServer.Router.Run(":" + strconv.Itoa(serverSettings.WebConfig.Application.HttpPort))
-
-	// go ginServer.Router.GET("/", func(c *gin.Context) {
-	// 	c.Redirect(http.StatusMovedPermanently, "https://"+serverSettings.WebConfig.Application.Domain+":"+strconv.Itoa(serverSettings.WebConfig.Application.HttpsPort))
-	// })
 
 }
 
