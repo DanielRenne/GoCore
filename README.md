@@ -86,7 +86,7 @@ Source it:
 
 1.  A sample project generator is available to build a GoCore project.
 
-	`go install github.com/DanielRenne/GoCore/core/goCoreCreateApp`
+	`go install github.com/DanielRenne/GoCore/goCoreCreateApp`
 
 	And install the binary for fetching the project template files
 
@@ -96,7 +96,7 @@ Then run
 
     goCoreCreateApp
 
-Follow the prompts to generate your app and it will copy the templates found in GoCore/tools/appFiles into your project directory github.com/username/appName.  Note you probably should install nodejs, npm and nvm before generating an app.
+Follow the prompts to generate your app.  Note you probably should install nodejs, npm and nvm before generating an app.
 
 GoCore has built in functions to read json configuration files to generate SQL Tables, indexes, primary & foreign keys, NOSQL Collections & Buckets, auto-generated Golang model code files, auto-generated REST web api code files, and swagger.io schema files application.  See [BuildCore Readme](https://github.com/DanielRenne/GoCore/blob/master/buildCore/README.md) for details.
 

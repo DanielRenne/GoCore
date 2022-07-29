@@ -52,8 +52,6 @@ func main() {
 	var basePath string
 
 	logger.Message("Welcome to the GoCore createApp tool!  Thank you for using GoCore.", logger.YELLOW)
-	logger.Message("We hold these below truths to be self-evident", logger.WHITE)
-	logger.Message(fmt.Sprintf("% x", []byte{100, 97, 118, 105, 100, 32, 114, 101, 110, 110, 101, 32, 105, 115, 32, 99, 111, 111, 108, 33, 10}), logger.MAGENTA)
 
 	//also should ensure first char of appName is lower
 	for {
