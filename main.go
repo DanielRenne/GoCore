@@ -1,6 +1,8 @@
 package main
 
 import (
+	"log"
+
 	_ "github.com/DanielRenne/GoCore/core"
 	_ "github.com/DanielRenne/GoCore/core/app"
 	_ "github.com/DanielRenne/GoCore/core/app/api"
@@ -28,5 +30,5 @@ import (
 )
 
 func main() {
-
+	log.Println("Welcome to GoCore:\n\nThis is a dummy binary meant to import all the shared libraries GoCore apps use so you can import anything you want.")
 }
