@@ -81,12 +81,12 @@ func downloadRelease(url string, fileName string) {
 	}
 
 	resp, errHttpGet := http.Get(url)
-	defer resp.Body.Close()
 
 	if errHttpGet != nil {
 		fmt.Println("Failed to Download GoCoreDep master zip file:  " + errHttpGet.Error())
 		return
 	}
+	defer resp.Body.Close()
 
 	n, errCopyOut := io.Copy(out, resp.Body)
 
@@ -111,12 +111,12 @@ func downloadManifest() {
 	fmt.Println("Downloading Manifest.  Please Wait . . .")
 
 	resp, errHttpGet := http.Get(manifestURL)
-	defer resp.Body.Close()
 
 	if errHttpGet != nil {
 		fmt.Println("Failed to Download GoCoreDep manifest:  " + errHttpGet.Error())
 		return
 	}
+	defer resp.Body.Close()
 
 	n, errCopyOut := io.Copy(out, resp.Body)
 
