@@ -27,7 +27,7 @@ require (
 	github.com/gorilla/context v0.0.0-20160816184700-01ef6ff48fdc // indirect
 	github.com/gorilla/securecookie v1.1.1 // indirect
 	github.com/gorilla/sessions v0.0.0-20160816185042-1bbba13ba476 // indirect
-	github.com/gorilla/websocket v1.0.1-0.20161112142712-e8f0f8aaa98d
+	github.com/gorilla/websocket v1.5.0
 	github.com/mattn/go-colorable v0.0.6 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
