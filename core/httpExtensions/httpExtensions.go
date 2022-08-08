@@ -1,11 +1,33 @@
 package httpExtensions
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
+	"time"
+
+	"github.com/DanielRenne/GoCore/core/extensions"
 )
+
+func GetJSONRequest(urlRequest string, x interface{}) (err error) {
+	var myClient = &http.Client{Timeout: 25 * time.Second}
+	var r *http.Response
+	r, err = myClient.Get(urlRequest)
+	if err != nil {
+		return
+	}
+	defer r.Body.Close()
+
+	if r.StatusCode <= 400 {
+		err = json.NewDecoder(r.Body).Decode(x)
+	} else {
+		err = errors.New("Non 200 status code: " + extensions.IntToString(r.StatusCode))
+	}
+	return
+}
 
 func DownloadFromUrl(url string, path string) error {
 	fmt.Println("Downloading", url, "to", path)

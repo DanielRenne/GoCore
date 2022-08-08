@@ -5,6 +5,7 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"runtime"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -36,7 +37,7 @@ const (
 )
 
 func init() {
-	//VerboseBornAndDeadGophers= true
+	VerboseBornAndDeadGophers = true
 	rand.Seed(time.Now().UnixNano())
 	RunningGophers = utils.Array()
 	GopherTimeRunning = make(map[string]time.Time, 0)
@@ -112,7 +113,7 @@ func ViewRunningGophers() {
     ]             ~ ~             |
     |                            |
      |                           |
-at ` + time.Now().String() + " " + extensions.IntToString(len(RunningGophers)) + ` Gophers workin up in here!
+at ` + time.Now().String() + " " + extensions.IntToString(len(RunningGophers)) + ` Logged Gophers workin up in here (` + extensions.IntToString(runtime.NumGoroutine()-len(RunningGophers)) + ` mysterious and ghostly Gophers working in secret)!
 `)
 		for i, gopher := range RunningGophers {
 			val, ok := GopherTimeRunning[gopher]

@@ -33,6 +33,7 @@ import (
 type WebSocketRemoval func(info WebSocketConnectionMeta)
 type customLog func(desc string, message string)
 
+var hasClientEverConnectedWebsocket bool
 var BroadcastSockets bool
 var CustomLog customLog
 var totalWriteFailures sync.Map
@@ -70,87 +71,11 @@ type WebSocketConnectionMeta struct {
 }
 
 func init() {
+	WebSocketRetriesBeforeRemoval = 5
+	WebSocketSecondaryRetriesBeforeRemoval = 5
 	RegisterWebSocketDataCallback(handleWebSocketData)
 	RegisterSecondaryWebSocketDataCallback(handleWebSocketSecondaryData)
 	BroadcastSockets = true
-
-	go func() {
-		for {
-			go func() {
-				defer func() {
-					if recover := recover(); recover != nil {
-						log.Println("Panic Recovered at ReplyToWebSocketSynchronous():  ", recover)
-						return
-					}
-				}()
-				start := time.Now()
-				totalPrimary := 0
-				totalPrimaryDeleted := 0
-				totalSecondary := 0
-				totalSecondaryDeleted := 0
-				GetAllWebSocketMeta().Range(func(key interface{}, value interface{}) bool {
-					totalPrimary++
-					meta, ok := value.(*WebSocketConnectionMeta)
-					if ok {
-						err := ReplyToWebSocketSynchronous(meta.Conn, []byte("."))
-						if err != nil {
-							val, ok := totalWriteFailures.Load(meta.Conn.Id)
-							total := 0
-							if ok {
-								intVal, ok := val.(int)
-								if ok {
-									total = intVal + 1
-									totalWriteFailures.Store(meta.Conn.Id, total)
-								}
-							} else {
-								total = 1
-								totalWriteFailures.Store(meta.Conn.Id, total)
-							}
-							if total == 5 {
-								totalWriteFailures.Store(meta.Conn.Id, 0)
-								totalPrimaryDeleted++
-								deleteWebSocket(meta.Conn, false, "Write single byte of '.' failed 5 times: "+err.Error())
-							}
-						}
-					}
-					return true
-				})
-				GetAllSecondaryWebSocketMeta().Range(func(key interface{}, value interface{}) bool {
-					totalSecondary++
-					meta, ok := value.(*WebSocketConnectionMeta)
-					if ok {
-						err := ReplyToWebSocketSynchronous(meta.Conn, []byte("."))
-						if err != nil {
-							val, ok := totalWriteFailures.Load(meta.Conn.Id)
-							total := 0
-							if ok {
-								intVal, ok := val.(int)
-								if ok {
-									total = intVal + 1
-									totalWriteFailures.Store(meta.Conn.Id, total)
-								}
-							} else {
-								total = 1
-								totalWriteFailures.Store(meta.Conn.Id, total)
-							}
-							if total == 5 {
-								totalSecondaryDeleted++
-								deleteWebSocket(meta.Conn, true, "Write single byte of '.' failed 5 times: "+err.Error())
-							}
-						}
-					}
-					return true
-				})
-				t := time.Since(start)
-				report := " took : " + extensions.Int64ToString(t.Milliseconds()) + "ms (Primary Total " + extensions.IntToString(totalPrimary) + " - deleted " + extensions.IntToString(totalPrimaryDeleted) + ") (Secondary Total " + extensions.IntToString(totalSecondary) + " - deleted " + extensions.IntToString(totalSecondaryDeleted) + ") "
-				if CustomLog != nil {
-					CustomLog("app->webSocketSendByte", report)
-				}
-				log.Println("app->webSocketSendByte: " + report)
-			}()
-			time.Sleep(time.Second * 10)
-		}
-	}()
 }
 
 type WebSocketUpdateIdPayload struct {
@@ -208,10 +133,10 @@ func handleWebSocketBase(conn *WebSocketConnection, c *gin.Context, messageType 
 		if ok {
 			socket.Conn.Id = request.NewID
 			if !secondary {
-				RemoveWebSocketMeta(id)
+				webSocketConnectionsMeta.Delete(id)
 				SetWebSocketMeta(socket.Conn.Id, socket)
 			} else {
-				RemoveSecondaryWebSocketMeta(id)
+				webSocketSecondaryConnectionsMeta.Delete(id)
 				SetSecondaryWebSocketMeta(socket.Conn.Id, socket)
 			}
 			request.ResponseErrors = false
@@ -248,12 +173,15 @@ var upgrader = websocket.Upgrader{
 
 var WebSocketConnections sync.Map
 var WebSocketSecondaryConnections sync.Map
+var WebSocketRemovalCallback WebSocketRemoval
+var WebSocketSecondaryRemovalCallback WebSocketRemoval
+var WebSocketRetriesBeforeRemoval int
+var WebSocketSecondaryRetriesBeforeRemoval int
+
 var webSocketConnectionsMeta sync.Map
 var webSocketSecondaryConnectionsMeta sync.Map
 var webSocketCallbacks sync.Map
 var webSocketSecondaryCallbacks sync.Map
-var WebSocketRemovalCallback WebSocketRemoval
-var WebSocketSecondaryRemovalCallback WebSocketRemoval
 
 func Initialize(path string, config string) (err error) {
 	err = serverSettings.Initialize(path, config)
@@ -467,6 +395,88 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context, se
 			return
 		}
 	}()
+	mutex.Lock()
+	if !hasClientEverConnectedWebsocket {
+		hasClientEverConnectedWebsocket = true
+		go func() {
+			for {
+				go func() {
+					defer func() {
+						if recover := recover(); recover != nil {
+							log.Println("Panic Recovered at ReplyToWebSocketSynchronous():  ", recover)
+							return
+						}
+					}()
+					start := time.Now()
+					totalPrimary := 0
+					totalPrimaryDeleted := 0
+					totalSecondary := 0
+					totalSecondaryDeleted := 0
+					GetAllWebSocketMeta().Range(func(key interface{}, value interface{}) bool {
+						totalPrimary++
+						meta, ok := value.(*WebSocketConnectionMeta)
+						if ok {
+							err := ReplyToWebSocketSynchronous(meta.Conn, []byte("."))
+							if err != nil {
+								val, ok := totalWriteFailures.Load(meta.Conn.Id)
+								total := 0
+								if ok {
+									intVal, ok := val.(int)
+									if ok {
+										total = intVal + 1
+										totalWriteFailures.Store(meta.Conn.Id, total)
+									}
+								} else {
+									total = 1
+									totalWriteFailures.Store(meta.Conn.Id, total)
+								}
+								if total == WebSocketRetriesBeforeRemoval {
+									totalWriteFailures.Store(meta.Conn.Id, 0)
+									totalPrimaryDeleted++
+									deleteWebSocket(meta.Conn, false, "Write single byte of '.' failed "+extensions.IntToString(total)+" times: "+err.Error())
+								}
+							}
+						}
+						return true
+					})
+					GetAllSecondaryWebSocketMeta().Range(func(key interface{}, value interface{}) bool {
+						totalSecondary++
+						meta, ok := value.(*WebSocketConnectionMeta)
+						if ok {
+							err := ReplyToWebSocketSynchronous(meta.Conn, []byte("."))
+							if err != nil {
+								val, ok := totalWriteFailures.Load(meta.Conn.Id)
+								total := 0
+								if ok {
+									intVal, ok := val.(int)
+									if ok {
+										total = intVal + 1
+										totalWriteFailures.Store(meta.Conn.Id, total)
+									}
+								} else {
+									total = 1
+									totalWriteFailures.Store(meta.Conn.Id, total)
+								}
+								if total == WebSocketSecondaryRetriesBeforeRemoval {
+									totalSecondaryDeleted++
+									deleteWebSocket(meta.Conn, true, "Write single byte of '.' failed "+extensions.IntToString(total)+" times: "+err.Error())
+								}
+							}
+						}
+						return true
+					})
+					t := time.Since(start)
+					report := " took : " + extensions.Int64ToString(t.Milliseconds()) + "ms (Primary Total " + extensions.IntToString(totalPrimary) + " - deleted " + extensions.IntToString(totalPrimaryDeleted) + ") (Secondary Total " + extensions.IntToString(totalSecondary) + " - deleted " + extensions.IntToString(totalSecondaryDeleted) + ") "
+					if CustomLog != nil {
+						CustomLog("app->webSocketSendByte", report)
+					}
+					log.Println("app->webSocketSendByte: " + report)
+				}()
+				time.Sleep(time.Second * 10)
+			}
+		}()
+	}
+	mutex.Unlock()
 
 	if serverSettings.WebConfig.Application.AllowCrossOriginRequests {
 		r.Header.Add("Access-Control-Allow-Origin", "*")
@@ -579,7 +589,7 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context, se
 				return
 			}
 		}
-	}, "GoCore/app.go->webSocketHandler[Reader]")
+	}, "GoCore/app.go->webSocketHandler[Reader for "+wsConn.Id+"]")
 
 	if !secondary {
 		WebSocketConnections.Store(wsConn.Id, wsConn)
@@ -1030,7 +1040,6 @@ func deleteWebSocket(c *WebSocketConnection, secondary bool, reason string) {
 		log.Println(logDeletion)
 
 		if !secondary {
-			WebSocketConnections.Delete(c.Id)
 
 			if store.OnChange != nil {
 				go func() {
@@ -1060,10 +1069,25 @@ func deleteWebSocket(c *WebSocketConnection, secondary bool, reason string) {
 				}
 			}
 
-			RemoveWebSocketMeta(c.Id)
+			WebSocketConnections.Delete(c.Id)
+			webSocketConnectionsMeta.Delete(c.Id)
 		} else {
+			if WebSocketSecondaryRemovalCallback != nil {
+				info, ok := GetSecondaryWebSocketMeta(c.Id)
+				if ok {
+					go func(c *WebSocketConnection) {
+						defer func() {
+							if recover := recover(); recover != nil {
+								log.Println("Panic Recovered at deleteWebSocket():  ", recover)
+								return
+							}
+						}()
+						WebSocketSecondaryRemovalCallback(*info)
+					}(c)
+				}
+			}
 			WebSocketSecondaryConnections.Delete(c.Id)
-			RemoveSecondaryWebSocketMeta(c.Id)
+			webSocketSecondaryConnectionsMeta.Delete(c.Id)
 		}
 
 	}()
@@ -1083,10 +1107,6 @@ func SetWebSocketMeta(id string, info *WebSocketConnectionMeta) {
 	webSocketConnectionsMeta.Store(id, info)
 }
 
-func RemoveWebSocketMeta(id string) {
-	webSocketConnectionsMeta.Delete(id)
-}
-
 func GetAllWebSocketMeta() (items *sync.Map) {
 	return &webSocketConnectionsMeta
 }
@@ -1102,10 +1122,6 @@ func GetSecondaryWebSocketMeta(id string) (info *WebSocketConnectionMeta, ok boo
 
 func SetSecondaryWebSocketMeta(id string, info *WebSocketConnectionMeta) {
 	webSocketSecondaryConnectionsMeta.Store(id, info)
-}
-
-func RemoveSecondaryWebSocketMeta(id string) {
-	webSocketSecondaryConnectionsMeta.Delete(id)
 }
 
 func GetAllSecondaryWebSocketMeta() (items *sync.Map) {

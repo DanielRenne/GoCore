@@ -5,7 +5,7 @@ go 1.13
 require (
 	github.com/DataDog/zstd v1.5.2 // indirect
 	github.com/MakeNowJust/heredoc v0.0.0-20140704152643-1d91351acdc1 // indirect
-	github.com/Sereal/Sereal v0.0.0-20220220040404-e0d1e550e879 // indirect
+	github.com/Sereal/Sereal v0.0.0-20220728120636-cf78dcdc78a5 // indirect
 	github.com/asdine/storm v0.0.0-20160730105259-c9a194eaf968
 	github.com/boj/redistore v0.0.0-20160128113310-fc113767cd6b // indirect
 	github.com/boltdb/bolt v1.2.2-0.20160730144416-94c8db596809 // indirect
@@ -27,7 +27,7 @@ require (
 	github.com/gorilla/context v0.0.0-20160816184700-01ef6ff48fdc // indirect
 	github.com/gorilla/securecookie v1.1.1 // indirect
 	github.com/gorilla/sessions v0.0.0-20160816185042-1bbba13ba476 // indirect
-	github.com/gorilla/websocket v1.0.1-0.20161112142712-e8f0f8aaa98d
+	github.com/gorilla/websocket v1.5.0
 	github.com/mattn/go-colorable v0.0.6 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect

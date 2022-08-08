@@ -6,6 +6,34 @@ import (
 	"time"
 )
 
+//AtomicStringArray provides a []string that is lock safe.
+type AtomicStringArray struct {
+	valueSync sync.RWMutex
+	value     []string
+}
+
+//Get returns the []string value
+func (obj *AtomicStringArray) Get() (value []string) {
+	obj.valueSync.RLock()
+	value = obj.value
+	obj.valueSync.RUnlock()
+	return
+}
+
+//Append the []string value
+func (obj *AtomicStringArray) Append(value string) {
+	obj.valueSync.Lock()
+	obj.value = append(obj.value, value)
+	obj.valueSync.Unlock()
+}
+
+//sets the []string value
+func (obj *AtomicStringArray) Set(value []string) {
+	obj.valueSync.Lock()
+	obj.value = value
+	obj.valueSync.Unlock()
+}
+
 //AtomicString provides a string object that is lock safe.
 type AtomicString struct {
 	valueSync sync.RWMutex
