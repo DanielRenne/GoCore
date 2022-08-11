@@ -189,6 +189,11 @@ func Tail(path string, length int64) (data string) {
 		if err == nil {
 			data = string(buf)
 		}
+	} else {
+		_, err := file.Read(buf)
+		if err == nil {
+			data = string(buf)
+		}
 	}
 	return
 }
