@@ -176,13 +176,16 @@ func TimeTrackQuery(start time.Time, name string, collection *mgo.Collection, m 
 
 func Tail(path string, length int64) (data string) {
 	file, err := os.Open(path)
-	defer file.Close()
 	if err != nil {
 		return
 	}
+	defer file.Close()
 
 	buf := make([]byte, length)
 	stat, err := os.Stat(path)
+	if err != nil {
+		return
+	}
 	start := stat.Size() - length
 	if start > 0 {
 		_, err = file.ReadAt(buf, start)
