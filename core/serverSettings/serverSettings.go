@@ -4,16 +4,19 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"sync"
+
+	"github.com/DanielRenne/GoCore/core/path"
 )
 
-type htmlTemplates struct {
+type HtmlTemplates struct {
 	Enabled         bool   `json:"enabled"`
 	Directory       string `json:"directory"`
 	DirectoryLevels int    `json:"directoryLevels"`
 }
 
-type dbConnection struct {
+type DbConnection struct {
 	ConnectionString    string `json:"connectionString"`
 	EnableTLS           bool   `json:"enableTLS"`
 	Driver              string `json:"driver"`
@@ -29,23 +32,23 @@ type dbConnection struct {
 	} `json:"replication"`
 }
 
-type license struct {
+type License struct {
 	Name string `json:"name"`
 	URL  string `json:"url"`
 }
 
-type contact struct {
+type Contact struct {
 	Name  string `json:"name"`
 	URL   string `json:"url"`
 	Email string `json:"email"`
 }
 
-type info struct {
+type Info struct {
 	Title          string  `json:"title"`
 	Description    string  `json:"description"`
-	Contact        contact `json:"contact"`
-	License        license `json:"license"`
-	TermsOfService string  `json:termsOfService"`
+	Contact        Contact `json:"contact"`
+	License        License `json:"license"`
+	TermsOfService string  `json:"termsOfService"`
 }
 
 type Application struct {
@@ -64,8 +67,8 @@ type Application struct {
 	GitWebHookSecretKey      string        `json:"gitWebHookSecretKey"`
 	GitWebHookPort           string        `json:"gitWebHookServerPort"`
 	GitWebHookPath           string        `json:"gitWebHookPath"`
-	Info                     info          `json:"info"`
-	HtmlTemplates            htmlTemplates `json:"htmlTemplates"`
+	Info                     Info          `json:"info"`
+	HtmlTemplates            HtmlTemplates `json:"htmlTemplates"`
 	RootIndexPath            string        `json:"rootIndexPath"`
 	DisableRootIndex         bool          `json:"disableRootIndex"`
 	CustomGinLogger          bool          `json:"customGinLogger"`
@@ -84,34 +87,45 @@ type Application struct {
 	AllowCrossOriginRequests bool          `json:"allowCrossOriginRequests"`
 }
 
-type webConfigObj struct {
-	DbConnections []dbConnection `json:"dbConnections"`
+type WebConfigType struct {
+	DbConnections []DbConnection `json:"dbConnections"`
 	Application   Application    `json:"application"`
-	DbConnection  dbConnection
+	DbConnection  DbConnection
 }
 
-var WebConfig webConfigObj
+var WebConfig WebConfigType
 var WebConfigMutex sync.RWMutex
 var APP_LOCATION string
 var SWAGGER_UI_PATH string
 
-func Initialize(path string, configurationFile string) (err error) {
+func Init() {
+	Initialize(path.GetBinaryPath(), "webConfig.json")
+}
 
+func InitCustomWebConfig(webConfig string) {
+	Initialize(path.GetBinaryPath(), webConfig)
+}
+
+func InitPath(path string) {
 	APP_LOCATION = path
 	SWAGGER_UI_PATH = APP_LOCATION + "/web/swagger/dist"
+}
+
+func Initialize(path string, configurationFile string) (err error) {
+	InitPath(path)
 	fmt.Println("core serverSettings initialized.")
 
 	jsonData, err := ioutil.ReadFile(APP_LOCATION + "/" + configurationFile)
 	if err != nil {
 		fmt.Println("Reading of webConfig.json failed:  " + err.Error())
-		return
+		os.Exit(1)
 	}
 
 	WebConfigMutex.Lock()
 	errUnmarshal := json.Unmarshal(jsonData, &WebConfig)
 	if errUnmarshal != nil {
 		fmt.Println("Parsing / Unmarshaling of webConfig.json failed:  " + errUnmarshal.Error())
-		return
+		os.Exit(1)
 	}
 
 	for _, dbConnection := range WebConfig.DbConnections {

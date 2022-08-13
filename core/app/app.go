@@ -21,6 +21,7 @@ import (
 	"github.com/DanielRenne/GoCore/core/ginServer"
 	"github.com/DanielRenne/GoCore/core/gitWebHooks"
 	"github.com/DanielRenne/GoCore/core/logger"
+	"github.com/DanielRenne/GoCore/core/path"
 	"github.com/DanielRenne/GoCore/core/serverSettings"
 	"github.com/DanielRenne/GoCore/core/store"
 	"github.com/gin-gonic/gin"
@@ -173,6 +174,14 @@ var WebSocketRemovalCallback WebSocketRemoval
 
 func init() {
 	BroadcastSockets = true
+}
+
+func Init() (err error) {
+	return Initialize(path.GetBinaryPath(), "webConfig.json")
+}
+
+func InitCustomWebConfig(webConfig string) {
+	Initialize(path.GetBinaryPath(), webConfig)
 }
 
 func Initialize(path string, config string) (err error) {
