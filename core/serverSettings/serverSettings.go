@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"os"
 	"sync"
 
 	"github.com/DanielRenne/GoCore/core/path"
@@ -107,14 +106,12 @@ func Initialize(path string, configurationFile string) (err error) {
 	jsonData, err := ioutil.ReadFile(APP_LOCATION + "/" + configurationFile)
 	if err != nil {
 		fmt.Println("Reading of webConfig.json failed:  " + err.Error())
-		os.Exit(1)
 	}
 
 	WebConfigMutex.Lock()
 	errUnmarshal := json.Unmarshal(jsonData, &WebConfig)
 	if errUnmarshal != nil {
 		fmt.Println("Parsing / Unmarshaling of webConfig.json failed:  " + errUnmarshal.Error())
-		os.Exit(1)
 	}
 
 	for _, dbConnection := range WebConfig.DbConnections {
