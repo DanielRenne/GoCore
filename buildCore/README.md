@@ -6,7 +6,7 @@ BuildCore is a package for GoCore that will generate SQL Tables, indexes, primar
 
 This routine will read the webConfig.json file and read versioned schema files located in db/{appName}/schemas/{version}/ to create database files and models.  {version} must conform to standard semantic versioning format 1.0.0.  Major, Minor, and Revision.
 
-### WebConfig.json
+### webConfig.json
 
 For information on how to configure webConfig.json see [Application Settings](https://github.com/DanielRenne/GoCore/blob/master/doc/Application_Settings.md).
 
