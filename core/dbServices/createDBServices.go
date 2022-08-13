@@ -227,7 +227,6 @@ func walkNoSQLSchema() {
 		return
 	}
 
-	versionNumber := ""
 	for _, file := range fileNames {
 
 		if file.IsDir() == true {
@@ -235,7 +234,6 @@ func walkNoSQLSchema() {
 			version := extensions.Version{}
 			version.Init(file.Name())
 			versionDir := "v" + version.MajorString
-			versionNumber = version.Value
 			walkNoSQLVersion(basePath+"/"+file.Name(), versionDir)
 
 			goFileNames, errGoReadDir := ioutil.ReadDir(serverSettings.APP_LOCATION + "/db/goFiles/v" + version.MajorString)
@@ -250,14 +248,8 @@ func walkNoSQLSchema() {
 			} else {
 				color.Red(errGoReadDir.Error())
 			}
-
-			//Create Swagger Definition With the latest Version being equal to swagger.json, all others swagger_1.0.0.json etc...
-			//writeSwaggerConfiguration("/api/"+versionDir, version.Value)
 		}
 	}
-
-	//Make a copy of the latest Swagger Version Definition for Swagger UI to default to swagger.json.  We will keep the latest version as a 2nd copy.
-	extensions.CopyFile(serverSettings.SWAGGER_UI_PATH+"/swagger."+versionNumber+".json", serverSettings.SWAGGER_UI_PATH+"/swagger.json")
 
 }
 
@@ -313,7 +305,6 @@ func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir s
 
 	//Clean the Model and API Directory
 	// extensions.RemoveDirectory(serverSettings.APP_LOCATION + "/models/" + versionDir + "/model")
-	extensions.RemoveDirectory(serverSettings.APP_LOCATION + "/webAPIs/" + versionDir + "/webAPI")
 
 	//Create a NOSQLBucket Model
 	// bucket := generateNoSQLModelBucket(driver)
@@ -387,12 +378,6 @@ func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir s
 			writeNoSQLStub(histModified, serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/"+extensions.MakeFirstLowerCase(collection.Schema.Name)+"_Hist.go")
 
 		}
-		os.Mkdir(serverSettings.APP_LOCATION+"/webAPIs/", 0777)
-		os.Mkdir(serverSettings.APP_LOCATION+"/webAPIs/"+versionDir, 0777)
-		os.Mkdir(serverSettings.APP_LOCATION+"/webAPIs/"+versionDir+"/webAPI/", 0777)
-
-		cWebAPI := genSchemaWebAPI(collection, collection.Schema, strings.Replace(serverSettings.APP_LOCATION, "src/", "", -1)+"/models/"+versionDir+"/model", driver, versionDir)
-		writeNoSQLWebAPI(cWebAPI, serverSettings.APP_LOCATION+"/webAPIs/"+versionDir+"/webAPI/"+extensions.MakeFirstLowerCase(collection.Schema.Name)+".go", collection)
 	}
 
 }

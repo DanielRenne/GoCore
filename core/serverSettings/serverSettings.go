@@ -43,14 +43,6 @@ type Contact struct {
 	Email string `json:"email"`
 }
 
-type Info struct {
-	Title          string  `json:"title"`
-	Description    string  `json:"description"`
-	Contact        Contact `json:"contact"`
-	License        License `json:"license"`
-	TermsOfService string  `json:"termsOfService"`
-}
-
 type Application struct {
 	Name                     string        `json:"name"`
 	Domain                   string        `json:"domain"`
@@ -67,7 +59,6 @@ type Application struct {
 	GitWebHookSecretKey      string        `json:"gitWebHookSecretKey"`
 	GitWebHookPort           string        `json:"gitWebHookServerPort"`
 	GitWebHookPath           string        `json:"gitWebHookPath"`
-	Info                     Info          `json:"info"`
 	HtmlTemplates            HtmlTemplates `json:"htmlTemplates"`
 	RootIndexPath            string        `json:"rootIndexPath"`
 	DisableRootIndex         bool          `json:"disableRootIndex"`
@@ -96,7 +87,6 @@ type WebConfigType struct {
 var WebConfig WebConfigType
 var WebConfigMutex sync.RWMutex
 var APP_LOCATION string
-var SWAGGER_UI_PATH string
 
 func Init() {
 	Initialize(path.GetBinaryPath(), "webConfig.json")
@@ -108,7 +98,6 @@ func InitCustomWebConfig(webConfig string) {
 
 func InitPath(path string) {
 	APP_LOCATION = path
-	SWAGGER_UI_PATH = APP_LOCATION + "/web/swagger/dist"
 }
 
 func Initialize(path string, configurationFile string) (err error) {

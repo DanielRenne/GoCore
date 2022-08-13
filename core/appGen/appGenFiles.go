@@ -3,6 +3,7 @@ package appGen
 import (
 	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 
@@ -20,6 +21,87 @@ func cdGoPath() {
 func GenerateApp() {
 	cdGoPath()
 	moveAppFiles()
+}
+
+func GenerateServerApp() {
+	moveServerOnlyAppFiles()
+}
+
+func moveServerOnlyAppFiles() {
+
+	//First check for the WebConfig.json file
+	var err error
+	_, err = os.Stat(serverSettings.APP_LOCATION + "/webConfig.json")
+
+	if err != nil {
+		//TODO just flush a buffer string into a file
+		webConfig := `
+{
+	"application":{
+		"logGophers": false,
+		"domain": "0.0.0.0",
+		"serverFQDN": "0.0.0.0",
+		"httpPort": 8080,
+		"httpsPort": 443,
+		"releaseMode":"development",
+		"webServiceOnly":false,
+		"versionNumeric": 1,
+		"versionDot": "0.0.1",
+		"productName": "goCoreProductNameMainProduct",
+		"customGinLogger": true,
+		"disableRootIndex": true,
+		"sessionKey":"goCoreSessionKey",
+		"sessionName":"goCoreProductName",
+		"sessionExpirationDays":3650,
+		"sessionSecureCookie":false,
+		"csrfSecret":"goCoreCsrfSecret",
+		"bootstrapData":true, 
+		"htmlTemplates":{
+			"enabled":false,
+			"directory":"templates",
+			"directoryLevels": 1
+		}
+	},
+	"dbConnections":[
+		{
+			"driver" : "mongoDB",
+			"connectionString": "mongodb://127.0.0.1:27017/goCoreProductName",
+			"database": "goCoreProductName"
+		}
+	]
+}
+`
+		extensions.WriteToFile(webConfig, serverSettings.APP_LOCATION+"/webConfig.json", 0644)
+		logger.Message("Copied webConfig.json to Application.", logger.GREEN)
+	}
+
+	_, err = os.Stat(serverSettings.APP_LOCATION + "/keys")
+
+	if err != nil {
+		os.MkdirAll(serverSettings.APP_LOCATION+"/keys", 0644)
+		os.Chdir(serverSettings.APP_LOCATION + "/keys")
+		cmd := exec.Command("openssl", "req", "-newkey", "rsa:2048", "-new", "-nodes", "-x509", "-days", "13650", "-subj", "'/CN=www.mydom.com/O=My Company Name LTD./C=US'", "-keyout", "key.pem", "-out", "cert.pem")
+		err = cmd.Start()
+		if err != nil {
+			logger.Message("Created keys with openssl for application.", logger.RED)
+		} else {
+			logger.Message("Created keys to for application.", logger.GREEN)
+		}
+	}
+
+	_, err = os.Stat(serverSettings.APP_LOCATION + "/db")
+
+	if err != nil {
+		os.MkdirAll(serverSettings.APP_LOCATION+"/db/schemas/1.0.0", 0644)
+		logger.Message("Created db/schemas/1.0.0 to Application.", logger.GREEN)
+	}
+
+	_, err = os.Stat(serverSettings.APP_LOCATION + "/db/bootstrap")
+
+	if err != nil {
+		os.MkdirAll(serverSettings.APP_LOCATION+"/db/bootstrap", 0644)
+		logger.Message("Created db/bootstrap.", logger.GREEN)
+	}
 }
 
 // create if not exists
@@ -356,8 +438,6 @@ localWebConfig.json
 nohup.out
 debug
 .happypack
-web/swagger/dist/swagger.*
-/webAPIs/
 /log/*
 webConfig.json
 /dist

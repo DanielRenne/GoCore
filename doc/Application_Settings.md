@@ -1,5 +1,21 @@
 # GoCore Application Settings
 
+## buildCore (regenerating your models and initializing webConfig keys and missing db folders)
+
+Create a build binary (preferably named yourAppNameModelBuild) for your application with the following code (you will go install and execute this anytime your schema JSON files have changed to regerate the model structs and functions):
+
+	package main
+
+	import (
+		"github.com/DanielRenne/GoCore/buildCore"
+	)
+	
+	func main() {
+		buildCore.Init()
+	}
+
+
+
 ## app package
 
 The GoCore/core/app package is what runs your application.  You must first Init() it with the root path of your application.  Then call the Run() method which will block on the HTTP server initialization.
@@ -34,32 +50,40 @@ There are two root objects to be configured:
 
 
 
+{ 
 	"application":{
-	    "domain": "127.0.0.1",
-	    "httpPort": 80,
-	    "httpsPort": 443, 
-	    "releaseMode":"release",
-	    "webServiceOnly":false,
-	    "info":{
-	    	"title": "Hello World Playground",
-	    	"description":"A web site to try GoCore.",
-	    	"contact":{
-	    		"name":"DRenne",
-	    		"email":"support@myWebSite.com",
-	    		"url":"myWebSite.com"
-	    	},
-	    	"license": {
-	    		"name": "Apache 2.0",
-	  			"url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-	    	},
-	    	"termsOfService":"http://127.0.0.1/terms"
-	    },
+		"logGophers": false,
+		"domain": "0.0.0.0",
+		"serverFQDN": "0.0.0.0",
+		"httpPort": 8080,
+		"httpsPort": 443,
+		"releaseMode":"development",
+		"webServiceOnly":false,
+		"versionNumeric": 1,
+		"versionDot": "0.0.1",
+		"productName": "goCoreProductNameMainProduct",
+		"customGinLogger": true,
+		"disableRootIndex": true,
+		"sessionKey":"goCoreSessionKey",
+		"sessionName":"goCoreProductName",
+		"sessionExpirationDays":3650,
+		"sessionSecureCookie":false,
+		"csrfSecret":"goCoreCsrfSecret",
+		"bootstrapData":true, 
 		"htmlTemplates":{
 			"enabled":false,
 			"directory":"templates",
 			"directoryLevels": 1
 		}
-	}
+	},
+	"dbConnections":[
+		{
+			"driver" : "mongoDB",
+			"connectionString": "mongodb://127.0.0.1:27017/goCoreProductName",
+			"database": "goCoreProductName"
+		}
+	]
+}
 
 At the root of application there are the following fields:
 
@@ -108,10 +132,6 @@ type BootstrapMeta struct {
 #### versionDot
 
 Useful to show the users a dot-based version
-
-#### info
-
-Tells the application details about the application for swagger.io information and schema.
 
 #### htmlTemplates
 

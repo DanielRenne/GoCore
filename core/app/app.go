@@ -540,11 +540,12 @@ func loadHTMLTemplates() {
 
 func initializeStaticRoutes() {
 
-	ginServer.Router.GET("/swagger", func(c *gin.Context) {
-		// c.Redirect(http.StatusMovedPermanently, "https://"+serverSettings.WebConfig.Application.Domain+":"+strconv.Itoa(serverSettings.WebConfig.Application.HttpsPort)+"/web/swagger/dist/index.html")
+	// Swagger support has been deprecated
+	// ginServer.Router.GET("/swagger", func(c *gin.Context) {
+	// 	// c.Redirect(http.StatusMovedPermanently, "https://"+serverSettings.WebConfig.Application.Domain+":"+strconv.Itoa(serverSettings.WebConfig.Application.HttpsPort)+"/web/swagger/dist/index.html")
 
-		ginServer.ReadHTMLFile(serverSettings.APP_LOCATION+"/web/swagger/dist/index.html", c)
-	})
+	// 	ginServer.ReadHTMLFile(serverSettings.APP_LOCATION+"/web/swagger/dist/index.html", c)
+	// })
 }
 
 func RegisterWebSocketDataCallback(callback WebSocketCallback) {

@@ -1,5 +1,7 @@
 package main
 
+// NOTE, this file is legacy and for another project using GoCore no need to install it
+
 import (
 	"encoding/json"
 	"fmt"

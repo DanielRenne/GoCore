@@ -82,7 +82,11 @@ Source it:
 
 ### Add to your Operating Systems Path the ~/go/bin directory
 
-### Build GoCore App
+### Build GoCore Backend Only App
+
+
+
+### Build GoCore Front End/Backend App
 
 1.  A sample project generator is available to build a GoCore project.
 
@@ -98,7 +102,7 @@ Then run
 
 Follow the prompts to generate your app.  Note you probably should install nodejs, npm and nvm before generating an app.
 
-GoCore has built in functions to read json configuration files to generate SQL Tables, indexes, primary & foreign keys, NOSQL Collections & Buckets, auto-generated Golang model code files, auto-generated REST web api code files, and swagger.io schema files application.  See [BuildCore Readme](https://github.com/DanielRenne/GoCore/blob/master/buildCore/README.md) for details.
+GoCore has built in functions to read json configuration files to generate SQL Tables, indexes, primary & foreign keys, NOSQL Collections & Buckets, auto-generated Golang model code files.  See [BuildCore Readme](https://github.com/DanielRenne/GoCore/blob/master/buildCore/README.md) for details.
 
 ### Run Your GoCore App
 

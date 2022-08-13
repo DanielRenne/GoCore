@@ -6,6 +6,16 @@ import (
 	"github.com/DanielRenne/GoCore/core/serverSettings"
 )
 
+func Init() {
+
+	serverSettings.Init()
+	dbServices.Initialize()
+	appGen.GenerateServerApp()
+	// Reinitialize if webConfig.json created
+	serverSettings.Init()
+	dbServices.RunDBCreate()
+}
+
 func Initialize(path string, fileName string) {
 
 	serverSettings.Initialize(path, fileName)

@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	_ "github.com/DanielRenne/GoCore/buildCore"
 	_ "github.com/DanielRenne/GoCore/core"
 	_ "github.com/DanielRenne/GoCore/core/app"
 	_ "github.com/DanielRenne/GoCore/core/app/api"
@@ -27,6 +28,7 @@ import (
 	_ "github.com/DanielRenne/GoCore/core/syncAtomic"
 	_ "github.com/DanielRenne/GoCore/core/utils"
 	_ "github.com/DanielRenne/GoCore/core/zip"
+	_ "github.com/DanielRenne/GoCore/modelBuild"
 )
 
 func main() {

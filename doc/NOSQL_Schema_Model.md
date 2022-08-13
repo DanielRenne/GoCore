@@ -8,8 +8,6 @@ For NOSQL Document systems documents are typically stored as JSON and part of a 
 
 Schemas are to be defined within a directory beneath db/[Applicaiton Name]/schemas/[Version (1.0.0)].
 
-GoCore uses standard semantic versioning of Major, Minor, and Revision numbers to properly implement swagger api definitions.  Schema files must be located within the versioned directory.
-
 Any file with a .json extension will be processed to create a NOSQL model.  NOTE:  Additional sub directories are recursively walked and processed to support larger application organization.
 
 Each schema json file starts with and array of collections.  Each collection must have a name and schema.  The schema for the collection is the document you want to store to the NOSQL DB.  Each schema contains a name and fields array.
