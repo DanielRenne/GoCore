@@ -2,7 +2,9 @@
 
 ## buildCore (regenerating your models and initializing webConfig keys and missing db folders)
 
-Create a build binary (preferably named yourAppNameModelBuild) for your application with the following code (you will go install and execute this anytime your schema JSON files have changed to regerate the model structs and functions):
+Create a build binary (preferably named yourAppNameModelBuild.go in your base application folder)
+
+The purpose of this binary is that anytime your schema JSON files have changed to regerate the model structs and functions.  So once you create the file, go install it and run it anytime your models change:
 
 	package main
 

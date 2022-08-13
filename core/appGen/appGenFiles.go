@@ -96,12 +96,61 @@ func moveServerOnlyAppFiles() {
 		logger.Message("Created db/schemas/1.0.0 to Application.", logger.GREEN)
 	}
 
+	_, err = os.Stat(serverSettings.APP_LOCATION + "/log")
+
+	if err != nil {
+		os.MkdirAll(serverSettings.APP_LOCATION+"/log", 0644)
+		logger.Message("Created log for Application.", logger.GREEN)
+	}
+
 	_, err = os.Stat(serverSettings.APP_LOCATION + "/db/bootstrap")
 
 	if err != nil {
 		os.MkdirAll(serverSettings.APP_LOCATION+"/db/bootstrap", 0644)
 		logger.Message("Created db/bootstrap.", logger.GREEN)
 	}
+
+	log.Println(`
+// Add a file for your main GoCore app
+package main
+
+import (
+	"time"
+	"log" 
+	"runtime/debug"
+	"github.com/DanielRenne/GoCore/core/app"
+	// "github.com/DanielRenne/GoCore/core/logger" 
+)
+
+func main() {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Println("\n\nPanic Stack: " + string(debug.Stack()))
+			time.Sleep(time.Millisecond * 3000)
+			main()
+			return
+		}
+	}()
+
+	err := app.Init()
+
+	if err != nil {
+		log.Println("Error init: " + err.Error())
+		time.Sleep(time.Millisecond * 3000)
+		main()
+	} else {
+		//todo...
+		// core.CronJobs.Start()
+		// cron.Start()
+
+		// go logger.GoRoutineLogger(func() {
+		// 	time.Sleep(time.Millisecond * 5000)
+		// 	br.Schedules.LoadDay(time.Now())
+		// }, "main->Loading Schedules")
+
+		app.Run()
+	}
+}`)
 }
 
 // create if not exists
