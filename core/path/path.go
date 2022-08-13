@@ -17,7 +17,7 @@ func GetBinaryPath() (path string) {
 	exPath := filepath.Dir(ex)
 	if strings.Contains(exPath, "go-build") { //This means we are running in go run and need to use the goPath
 		if len(os.Args) >= 2 {
-			path = os.Args[1] + PathSeparator
+			path = os.Args[1]
 		} else {
 			log.Println("Using GoCore in go run, you must pass go run yourMain.go $(pwd) so it can get your path of your project")
 			os.Exit(1)
@@ -26,9 +26,9 @@ func GetBinaryPath() (path string) {
 		if strings.Index(exPath, "Contents/MacOS") != -1 {
 			dirs := strings.Split(exPath, "/")
 			dirs = dirs[:len(dirs)-3]
-			path = strings.Join(dirs, "/") + PathSeparator
+			path = strings.Join(dirs, "/")
 		} else {
-			path = exPath + PathSeparator
+			path = exPath
 		}
 	}
 	return
