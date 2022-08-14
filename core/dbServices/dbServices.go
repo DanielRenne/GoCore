@@ -51,17 +51,17 @@ func ReadMongoDB() (mdb *mgo.Database) {
 	return mdb
 }
 
-func Initialize() error {
+func Initialize() {
 
 	fmt.Println("core dbServices initialized.")
-
-	switch serverSettings.WebConfig.DbConnection.Driver {
-	case DATABASE_DRIVER_BOLTDB:
-		return openBolt()
-	case DATABASE_DRIVER_MONGODB:
-		return openMongo()
-	}
-	return nil
+	go func() {
+		switch serverSettings.WebConfig.DbConnection.Driver {
+		case DATABASE_DRIVER_BOLTDB:
+			openBolt()
+		case DATABASE_DRIVER_MONGODB:
+			openMongo()
+		}
+	}()
 }
 
 func openSQLDriver() error {
@@ -81,7 +81,7 @@ func openSQLDriver() error {
 	return nil
 }
 
-func openBolt() error {
+func openBolt() {
 
 	myDBDir := serverSettings.APP_LOCATION + "/db/" + serverSettings.WebConfig.DbConnection.ConnectionString
 
@@ -96,14 +96,25 @@ func openBolt() error {
 	if err != nil {
 		color.Red("Failed to create or open boltDB Database at " + myDBDir + ":\n\t" + err.Error())
 		os.Exit(1)
-		return err
 	}
 
 	color.Cyan("Successfully opened new bolt DB at " + myDBDir)
-	return nil
 }
 
-func openMongo() error {
+func GetMongoDialInfo() (*mgo.DialInfo, error) {
+	connectionString := serverSettings.WebConfig.DbConnection.ConnectionString
+	if mongoDBOverride != "" {
+		connectionString = mongoDBOverride
+	}
+
+	overrideConnectionString := os.Getenv("MGO_CONNECTION_STRING")
+	if overrideConnectionString != "" {
+		connectionString = overrideConnectionString
+	}
+	return mgo.ParseURL(connectionString)
+}
+
+func openMongo() {
 
 	if serverSettings.WebConfig.DbConnection.Replication.Enabled {
 		info := new(mgo.DialInfo)
@@ -162,20 +173,9 @@ func openMongo() error {
 		}
 	}
 
-	var err error
-	connectionString := serverSettings.WebConfig.DbConnection.ConnectionString
-	if mongoDBOverride != "" {
-		connectionString = mongoDBOverride
-	}
-
-	overrideConnectionString := os.Getenv("MGO_CONNECTION_STRING")
-	if overrideConnectionString != "" {
-		connectionString = overrideConnectionString
-	}
-
 	mgoTLSEnabled := os.Getenv("MGO_TLS_ENABLED")
 
-	dialInfo, err := mgo.ParseURL(connectionString)
+	dialInfo, err := GetMongoDialInfo()
 	if err != nil {
 		log.Println(err)
 	}
@@ -198,29 +198,11 @@ func openMongo() error {
 
 	}
 
+	// This will block forever until a connection is established
 	DBMutex.Lock()
 	MongoSession, err = mgo.DialWithInfo(dialInfo) // open an connection -> Dial function
 	DBMutex.Unlock()
-
-	if err != nil {
-		for i := 0; i < 5; i++ {
-			DBMutex.Lock()
-			MongoSession, err = mgo.DialWithInfo(dialInfo) // open an connection -> Dial function
-			DBMutex.Unlock()
-			if err == nil {
-				break
-			} else {
-				time.Sleep(time.Millisecond * 3)
-			}
-		}
-		if err != nil {
-			color.Red("Failed to create or open mongo Database at " + connectionString + "\n\t" + err.Error())
-			os.Exit(1)
-			return err
-		}
-
-	}
-	return connectMongoDB()
+	connectMongoDB()
 }
 
 func connectMongoDB() error {

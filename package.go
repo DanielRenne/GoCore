@@ -1,8 +1,7 @@
-package main
+package goCore
 
 import (
-	"log"
-
+	// Required package dependencies for mongo models
 	_ "github.com/DanielRenne/GoCore/buildCore"
 	_ "github.com/DanielRenne/GoCore/core"
 	_ "github.com/DanielRenne/GoCore/core/app"
@@ -29,8 +28,5 @@ import (
 	_ "github.com/DanielRenne/GoCore/core/utils"
 	_ "github.com/DanielRenne/GoCore/core/zip"
 	_ "github.com/DanielRenne/GoCore/modelBuild"
+	_ "github.com/altipla-consulting/i18n-dateformatter"
 )
-
-func main() {
-	log.Println("Welcome to GoCore:\n\nThis is a dummy binary meant to import all the shared libraries GoCore apps use so you can import anything you want.")
-}

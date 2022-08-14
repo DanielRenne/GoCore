@@ -60,9 +60,6 @@ type Transaction struct {
 	RolledBackBy   string        ` + "`" + `json:"rolledBackBy" bson:"rolledBackBy"` + "`" + `
 	RollbackReason string        ` + "`" + `json:"rollbackReason" bson:"rollbackReason"` + "`" + `
 
-	Joins struct {
-		User *User ` + "`" + `json:"User,omitempty" join:"Users,User,UserId"` + "`" + `
-	} ` + "`" + `json:"Joins" bson:"-"` + "`" + `
 }
 
 func (obj modelTransactions) SetCollection(mdb *mgo.Database) {

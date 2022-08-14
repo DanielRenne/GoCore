@@ -12,20 +12,27 @@ import (
 	"io/ioutil"
 
 	"github.com/DanielRenne/GoCore/core/extensions"
+	"github.com/DanielRenne/GoCore/core/path"
 	"github.com/DanielRenne/GoCore/core/serverSettings"
 	"github.com/DanielRenne/GoCore/core/utils"
 	"github.com/golang/groupcache"
 )
 
-const (
-	CACHE_STORAGE_PATH = "/usr/local/goCore/caches"
-	CACHE_JOBS         = "/usr/local/goCore/jobs"
-)
+var CACHE_STORAGE_PATH string
+var CACHE_JOBS string
+var CACHE_BOOTSTRAP_STORAGE_PATH string
+var CACHE_MANIFEST_STORAGE_PATH string
 
-const (
-	CACHE_BOOTSTRAP_STORAGE_PATH = CACHE_STORAGE_PATH + "/bootstrap"
-	CACHE_MANIFEST_STORAGE_PATH  = CACHE_STORAGE_PATH + "/manifests"
-)
+// SetGoCoreStoragePath set a directory with a trailing slash of where you want goCore to set
+func SetGoCoreStoragePath(directory string) {
+	CACHE_STORAGE_PATH = directory + "caches"
+	CACHE_JOBS = directory + "jobs"
+	CACHE_BOOTSTRAP_STORAGE_PATH = CACHE_STORAGE_PATH + path.PathSeparator + "bootstrap"
+	CACHE_MANIFEST_STORAGE_PATH = CACHE_STORAGE_PATH + path.PathSeparator + "manifests"
+	os.MkdirAll(CACHE_BOOTSTRAP_STORAGE_PATH, 0777)
+	os.MkdirAll(CACHE_JOBS, 0777)
+	os.MkdirAll(CACHE_MANIFEST_STORAGE_PATH, 0777)
+}
 
 type model struct {
 	sync.RWMutex
@@ -56,9 +63,6 @@ var tempStringCacheSynced = struct {
 }{cache: make(map[string]string)}
 
 func init() {
-	os.MkdirAll(CACHE_BOOTSTRAP_STORAGE_PATH, 0777)
-	os.MkdirAll(CACHE_JOBS, 0777)
-	os.MkdirAll(CACHE_MANIFEST_STORAGE_PATH, 0777)
 	Model = model{
 		BootstrapCache: make(map[string][]string, 0),
 	}
@@ -70,8 +74,15 @@ func init() {
 	}
 }
 
-//Call Initialize in main before any calls to this package are performed.  serverSettings package must be initialized before fileCache.
+// Call Initialize in main before any calls to this package are performed.  serverSettings package must be initialized before fileCache.
+// Developers can call SetGoCoreStoragePath() with a path of their choice for storage of where bootstrap caches and jobs files (for one time cron jobs are stored
 func Initialize() {
+	if !path.IsWindows && CACHE_STORAGE_PATH == "" {
+		SetGoCoreStoragePath("/usr/local/goCore/")
+	} else if path.IsWindows && CACHE_STORAGE_PATH == "" {
+		SetGoCoreStoragePath("C:\\goCore\\")
+	}
+
 	if serverSettings.WebConfig.Application.Domain != "" {
 		initializeGroupCache(serverSettings.WebConfig.Application.Domain)
 	}

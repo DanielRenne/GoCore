@@ -30,10 +30,14 @@ import (
 )
 
 type WebSocketRemoval func(info WebSocketConnectionMeta)
+
+var StaticWebLocation string
+
 type customLog func(desc string, message string)
 
 var BroadcastSockets bool
 var CustomLog customLog
+var PrimaryGoCoreHTTPServer *http.Server
 
 type WebSocketConnection struct {
 	sync.RWMutex
@@ -173,20 +177,22 @@ var WebSocketCallbacks sync.Map
 var WebSocketRemovalCallback WebSocketRemoval
 
 func init() {
+	StaticWebLocation = "web"
 	BroadcastSockets = true
 }
 
-func Init() (err error) {
-	return Initialize(path.GetBinaryPath(), "webConfig.json")
+func Init() {
+	Initialize(path.GetBinaryPath(), "webConfig.json")
 }
 
 func InitCustomWebConfig(webConfig string) {
 	Initialize(path.GetBinaryPath(), webConfig)
 }
 
-func Initialize(path string, config string) (err error) {
-	err = serverSettings.Initialize(path, config)
+func Initialize(path string, config string) {
+	err := serverSettings.Initialize(path, config)
 	if err != nil {
+		log.Println("Failed to parse or read webConfig.json : " + err.Error())
 		return
 	}
 
@@ -200,11 +206,7 @@ func Initialize(path string, config string) (err error) {
 		ginServer.Initialize(gin.DebugMode, serverSettings.WebConfig.Application.CookieDomain)
 	}
 	fileCache.Initialize()
-
-	err = dbServices.Initialize()
-	if err != nil {
-		return
-	}
+	dbServices.Initialize()
 	return
 }
 
@@ -223,20 +225,21 @@ func RunLite(port int) {
 			return
 		}
 	}()
-
-	ginServer.Router.GET("/ws", func(c *gin.Context) {
-		webSocketHandler(c.Writer, c.Request, c)
-	})
+	if !serverSettings.WebConfig.Application.DisableWebSockets {
+		ginServer.Router.GET("/ws", func(c *gin.Context) {
+			webSocketHandler(c.Writer, c.Request, c)
+		})
+	}
 
 	log.Println("GoCore Application Started")
 
-	s := &http.Server{
+	PrimaryGoCoreHTTPServer = &http.Server{
 		Addr:         ":" + strconv.Itoa(port),
 		Handler:      ginServer.Router,
 		ReadTimeout:  300 * time.Second,
 		WriteTimeout: 300 * time.Second,
 	}
-	err := s.ListenAndServe()
+	err := PrimaryGoCoreHTTPServer.ListenAndServe()
 	if err != nil {
 		log.Println("GoCore Cannot open port " + strconv.Itoa(port) + " Reason: " + err.Error())
 		os.Exit(1)
@@ -303,11 +306,16 @@ func Run() {
 
 		loadHTMLTemplates()
 
-		ginServer.Router.Static("/web", serverSettings.APP_LOCATION+"/web")
+		// Override to blank string if you dont want static files to be mounted
+		if StaticWebLocation != "" {
+			ginServer.Router.Static("/"+StaticWebLocation, serverSettings.APP_LOCATION+path.PathSeparator+StaticWebLocation)
+		}
 
-		ginServer.Router.GET("/ws", func(c *gin.Context) {
-			webSocketHandler(c.Writer, c.Request, c)
-		})
+		if !serverSettings.WebConfig.Application.DisableWebSockets {
+			ginServer.Router.GET("/ws", func(c *gin.Context) {
+				webSocketHandler(c.Writer, c.Request, c)
+			})
+		}
 	}
 
 	initializeStaticRoutes()
@@ -346,22 +354,24 @@ func Run() {
 
 		}()
 	}
-
+	RunServer()
 	log.Println("GoCore Application Started")
+}
 
+func RunServer() {
 	port := strconv.Itoa(serverSettings.WebConfig.Application.HttpPort)
 	envPort := os.Getenv("PORT")
 	if envPort != "" {
 		port = envPort
 	}
 
-	s := &http.Server{
+	PrimaryGoCoreHTTPServer = &http.Server{
 		Addr:         ":" + port,
 		Handler:      ginServer.Router,
 		ReadTimeout:  900 * time.Second,
 		WriteTimeout: 300 * time.Second,
 	}
-	err := s.ListenAndServe()
+	err := PrimaryGoCoreHTTPServer.ListenAndServe()
 	if err != nil {
 		log.Println("GoCore Application failed to listen on port (" + port + "):  " + err.Error())
 		os.Exit(1)
@@ -523,7 +533,6 @@ func loadHTMLTemplates() {
 			c.HTML(http.StatusOK, dirLevel+"index.tmpl", gin.H{})
 		})
 	} else {
-
 		if serverSettings.WebConfig.Application.DisableRootIndex {
 			return
 		}

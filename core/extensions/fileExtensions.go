@@ -318,6 +318,18 @@ func WriteToFile(value string, path string, perm os.FileMode) error {
 	return nil
 }
 
+func Write(value string, path string) error {
+	return WriteToFile(value, path, UNIX_COMMON_FILE)
+}
+
+func MkDir(path string) error {
+	return os.MkdirAll(path, UNIX_COMMON_DIR)
+}
+
+func MkDirRWAll(path string) error {
+	return os.MkdirAll(path, UNIX_DIR_RWALL)
+}
+
 func DoesFileExist(path string) bool {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		return false

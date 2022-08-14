@@ -261,6 +261,37 @@ func walkNoSQLVersion(path string, versionDir string) {
 
 	scs.schemasCreated = make(map[string]NOSQLSchema, 0)
 
+	os.Mkdir(serverSettings.APP_LOCATION+"/models/", 0777)
+	os.Mkdir(serverSettings.APP_LOCATION+"/models/"+versionDir, 0777)
+	os.Mkdir(serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/", 0777)
+	extensions.Write("package model", serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/package.go")
+
+	driver := serverSettings.WebConfig.DbConnection.Driver
+
+	//Copy Stub Files
+	if driver == DATABASE_DRIVER_MONGODB {
+		writeNoSQLStub(mongoStubs.Query, serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/query.go")
+	} else if driver == DATABASE_DRIVER_BOLTDB {
+		writeNoSQLStub(boltStubs.Query, serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/query.go")
+	}
+	writeNoSQLStub(commonStubs.TimeZone, serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/timeZone.go")
+	writeNoSQLStub(commonStubs.TimeZoneLocations, serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/timeZoneLocations.go")
+	writeNoSQLStub(commonStubs.Locales, serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/locales.go")
+	var transactionTemplate []byte
+
+	if driver == DATABASE_DRIVER_MONGODB {
+		transactionTemplate = []byte(mongoStubs.Transaction)
+	} else if driver == DATABASE_DRIVER_BOLTDB {
+		transactionTemplate = []byte(boltStubs.Transaction)
+	}
+	transactionModified := string(transactionTemplate[:])
+
+	if serverSettings.WebConfig.DbConnection.TransactionSizeMax > 0 {
+		transactionModified = strings.Replace(transactionModified, "ci := mgo.CollectionInfo{ForceIdIndex: true}", "ci := mgo.CollectionInfo{ForceIdIndex: true, Capped:true, MaxBytes:"+extensions.IntToString(serverSettings.WebConfig.DbConnection.TransactionSizeMax)+"}\n", -1)
+	}
+
+	writeNoSQLStub(transactionModified, serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/transaction.go")
+
 	err := filepath.Walk(path, func(path string, f os.FileInfo, errWalk error) error {
 
 		if errWalk != nil {
@@ -289,7 +320,7 @@ func walkNoSQLVersion(path string, versionDir string) {
 				allCollections.Unlock()
 			}
 
-			createNoSQLModel(schemaDB.Collections, serverSettings.WebConfig.DbConnection.Driver, versionDir, &scs)
+			createNoSQLModel(schemaDB.Collections, driver, versionDir, &scs)
 		}
 
 		return e
@@ -308,21 +339,8 @@ func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir s
 
 	//Create a NOSQLBucket Model
 	// bucket := generateNoSQLModelBucket(driver)
-	os.Mkdir(serverSettings.APP_LOCATION+"/models/", 0777)
-	os.Mkdir(serverSettings.APP_LOCATION+"/models/"+versionDir, 0777)
-	os.Mkdir(serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/", 0777)
 
 	// writeNOSQLModelBucket(bucket, serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/bucket.go")
-
-	//Copy Stub Files
-	if driver == DATABASE_DRIVER_MONGODB {
-		writeNoSQLStub(mongoStubs.Query, serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/query.go")
-	} else if driver == DATABASE_DRIVER_BOLTDB {
-		writeNoSQLStub(boltStubs.Query, serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/query.go")
-	}
-	writeNoSQLStub(commonStubs.TimeZone, serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/timeZone.go")
-	writeNoSQLStub(commonStubs.TimeZoneLocations, serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/timeZoneLocations.go")
-	writeNoSQLStub(commonStubs.Locales, serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/locales.go")
 
 	var histTemplate []byte
 	if driver == DATABASE_DRIVER_MONGODB {
@@ -335,21 +353,6 @@ func createNoSQLModel(collections []NOSQLCollection, driver string, versionDir s
 		}
 
 	}
-
-	var transactionTemplate []byte
-
-	if driver == DATABASE_DRIVER_MONGODB {
-		transactionTemplate = []byte(mongoStubs.Transaction)
-	} else if driver == DATABASE_DRIVER_BOLTDB {
-		transactionTemplate = []byte(boltStubs.Transaction)
-	}
-	transactionModified := string(transactionTemplate[:])
-
-	if serverSettings.WebConfig.DbConnection.TransactionSizeMax > 0 {
-		transactionModified = strings.Replace(transactionModified, "ci := mgo.CollectionInfo{ForceIdIndex: true}", "ci := mgo.CollectionInfo{ForceIdIndex: true, Capped:true, MaxBytes:"+extensions.IntToString(serverSettings.WebConfig.DbConnection.TransactionSizeMax)+"}\n", -1)
-	}
-
-	writeNoSQLStub(transactionModified, serverSettings.APP_LOCATION+"/models/"+versionDir+"/model/transaction.go")
 
 	//Create the Collection Models
 	for _, collection := range collections {

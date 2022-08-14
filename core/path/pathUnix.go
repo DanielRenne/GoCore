@@ -5,3 +5,4 @@ package path
 
 //PathSeparator provides windows or non-windows path separator.
 const PathSeparator = "/"
+const IsWindows = false

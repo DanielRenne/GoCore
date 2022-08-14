@@ -1,6 +1,7 @@
 package appGen
 
 import (
+	"bufio"
 	"log"
 	"os"
 	"os/exec"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/DanielRenne/GoCore/core/extensions"
 	"github.com/DanielRenne/GoCore/core/logger"
+	"github.com/DanielRenne/GoCore/core/path"
 	"github.com/DanielRenne/GoCore/core/serverSettings"
 	"github.com/DanielRenne/GoCore/core/utils"
 	"github.com/globalsign/mgo/bson"
@@ -31,10 +33,13 @@ func moveServerOnlyAppFiles() {
 
 	//First check for the WebConfig.json file
 	var err error
-	_, err = os.Stat(serverSettings.APP_LOCATION + "/webConfig.json")
+	var isInitializingApp bool
+	var totalSuccesses int
+	totalExpectedSuccesses := 12
+	_, err = os.Stat(serverSettings.APP_LOCATION + path.PathSeparator + "webConfig.json")
 
 	if err != nil {
-		//TODO just flush a buffer string into a file
+		isInitializingApp = true
 		webConfig := `
 {
 	"application":{
@@ -50,6 +55,7 @@ func moveServerOnlyAppFiles() {
 		"productName": "goCoreProductNameMainProduct",
 		"customGinLogger": true,
 		"disableRootIndex": true,
+		"disableWebSockets": false,
 		"sessionKey":"goCoreSessionKey",
 		"sessionName":"goCoreProductName",
 		"sessionExpirationDays":3650,
@@ -71,57 +77,380 @@ func moveServerOnlyAppFiles() {
 	]
 }
 `
-		extensions.WriteToFile(webConfig, serverSettings.APP_LOCATION+"/webConfig.json", 0644)
-		logger.Message("Copied webConfig.json to Application.", logger.GREEN)
-	}
-
-	_, err = os.Stat(serverSettings.APP_LOCATION + "/keys")
-
-	if err != nil {
-		os.MkdirAll(serverSettings.APP_LOCATION+"/keys", 0644)
-		os.Chdir(serverSettings.APP_LOCATION + "/keys")
-		cmd := exec.Command("openssl", "req", "-newkey", "rsa:2048", "-new", "-nodes", "-x509", "-days", "13650", "-subj", "'/CN=www.mydom.com/O=My Company Name LTD./C=US'", "-keyout", "key.pem", "-out", "cert.pem")
-		err = cmd.Start()
+		err := extensions.Write(webConfig, serverSettings.APP_LOCATION+path.PathSeparator+"webConfig.json")
 		if err != nil {
-			logger.Message("Created keys with openssl for application.", logger.RED)
+			logger.Message("failed to create webConfig.json"+err.Error(), logger.RED)
 		} else {
-			logger.Message("Created keys to for application.", logger.GREEN)
+			totalSuccesses++
+			logger.Message("Copied webConfig.json to Application.", logger.GREEN)
 		}
 	}
 
-	_, err = os.Stat(serverSettings.APP_LOCATION + "/db")
+	if isInitializingApp {
+		var mainCNKeys string
+		for {
+			reader := bufio.NewReader(os.Stdin)
+			logger.Message("Add your full cert information like this: \"/CN=www.mydom.com/O=My Company Name LTD./C=US\" (defaults to this if you just press enter)", logger.GREEN)
+			mainCNKeys, _ = reader.ReadString('\n')
+			mainCNKeys = strings.Trim(mainCNKeys, "\n")
+			if mainCNKeys == "" {
+				mainCNKeys = "/CN=www.mydom.com/O=My Company Name LTD./C=US"
+			}
+			break
+		}
 
+		_, err = os.Stat(serverSettings.APP_LOCATION + path.PathSeparator + "keys")
+
+		if err != nil {
+			err = extensions.MkDir(serverSettings.APP_LOCATION + path.PathSeparator + "keys")
+			if err == nil {
+				totalSuccesses++
+				err := os.Chdir(serverSettings.APP_LOCATION + path.PathSeparator + "keys")
+				if err == nil {
+
+					cmd := exec.Command("openssl", "req", "-newkey", "rsa:2048", "-new", "-nodes", "-x509", "-days", "13650", "-subj", "'"+mainCNKeys+"'", "-keyout", "key.pem")
+					err = cmd.Start()
+					if err != nil {
+						logger.Message("Failed to create keys with openssl for application.", logger.RED)
+					} else {
+						totalSuccesses++
+						cmd := exec.Command("openssl", "req", "-new", "-subj", "'"+mainCNKeys+"'", "-key", "key.pem", "-out", "cert.pem")
+						err = cmd.Start()
+						if err != nil {
+							logger.Message("Created to create cert with openssl for application.", logger.RED)
+						} else {
+							totalSuccesses++
+							logger.Message("Created keys for application.", logger.GREEN)
+						}
+
+					}
+				}
+			} else {
+				logger.Message("Couldnt create keys dir", logger.RED)
+			}
+		}
+
+		_, err = os.Stat(serverSettings.APP_LOCATION + path.PathSeparator + "db")
+
+		if err != nil {
+			err = extensions.MkDir(serverSettings.APP_LOCATION + path.PathSeparator + "db" + path.PathSeparator + "schemas" + path.PathSeparator + "1.0.0")
+			if err == nil {
+				totalSuccesses++
+				logger.Message("Created db/schemas/1.0.0 to Application.", logger.GREEN)
+
+				err = extensions.MkDir(serverSettings.APP_LOCATION + path.PathSeparator + "db" + path.PathSeparator + "goFiles" + path.PathSeparator + "v1")
+				if err == nil {
+					totalSuccesses++
+					logger.Message("Created goFiles for Application.", logger.GREEN)
+
+					err := extensions.Write(`package model
+// Anything go files you put here will be combined into the model package so you can extend whatever you want after the models have been generated
+`, serverSettings.APP_LOCATION+path.PathSeparator+"db"+path.PathSeparator+"goFiles"+path.PathSeparator+"v1"+path.PathSeparator+"blankExample.go")
+					if err != nil {
+						logger.Message("failed to create blankExample.go "+err.Error(), logger.RED)
+					} else {
+						totalSuccesses++
+						logger.Message("Created blankExample.go  for Application.", logger.GREEN)
+					}
+				} else {
+					logger.Message("failed to create goFiles dir: "+err.Error(), logger.RED)
+				}
+			} else {
+				logger.Message("Couldnt create db/schemas/1.0.0 dir", logger.RED)
+			}
+		}
+
+		_, err = os.Stat(serverSettings.APP_LOCATION + path.PathSeparator + "log")
+
+		if err != nil {
+			err = extensions.MkDirRWAll(serverSettings.APP_LOCATION + path.PathSeparator + "log")
+			if err == nil {
+				totalSuccesses++
+				logger.Message("Created log for Application.", logger.GREEN)
+			} else {
+				logger.Message("Failed to create log dir.", logger.RED)
+			}
+		}
+
+		_, err = os.Stat(serverSettings.APP_LOCATION + path.PathSeparator + "db" + path.PathSeparator + "bootstrap")
+
+		if err != nil {
+			err = extensions.MkDir(serverSettings.APP_LOCATION + path.PathSeparator + "db" + path.PathSeparator + "bootstrap")
+			if err == nil {
+				totalSuccesses++
+				logger.Message("Created /db/bootstrap for Application.", logger.GREEN)
+			} else {
+				logger.Message("Failed to create /db/bootstrap dir.", logger.RED)
+			}
+		}
+		_, err = os.Stat(serverSettings.APP_LOCATION + path.PathSeparator + ".gitignore")
+
+		if err != nil {
+			err := extensions.Write(`*.idea
+*.pyc
+nohup.out
+debug
+/log/*
+webConfig.json
+.DS_Store
+.history
+*.vscode
+*.db
+/models/
+`, serverSettings.APP_LOCATION+path.PathSeparator+".gitignore")
+			if err != nil {
+				logger.Message("failed to create .gitignore"+err.Error(), logger.RED)
+			} else {
+				totalSuccesses++
+				logger.Message("Created .gitignore for Application.", logger.GREEN)
+			}
+		}
+
+		_, err = os.Stat(serverSettings.APP_LOCATION + path.PathSeparator + "settings")
+
+		if err != nil {
+			err = extensions.MkDir(serverSettings.APP_LOCATION + path.PathSeparator + "settings")
+			if err == nil {
+				totalSuccesses++
+				logger.Message("Created settings Application.", logger.GREEN)
+				settingsFile := `
+// Package settings provides settings for go files to reference paths and other constants to know where files are located.
+package settings
+
+import (	
+	"io/ioutil"
+	"log"
+	"os"
+	"sync"
+	"encoding/json"
+	"github.com/DanielRenne/GoCore/core/serverSettings"
+)
+var Version string 
+
+type appSettings struct {
+	DeveloperMode                      bool     ` + "`" + `json:"developerMode"` + "`" + ` 
+	// TODO: Add more application specific settings here
+}
+
+type webConfig struct {
+	AppSettings appSettings ` + "`" + `json:"appSettings"` + "`" + ` 
+}
+
+type FullWebConfig struct {
+	Application serverSettings.Application ` + "`" + `json:"application"` + "`" + ` 
+	DbConnections []serverSettings.DbConnection ` + "`" + `json:"dbConnections"` + "`" + ` 
+	AppSettings struct {
+		DeveloperMode                      bool          ` + "`" + `json:"developerMode"` + "`" + `
+		// TODO: Add more application specific settings here
+	} ` + "`" + `json:"appSettings"` + "`" + ` 
+}
+var AppSettings appSettings
+var ServerSettings serverSettings.Application
+var AppSettingsSync sync.RWMutex
+
+func Initialize() {
+	log.Println("Settings Initialized.")
+	if serverSettings.APP_LOCATION == "" {
+		log.Println("server settings APP_LOCATION is blank.  This is not right!")
+		os.Exit(1)
+	}
+	ServerSettings = serverSettings.WebConfig.Application
+
+	jsonData, err := ioutil.ReadFile(serverSettings.APP_LOCATION + "/webConfig.json")
 	if err != nil {
-		os.MkdirAll(serverSettings.APP_LOCATION+"/db/schemas/1.0.0", 0644)
-		logger.Message("Created db/schemas/1.0.0 to Application.", logger.GREEN)
+		log.Println("Reading of webConfig.json failed at settings.init():  " + err.Error())
+		os.Exit(1)
 	}
 
-	_, err = os.Stat(serverSettings.APP_LOCATION + "/log")
+	var config webConfig
 
-	if err != nil {
-		os.MkdirAll(serverSettings.APP_LOCATION+"/log", 0644)
-		logger.Message("Created log for Application.", logger.GREEN)
+	errUnmarshal := json.Unmarshal(jsonData, &config)
+	if errUnmarshal != nil {
+		log.Println("Parsing / Unmarshaling of webConfig.json failed:  " + errUnmarshal.Error())
+		os.Exit(1)
 	}
 
-	_, err = os.Stat(serverSettings.APP_LOCATION + "/db/bootstrap")
+	AppSettingsSync.Lock()
+	AppSettings = config.AppSettings
+	AppSettingsSync.Unlock()
+}
+`
+				err := extensions.Write(settingsFile, serverSettings.APP_LOCATION+path.PathSeparator+"settings"+path.PathSeparator+"settings.go")
+				if err != nil {
+					logger.Message("failed to settings.go: "+err.Error(), logger.RED)
+				} else {
+					totalSuccesses++
+					logger.Message("Created settings/settings.go for Application.", logger.GREEN)
+				}
+			} else {
+				logger.Message("Couldnt settings dir", logger.RED)
+			}
+		}
 
-	if err != nil {
-		os.MkdirAll(serverSettings.APP_LOCATION+"/db/bootstrap", 0644)
-		logger.Message("Created db/bootstrap.", logger.GREEN)
-	}
+		var mainNameFileGo string
+		for {
+			reader := bufio.NewReader(os.Stdin)
+			logger.Message("What do you want to call your main package fileName?", logger.GREEN)
+			mainNameFileGo, _ = reader.ReadString('\n')
+			mainNameFileGo = strings.Trim(mainNameFileGo, "\n")
+			ok := false
+			if strings.Index(mainNameFileGo, " ") == -1 {
+				ok = true
+			} else {
+				logger.Message("No spaces please", logger.GREEN)
+			}
+			if ok {
+				if strings.Index(mainNameFileGo, ".go") == -1 {
+					mainNameFileGo += ".go"
+				}
+				break
+			}
+		}
 
-	log.Println(`
-// Add a file for your main GoCore app
+		// todo parse go.mod for name
+		//module github.com/your_example/repo_project
+		var moduleName string
+		for {
+			reader := bufio.NewReader(os.Stdin)
+			logger.Message("What is your go module name?", logger.GREEN)
+			moduleName, _ = reader.ReadString('\n')
+			moduleName = strings.Trim(moduleName, "\n")
+			ok := false
+			if strings.Index(moduleName, " ") == -1 {
+				ok = true
+			} else {
+				logger.Message("No spaces please", logger.GREEN)
+			}
+			if ok {
+				break
+			}
+		}
+
+		addCronJob := "y"
+		for {
+			reader := bufio.NewReader(os.Stdin)
+			logger.Message("Do you want to include cron jobs to your main.go? ('y' or 'n')", logger.GREEN)
+			addCronJob, _ = reader.ReadString('\n')
+			addCronJob = strings.Trim(addCronJob, "\n")
+			if addCronJob == "" {
+				addCronJob = "y"
+			}
+			ok := false
+			if addCronJob == "y" || addCronJob == "n" {
+				ok = true
+			} else {
+				logger.Message("Invalid type 'n' or 'y'", logger.RED)
+			}
+			if ok {
+				break
+			}
+		}
+
+		cronImport := ""
+		cronStartCode := ""
+
+		if addCronJob == "y" {
+			totalExpectedSuccesses = totalExpectedSuccesses + 2
+			cronImport = "\t\"github.com/DanielRenne/GoCore/core\"\n\t//\"yourPackageName/cron\""
+			cronStartCode = "\tcore.CronJobs.Start()\n\t//cron.Start()"
+			_, err = os.Stat(serverSettings.APP_LOCATION + path.PathSeparator + "cron")
+
+			if err != nil {
+				err = extensions.MkDir(serverSettings.APP_LOCATION + path.PathSeparator + "cron")
+				if err == nil {
+					totalSuccesses++
+					logger.Message("Created /cron dir for Application.", logger.GREEN)
+					cronFile := `
+				package cron
+
+				import (
+					"log"
+					"fmt"
+					"runtime/debug"
+					"time"
+
+					"github.com/DanielRenne/GoCore/core"
+				)
+
+				func Start() {
+					defer func() {
+						if r := recover(); r != nil {
+							log.Println("\n\nPanic Stack: " + string(debug.Stack()))
+							time.Sleep(time.Millisecond * 3000)
+							Start()
+							return
+						}
+					}()
+					// setup cron jobs for your app you can do
+					// core.CRON_TOP_OF_HOUR
+					// core.CRON_TOP_OF_SECOND
+					// And much more, just check the core package for more or send a pull request if you need faster tickers
+					// go core.CronJobs.RegisterRecurring(core.CRON_TOP_OF_30_SECONDS, yourCronFunction)
+				}
+`
+					err := extensions.Write(cronFile, serverSettings.APP_LOCATION+path.PathSeparator+"cron"+path.PathSeparator+"cron.go")
+					if err != nil {
+						logger.Message("failed to create cron go file"+err.Error(), logger.RED)
+					} else {
+						totalSuccesses++
+						logger.Message("Created cron/cron.go for Application.", logger.GREEN)
+					}
+				} else {
+					logger.Message("Failed to create /cron dir.", logger.RED)
+				}
+			}
+		}
+		if totalExpectedSuccesses != totalSuccesses {
+			logger.Message("Something failed in the GoCore app generation, please look above in the logs", logger.RED)
+		}
+		mainFile := `
 package main
 
 import (
+	"os"
+	"net/http"
 	"time"
 	"log" 
 	"runtime/debug"
+	"net"
 	"github.com/DanielRenne/GoCore/core/app"
-	// "github.com/DanielRenne/GoCore/core/logger" 
+	"github.com/DanielRenne/GoCore/core/ginServer"
+	"github.com/DanielRenne/GoCore/core/dbServices"
+	"github.com/gin-gonic/gin"
+	
+	_ "` + moduleName + `/models/v1/model"
+	"` + moduleName + `/settings"
+	` + cronImport + `
 )
 
+func loadApp(c *gin.Context) {
+	handleRespondHTML(c, []byte(appIndex(c)), time.Now())
+}
+
+func handleRespondHTML(c *gin.Context, data []byte, modTime time.Time) {
+	ginServer.RenderHTML(string(data), c)
+}
+
+func appIndex(c *gin.Context) (htmlContent string) {
+	// Show mongo restart page if it cannot dial to port
+	dialer, _ := dbServices.GetMongoDialInfo()
+	conn, err := net.Dial("tcp", dialer.Addrs[0])
+	if err != nil { 
+		htmlContent = ` + "`" + `
+			<span style="color: red">
+				<h2>
+					An error occurred and application cannot run due to mongo database being down.<br/><br/> 
+					Error description: ` + "`" + ` + err.Error() + ` + "`" + `<br/><br/>
+				</h2> 
+			</span>
+			` + "`" + `
+		return
+	}
+	conn.Close()
+	htmlContent = "<html><body>Hello goCore World!</body></html>"
+	return
+}
+ 
 func main() {
 	defer func() {
 		if r := recover(); r != nil {
@@ -131,26 +460,56 @@ func main() {
 			return
 		}
 	}()
-
-	err := app.Init()
-
+	
+	// By default go core will mount to web a folder matching web in your app for static hosting but for your initial app, we are turning this off, if you need it create a directory called web or whatever you enter below
+	app.StaticWebLocation = ""
+	app.Init()
+	settings.Initialize()
+		// Give mongo 2 seconds to connect
+	time.Sleep(time.Second * 2) 
+	
+	// Detect if port is open on mongo, if not do not do anything database wise because that will block until a connection is established.
+	// Most likely you will attempt to build out database models
+	dialer, _ := dbServices.GetMongoDialInfo()
+	conn, err := net.Dial("tcp", dialer.Addrs[0])
 	if err != nil {
-		log.Println("Error init: " + err.Error())
-		time.Sleep(time.Millisecond * 3000)
-		main()
-	} else {
-		//todo...
-		// core.CronJobs.Start()
-		// cron.Start()
-
-		// go logger.GoRoutineLogger(func() {
-		// 	time.Sleep(time.Millisecond * 5000)
-		// 	br.Schedules.LoadDay(time.Now())
-		// }, "main->Loading Schedules")
-
-		app.Run()
+		ginServer.Router.GET("/", func(c *gin.Context) {
+			c.String(http.StatusOK, "` + "%v" + `", "An error occurred and this application cannot run (due to mongo database services being down).\n\n Error description: "+err.Error())
+		})
+		go app.RunServer()
+		time.Sleep(time.Minute)
+		os.Exit(1) // systemd daemon should respawn your main program
 	}
-}`)
+	conn.Close()
+	
+	` + cronStartCode + `
+	
+	// Put all your application code here:
+	
+	// Controllers:
+	// Add all your ginServer.Router methods preferrably in your own controllers package
+	// Move appIndex() handleRespondHTML() and loadApp() to your controllers package
+	ginServer.Router.GET("/", loadApp)
+	
+	// Block and run the server ports
+	app.Run()
+}`
+		err := extensions.Write(mainFile, serverSettings.APP_LOCATION+path.PathSeparator+mainNameFileGo)
+		if err != nil {
+			logger.Message("failed to create main go file"+err.Error(), logger.RED)
+		} else {
+			if totalExpectedSuccesses == totalSuccesses {
+				msg := "GoCore " + mainNameFileGo + " and other files generated in your module successfully."
+				logger.Message(msg+"  Please `go run "+mainNameFileGo+" $(pwd)` to get started running your app for the first time", logger.GREEN)
+				go exec.Command("say", msg).Output()
+				cmd := exec.Command("go", "get", "-d", "./...")
+				err = cmd.Start()
+				if err != nil {
+					logger.Message("go get failed "+err.Error(), logger.RED)
+				}
+			}
+		}
+	}
 }
 
 // create if not exists

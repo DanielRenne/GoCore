@@ -4,3 +4,4 @@
 package path
 
 const PathSeparator = "\\"
+const IsWindows = true

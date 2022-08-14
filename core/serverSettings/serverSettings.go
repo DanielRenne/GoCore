@@ -61,6 +61,7 @@ type Application struct {
 	HtmlTemplates            HtmlTemplates `json:"htmlTemplates"`
 	RootIndexPath            string        `json:"rootIndexPath"`
 	DisableRootIndex         bool          `json:"disableRootIndex"`
+	DisableWebSockets        bool          `json:"disableWebSockets"`
 	CustomGinLogger          bool          `json:"customGinLogger"`
 	SessionKey               string        `json:"sessionKey"`
 	SessionName              string        `json:"sessionName"`
