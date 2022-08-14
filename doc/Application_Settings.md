@@ -15,7 +15,18 @@ The purpose of this binary is that anytime your schema JSON files have changed t
 	func main() {
 		buildCore.Init()
 	}
+  
+Then run `go mod tidy` which will download buildCore package
 
+Then run `go run yourBuildFile.go $(pwd)`
+
+Follow the steps outlined and parameters to generate your backend only goCore application
+
+Then run `go get -d ./...` to download all the dependencies of your main.go
+
+If you look at the output it will show you your command to go run like: `go run main.go $(pwd)`
+
+When you build your main.go you dont have to pass the `pwd` as the first parameter.  It's only needed in go run due to temporary compile directories and needing to know where your webConfig and referenced files are located.
 
 
 ## app package

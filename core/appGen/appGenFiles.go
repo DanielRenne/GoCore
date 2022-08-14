@@ -502,11 +502,6 @@ func main() {
 				msg := "GoCore " + mainNameFileGo + " and other files generated in your module successfully."
 				logger.Message(msg+"  Please `go run "+mainNameFileGo+" $(pwd)` to get started running your app for the first time", logger.GREEN)
 				go exec.Command("say", msg).Output()
-				cmd := exec.Command("go", "get", "-d", "./...")
-				err = cmd.Start()
-				if err != nil {
-					logger.Message("go get failed "+err.Error(), logger.RED)
-				}
 			}
 		}
 	}
