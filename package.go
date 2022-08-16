@@ -21,6 +21,7 @@ import (
 	_ "github.com/DanielRenne/GoCore/core/gitWebHooks"
 	_ "github.com/DanielRenne/GoCore/core/httpExtensions"
 	_ "github.com/DanielRenne/GoCore/core/logger"
+	_ "github.com/DanielRenne/GoCore/core/mongo"
 	_ "github.com/DanielRenne/GoCore/core/pubsub"
 	_ "github.com/DanielRenne/GoCore/core/serverSettings"
 	_ "github.com/DanielRenne/GoCore/core/store"
