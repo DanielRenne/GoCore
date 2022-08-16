@@ -354,8 +354,8 @@ func Run() {
 
 		}()
 	}
-	RunServer()
 	log.Println("GoCore Application Started")
+	RunServer()
 }
 
 func RunServer() {
