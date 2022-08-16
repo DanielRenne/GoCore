@@ -161,16 +161,16 @@ func TimeTrack(start time.Time, name string) (log string) {
 	elapsed := time.Since(start)
 	//if elapsed.Seconds() > 1 {
 	//}
-	return fmt.Sprintf("<Timing>%s took %s</Timing>", name, elapsed)
+	return fmt.Sprintf("%s took %s", name, elapsed)
 }
 
 func TimeTrackQuery(start time.Time, name string, collection *mgo.Collection, m bson.M, q *mgo.Query) (log string) {
 	elapsed := time.Since(start)
-	log += "<Timing>\n\n"
+	log += "\n\n"
 	log += fmt.Sprintf("%#v", collection) + "\n\n"
 	log += fmt.Sprintf("%#v", m) + "\n\n"
 	log += fmt.Sprintf("%#v", q) + "\n\n"
-	log += fmt.Sprintf("%s took %s", name, elapsed) + "\n</Timing>\n"
+	log += fmt.Sprintf("%s took %s", name, elapsed) + "\n\n"
 	return
 }
 
