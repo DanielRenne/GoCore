@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/DanielRenne/GoCore/core/extensions"
@@ -16,8 +17,8 @@ import (
 
 const TimeFormat = "Mon, 02 Jan 2006 15:04:05 GMT"
 const StatusNotModified = 304 // RFC 7232, 4.1
-
 var unixEpochTime = time.Unix(0, 0)
+var mux sync.RWMutex
 
 type ErrorResponse struct {
 	Message string `json:"message"`
@@ -36,6 +37,9 @@ func GetSessionKey(c *gin.Context, key string) (sessionKey string) {
 			return
 		}
 	}()
+	mux.RLock()
+	defer mux.RUnlock()
+
 	session := sessions.Default(c)
 	if strings.Contains(c.Request.Host, ".com") {
 		session.Options(sessions.Options{MaxAge: 86400 * serverSettings.WebConfig.Application.SessionExpirationDays,
@@ -55,6 +59,9 @@ func GetSessionKey(c *gin.Context, key string) (sessionKey string) {
 }
 
 func SetSessionKey(c *gin.Context, key string, value string) {
+	mux.Lock()
+	defer mux.Unlock()
+
 	session := sessions.Default(c)
 	if strings.Contains(c.Request.Host, ".com") {
 		session.Options(sessions.Options{Path: "/", MaxAge: 86400 * serverSettings.WebConfig.Application.SessionExpirationDays,
@@ -68,6 +75,8 @@ func SetSessionKey(c *gin.Context, key string, value string) {
 }
 
 func SaveSession(c *gin.Context) {
+	mux.Lock()
+	defer mux.Unlock()
 	session := sessions.Default(c)
 	if strings.Contains(c.Request.Host, ".com") {
 		session.Options(sessions.Options{MaxAge: 86400 * serverSettings.WebConfig.Application.SessionExpirationDays,
@@ -80,6 +89,8 @@ func SaveSession(c *gin.Context) {
 }
 
 func ClearSession(c *gin.Context) {
+	mux.Lock()
+	defer mux.Unlock()
 	session := sessions.Default(c)
 	if strings.Contains(c.Request.Host, ".com") {
 		session.Options(sessions.Options{MaxAge: 86400 * serverSettings.WebConfig.Application.SessionExpirationDays,
