@@ -6,6 +6,8 @@ require (
 	github.com/DataDog/zstd v1.5.2 // indirect
 	github.com/MakeNowJust/heredoc v0.0.0-20140704152643-1d91351acdc1 // indirect
 	github.com/Sereal/Sereal v0.0.0-20220220040404-e0d1e550e879 // indirect
+	github.com/altipla-consulting/dateformatter v0.0.0-20181229145957-7f51bee562e1 // indirect
+	github.com/altipla-consulting/i18n-dateformatter v0.0.0-20181229145957-7f51bee562e1
 	github.com/asdine/storm v0.0.0-20160730105259-c9a194eaf968
 	github.com/boj/redistore v0.0.0-20160128113310-fc113767cd6b // indirect
 	github.com/boltdb/bolt v1.2.2-0.20160730144416-94c8db596809 // indirect
