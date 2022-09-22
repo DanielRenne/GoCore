@@ -260,7 +260,7 @@ func (self *core_debug) DumpBase(values ...interface{}) (output string) {
 				var rawBytes []byte
 				rawBytes, err = json.MarshalIndent(value, "", "\t")
 				if err == nil {
-					if kind == "slice" || strings.Index(kind, "[]") != -1 {
+					if kind == "slice" || kind[:2] == "[]" {
 						valReflected := reflect.ValueOf(value)
 						output += fmt.Sprintf("#### %-39s [len:%s]####\n%+v", kind, extensions.IntToString(valReflected.Len()), string(rawBytes[:]))
 					} else {
@@ -280,7 +280,7 @@ func (self *core_debug) DumpBase(values ...interface{}) (output string) {
 					} else {
 						output += stringVal[6:] + " --> "
 					}
-				} else if strings.Index(kind, "[]") != -1 || strings.TrimSpace(kind) == "array" {
+				} else if kind[:2] == "[]" || strings.TrimSpace(kind) == "array" {
 					valReflected := reflect.ValueOf(value)
 					output += fmt.Sprintf("#### %-39s [len:%s]####\n%+v", kind, extensions.IntToString(valReflected.Len()), value)
 				} else {
