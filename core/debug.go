@@ -2,6 +2,7 @@
 package core
 
 import (
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -259,20 +260,29 @@ func (self *core_debug) DumpBase(values ...interface{}) (output string) {
 				var rawBytes []byte
 				rawBytes, err = json.MarshalIndent(value, "", "\t")
 				if err == nil {
-					output += fmt.Sprintf("#### %-39s ####\n%+v", kind, string(rawBytes[:]))
+					if kind == "slice" || strings.Index(kind, "[]") != -1 {
+						valReflected := reflect.ValueOf(value)
+						output += fmt.Sprintf("#### %-39s [len:%s]####\n%+v", kind, extensions.IntToString(valReflected.Len()), string(rawBytes[:]))
+					} else {
+						output += fmt.Sprintf("#### %-39s ####\n%+v", kind, string(rawBytes[:]))
+					}
 				}
 			} else {
 				if strings.TrimSpace(kind) == "string" {
 					var stringVal = value.(string)
 					position := strings.Index(stringVal, "Desc->")
 					if position == -1 {
-						output += "#### + " + kind + " " + stringVal + "[len:" + extensions.IntToString(len(stringVal)) + "]####" + "\n"
-						// for _, tmp := range strings.Split(stringVal, "\\n") {
-						// 	output += "\n" + tmp
-						// }
+						if !extensions.IsPrintable(stringVal) {
+							stringVal = hex.Dump([]byte(stringVal))
+						}
+						valReflected := reflect.ValueOf(value)
+						output += fmt.Sprintf("#### %-39s [len:%s]####\n%s", kind, extensions.IntToString(valReflected.Len()), stringVal)
 					} else {
 						output += stringVal[6:] + " --> "
 					}
+				} else if strings.Index(kind, "[]") != -1 || strings.TrimSpace(kind) == "array" {
+					valReflected := reflect.ValueOf(value)
+					output += fmt.Sprintf("#### %-39s [len:%s]####\n%+v", kind, extensions.IntToString(valReflected.Len()), value)
 				} else {
 					output += fmt.Sprintf("#### %-39s ####\n%+v", kind, value)
 				}
