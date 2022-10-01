@@ -20,7 +20,7 @@ require (
 	github.com/garyburd/redigo v1.0.1-0.20160810234951-ffa8d46ada78 // indirect
 	github.com/gin-contrib/secure v0.0.1
 	github.com/gin-gonic/contrib v0.0.0-20160703143648-547e518040cf
-	github.com/gin-gonic/gin v1.5.0
+	github.com/gin-gonic/gin v1.7.0
 	github.com/globalsign/mgo v0.0.0-20171106093149-5be15cc6a449
 	github.com/go-errors/errors v0.0.0-20161205223245-8fa88b06e597
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e
@@ -35,6 +35,5 @@ require (
 	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/oleiade/reflections v0.0.0-20160817071559-0e86b3c98b2f // indirect
 	github.com/utrack/gin-csrf v0.0.0-20150831070702-63c0ef5eca6c
-	golang.org/x/sys v0.0.0-20190922100055-0a153f010e69 // indirect
 	gopkg.in/go-playground/webhooks.v5 v5.1.0
 )
