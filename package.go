@@ -25,7 +25,6 @@ import (
 	_ "github.com/DanielRenne/GoCore/core/pubsub"
 	_ "github.com/DanielRenne/GoCore/core/serverSettings"
 	_ "github.com/DanielRenne/GoCore/core/store"
-	_ "github.com/DanielRenne/GoCore/core/syncAtomic"
 	_ "github.com/DanielRenne/GoCore/core/utils"
 	_ "github.com/DanielRenne/GoCore/core/zip"
 	_ "github.com/DanielRenne/GoCore/modelBuild"
