@@ -40,27 +40,38 @@ func moveServerOnlyAppFiles() {
 
 	if err != nil {
 		isInitializingApp = true
+		var mainAppName string
+		for {
+			reader := bufio.NewReader(os.Stdin)
+			logger.Message("Please enter the camelCase name of your app", logger.GREEN)
+			mainAppName, _ = reader.ReadString('\n')
+			mainAppName = strings.Trim(mainAppName, "\n")
+			if mainAppName != "" {
+				break
+			}
+		}
+
 		webConfig := `
 {
 	"application":{
 		"logGophers": false,
 		"domain": "0.0.0.0",
 		"serverFQDN": "0.0.0.0",
-		"httpPort": 8080,
+		"httpPort": 80,
 		"httpsPort": 443,
 		"releaseMode":"development",
 		"webServiceOnly":false,
 		"versionNumeric": 1,
 		"versionDot": "0.0.1",
-		"productName": "goCoreProductNameMainProduct",
+		"productName": "` + mainAppName + `",
 		"customGinLogger": true,
 		"disableRootIndex": true,
 		"disableWebSockets": false,
-		"sessionKey":"goCoreSessionKey",
-		"sessionName":"goCoreProductName",
+		"sessionKey":"` + mainAppName + `SessionKey",
+		"sessionName":"` + mainAppName + `ProductName",
 		"sessionExpirationDays":3650,
 		"sessionSecureCookie":false,
-		"csrfSecret":"goCoreCsrfSecret",
+		"csrfSecret":"` + mainAppName + `CsrfSecret",
 		"bootstrapData":true, 
 		"htmlTemplates":{
 			"enabled":false,
@@ -71,8 +82,8 @@ func moveServerOnlyAppFiles() {
 	"dbConnections":[
 		{
 			"driver" : "mongoDB",
-			"connectionString": "mongodb://127.0.0.1:27017/goCoreProductName",
-			"database": "goCoreProductName"
+			"connectionString": "mongodb://127.0.0.1:27017/` + mainAppName + `",
+			"database": "` + mainAppName + `"
 		}
 	]
 }
@@ -90,7 +101,7 @@ func moveServerOnlyAppFiles() {
 		var mainCNKeys string
 		for {
 			reader := bufio.NewReader(os.Stdin)
-			logger.Message("Add your full cert information like this: \"/CN=www.mydom.com/O=My Company Name LTD./C=US\" (defaults to this if you just press enter)", logger.GREEN)
+			logger.Message("We are now attempting to generate SSL self signed certificates.  Add your full cert information like this: \"/CN=www.mydom.com/O=My Company Name LTD./C=US\" (defaults to this if you just press enter)", logger.GREEN)
 			mainCNKeys, _ = reader.ReadString('\n')
 			mainCNKeys = strings.Trim(mainCNKeys, "\n")
 			if mainCNKeys == "" {
@@ -553,185 +564,219 @@ func replaceAnything(path string, find string, replace string) {
 }
 
 func moveAppFiles() {
-	humanTitle, err := extensions.ReadFile("/tmp/humanTitle")
-	if err != nil {
-		log.Println("error reading humanTitle")
-	}
-	foundDbType := false
-	databaseType, errDatabaseFile := extensions.ReadFile("/tmp/databaseType")
-	if errDatabaseFile != nil {
-		log.Println("error reading databaseType")
-	} else {
-		os.Remove("/tmp/databaseType")
-		foundDbType = true
-	}
 
-	_, errDatabaseType := os.Stat(serverSettings.APP_LOCATION + "/databaseType")
-	if errDatabaseType == nil {
-		databaseType, err = extensions.ReadFile(serverSettings.APP_LOCATION + "/databaseType")
+	_, err := os.Stat("/tmp/tools/appFiles")
+	if err == nil {
+		humanTitle, err := extensions.ReadFile("/tmp/humanTitle")
+		mainCNKeys, err := extensions.ReadFile("/tmp/mainCNKeys")
 		if err != nil {
-			log.Println("error reading databaseType local")
-		}
-		foundDbType = false
-	}
-	parts := strings.Split(serverSettings.APP_LOCATION, "/")
-	appName := parts[len(parts)-1]
-	githubName := parts[len(parts)-2]
-	project := githubName + "/" + appName
-	//First check for the WebConfig.json file
-	_, errNoWebConfig := os.Stat(serverSettings.APP_LOCATION + "/webConfig.json")
-	if errNoWebConfig != nil {
-		if string(databaseType) == "mongo" || string(databaseType) == "" {
-			extensions.CopyFile("/tmp/tools/appFiles/webConfig.json", serverSettings.APP_LOCATION+"/webConfig.json")
-		} else if string(databaseType) == "bolt" {
-			extensions.CopyFile("/tmp/tools/appFiles/webConfig.bolt.json", serverSettings.APP_LOCATION+"/webConfig.json")
-		}
-		if foundDbType {
-			createFile("/databaseType", string(databaseType))
-		}
-		logger.Message("Copied webConfig.json to Application.", logger.GREEN)
-	}
-
-	_, err = os.Stat(serverSettings.APP_LOCATION + "/webConfig.prod.json")
-	if err != nil {
-		extensions.CopyFile("/tmp/tools/appFiles/webConfig.prod.json", serverSettings.APP_LOCATION+"/webConfig.prod.json")
-		logger.Message("Copied webConfig.json to Application.", logger.GREEN)
-	}
-
-	_, err = os.Stat(serverSettings.APP_LOCATION + "/webConfig.dev.json")
-	if err != nil {
-		extensions.CopyFile("/tmp/tools/appFiles/webConfig.dev.json", serverSettings.APP_LOCATION+"/webConfig.dev.json")
-		logger.Message("Copied webConfig.json to Application.", logger.GREEN)
-	}
-
-	for _, v := range utils.Array("webConfig.prod.json", "webConfig.dev.json", "webConfig.json") {
-		id1 := bson.NewObjectId()
-		id2 := bson.NewObjectId()
-		utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/"+v, "goCoreProductName", appName+"BaseProduct")
-		utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/"+v, "goCoreCsrfSecret", id1.Hex())
-		utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/"+v, "goCoreSessionKey", id2.Hex())
-	}
-
-	_, err = os.Stat(serverSettings.APP_LOCATION + "/log")
-	if err != nil {
-		os.MkdirAll(serverSettings.APP_LOCATION+"/log/plugins", 0777)
-	}
-	var wasCopied bool
-	wasCopied = copyFolder("/keys")
-	wasCopied = copyFolder("/web")
-	if wasCopied {
-		utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/web/app/watchFile.json", "DanielRenne/goCoreAppTemplate", project)
-		utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/web/app/javascript/build-css.sh", "DanielRenne/goCoreAppTemplate", project)
-		replacePath("/web/app/javascript/pages/template", project, githubName, appName)
-		for _, v := range utils.Array("/web/app/manifests", "/web/app/globalization/translations", "/web/app/javascript/pages/logs", "/web/app/javascript/globals", "/web/app/markup/app") {
-			replaceAnything(v, "GoCoreAppHumanName", strings.TrimSpace(string(humanTitle)))
-		}
-	}
-	wasCopied = copyFolder("/payloads")
-	wasCopied = copyFolder("/constants")
-	if wasCopied {
-		replacePath("/constants", project, githubName, appName)
-	}
-	wasCopied = copyFolder("/controllers")
-	if wasCopied {
-		replacePath("/controllers", project, githubName, appName)
-		utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/controllers/homeGetController.go", "goCoreProductName", appName)
-		utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/controllers/homeGetController.go", "-APPNAME", "-"+appName)
-	}
-	wasCopied = copyFolder("/bin")
-	if wasCopied {
-		replacePath("/bin", project, githubName, appName)
-	}
-	wasCopied = copyFolder("/cron")
-	if wasCopied {
-		replacePath("/cron", project, githubName, appName)
-	}
-	wasCopied = copyFolder("/constants")
-	if wasCopied {
-		replacePath("/constants", project, githubName, appName)
-	}
-
-	if errDatabaseFile == nil {
-		copyFolder("/install")
-		replacePath("/install", project, githubName, appName)
-		err = os.Rename(serverSettings.APP_LOCATION+"/install/install.go", serverSettings.APP_LOCATION+"/install/install"+strings.Title(appName)+".go")
-		if err != nil {
-			log.Println("error renaming install")
+			log.Println("error reading humanTitle")
 			os.Exit(1)
 		}
-		err = os.Rename(serverSettings.APP_LOCATION+"/install", serverSettings.APP_LOCATION+"/install"+strings.Title(appName))
-		if err != nil {
-			log.Println("error renaming install folder")
+		foundDbType := false
+		databaseType, errDatabaseFile := extensions.ReadFile("/tmp/databaseType")
+		if errDatabaseFile != nil {
+			log.Println("error reading databaseType")
 			os.Exit(1)
+		} else {
+			os.Remove("/tmp/databaseType")
+			foundDbType = true
 		}
-	}
-	wasCopied = copyFolder("/br")
-	if wasCopied {
-		replacePath("/br", project, githubName, appName)
-	}
-	wasCopied = copyFolder("/scheduleEngine")
-	if wasCopied {
-		replacePath("/scheduleEngine", project, githubName, appName)
-	}
-	wasCopied = copyFolder("/password")
-	if wasCopied {
-		replacePath("/password", project, githubName, appName)
-		secret := bson.NewObjectId()
-		replaceAnything("/password", "GoCorePasswordSecret", secret.Hex())
-	}
-	wasCopied = copyFolder("/queries")
-	if wasCopied {
-		replacePath("/queries", project, githubName, appName)
-	}
-	wasCopied = copyFolder("/settings")
-	if wasCopied {
-		replacePath("/settings", project, githubName, appName)
-	}
-	wasCopied = copyFolder("/sessionFunctions")
-	if wasCopied {
-		replacePath("/sessionFunctions", project, githubName, appName)
-	}
-	wasCopied = copyFolder("/viewModel")
-	if wasCopied {
-		replacePath("/viewModel", project, githubName, appName)
-	}
-	wasCopied = copyFolder("/errors")
-	if wasCopied {
-		replacePath("/errors", project, githubName, appName)
-	}
-	wasCopied = copyFolder("/networks")
-	if wasCopied {
-		replacePath("/networks", project, githubName, appName)
-	}
-	wasCopied = copyFolder("/gitWebHooks")
-	if wasCopied {
-		replacePath("/gitWebHooks", project, githubName, appName)
-	}
-	wasCopied = copyFolder("/controllerRegistry")
-	if wasCopied {
-		replacePath("/controllerRegistry", project, githubName, appName)
-	}
 
-	_, err = os.Stat(serverSettings.APP_LOCATION + "/db")
+		_, errDatabaseType := os.Stat(serverSettings.APP_LOCATION + "/databaseType")
+		if errDatabaseType == nil {
+			databaseType, err = extensions.ReadFile(serverSettings.APP_LOCATION + "/databaseType")
+			if err != nil {
+				log.Println("error reading databaseType local")
+				os.Exit(1)
+			}
+			foundDbType = false
+		}
+		parts := strings.Split(serverSettings.APP_LOCATION, "/")
+		appName := parts[len(parts)-1]
+		githubName := parts[len(parts)-2]
+		project := githubName + "/" + appName
+		//First check for the WebConfig.json file
+		_, errNoWebConfig := os.Stat(serverSettings.APP_LOCATION + "/webConfig.json")
+		if errNoWebConfig != nil {
+			if string(databaseType) == "mongo" || string(databaseType) == "" {
+				extensions.CopyFile("/tmp/tools/appFiles/webConfig.json", serverSettings.APP_LOCATION+"/webConfig.json")
+			} else if string(databaseType) == "bolt" {
+				extensions.CopyFile("/tmp/tools/appFiles/webConfig.bolt.json", serverSettings.APP_LOCATION+"/webConfig.json")
+			}
+			if foundDbType {
+				createFile("/databaseType", string(databaseType))
+			}
+			logger.Message("Copied webConfig.json to Application.", logger.GREEN)
+		}
 
-	if err != nil {
-		os.MkdirAll(serverSettings.APP_LOCATION+"/db/schemas/1.0.0", 0777)
-		os.MkdirAll(serverSettings.APP_LOCATION+"/db/bootstrap", 0777)
-		os.MkdirAll(serverSettings.APP_LOCATION+"/db/goFiles/v1", 0777)
-		extensions.WriteToFile("Put model class functions and overrides here", serverSettings.APP_LOCATION+"/db/goFiles/v1/.gitkeep", 0777)
-		extensions.CopyFolder("/tmp/tools/appFiles/db/schemas", serverSettings.APP_LOCATION+"/db/schemas/1.0.0")
-		extensions.CopyFolder("/tmp/tools/appFiles/db/bootstrap", serverSettings.APP_LOCATION+"/db/bootstrap")
-		logger.Message("Created db/schemas/1.0.0 in Application.", logger.GREEN)
-	}
+		_, err = os.Stat(serverSettings.APP_LOCATION + "/webConfig.prod.json")
+		if err != nil {
+			extensions.CopyFile("/tmp/tools/appFiles/webConfig.prod.json", serverSettings.APP_LOCATION+"/webConfig.prod.json")
+			logger.Message("Copied webConfig.json to Application.", logger.GREEN)
+		}
 
-	_, err = os.Stat(serverSettings.APP_LOCATION + "/models")
+		_, err = os.Stat(serverSettings.APP_LOCATION + "/webConfig.dev.json")
+		if err != nil {
+			extensions.CopyFile("/tmp/tools/appFiles/webConfig.dev.json", serverSettings.APP_LOCATION+"/webConfig.dev.json")
+			logger.Message("Copied webConfig.json to Application.", logger.GREEN)
+		}
 
-	if err != nil {
-		os.MkdirAll(serverSettings.APP_LOCATION+"/models/v1/model", 0777)
-		logger.Message("Created models/v1/model in Application.", logger.GREEN)
-	}
+		for _, v := range utils.Array("webConfig.prod.json", "webConfig.dev.json", "webConfig.json") {
+			id1 := bson.NewObjectId()
+			id2 := bson.NewObjectId()
+			utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/"+v, "goCoreProductName", appName+"BaseProduct")
+			utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/"+v, "goCoreCsrfSecret", id1.Hex())
+			utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/"+v, "goCoreSessionKey", id2.Hex())
+		}
 
-	createFile("/releaseNotes.txt", `
+		_, err = os.Stat(serverSettings.APP_LOCATION + "/log")
+		if err != nil {
+			os.MkdirAll(serverSettings.APP_LOCATION+"/log/plugins", 0777)
+		}
+		var wasCopied bool
+		_, err = os.Stat(serverSettings.APP_LOCATION + path.PathSeparator + "keys")
+
+		if err != nil {
+			err = extensions.MkDir(serverSettings.APP_LOCATION + path.PathSeparator + "keys")
+			if err == nil {
+				err := os.Chdir(serverSettings.APP_LOCATION + path.PathSeparator + "keys")
+				if err == nil {
+
+					cmd := exec.Command("openssl", "req", "-newkey", "rsa:2048", "-new", "-nodes", "-x509", "-days", "13650", "-subj", "'"+string(mainCNKeys)+"'", "-keyout", "key.pem")
+					err = cmd.Start()
+					if err != nil {
+						logger.Message("Failed to create keys with openssl for application.", logger.RED)
+					} else {
+						cmd := exec.Command("openssl", "req", "-new", "-subj", "'"+string(mainCNKeys)+"'", "-key", "key.pem", "-out", "cert.pem")
+						err = cmd.Start()
+						if err != nil {
+							logger.Message("Created to create cert with openssl for application.", logger.RED)
+						} else {
+							logger.Message("Created keys for application.", logger.GREEN)
+						}
+					}
+				}
+				err = os.Chdir(serverSettings.APP_LOCATION)
+				if err != nil {
+					logger.Message("Failed  to change dir to app location.", logger.RED)
+				}
+			} else {
+				logger.Message("Couldnt create keys dir", logger.RED)
+			}
+		}
+
+		wasCopied = copyFolder("/web")
+		if wasCopied {
+			utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/web/app/watchFile.json", "DanielRenne/goCoreAppTemplate", project)
+			utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/web/app/javascript/build-css.sh", "DanielRenne/goCoreAppTemplate", project)
+			replacePath("/web/app/javascript/pages/template", project, githubName, appName)
+			for _, v := range utils.Array("/web/app/manifests", "/web/app/globalization/translations", "/web/app/javascript/pages/logs", "/web/app/javascript/globals", "/web/app/markup/app") {
+				replaceAnything(v, "GoCoreAppHumanName", strings.TrimSpace(string(humanTitle)))
+			}
+		}
+		wasCopied = copyFolder("/payloads")
+		wasCopied = copyFolder("/constants")
+		if wasCopied {
+			replacePath("/constants", project, githubName, appName)
+		}
+		wasCopied = copyFolder("/controllers")
+		if wasCopied {
+			replacePath("/controllers", project, githubName, appName)
+			utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/controllers/homeGetController.go", "goCoreProductName", appName)
+			utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/controllers/homeGetController.go", "-APPNAME", "-"+appName)
+		}
+		wasCopied = copyFolder("/bin")
+		if wasCopied {
+			replacePath("/bin", project, githubName, appName)
+		}
+		wasCopied = copyFolder("/cron")
+		if wasCopied {
+			replacePath("/cron", project, githubName, appName)
+		}
+		wasCopied = copyFolder("/constants")
+		if wasCopied {
+			replacePath("/constants", project, githubName, appName)
+		}
+
+		if errDatabaseFile == nil {
+			copyFolder("/install")
+			replacePath("/install", project, githubName, appName)
+			err = os.Rename(serverSettings.APP_LOCATION+"/install/install.go", serverSettings.APP_LOCATION+"/install/install"+strings.Title(appName)+".go")
+			if err != nil {
+				log.Println("error renaming install")
+				os.Exit(1)
+			}
+			err = os.Rename(serverSettings.APP_LOCATION+"/install", serverSettings.APP_LOCATION+"/install"+strings.Title(appName))
+			if err != nil {
+				log.Println("error renaming install folder")
+				os.Exit(1)
+			}
+		}
+		wasCopied = copyFolder("/br")
+		if wasCopied {
+			replacePath("/br", project, githubName, appName)
+		}
+		wasCopied = copyFolder("/scheduleEngine")
+		if wasCopied {
+			replacePath("/scheduleEngine", project, githubName, appName)
+		}
+		wasCopied = copyFolder("/password")
+		if wasCopied {
+			replacePath("/password", project, githubName, appName)
+			secret := bson.NewObjectId()
+			replaceAnything("/password", "GoCorePasswordSecret", secret.Hex())
+		}
+		wasCopied = copyFolder("/queries")
+		if wasCopied {
+			replacePath("/queries", project, githubName, appName)
+		}
+		wasCopied = copyFolder("/settings")
+		if wasCopied {
+			replacePath("/settings", project, githubName, appName)
+		}
+		wasCopied = copyFolder("/sessionFunctions")
+		if wasCopied {
+			replacePath("/sessionFunctions", project, githubName, appName)
+		}
+		wasCopied = copyFolder("/viewModel")
+		if wasCopied {
+			replacePath("/viewModel", project, githubName, appName)
+		}
+		wasCopied = copyFolder("/errors")
+		if wasCopied {
+			replacePath("/errors", project, githubName, appName)
+		}
+		wasCopied = copyFolder("/networks")
+		if wasCopied {
+			replacePath("/networks", project, githubName, appName)
+		}
+
+		wasCopied = copyFolder("/controllerRegistry")
+		if wasCopied {
+			replacePath("/controllerRegistry", project, githubName, appName)
+		}
+
+		_, err = os.Stat(serverSettings.APP_LOCATION + "/db")
+
+		if err != nil {
+			os.MkdirAll(serverSettings.APP_LOCATION+"/db/schemas/1.0.0", 0777)
+			os.MkdirAll(serverSettings.APP_LOCATION+"/db/bootstrap", 0777)
+			os.MkdirAll(serverSettings.APP_LOCATION+"/db/goFiles/v1", 0777)
+			extensions.WriteToFile("Put model class functions and overrides here", serverSettings.APP_LOCATION+"/db/goFiles/v1/.gitkeep", 0777)
+			extensions.CopyFolder("/tmp/tools/appFiles/db/schemas", serverSettings.APP_LOCATION+"/db/schemas/1.0.0")
+			extensions.CopyFolder("/tmp/tools/appFiles/db/bootstrap", serverSettings.APP_LOCATION+"/db/bootstrap")
+			logger.Message("Created db/schemas/1.0.0 in Application.", logger.GREEN)
+		}
+
+		_, err = os.Stat(serverSettings.APP_LOCATION + "/models")
+
+		if err != nil {
+			os.MkdirAll(serverSettings.APP_LOCATION+"/models/v1/model", 0777)
+			logger.Message("Created models/v1/model in Application.", logger.GREEN)
+		}
+
+		createFile("/releaseNotes.txt", `
 `+strings.ToUpper(appName)+` Release Notes:
 
 Legend:
@@ -747,7 +792,7 @@ Legend:
 
 				-APPNAME`)
 
-	createFile("/"+appName+".go", `
+		createFile("/"+appName+".go", `
 package main
 
 import (
@@ -760,7 +805,8 @@ import (
 
 	"fmt"
 	"net/http"
-
+	
+	"github.com/DanielRenne/GoCore/core/dbServices"
 	"github.com/DanielRenne/GoCore/core"
 	"github.com/DanielRenne/GoCore/core/app"
 	"github.com/DanielRenne/GoCore/core/ginServer"
@@ -786,55 +832,61 @@ func main() {
 			return
 		}
 	}()
-
-	err := app.Initialize(os.Getenv("`+appName+`_path"), "webConfig.json")
+	
+	app.Initialize(os.Getenv("`+appName+`_path"), "webConfig.json")
 	settings.Initialize()
 	br.Schedules.UpdateLinuxToGMT()
 
+	dialer, _ := dbServices.GetMongoDialInfo()
+	conn, err := net.Dial("tcp", dialer.Addrs[0])
 	if err != nil {
 		//lastError := err.Error()
 		ginServer.Router.GET("/", func(c *gin.Context) {
-			c.String(http.StatusOK, "%v", "An error occurred and the `+appName+` app cannot run (most likely due to mongo database services being down).\n\nError description: "+err.Error())
+			c.String(http.StatusOK, "%v", "An error occurred and velocity cannot run (due to mongo database services being down).\n\n Error description: "+err.Error()+".")
 		})
-		app.Run()
-	} else {
-		if settings.AppSettings.DeveloperGoTrace {
-			f, err := os.Create(os.Getenv("`+appName+`_path") + "/log/trace.log")
-			if err != nil {
-				panic(err)
-			}
-			defer f.Close()
-
-			err = trace.Start(f)
-			if err != nil {
-				panic(err)
-			}
-			mgo.SetDebug(true)
-
-			file, _ := os.OpenFile(os.Getenv("`+appName+`_path") + "/log/studioMongo.log", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0777)
-
-			var aLogger *log.Logger
-			aLogger = log.New(file, "", log.LstdFlags)
-
-			mgo.SetLogger(aLogger)
-			mgo.SetStats(true)
-		}
-
-		controllers.Initialize()
-
-		core.CronJobs.Start()
-		cron.Start()
-
-		go logger.GoRoutineLogger(func() {
-			time.Sleep(time.Millisecond * 5000)
-			br.Schedules.LoadDay(time.Now())
-		}, "main->Loading Schedules")
-
-		app.Run()
+		go app.RunServer()
+		time.Sleep(time.Minute)
+		os.Exit(1) // systemd daemon should respawn your main program
 	}
+	conn.Close()
+
+	if settings.AppSettings.DeveloperGoTrace {
+		f, err := os.Create(os.Getenv("`+appName+`_path") + "/log/trace.log")
+		if err != nil {
+			panic(err)
+		}
+		defer f.Close()
+
+		err = trace.Start(f)
+		if err != nil {
+			panic(err)
+		}
+		mgo.SetDebug(true)
+
+		file, _ := os.OpenFile(os.Getenv("`+appName+`_path") + "/log/studioMongo.log", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0777)
+
+		var aLogger *log.Logger
+		aLogger = log.New(file, "", log.LstdFlags)
+
+		mgo.SetLogger(aLogger)
+		mgo.SetStats(true)
+	}
+
+	controllers.Initialize()
+
+	core.CronJobs.Start()
+	cron.Start()
+
+	go logger.GoRoutineLogger(func() {
+		time.Sleep(time.Millisecond * 5000)
+		br.Schedules.LoadDay(time.Now())
+	}, "main->Loading Schedules")
+	
+	// Blocking - Finally run your web server after starting cron jobs, setting up controllers.
+	app.Run()
 }`)
 
-	createFile("/.gitignore", `*.idea
+		createFile("/.gitignore", `*.idea
 *.pyc
 db/bootstrap/*/mongoDump
 localWebConfig.json
@@ -857,7 +909,7 @@ web/app/node_modules
 package-lock.json
 `+appName)
 
-	createFile("/README.md", `# `+appName+` [a [GoCore Application](https://github.com/DanielRenne/GoCore/ "GoCore Application")]
+		createFile("/README.md", `# `+appName+` [a [GoCore Application](https://github.com/DanielRenne/GoCore/ "GoCore Application")]
 
 Add an elevator description to pitch of what this GoCore web app does here.
 
@@ -867,5 +919,5 @@ Add an elevator description to pitch of what this GoCore web app does here.
 
 Once your application is up and running login as username admin and password admin and start coding
 `)
-
+	}
 }
