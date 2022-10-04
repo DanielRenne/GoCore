@@ -62,6 +62,10 @@ func (q *Queue) Any() (any bool) {
 
 // Wait will return a channel for your function to wait on.
 func (q *Queue) Wait(x interface{}) (c chan interface{}, any bool) {
+	if q.TimeoutMilliseconds == nil {
+		q.TimeoutMilliseconds = &atomicTypes.AtomicInt{}
+		q.TimeoutMilliseconds.Set(10000)
+	}
 	timeoutMs := q.TimeoutMilliseconds.Get()
 	any = q.any.Get()
 	q.any.Set(true)
@@ -76,9 +80,6 @@ func (q *Queue) Wait(x interface{}) (c chan interface{}, any bool) {
 				return
 			}
 		}()
-		if timeoutMs == 0 {
-			timeoutMs = 10000
-		}
 		time.Sleep(time.Millisecond * time.Duration(timeoutMs))
 		_, ok := q.channels.Load(randomValue)
 		if ok {
