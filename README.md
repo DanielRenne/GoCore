@@ -42,7 +42,7 @@ Below are some targeted goals:
 ---
 
 - Channel management queues and pubsub functions
-  - A [simple channel management queue system](github.com/DanielRenne/GoCore/core/channels/#example_Signal) for managing goRoutines and channels in [github.com/DanielRenne/GoCore/core/channels](https://pkg.go.dev/github.com/DanielRenne/GoCore@v1.5.0/core/channels) package
+  - A [simple channel management queue system](https://pkg.go.dev/github.com/DanielRenne/GoCore@v1.5.0/core/pubsub#example_Signal) for managing goRoutines and channels in [github.com/DanielRenne/GoCore/core/channels](https://pkg.go.dev/github.com/DanielRenne/GoCore@v1.5.0/core/channels) package
   - pubsub package for [publishing to subscribers](https://pkg.go.dev/github.com/DanielRenne/GoCore@v1.5.0/core/pubsub#example_Publish) in [github.com/DanielRenne/GoCore/core/pubsub](https://pkg.go.dev/github.com/DanielRenne/GoCore@v1.5.0/core/pubsub) package
 
 ---
