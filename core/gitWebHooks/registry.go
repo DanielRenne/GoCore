@@ -1,3 +1,4 @@
+// package gitWebHooks - deprecated use git actions instead
 package gitWebHooks
 
 import (
@@ -19,7 +20,7 @@ type webHooks interface {
 	RunEvent(x interface{})
 }
 
-//RegisterHook will register a new store to the store registry.
+// RegisterHook will register a new store to the store registry.
 func RegisterHook(typeHook string, x interface{}) {
 	registry.Store(typeHook, x)
 }

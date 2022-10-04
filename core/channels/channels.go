@@ -1,3 +1,4 @@
+// Package channels provides a simple way to wait for a signal in a thread-safe manner
 package channels
 
 import (
@@ -10,13 +11,21 @@ import (
 	"github.com/DanielRenne/GoCore/core/extensions"
 )
 
-//Queue provides a factory to queue channels sequentially and pop / signal them one at a time in a daisy chain.
+// Queue provides a factory to queue channels sequentially and pop / signal them one at a time in a daisy chain.
 type Queue struct {
-	any      atomicTypes.AtomicBool
-	channels sync.Map
+	// Defaults to 10000 ms if none passed
+	TimeoutMilliseconds *atomicTypes.AtomicInt
+	any                 atomicTypes.AtomicBool
+	channels            sync.Map
 }
 
-//Signal will only signal the first item in the queue.
+// Signal stub function. Use Queue.Signal() instead
+func Signal(x interface{}) {
+	q := Queue{}
+	q.Signal(x)
+}
+
+// Signal will only signal the first item in the queue.
 func (q *Queue) Signal(x interface{}) {
 
 	defer func() {
@@ -45,14 +54,15 @@ func (q *Queue) Signal(x interface{}) {
 	q.any.Set(anyMoreInRange)
 }
 
-//Any will return true if there are any current channels waiting.
+// Any will return true if there are any current channels waiting.
 func (q *Queue) Any() (any bool) {
 	any = q.any.Get()
 	return
 }
 
-//Wait will return a channel for your function to wait on.
+// Wait will return a channel for your function to wait on.
 func (q *Queue) Wait(x interface{}) (c chan interface{}, any bool) {
+	timeoutMs := q.TimeoutMilliseconds.Get()
 	any = q.any.Get()
 	q.any.Set(true)
 	c = make(chan interface{})
@@ -66,7 +76,10 @@ func (q *Queue) Wait(x interface{}) (c chan interface{}, any bool) {
 				return
 			}
 		}()
-		time.Sleep(time.Millisecond * 10000)
+		if timeoutMs == 0 {
+			timeoutMs = 10000
+		}
+		time.Sleep(time.Millisecond * time.Duration(timeoutMs))
 		_, ok := q.channels.Load(randomValue)
 		if ok {
 			q.channels.Delete(randomValue)

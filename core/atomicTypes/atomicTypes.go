@@ -1,4 +1,4 @@
-//Package atomicTypes provides object locking / unlocking for setting and getting.
+// Package atomicTypes provides object locking / unlocking for setting and getting.
 package atomicTypes
 
 import (
@@ -6,13 +6,13 @@ import (
 	"time"
 )
 
-//AtomicString provides a string object that is lock safe.
+// AtomicString provides a string object that is lock safe.
 type AtomicString struct {
 	valueSync sync.RWMutex
 	value     string
 }
 
-//Get returns the string value
+// Get returns the string value
 func (obj *AtomicString) Get() (value string) {
 	obj.valueSync.RLock()
 	value = obj.value
@@ -20,20 +20,20 @@ func (obj *AtomicString) Get() (value string) {
 	return
 }
 
-//Set sets the string value
+// Set sets the string value
 func (obj *AtomicString) Set(value string) {
 	obj.valueSync.Lock()
 	obj.value = value
 	obj.valueSync.Unlock()
 }
 
-//AtomicInt provides an int object that is lock safe.
+// AtomicInt provides an int object that is lock safe.
 type AtomicInt struct {
 	valueSync sync.RWMutex
 	value     int
 }
 
-//Get returns the int value
+// Get returns the int value
 func (obj *AtomicInt) Get() (value int) {
 	obj.valueSync.RLock()
 	value = obj.value
@@ -41,7 +41,7 @@ func (obj *AtomicInt) Get() (value int) {
 	return
 }
 
-//Set sets the int value
+// Set sets the int value
 func (obj *AtomicInt) Set(value int) {
 	obj.valueSync.Lock()
 	obj.value = value
@@ -75,13 +75,13 @@ func (obj *AtomicInt) Add(n int) int {
 	return obj.value
 }
 
-//AtomicUInt16 provides an uint16 object that is lock safe.
+// AtomicUInt16 provides an uint16 object that is lock safe.
 type AtomicUInt16 struct {
 	valueSync sync.RWMutex
 	value     uint16
 }
 
-//Get returns the int value
+// Get returns the int value
 func (obj *AtomicUInt16) Get() (value uint16) {
 	obj.valueSync.RLock()
 	value = obj.value
@@ -89,20 +89,20 @@ func (obj *AtomicUInt16) Get() (value uint16) {
 	return
 }
 
-//Set sets the int value
+// Set sets the int value
 func (obj *AtomicUInt16) Set(value uint16) {
 	obj.valueSync.Lock()
 	obj.value = value
 	obj.valueSync.Unlock()
 }
 
-//AtomicUInt32 provides an uint16 object that is lock safe.
+// AtomicUInt32 provides an uint16 object that is lock safe.
 type AtomicUInt32 struct {
 	valueSync sync.RWMutex
 	value     uint32
 }
 
-//Get returns the int value
+// Get returns the int value
 func (obj *AtomicUInt32) Get() (value uint32) {
 	obj.valueSync.RLock()
 	value = obj.value
@@ -110,20 +110,20 @@ func (obj *AtomicUInt32) Get() (value uint32) {
 	return
 }
 
-//Set sets the int value
+// Set sets the int value
 func (obj *AtomicUInt32) Set(value uint32) {
 	obj.valueSync.Lock()
 	obj.value = value
 	obj.valueSync.Unlock()
 }
 
-//AtomicBool provides an bool object that is lock safe.
+// AtomicBool provides an bool object that is lock safe.
 type AtomicBool struct {
 	valueSync sync.RWMutex
 	value     bool
 }
 
-//Get returns the bool value
+// Get returns the bool value
 func (obj *AtomicBool) Get() (value bool) {
 	obj.valueSync.RLock()
 	value = obj.value
@@ -131,14 +131,14 @@ func (obj *AtomicBool) Get() (value bool) {
 	return
 }
 
-//Set sets the bool value
+// Set sets the bool value
 func (obj *AtomicBool) Set(value bool) {
 	obj.valueSync.Lock()
 	obj.value = value
 	obj.valueSync.Unlock()
 }
 
-//ToggleTrue sets the bool value only if the check back true; return if the value was set
+// ToggleTrue sets the bool value only if the check back true; return if the value was set
 func (obj *AtomicBool) ToggleTrue() (changed bool) {
 	obj.valueSync.Lock()
 	defer obj.valueSync.Unlock()
@@ -153,13 +153,13 @@ func (obj *AtomicBool) ToggleTrue() (changed bool) {
 	return
 }
 
-//AtomicTime provides a time.Time object that is lock safe.
+// AtomicTime provides a time.Time object that is lock safe.
 type AtomicTime struct {
 	valueSync sync.RWMutex
 	value     time.Time
 }
 
-//Get returns the time.Time value
+// Get returns the time.Time value
 func (obj *AtomicTime) Get() (value time.Time) {
 	obj.valueSync.RLock()
 	value = obj.value
@@ -167,20 +167,20 @@ func (obj *AtomicTime) Get() (value time.Time) {
 	return
 }
 
-//Set sets the time.Time value
+// Set sets the time.Time value
 func (obj *AtomicTime) Set(value time.Time) {
 	obj.valueSync.Lock()
 	obj.value = value
 	obj.valueSync.Unlock()
 }
 
-//AtomicByteArray provides a []byte object that is lock safe.
+// AtomicByteArray provides a []byte object that is lock safe.
 type AtomicByteArray struct {
 	valueSync sync.RWMutex
 	value     []byte
 }
 
-//Get returns the []byte value
+// Get returns the []byte value
 func (obj *AtomicByteArray) Get() (value []byte) {
 	obj.valueSync.RLock()
 	value = obj.value
@@ -188,20 +188,20 @@ func (obj *AtomicByteArray) Get() (value []byte) {
 	return
 }
 
-//Set sets the []byte value
+// Set sets the []byte value
 func (obj *AtomicByteArray) Set(value []byte) {
 	obj.valueSync.Lock()
 	obj.value = value
 	obj.valueSync.Unlock()
 }
 
-//AtomicBoolArray provides a []bool object that is lock safe.
+// AtomicBoolArray provides a []bool object that is lock safe.
 type AtomicBoolArray struct {
 	valueSync sync.RWMutex
 	value     []bool
 }
 
-//Get returns the []bool value
+// Get returns the []bool value
 func (obj *AtomicBoolArray) Get() (value []bool) {
 	obj.valueSync.RLock()
 	value = obj.value
@@ -209,14 +209,14 @@ func (obj *AtomicBoolArray) Get() (value []bool) {
 	return
 }
 
-//Set sets the []bool value
+// Set sets the []bool value
 func (obj *AtomicBoolArray) Set(value []bool) {
 	obj.valueSync.Lock()
 	obj.value = value
 	obj.valueSync.Unlock()
 }
 
-//SetByIndex sets a bool by index value
+// SetByIndex sets a bool by index value
 func (obj *AtomicBoolArray) SetByIndex(index int, value bool) {
 	obj.valueSync.Lock()
 	if len(obj.value) > index {
@@ -225,13 +225,13 @@ func (obj *AtomicBoolArray) SetByIndex(index int, value bool) {
 	obj.valueSync.Unlock()
 }
 
-//AtomicFloat64 provides a float64 object that is lock safe.
+// AtomicFloat64 provides a float64 object that is lock safe.
 type AtomicFloat64 struct {
 	valueSync sync.RWMutex
 	value     float64
 }
 
-//Get returns the float64 value
+// Get returns the float64 value
 func (obj *AtomicFloat64) Get() (value float64) {
 	obj.valueSync.RLock()
 	value = obj.value
@@ -239,7 +239,7 @@ func (obj *AtomicFloat64) Get() (value float64) {
 	return
 }
 
-//Set sets the float64 value
+// Set sets the float64 value
 func (obj *AtomicFloat64) Set(value float64) {
 	obj.valueSync.Lock()
 	obj.value = value

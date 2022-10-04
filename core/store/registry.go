@@ -1,3 +1,4 @@
+// Package store provides internal interfaces for dbServices and models to publish out changes
 package store
 
 import (

@@ -1,3 +1,4 @@
+// Package provides some basic DES_CBC or CBC_PKCS7 encryption and decryption functions.
 package crypto
 
 import (
@@ -8,6 +9,7 @@ import (
 	"strings"
 )
 
+// DecryptDES_CBC will decrypt a string using DES_CBC encryption.
 func DecryptDES_CBC(data []byte, key string, iv []byte) string {
 
 	block, err := des.NewCipher([]byte(key))
@@ -20,6 +22,7 @@ func DecryptDES_CBC(data []byte, key string, iv []byte) string {
 	return DecryptDES_CBC_Byte(data, block, iv)
 }
 
+// DecryptDES_CBC_Byte will decrypt an []byte using DES_CBC encryption.
 func DecryptDES_CBC_Byte(encrypted []byte, block cipher.Block, iv []byte) string {
 
 	cbc := cipher.NewCBCDecrypter(block, iv)
@@ -28,6 +31,7 @@ func DecryptDES_CBC_Byte(encrypted []byte, block cipher.Block, iv []byte) string
 
 }
 
+// EncryptDES_CBC_PKCS7 will encrypt a string using DES_CBC_PKCS7 encryption.
 func EncryptDES_CBC_PKCS7(plainText []byte, key string, iv []byte) string {
 
 	block, err := des.NewCipher([]byte(key))
@@ -45,6 +49,7 @@ func EncryptDES_CBC_PKCS7(plainText []byte, key string, iv []byte) string {
 	return EncryptDES_CBC_Byte(paddedPlainText, block, iv)
 }
 
+// EncryptDES_CBC_Byte will encrypt an []byte using DES_CBC encryption.
 func EncryptDES_CBC_Byte(plainText []byte, block cipher.Block, iv []byte) string {
 
 	encrypted := make([]byte, len(plainText))

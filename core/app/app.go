@@ -29,16 +29,24 @@ import (
 	"gopkg.in/go-playground/webhooks.v5/github"
 )
 
+// WebSocketRemoval a type which removes a websocket callback
 type WebSocketRemoval func(info WebSocketConnectionMeta)
 
+// StaticWebLocation is the location of the static web files (defaults to "/web")
 var StaticWebLocation string
 
 type customLog func(desc string, message string)
 
+// BroadcastSockets is a flag that determines if web sockets should broadcast to all clients (defaults to true with init())
 var BroadcastSockets bool
+
+// CustomLog allows you to set a custom log function for the web server logs that GoCore outputs
 var CustomLog customLog
+
+// PrimaryGoCoreHTTPServer is the primary http server that GoCore uses where if you needed to tear it down you could
 var PrimaryGoCoreHTTPServer *http.Server
 
+// WebSocketConnection is a websocket connection
 type WebSocketConnection struct {
 	sync.RWMutex
 	Id                   string
@@ -51,16 +59,17 @@ type WebSocketConnection struct {
 	WriteLock            sync.RWMutex
 	LastResponseTime     time.Time
 	LastResponseTimeLock sync.RWMutex
-
-	GinContextSync GinContextSync
+	GinContextSync       GinContextSync
 }
 
+// GinContextSync is a sync wrapper for a gin context
 type GinContextSync struct {
 	sync.RWMutex
 	Initialized atomicTypes.AtomicBool
 	Context     *gin.Context
 }
 
+// WebSocketConnectionMeta is the meta data for a websocket connection
 type WebSocketConnectionMeta struct {
 	Conn             *WebSocketConnection
 	Context          interface{}
@@ -79,11 +88,13 @@ func (obj *WebSocketConnectionMeta) GetConnection() (conn *WebSocketConnection) 
 	return
 }
 
+// WebSocketConnectionCollection is a collection of websocket connections
 type WebSocketConnectionCollection struct {
 	sync.RWMutex
 	Connections []*WebSocketConnection
 }
 
+// ConcurrentWebSocketConnectionItem is a concurrent websocket connection item
 type ConcurrentWebSocketConnectionItem struct {
 	Index int
 	Conn  *WebSocketConnection
@@ -125,11 +136,13 @@ func (wscc *WebSocketConnectionCollection) Iter() <-chan ConcurrentWebSocketConn
 	return c
 }
 
+// WebSocketCallbackSync is a sync wrapper for a websocket callback
 type WebSocketCallbackSync struct {
 	sync.RWMutex
 	callbacks []WebSocketCallback
 }
 
+// ConcurrentWebSocketCallbackItem is a concurrent websocket callback item
 type ConcurrentWebSocketCallbackItem struct {
 	Index    int
 	Callback WebSocketCallback
@@ -158,11 +171,13 @@ func (self *WebSocketCallbackSync) Iter() <-chan ConcurrentWebSocketCallbackItem
 	return c
 }
 
+// WebSocketPubSubPayload is a websocket pub sub payload
 type WebSocketPubSubPayload struct {
 	Key     string      `json:"Key"`
 	Content interface{} `json:"Content"`
 }
 
+// WebSocketCallback is a websocket callback
 type WebSocketCallback func(conn *WebSocketConnection, c *gin.Context, messageType int, id string, data []byte)
 
 var upgrader = websocket.Upgrader{
@@ -171,9 +186,14 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
+// WebSocketConnections is a collection of websocket connections
 var WebSocketConnections sync.Map
 var webSocketConnectionsMeta sync.Map
+
+// WebSocketCallbacks is a collection of websocket callbacks
 var WebSocketCallbacks sync.Map
+
+// WebSocketRemovalCallback is a collection of websocket removal callbacks
 var WebSocketRemovalCallback WebSocketRemoval
 
 func init() {
@@ -181,14 +201,17 @@ func init() {
 	BroadcastSockets = true
 }
 
+// Init initializes the web server with the default webConfig.json file
 func Init() {
 	Initialize(path.GetBinaryPath(), "webConfig.json")
 }
 
+// InitCustomWebCofig initializes the web server with a custom webConfig.json file
 func InitCustomWebConfig(webConfig string) {
 	Initialize(path.GetBinaryPath(), webConfig)
 }
 
+// Initialize initializes the web server with a full path to your proect and the name of your webConfig.json file.
 func Initialize(path string, config string) {
 	err := serverSettings.Initialize(path, config)
 	if err != nil {
@@ -210,12 +233,15 @@ func Initialize(path string, config string) {
 	return
 }
 
+// InitializeLite initilizes a basic gin server with no database coupling
 func InitializeLite(secureHeaders bool, allowedHosts []string) (err error) {
 	ginServer.InitializeLite(gin.ReleaseMode, secureHeaders, allowedHosts)
+	// Why do we do this here.  Its not needed
 	fileCache.Initialize()
 	return
 }
 
+// RunLite is a lite version of Run that does not require a webConfig.json file or any serverSettings information
 func RunLite(port int) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -247,6 +273,7 @@ func RunLite(port int) {
 
 }
 
+// Run starts the server (Typically for a full GoCore server)
 func Run() {
 
 	defer func() {
@@ -310,15 +337,13 @@ func Run() {
 		if StaticWebLocation != "" {
 			ginServer.Router.Static("/"+StaticWebLocation, serverSettings.APP_LOCATION+path.PathSeparator+StaticWebLocation)
 		}
-
-		if !serverSettings.WebConfig.Application.DisableWebSockets {
-			ginServer.Router.GET("/ws", func(c *gin.Context) {
-				webSocketHandler(c.Writer, c.Request, c)
-			})
-		}
 	}
 
-	initializeStaticRoutes()
+	if !serverSettings.WebConfig.Application.DisableWebSockets {
+		ginServer.Router.GET("/ws", func(c *gin.Context) {
+			webSocketHandler(c.Writer, c.Request, c)
+		})
+	}
 
 	if extensions.DoesFileExist(serverSettings.APP_LOCATION+"/keys/cert.pem") && extensions.DoesFileExist(serverSettings.APP_LOCATION+"/keys/key.pem") {
 		go func() {
@@ -355,9 +380,11 @@ func Run() {
 		}()
 	}
 	log.Println("GoCore Application Started")
+	// RunServer Blocking forever!!
 	RunServer()
 }
 
+// RunServer Blocking forever with ListenAndServe!!
 func RunServer() {
 	port := strconv.Itoa(serverSettings.WebConfig.Application.HttpPort)
 	envPort := os.Getenv("PORT")
@@ -490,6 +517,7 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request, c *gin.Context) {
 	WebSocketConnections.Store(wsConn.Id, wsConn)
 }
 
+// CloseAllSockets closes all web sockets
 func CloseAllSockets() {
 
 	items := []*WebSocketConnection{}
@@ -547,21 +575,13 @@ func loadHTMLTemplates() {
 	}
 }
 
-func initializeStaticRoutes() {
-
-	// Swagger support has been deprecated
-	// ginServer.Router.GET("/swagger", func(c *gin.Context) {
-	// 	// c.Redirect(http.StatusMovedPermanently, "https://"+serverSettings.WebConfig.Application.Domain+":"+strconv.Itoa(serverSettings.WebConfig.Application.HttpsPort)+"/web/swagger/dist/index.html")
-
-	// 	ginServer.ReadHTMLFile(serverSettings.APP_LOCATION+"/web/swagger/dist/index.html", c)
-	// })
-}
-
+// RegisterWebSocketDataCallback registers a callback for a websocket data event
 func RegisterWebSocketDataCallback(callback WebSocketCallback) {
 	uuid, _ := extensions.NewUUID()
 	WebSocketCallbacks.Store(uuid, callback)
 }
 
+// ReplyToWebSocket sends a message to a websocket connection
 func ReplyToWebSocket(conn *WebSocketConnection, data []byte) {
 	defer func() {
 		if recover := recover(); recover != nil {
@@ -590,6 +610,7 @@ func ReplyToWebSocket(conn *WebSocketConnection, data []byte) {
 	}()
 }
 
+// ReplyToWebSocketJSON sends a JSON message to a websocket connection
 func ReplyToWebSocketJSON(conn *WebSocketConnection, v interface{}) {
 
 	defer func() {
@@ -624,6 +645,7 @@ func ReplyToWebSocketJSON(conn *WebSocketConnection, v interface{}) {
 
 }
 
+// ReplyToWebSocketPubSub sends a message to all websocket connections
 func ReplyToWebSocketPubSub(conn *WebSocketConnection, key string, v interface{}) {
 	defer func() {
 		if recover := recover(); recover != nil {
@@ -659,6 +681,7 @@ func ReplyToWebSocketPubSub(conn *WebSocketConnection, key string, v interface{}
 
 }
 
+// BroadcastWebSocketData sends a message to all websocket connections
 func BroadcastWebSocketData(data []byte) {
 
 	defer func() {
@@ -696,6 +719,7 @@ func BroadcastWebSocketData(data []byte) {
 	return
 }
 
+// BroadcastWebSocketJSON sends a JSON message to all websocket connections
 func BroadcastWebSocketJSON(v interface{}) {
 	defer func() {
 		if recover := recover(); recover != nil {
@@ -733,6 +757,7 @@ func BroadcastWebSocketJSON(v interface{}) {
 
 }
 
+// PublishWebSocketJSON sends a JSON message to all websocket connections
 func PublishWebSocketJSON(key string, v interface{}) {
 	defer func() {
 		if recover := recover(); recover != nil {
@@ -772,6 +797,7 @@ func PublishWebSocketJSON(key string, v interface{}) {
 	})
 }
 
+// SetWebSocketTimeout sets the timeout for the websocket connections and will remove ones who havent sent a message within that time frame
 func SetWebSocketTimeout(timeout int) {
 	defer func() {
 		if recover := recover(); recover != nil {
@@ -862,6 +888,7 @@ func deleteWebSocket(c *WebSocketConnection) {
 
 }
 
+// GetWebSocketMeta returns the meta data for a websocket connection
 func GetWebSocketMeta(id string) (info *WebSocketConnectionMeta, ok bool) {
 	result, ok := webSocketConnectionsMeta.Load(id)
 	if ok {
@@ -871,14 +898,17 @@ func GetWebSocketMeta(id string) (info *WebSocketConnectionMeta, ok bool) {
 	return
 }
 
+// SetWebSocketMeta sets the meta data for a websocket connection
 func SetWebSocketMeta(id string, info *WebSocketConnectionMeta) {
 	webSocketConnectionsMeta.Store(id, info)
 }
 
+// RemoveWebSocketMeta removes the meta data for a websocket connection
 func RemoveWebSocketMeta(id string) {
 	webSocketConnectionsMeta.Delete(id)
 }
 
+// GetAllWebSocketMeta returns all the meta data for all websocket connections
 func GetAllWebSocketMeta() (items *sync.Map) {
 	return &webSocketConnectionsMeta
 }
