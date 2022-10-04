@@ -1,3 +1,4 @@
+// Package extensions provides a set of functions to work with files, directories, and converting data types
 package extensions
 
 import (
@@ -20,6 +21,7 @@ import (
 	"github.com/forPelevin/gomoji"
 )
 
+// Version is a type that represents a version number.
 type Version struct {
 	Major          int
 	Minor          int
@@ -30,16 +32,19 @@ type Version struct {
 	Value          string
 }
 
+// FilePath is a type that represents a file path.
 type FilePath struct {
 	Name string `json:"Name"`
 	Path string `json:"Path"`
 	Type string `json:"Type"`
 }
 
+// ToString converts a FilePath to a string.
 func (obj *FilePath) ToString() (str string) {
 	return obj.Path + string(os.PathSeparator) + obj.Name + " | " + obj.Type
 }
 
+// GexToInt converts a string to an int.
 func HexToInt(hexStr string) int {
 	// remove 0x suffix if found in the input string
 	cleaned := strings.Replace(hexStr, "0x", "", -1)
@@ -49,6 +54,7 @@ func HexToInt(hexStr string) int {
 	return int(result)
 }
 
+// GetDecimalAndStringFromHex takes a hex string and returns the decimal value and the string value.
 func GetDecimalAndStringFromHex(twoDigitHexCode string) (decimalValue int, asciiString string, err error) {
 	decoded, err := hex.DecodeString(twoDigitHexCode)
 	if err != nil {
@@ -59,19 +65,17 @@ func GetDecimalAndStringFromHex(twoDigitHexCode string) (decimalValue int, ascii
 	return
 }
 
-/*
-* leftPad and rightPad just repoeat the padStr the indicated
-* number of times
-*
- */
+// LeftPad pads a string with a specified character to a specified length.
 func LeftPad(s string, padStr string, pLen int) string {
 	return strings.Repeat(padStr, pLen) + s
 }
+
+// RightPad pads a string with a specified character to a specified length.
 func RightPad(s string, padStr string, pLen int) string {
 	return s + strings.Repeat(padStr, pLen)
 }
 
-/* the Pad2Len functions are generally assumed to be padded with short sequences of strings
+/* RightPad2Len functions are generally assumed to be padded with short sequences of strings
 * in many cases with a single character sequence
 *
 * so we assume we can build the string out as if the char seq is 1 char and then
@@ -93,6 +97,7 @@ func RightPad2Len(s string, padStr string, overallLen int) string {
 	return retStr[:overallLen]
 }
 
+// LeftPad2Len functions are generally assumed to be padded with short sequences of strings
 func LeftPad2Len(s string, padStr string, overallLen int) string {
 	var padCountInt int
 	padCountInt = 1 + ((overallLen - len(padStr)) / len(padStr))
@@ -100,6 +105,7 @@ func LeftPad2Len(s string, padStr string, overallLen int) string {
 	return retStr[(len(retStr) - overallLen):]
 }
 
+// TrimSuffix removes a suffix from a string.
 func TrimSuffix(s, suffix string) string {
 	if strings.HasSuffix(s, suffix) {
 		s = s[:len(s)-len(suffix)]
@@ -107,6 +113,7 @@ func TrimSuffix(s, suffix string) string {
 	return s
 }
 
+// PrintKiloBytes prints a number of bytes in kilobytes as a string
 func PrintKiloBytes(bytes int64) string {
 
 	var kilobytes float64
@@ -115,6 +122,7 @@ func PrintKiloBytes(bytes int64) string {
 	return fmt.Sprint(FloatToString(kilobytes, 2), " kB")
 }
 
+// PrintMegaBytes prints a number of bytes in megabytes as a human readable string
 func PrintMegaBytes(bytes int64) string {
 
 	var kilobytes float64
@@ -126,6 +134,8 @@ func PrintMegaBytes(bytes int64) string {
 	return fmt.Sprint(FloatToString(megabytes, 2), " MB")
 }
 
+// IsPrintable checks if a string is printable and returns true or false.
+// If it is an emoji, it returns true even if non printables are also in the string
 func IsPrintable(s string) bool {
 	// if an emoji is in the string just return true.
 	if gomoji.ContainsEmoji(s) {
@@ -141,6 +151,7 @@ func IsPrintable(s string) bool {
 	return true
 }
 
+// PrintZettaBytes prints a number of bytes in zettabytes as a human readable string
 func PrintZettaBytes(bytes int64) string {
 
 	var kilobytes float64
@@ -167,15 +178,18 @@ func PrintZettaBytes(bytes int64) string {
 	return fmt.Sprint(FloatToString(zettabytes, 2), " ZB")
 }
 
+// FloatToString converts a float to a string
 func FloatToString(input_num float64, precision int) string {
 	// to convert a float number to a string
 	return strconv.FormatFloat(input_num, 'f', precision, 64)
 }
 
+// Round rounds a float to a specified number of decimal places
 func Round(x, unit float64) float64 {
 	return float64(int64(x/unit+0.5)) * unit
 }
 
+// StringToInteger converts a string to an integer
 func StringToInt(val string) int {
 
 	r, err := strconv.Atoi(val)
@@ -185,6 +199,7 @@ func StringToInt(val string) int {
 	return r
 }
 
+// StringToUInt16 converts a string to an uin16
 func StringToUInt16(val string) uint16 {
 
 	r, err := strconv.Atoi(val)
@@ -194,6 +209,7 @@ func StringToUInt16(val string) uint16 {
 	return uint16(r)
 }
 
+// StringToFloat converts a string to a float
 func StringToFloat(val string, precision int) (r float64) {
 	r, err := strconv.ParseFloat(val, precision)
 	if err != nil {
@@ -202,6 +218,7 @@ func StringToFloat(val string, precision int) (r float64) {
 	return r
 }
 
+// StringToUInt64 converts a string to an uin64
 func StringToUInt64(val string) uint64 {
 	i, err := strconv.ParseUint(val, 10, 64)
 	if err != nil {
@@ -210,6 +227,7 @@ func StringToUInt64(val string) uint64 {
 	return i
 }
 
+// StringToUInt8 converts a string to an uint8
 func StringToUInt8(val string) uint8 {
 	i, err := strconv.ParseUint(val, 10, 8)
 	if err != nil {
@@ -218,28 +236,34 @@ func StringToUInt8(val string) uint8 {
 	return uint8(i)
 }
 
+// IntToString converts an integer to a string
 func IntToString(val int) string {
 	return strconv.Itoa(val)
 }
 
+// IntToBool converts an integer to a bool
 func IntToBool(val int) bool {
 	return val != 0
 }
 
+// Int32ToString converts a 32 bit integer to a string
 func Int32ToString(val int32) string {
 	return strconv.Itoa(Int32ToInt(val))
 }
 
+// Int64ToString converts a 64 bit integer to a string
 func Int64ToString(val int64) string {
 	return strconv.FormatInt(val, 10)
 }
 
+// Int64ToInt32 converts a 64 bit integer to a 32 bit integer
 func Int64ToInt32(val int64) (ret int) {
 	tempLong := ((val >> 32) << 32) //shift it right then left 32 bits, which zeroes the lower half of the long
 	ret = (int)(val - tempLong)
 	return ret
 }
 
+// Int32ToInt converts a 32 bit integer to a 32 bit integer
 func Int32ToInt(val int32) (ret int) {
 	tempLong := ((val >> 32) << 32) //shift it right then left 32 bits, which zeroes the lower half of the long
 	ret = (int)(val - tempLong)
@@ -268,10 +292,12 @@ func DWordToInt(data []byte) (num int32) {
 	return
 }
 
+// BoolToString converts a bool to a string
 func BoolToString(val bool) string {
 	return strconv.FormatBool(val)
 }
 
+// StringToBool converts a string to a bool
 func StringToBool(val string) bool {
 	r, err := strconv.ParseBool(val)
 	if err != nil {
@@ -280,6 +306,7 @@ func StringToBool(val string) bool {
 	return r
 }
 
+// Init initilizes the version
 func (obj *Version) Init(value string) {
 	versionInfo := strings.Split(value, ".")
 
@@ -301,6 +328,7 @@ func (obj *Version) Init(value string) {
 	}
 }
 
+// GenPackageImport a utility for initilizing a go package file
 func GenPackageImport(name string, imports []string) string {
 
 	val := "package " + name + "\n\n"
@@ -316,6 +344,7 @@ func GenPackageImport(name string, imports []string) string {
 	return val
 }
 
+// MakeFirstLowerCase makes the first letter of a string lowercase
 func MakeFirstLowerCase(s string) string {
 
 	if len(s) < 2 {
@@ -330,6 +359,7 @@ func MakeFirstLowerCase(s string) string {
 	return string(bytes.Join([][]byte{lc, rest}, nil))
 }
 
+// ExtractArgsWithinBrackets extracts the arguments within brackets
 func ExtractArgsWithinBrackets(str string) (res []string) {
 
 	brackets := &unicode.RangeTable{
@@ -351,12 +381,13 @@ func ExtractArgsWithinBrackets(str string) (res []string) {
 	return
 }
 
+// Random returns a random number between min and max
 func Random(min, max int) int {
 	rand.Seed(time.Now().UTC().UnixNano())
 	return rand.Intn(max-min) + min
 }
 
-//Between will return substring between two strings
+// Between will return substring between two strings
 func Between(value string, a string, b string) string {
 	// Get substring between two strings.
 	posFirst := strings.Index(value, a)
@@ -374,7 +405,7 @@ func Between(value string, a string, b string) string {
 	return value[posFirstAdjusted:posLast]
 }
 
-//SyncMapAny will return true if there are any items in the sync.Map
+// SyncMapAny will return true if there are any items in the sync.Map
 func SyncMapAny(x *sync.Map) (ok bool) {
 	x.Range(func(key interface{}, value interface{}) bool {
 		ok = true
@@ -383,7 +414,7 @@ func SyncMapAny(x *sync.Map) (ok bool) {
 	return
 }
 
-//SyncMapLength will return true the length of items in the sync.Map
+// SyncMapLength will return true the length of items in the sync.Map
 func SyncMapLength(x *sync.Map) (length int) {
 	x.Range(func(key interface{}, value interface{}) bool {
 		length = length + 1
@@ -406,7 +437,7 @@ func NewUUID() (string, error) {
 	return fmt.Sprintf("%x-%x-%x-%x-%x", uuid[0:4], uuid[4:6], uuid[6:8], uuid[8:10], uuid[10:]), nil
 }
 
-//RandomString returns a random string of length
+// RandomString returns a random string of length
 func RandomString(strlen int) string {
 	rand.Seed(time.Now().UTC().UnixNano())
 	const chars = "abcdefghijklmnopqrstuvwxyz0123456789"
@@ -417,7 +448,7 @@ func RandomString(strlen int) string {
 	return string(result)
 }
 
-//BigEndianUInt16 will convert a uint16 to 2 bytes
+// BigEndianUInt16 will convert a uint16 to 2 bytes
 func BigEndianUInt16(value uint16) (value1 byte, value2 byte) {
 	inject := make([]byte, 2)
 	binary.BigEndian.PutUint16(inject, value)
@@ -426,7 +457,7 @@ func BigEndianUInt16(value uint16) (value1 byte, value2 byte) {
 	return
 }
 
-//BigEndianUInt32 will convert a uint32 to 4 bytes
+// BigEndianUInt32 will convert a uint32 to 4 bytes
 func BigEndianUInt32(value uint32) (value1 byte, value2 byte, value3 byte, value4 byte) {
 	inject := make([]byte, 4)
 	binary.BigEndian.PutUint32(inject, value)
@@ -437,13 +468,13 @@ func BigEndianUInt32(value uint32) (value1 byte, value2 byte, value3 byte, value
 	return
 }
 
-//IpAddressToUint32 will convert a string ip address to UInt32
+// IpAddressToUint32 will convert a string ip address to UInt32
 func IpAddressToUint32(ip string) (value uint32) {
 	binary.Read(bytes.NewBuffer(net.ParseIP(ip).To4()), binary.BigEndian, &value)
 	return
 }
 
-//GetUserAgentName will return the name of the user agent.
+// GetUserAgentName will return the name of the user agent.
 func GetUserAgentName(req *http.Request) (name string) {
 	ua := req.Header.Get("User-Agent")
 	if ua != "" {

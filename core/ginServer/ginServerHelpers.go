@@ -1,3 +1,4 @@
+// Package ginServer contains the gin server and ginServer helper functions
 package ginServer
 
 import (
@@ -15,20 +16,26 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// TImeFormat useful for formatting timestamps
 const TimeFormat = "Mon, 02 Jan 2006 15:04:05 GMT"
+
+// StatusNotModified returns a 304 HTTP status code.
 const StatusNotModified = 304 // RFC 7232, 4.1
 var unixEpochTime = time.Unix(0, 0)
 var mux sync.RWMutex
 
+// ErrorResonse is a struct that is used to return errors to the client.
 type ErrorResponse struct {
 	Message string `json:"message"`
 }
 
+// LocaleLanguage is a struct that is used to return the language and locale of the client.
 type LocaleLanguage struct {
 	Locale   string
 	Language string
 }
 
+// GetSessionKey returns a thread-safe value of the session key.
 func GetSessionKey(c *gin.Context, key string) (sessionKey string) {
 	//https://github.com/gin-gonic/gin/issues/700
 	// defer needed to catch session.Get concurrent map read write.
@@ -58,6 +65,7 @@ func GetSessionKey(c *gin.Context, key string) (sessionKey string) {
 	}
 }
 
+// SetSessionKey sets a thread-safe value of the session key.
 func SetSessionKey(c *gin.Context, key string, value string) {
 	mux.Lock()
 	defer mux.Unlock()
@@ -74,6 +82,7 @@ func SetSessionKey(c *gin.Context, key string, value string) {
 	session.Save()
 }
 
+// SaveSession saves the session of the client.
 func SaveSession(c *gin.Context) {
 	mux.Lock()
 	defer mux.Unlock()
@@ -88,6 +97,7 @@ func SaveSession(c *gin.Context) {
 	session.Save()
 }
 
+// ClearSession clears the session of the client.
 func ClearSession(c *gin.Context) {
 	mux.Lock()
 	defer mux.Unlock()
@@ -102,6 +112,7 @@ func ClearSession(c *gin.Context) {
 	session.Clear()
 }
 
+// GetLocaleLanguage returns the locale and language of the client.
 func GetLocaleLanguage(c *gin.Context) (ll LocaleLanguage) {
 	header := c.Request.Header.Get("Accept-Language")
 	allLanguages := strings.Split(header, ";")
@@ -120,12 +131,13 @@ func GetLocaleLanguage(c *gin.Context) (ll LocaleLanguage) {
 	return
 }
 
+// GetRequestBody returns the body of the request as a string.
 func GetRequestBody(c *gin.Context) ([]byte, error) {
 	body := c.Request.Body
 	return ioutil.ReadAll(body)
 }
 
-// Reads a file from the path parameter and returns to the client as text/html.
+// ReadHTMLFile reads a file from the path parameter and returns to the client as text/html.
 func ReadHTMLFile(path string, c *gin.Context) {
 	page, err := ioutil.ReadFile(path)
 	if err != nil {
@@ -139,6 +151,7 @@ func ReadHTMLFile(path string, c *gin.Context) {
 	c.String(http.StatusOK, pageHTML)
 }
 
+// ReadJSFile reads a file from the path parameter and returns to the client as text/javascript.
 func ReadJSFile(path string, c *gin.Context) {
 	page, err := ioutil.ReadFile(path)
 	if err != nil {
@@ -152,7 +165,7 @@ func ReadJSFile(path string, c *gin.Context) {
 	c.String(http.StatusOK, pageHTML)
 }
 
-//Reads a file and responds with a base64 encoded string.  Primarily used for jquery ajax response binary data blob encoding.
+// ReadFileBase64 reads a file and responds with a base64 encoded string.  Primarily used for jquery ajax response binary data blob encoding.
 func ReadFileBase64(path string, c *gin.Context) {
 	page, err := ioutil.ReadFile(path)
 	if err != nil {
@@ -165,13 +178,13 @@ func ReadFileBase64(path string, c *gin.Context) {
 	c.String(http.StatusOK, data)
 }
 
-// Takes a string and returns to the client as text/html.
+// RenderHTML takes a string and returns to the client as text/html.
 func RenderHTML(html string, c *gin.Context) {
 	c.Header("Content-Type", "text/html")
 	c.String(http.StatusOK, html)
 }
 
-// Reads a file from the path parameter and returns to the client application/json
+// ReadJSONFile reads a file from the path parameter and returns to the client application/json
 func ReadJSONFile(path string, c *gin.Context) {
 	js, err := ioutil.ReadFile(path)
 	if err != nil {
@@ -182,7 +195,7 @@ func ReadJSONFile(path string, c *gin.Context) {
 	c.Writer.Write(js)
 }
 
-// Returns to the client application/json format for the passed interface.
+// RespondJSON returns to the client application/json format for the passed interface.
 func RespondJSON(v interface{}, c *gin.Context) {
 
 	if v == nil {
@@ -192,7 +205,7 @@ func RespondJSON(v interface{}, c *gin.Context) {
 	c.JSON(http.StatusOK, v)
 }
 
-//  Returns an byte array comprised of a JSON formated object with the error message.
+// RespondError returns an byte array comprised of a JSON formated object with the error message.
 func RespondError(message string) []byte {
 	var msg ErrorResponse
 	msg.Message = message
@@ -200,6 +213,7 @@ func RespondError(message string) []byte {
 	return b
 }
 
+// ReadGzipJSFile reads a file from the path parameter and returns to the client as application/gzip.
 func ReadGzipJSFile(path string, c *gin.Context) {
 
 	c.Header("Content-Type", "application/javascript")
@@ -207,6 +221,7 @@ func ReadGzipJSFile(path string, c *gin.Context) {
 	c.File(path)
 }
 
+// RespondGzipJSFile returns a file to the client as application/gzip.
 func RespondGzipJSFile(data []byte, modTime time.Time, c *gin.Context) {
 	c.Header("Content-Type", "application/javascript")
 	c.Header("Content-Encoding", "gzip")
@@ -214,48 +229,56 @@ func RespondGzipJSFile(data []byte, modTime time.Time, c *gin.Context) {
 	c.Writer.Write(data)
 }
 
+// RespondJSFile returns a file to the client as application/javascript.
 func RespondJSFile(data []byte, modTime time.Time, c *gin.Context) {
 	c.Header("Content-Type", "application/javascript")
 	CheckLastModified(c.Writer, c.Request, modTime)
 	c.Writer.Write(data)
 }
 
+// ResponsdTtfFile returns a file to the client as application/x-font-ttf.
 func RespondTtfFile(data []byte, modTime time.Time, c *gin.Context) {
 	c.Header("Content-Type", "application/x-font-ttf")
 	CheckLastModified(c.Writer, c.Request, modTime)
 	c.Writer.Write(data)
 }
 
+// RespondOtfFile returns a file to the client as application/x-font-opentype.
 func RespondOtfFile(data []byte, modTime time.Time, c *gin.Context) {
 	c.Header("Content-Type", "application/x-font-otf")
 	CheckLastModified(c.Writer, c.Request, modTime)
 	c.Writer.Write(data)
 }
 
+// ResondWoffFile returns a file to the client as application/font-woff.
 func RespondWoffFile(data []byte, modTime time.Time, c *gin.Context) {
 	c.Header("Content-Type", "application/font-woff")
 	CheckLastModified(c.Writer, c.Request, modTime)
 	c.Writer.Write(data)
 }
 
+// ResondWoff2File returns a file to the client as application/font-woff2.
 func RespondWoff2File(data []byte, modTime time.Time, c *gin.Context) {
 	c.Header("Content-Type", "application/font-woff2")
 	CheckLastModified(c.Writer, c.Request, modTime)
 	c.Writer.Write(data)
 }
 
+// RespondEotFile returns a file to the client as application/vnd.ms-fontobject.
 func RespondEotFile(data []byte, modTime time.Time, c *gin.Context) {
 	c.Header("Content-Type", "application/vnd.ms-fontobject")
 	CheckLastModified(c.Writer, c.Request, modTime)
 	c.Writer.Write(data)
 }
 
+// ResondSvgFile returns a file to the client as image/svg+xml.
 func RespondSvgFile(data []byte, modTime time.Time, c *gin.Context) {
 	c.Header("Content-Type", "image/svg+xml")
 	CheckLastModified(c.Writer, c.Request, modTime)
 	c.Writer.Write(data)
 }
 
+// ReadGzipCSSFile reads a file from the path parameter and returns to the client as text/css.
 func ReadGzipCSSFile(path string, c *gin.Context) {
 
 	c.Header("Content-Type", "text/css")
@@ -264,6 +287,7 @@ func ReadGzipCSSFile(path string, c *gin.Context) {
 
 }
 
+// RespondGzipCSSFile returns a file to the client as text/css.
 func RespondGzipCSSFile(data []byte, modTime time.Time, c *gin.Context) {
 	c.Header("Content-Type", "text/css")
 	c.Header("Content-Encoding", "gzip")
@@ -271,23 +295,26 @@ func RespondGzipCSSFile(data []byte, modTime time.Time, c *gin.Context) {
 	c.Writer.Write(data)
 }
 
+// RespondCSSFile returns a file to the client as text/css.
 func RespondCSSFile(data []byte, modTime time.Time, c *gin.Context) {
 	c.Header("Content-Type", "text/css")
 	CheckLastModified(c.Writer, c.Request, modTime)
 	c.Writer.Write(data)
 }
 
+// ReadPngFile reads a file from the path parameter and returns to the client as image/png.
 func ReadPngFile(path string, c *gin.Context) {
 	c.Header("Content-Type", "image/png")
 	c.File(path)
 }
 
+// ReadJpgFile reads a file from the path parameter and returns to the client as image/jpeg.
 func ReadJpgFile(path string, c *gin.Context) {
 	c.Header("Content-Type", "image/jpeg")
 	c.File(path)
 }
 
-// modtime is the modification time of the resource to be served, or IsZero().
+// CheckLastModified modtime is the modification time of the resource to be served, or IsZero().
 // return value is whether this request is now complete.
 func CheckLastModified(w http.ResponseWriter, r *http.Request, modtime time.Time) bool {
 	if modtime.IsZero() || modtime.Equal(unixEpochTime) {

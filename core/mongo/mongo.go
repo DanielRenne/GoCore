@@ -1,3 +1,4 @@
+// Package mongo contains a helper function for ensuring mongo is up or down
 package mongo
 
 import (
@@ -10,13 +11,30 @@ import (
 	"github.com/DanielRenne/GoCore/core/dbServices"
 )
 
+// IsMongoAlive is a global atomic bool that can be used to check if mongo is alive or not.
 var IsMongoAlive atomicTypes.AtomicBool
+
+// MongoError is a global error that shows the last error that occurred with mongo.
 var MongoError error
 
 func init() {
 	IsMongoAlive.Set(true)
 }
 
+// InitializeDaemonChecker is a function that will check if mongo is up or down every 5 seconds and will invoke your callback function with the status of the connection after 10 seconds of tcp timeouts it will flag as false or every 5 seconds return true to you.
+// You have to manage state if it has changed
+// Something like
+/*
+mongo.InitializeDaemonChecker(mongoDaemonCallback)
+func mongoDaemonCallback(status bool) {
+	type response struct {
+		Status bool `json:"status"`
+	}
+	var json response
+	json.Status = status
+	PublishWebSocketJSON("Mongo", json)
+}
+*/
 func InitializeDaemonChecker(callback func(bool)) {
 	go func() {
 		defer func() {

@@ -1,3 +1,4 @@
+// Package appGen internal only to scaffold applications running GoCore
 package appGen
 
 import (
@@ -20,11 +21,13 @@ func cdGoPath() {
 	os.Chdir(os.Getenv("GOPATH"))
 }
 
+// GenerateApp internal only
 func GenerateApp() {
 	cdGoPath()
 	moveAppFiles()
 }
 
+// GenerateServerApp internal only
 func GenerateServerApp() {
 	moveServerOnlyAppFiles()
 }
@@ -54,17 +57,16 @@ func moveServerOnlyAppFiles() {
 		webConfig := `
 {
 	"application":{
-		"logGophers": false,
+		"logGophers": true,
+		"logGopherInterval": 15,
 		"domain": "0.0.0.0",
 		"serverFQDN": "0.0.0.0",
 		"httpPort": 80,
 		"httpsPort": 443,
 		"releaseMode":"development",
-		"webServiceOnly":false,
 		"versionNumeric": 1,
 		"versionDot": "0.0.1",
 		"productName": "` + mainAppName + `",
-		"customGinLogger": true,
 		"disableRootIndex": true,
 		"disableWebSockets": false,
 		"sessionKey":"` + mainAppName + `SessionKey",

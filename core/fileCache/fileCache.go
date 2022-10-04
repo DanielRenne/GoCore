@@ -1,5 +1,5 @@
-//  Package fileCache will provide simple file content caching tools for in-Memory access to files.
-//  It uses golang/groupcache to cache your data into memory on multiple HTTP Pool servers.
+// Package fileCache will provide simple file content caching tools for in-Memory access to files.
+// It uses golang/groupcache to cache your data into memory on multiple HTTP Pool servers.
 package fileCache
 
 import (
@@ -18,12 +18,19 @@ import (
 	"github.com/golang/groupcache"
 )
 
+// CACHE_STORAGE_PATH is the base GoCore path where all caches are stored
 var CACHE_STORAGE_PATH string
+
+// CACHE_JOBS is the directory where jobs are stored
 var CACHE_JOBS string
+
+// CACHE_BOOTSTRAP_STORAGE_PATH is the directory where bootstrap caches are stored
 var CACHE_BOOTSTRAP_STORAGE_PATH string
+
+// CACHE_MANIFEST_STORAGE_PATH is the directory where bootstrap caches are stored
 var CACHE_MANIFEST_STORAGE_PATH string
 
-// SetGoCoreStoragePath set a directory with a trailing slash of where you want goCore to set
+// SetGoCoreStoragePath set a directory with a trailing slash of where you want goCore to set and make directories for caching files needed to keep track of your application cron and bootstrap caches.
 func SetGoCoreStoragePath(directory string) {
 	CACHE_STORAGE_PATH = directory + "caches"
 	CACHE_JOBS = directory + "jobs"
@@ -49,12 +56,18 @@ type byteManifest struct {
 }
 
 var allGroupCacheDomains []string
-var Model model
-var Jobs job
-var ByteManifest byteManifest
 var peers *groupcache.HTTPPool
 var htmlFileCache *groupcache.Group
 var stringCache *groupcache.Group
+
+// Model is the in memory model for bootstrap caches
+var Model model
+
+// Jobs is the in memory model for jobs
+var Jobs job
+
+// ByteManifest is the in memory model for byte manifest caches
+var ByteManifest byteManifest
 
 // contains the temporary string cache used to cache large strings.
 var tempStringCacheSynced = struct {
@@ -74,7 +87,15 @@ func init() {
 	}
 }
 
-// Call Initialize in main before any calls to this package are performed.  serverSettings package must be initialized before fileCache.
+// Init will initilize a groupCache if you pass a non empty string and create necessary folders for internal file caching of GoCore
+func Init(groupCache string) {
+	if groupCache != "" {
+		InitializeGroupCache(groupCache)
+	}
+	Initialize()
+}
+
+// Initialize in main before any calls to this package are performed.  serverSettings package must be initialized before fileCache.
 // Developers can call SetGoCoreStoragePath() with a path of their choice for storage of where bootstrap caches and jobs files (for one time cron jobs are stored
 func Initialize() {
 	if !path.IsWindows && CACHE_STORAGE_PATH == "" {
@@ -84,11 +105,12 @@ func Initialize() {
 	}
 
 	if serverSettings.WebConfig.Application.Domain != "" {
-		initializeGroupCache(serverSettings.WebConfig.Application.Domain)
+		InitializeGroupCache(serverSettings.WebConfig.Application.Domain)
 	}
 	LoadJobsFile()
 }
 
+// WriteJobCacheFile is exported internally to share between GoCore packages and should not be called directly by you.
 func WriteJobCacheFile() (err error) {
 	strjson, err := json.Marshal(Jobs.Jobs)
 	if err != nil {
@@ -101,6 +123,7 @@ func WriteJobCacheFile() (err error) {
 	return nil
 }
 
+// LoadJobsFile is exported internally to share between GoCore packages and should not be called directly by you.
 func LoadJobsFile() (err error) {
 	fname := CACHE_JOBS + "/jobs.json"
 	if extensions.DoesFileExist(fname) {
@@ -134,6 +157,7 @@ func LoadJobsFile() (err error) {
 	return
 }
 
+// WriteBootstrapCacheFile is exported internally to share between GoCore packages and should not be called directly by you.
 func WriteBootStrapCacheFile(key string) (err error) {
 	Model.RLock()
 	caches, ok := Model.BootstrapCache[key]
@@ -151,6 +175,7 @@ func WriteBootStrapCacheFile(key string) (err error) {
 	return nil
 }
 
+// UpdateBootstrapMemoryCache is exported internally to share between GoCore packages and should not be called directly by you.
 func UpdateBootStrapMemoryCache(key string, value string) {
 	Model.RLock()
 	_, ok := Model.BootstrapCache[key]
@@ -169,6 +194,7 @@ func UpdateBootStrapMemoryCache(key string, value string) {
 	return
 }
 
+// DeleteBootstrapCache is exported internally to share between GoCore packages and should not be called directly by you.
 func DeleteBootStrapFileCache(key string) (err error) {
 	fname := CACHE_BOOTSTRAP_STORAGE_PATH + "/" + key + ".json"
 	if extensions.DoesFileExist(fname) {
@@ -180,6 +206,7 @@ func DeleteBootStrapFileCache(key string) (err error) {
 	return
 }
 
+// DeleteAllBootstrapFileCache is exported internally to share between GoCore packages and should not be called directly by you.
 func DeleteAllBootStrapFileCache() (err error) {
 	if extensions.DoesFileExist(CACHE_BOOTSTRAP_STORAGE_PATH) {
 		err = extensions.RemoveDirectory(CACHE_BOOTSTRAP_STORAGE_PATH)
@@ -200,6 +227,7 @@ func DeleteAllBootStrapFileCache() (err error) {
 	return
 }
 
+// LoadCachedBootStrapFileFromKeyIntoMemory is exported internally to share between GoCore packages and should not be called directly by you.
 func LoadCachedBootStrapFromKeyIntoMemory(key string) (err error) {
 	fname := CACHE_BOOTSTRAP_STORAGE_PATH + "/" + key + ".json"
 	if extensions.DoesFileExist(fname) {
@@ -235,6 +263,7 @@ func LoadCachedBootStrapFromKeyIntoMemory(key string) (err error) {
 	return
 }
 
+// DoesHashExistInCache is exported internally to share between GoCore packages and should not be called directly by you.
 func DoesHashExistInCache(key string, value string) (exists bool) {
 	Model.RLock()
 	caches, ok := Model.BootstrapCache[key]
@@ -246,6 +275,7 @@ func DoesHashExistInCache(key string, value string) (exists bool) {
 	}
 }
 
+// WriteManifestCacheFile is exported internally to share between GoCore packages and should not be called directly by you.
 func WriteManifestCacheFile(key string) (err error) {
 	ByteManifest.RLock()
 	caches, ok := ByteManifest.Cache[key]
@@ -263,6 +293,7 @@ func WriteManifestCacheFile(key string) (err error) {
 	return nil
 }
 
+// UpdateManifestMemoryCache is exported internally to share between GoCore packages and should not be called directly by you.
 func UpdateManifestMemoryCache(key string, value string, byteSize int) {
 	ByteManifest.Lock()
 	_, ok := ByteManifest.Cache[key]
@@ -276,6 +307,7 @@ func UpdateManifestMemoryCache(key string, value string, byteSize int) {
 	return
 }
 
+// DeleteManifestFileCache is exported internally to share between GoCore packages and should not be called directly by you.
 func DeleteManifestFileCache(key string) (err error) {
 	fname := CACHE_MANIFEST_STORAGE_PATH + "/" + key + ".json"
 	if extensions.DoesFileExist(fname) {
@@ -287,6 +319,7 @@ func DeleteManifestFileCache(key string) (err error) {
 	return
 }
 
+// LoadCachedManifestFileFromKeyIntoMemory is exported internally to share between GoCore packages and should not be called directly by you.
 func LoadCachedManifestFromKeyIntoMemory(key string) (err error) {
 	fname := CACHE_MANIFEST_STORAGE_PATH + "/" + key + ".json"
 	ByteManifest.RLock()
@@ -313,6 +346,7 @@ func LoadCachedManifestFromKeyIntoMemory(key string) (err error) {
 	return
 }
 
+// DoesHashExistInManifestCache is exported internally to share between GoCore packages and should not be called directly by you.
 func DoesHashExistInManifestCache(key string, value string) (exists bool) {
 	ByteManifest.RLock()
 	_, ok := ByteManifest.Cache[key]
@@ -330,6 +364,7 @@ func DoesHashExistInManifestCache(key string, value string) (exists bool) {
 	}
 }
 
+// DeleteAllManifestFileCache is exported internally to share between GoCore packages and should not be called directly by you.
 func DeleteAllManifestFileCache() (err error) {
 	if extensions.DoesFileExist(CACHE_MANIFEST_STORAGE_PATH) {
 		err = extensions.RemoveDirectory(CACHE_MANIFEST_STORAGE_PATH)
@@ -342,7 +377,7 @@ func DeleteAllManifestFileCache() (err error) {
 	return
 }
 
-// Returns the html by path (key) from group cache
+// GetHTMLFile returns the html by path (key) from group cache
 func GetHTMLFile(path string) (string, error) {
 	var ctx context.Context
 	var data []byte
@@ -354,7 +389,7 @@ func GetHTMLFile(path string) (string, error) {
 	return string(data[:]), err
 }
 
-//Returns binary data by path(key) from group cache
+// GetFile returns binary data by path(key) from group cache
 func GetFile(path string) ([]byte, error) {
 	var ctx context.Context
 	var data []byte
@@ -366,7 +401,7 @@ func GetFile(path string) ([]byte, error) {
 	return data, err
 }
 
-// Gets a value by Key from group cache
+// GetString gets a value by Key from group cache
 func GetString(key string) (string, error) {
 	var ctx context.Context
 	var data []byte
@@ -378,7 +413,7 @@ func GetString(key string) (string, error) {
 	return string(data[:]), err
 }
 
-// Sets a Key value pair in group cache
+// SetString sets a Key value pair in group cache
 func SetString(key string, value string) error {
 
 	var ctx context.Context
@@ -387,13 +422,13 @@ func SetString(key string, value string) error {
 	return stringCache.Get(ctx, key, groupcache.AllocatingByteSliceSink(&data))
 }
 
-// Will update the group cache http pool.  Use for dynamic systems that update at runtime.
+// SetGroupCache will update the group cache http pool.  Use for dynamic systems that update at runtime.
 func SetGroupCache(servers []string) {
 	peers.Set(servers...)
 }
 
-// Creates the Peers for group cache and creates caches for multiple types.
-func initializeGroupCache(domain string) {
+// InitializeGroupCache creates the Peers for group cache and creates caches for multiple types.
+func InitializeGroupCache(domain string) {
 
 	//For now use the app domain, later we will read from a list of domains.
 	if !utils.InArray(domain, allGroupCacheDomains) {

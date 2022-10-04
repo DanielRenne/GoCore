@@ -1,3 +1,4 @@
+// Package zip provides support for compressing and decompressing zip files.
 package zip
 
 import (
@@ -9,6 +10,7 @@ import (
 	"strings"
 )
 
+// Unzip will decompress a zip archive, moving all files and folders.  You can exclude files by passing in a list of file extensions to exclude.
 func Unzip(archive, target string, excludedFiles []string) error {
 	reader, err := zip.OpenReader(archive)
 	if err != nil {
@@ -72,6 +74,7 @@ func Unzip(archive, target string, excludedFiles []string) error {
 	return nil
 }
 
+// ZipIt will create a new zip archive file based on a source folder and target output file
 func Zipit(source, target string) error {
 	zipfile, err := os.Create(target)
 	if err != nil {

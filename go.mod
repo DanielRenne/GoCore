@@ -35,5 +35,6 @@ require (
 	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/oleiade/reflections v0.0.0-20160817071559-0e86b3c98b2f // indirect
 	github.com/utrack/gin-csrf v0.0.0-20150831070702-63c0ef5eca6c
+	golang.org/x/tools v0.1.12 // indirect
 	gopkg.in/go-playground/webhooks.v5 v5.1.0
 )

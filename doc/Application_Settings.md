@@ -1,59 +1,6 @@
 # GoCore Application Settings
 
-## buildCore (regenerating your models and initializing webConfig keys and missing db folders)
-
-Create a build binary (preferably named yourAppNameModelBuild.go in your base application folder)
-
-The purpose of this binary is that anytime your schema JSON files have changed to regerate the model structs and functions.  So once you create the file, go install it and run it anytime your models change:
-
-	package main
-
-	import (
-		"github.com/DanielRenne/GoCore/buildCore"
-	)
-	
-	func main() {
-		buildCore.Init()
-	}
-  
-Then run `go mod tidy` which will download buildCore package
-
-Then run `go run yourBuildFile.go $(pwd)`
-
-Follow the steps outlined and parameters to generate your backend only goCore application
-
-Then run `go get -d ./...` to download all the dependencies of your main.go
-
-If you look at the output it will show you your command to go run like: `go run main.go $(pwd)`
-
-When you build your main.go you dont have to pass the `pwd` as the first parameter.  It's only needed in go run due to temporary compile directories and needing to know where your webConfig and referenced files are located.
-
-
-## app package
-
-The GoCore/core/app package is what runs your application.  You must first Init() it with the root path of your application.  Then call the Run() method which will block on the HTTP server initialization.
-
-Please note, that if you use go run, you must call `go run main.go $(pwd)` because GoCore needs to know the directory of your project to read the webConfig.json file and associated paths for things like models, keys, db/bootstrap etc.  You can also call app.InitCustomWebConfig() and pass a custom file name for webConfig.json based on your own logic.
-	
-	package main
-	
-	import (
-		"github.com/DanielRenne/GoCore/core/app"
-	)
-	
-	func main() {
-		//Run First.
-		app.Init()
-	
-		//Add your Application Code here.
-	
-		//Run Last.
-		app.Run()
-	}
-
-# App Settings
-
-GoCore reads a file located in the root directory of your package called webConfig.json  If one does not exist `buildCore` will auto generate one for your package with default settings.
+GoCore reads a file located in the root directory of your package called webConfig.json If one does not exist `buildCore` will auto generate one for your package with default settings.
 
 ## WebConfig.json
 
@@ -61,42 +8,42 @@ There are two root objects to be configured:
 
 ### application
 
-
-
-{ 
-	"application":{
-		"logGophers": false,
-		"domain": "0.0.0.0",
-		"serverFQDN": "0.0.0.0",
-		"httpPort": 8080,
-		"httpsPort": 443,
-		"releaseMode":"development",
-		"webServiceOnly":false,
-		"versionNumeric": 1,
-		"versionDot": "0.0.1",
-		"productName": "goCoreProductNameMainProduct",
-		"customGinLogger": true,
-		"disableRootIndex": true,
-		"sessionKey":"goCoreSessionKey",
-		"sessionName":"goCoreProductName",
-		"sessionExpirationDays":3650,
-		"sessionSecureCookie":false,
-		"csrfSecret":"goCoreCsrfSecret",
-		"bootstrapData":true, 
-		"htmlTemplates":{
-			"enabled":false,
-			"directory":"templates",
-			"directoryLevels": 1
-		}
-	},
-	"dbConnections":[
-		{
-			"driver" : "mongoDB",
-			"connectionString": "mongodb://127.0.0.1:27017/goCoreProductName",
-			"database": "goCoreProductName"
-		}
-	]
+```json
+{
+  "application": {
+    "logGophers": true,
+    "logGopherInterval": 15,
+    "domain": "0.0.0.0",
+    "serverFQDN": "0.0.0.0",
+    "httpPort": 80,
+    "httpsPort": 443,
+    "releaseMode": "development",
+    "webServiceOnly": false,
+    "versionNumeric": 1,
+    "versionDot": "0.0.1",
+    "productName": "goCoreProductNameMainProduct",
+    "disableRootIndex": true,
+    "sessionKey": "goCoreSessionKey",
+    "sessionName": "goCoreProductName",
+    "sessionExpirationDays": 3650,
+    "sessionSecureCookie": false,
+    "csrfSecret": "goCoreCsrfSecret",
+    "bootstrapData": true,
+    "htmlTemplates": {
+      "enabled": false,
+      "directory": "templates",
+      "directoryLevels": 1
+    }
+  },
+  "dbConnections": [
+    {
+      "driver": "mongoDB",
+      "connectionString": "mongodb://127.0.0.1:27017/goCoreProductName",
+      "database": "goCoreProductName"
+    }
+  ]
 }
+```
 
 At the root of application there are the following fields:
 
@@ -110,23 +57,19 @@ Currently only used for bootstrap purposes to compare domainName where you want 
 
 #### logGophers
 
-Instead of calling go func on anonymous functions.  Use logger.GoRoutineLogger() and pass the func with a description.  Then setup logGophers to true in your web config to log the time in which a goroutine starts and potentially exits.
+Instead of calling go func on anonymous functions. Use logger.GoRoutineLogger() and pass the func with a description. Then setup logGophers to true in your web config to log the time in which a goroutine starts and potentially exits.
 
 #### releaseMode
 
-Tells the application to debug and run GIN http routing into release mode.  "release" will enable release.  An empty string will place the application in debug mode.
+Tells the application to debug and run GIN http routing into release mode. "release" will enable release. An empty string will place the application in debug mode.
 
 #### webServiceOnly
 
-Tells the application only route web service paths.  NO static file routing will be enabled when set to true.
-
-#### customGinLogger
-
-If you plan to write and .Use a custom gin logger in your AppIndex, set to true.  Otherwise the default of false will use the default logger and recovery handler.
+Tells the application only route web service paths. NO static file routing will be enabled when set to true.
 
 #### productName
 
-A short name (usually not human with spaces).  Can be used to control which bootstrap information to seed based on the webConfig.json
+A short name (usually not human with spaces). Can be used to control which bootstrap information to seed based on the webConfig.json
 
 #### versionNumeric
 
@@ -148,39 +91,39 @@ Useful to show the users a dot-based version
 
 #### htmlTemplates
 
-Tells the application to use HTML templates that conform to the GIN Engine.  See [HTML Rendering in GIN](https://github.com/gin-gonic/gin#html-rendering]).  See [HTML Templates](https://github.com/DanielRenne/GoCore/blob/master/doc/HTML_Templates.md) for more details and examples.
+Tells the application to use HTML templates that conform to the GIN Engine. See [HTML Rendering in GIN](https://github.com/gin-gonic/gin#html-rendering]). See [HTML Templates](https://github.com/DanielRenne/GoCore/blob/master/doc/HTML_Templates.md) for more details and examples.
 
 #### htmlTemplates
 
-Tells the application to use HTML templates that conform to the GIN Engine.  See [HTML Rendering in GIN](https://github.com/gin-gonic/gin#html-rendering]).  See [HTML Templates](https://github.com/DanielRenne/GoCore/blob/master/doc/HTML_Templates.md) for more details and examples.
-
+Tells the application to use HTML templates that conform to the GIN Engine. See [HTML Rendering in GIN](https://github.com/gin-gonic/gin#html-rendering]). See [HTML Templates](https://github.com/DanielRenne/GoCore/blob/master/doc/HTML_Templates.md) for more details and examples.
 
 ### dbConnections
 
-Provides an array of database connections.  Currently GoCore only supports a single database connection.  Future releases will allow for multiple connections and types.
+Provides an array of database connections. Currently GoCore only supports a single database connection. Future releases will allow for multiple connections and types.
 
-	"dbConnections":[
-		{
-			"driver" : "boltDB",
-			"connectionString" : "db/helloWorld.db"
-		}
-	]
+    "dbConnections":[
+    	{
+    		"driver" : "boltDB",
+    		"connectionString" : "db/helloWorld.db"
+    	}
+    ]
+
 ### Database Connection Examples
 
 ### Bolt DB
 
 A NOSQL GOLang native database that runs within your application
 
-		{
-			"driver" : "boltDB",
-			"connectionString" : "db/helloWorld.db"
-		}
+    	{
+    		"driver" : "boltDB",
+    		"connectionString" : "db/helloWorld.db"
+    	}
 
 ### Mongo DB
 
 A NOSQL database that runs outside your application
 
-		{
-			"driver" : "mongoDB",
-			"connectionString" : "mongodb://myuser:mypass@localhost:40001,otherhost:40001/mydb"
-		}
+    	{
+    		"driver" : "mongoDB",
+    		"connectionString" : "mongodb://myuser:mypass@localhost:40001,otherhost:40001/mydb"
+    	}

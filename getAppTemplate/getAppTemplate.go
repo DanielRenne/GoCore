@@ -1,3 +1,4 @@
+// Package main - used to install a process that will download the full GoCore App Template for front-end and back-end examples
 package main
 
 import (
