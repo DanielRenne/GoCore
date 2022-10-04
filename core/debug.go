@@ -1,4 +1,5 @@
-// Package core contains some debugging/dumping variable functions
+// Package core is the core package of GoCore.
+// Also contains some debugging/dumping variable functions
 package core
 
 import (
