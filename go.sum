@@ -66,8 +66,8 @@ github.com/davidrenne/heredoc v0.0.0-20161006151009-80dc836e596c h1:QhLG0pk12HPQ
 github.com/davidrenne/heredoc v0.0.0-20161006151009-80dc836e596c/go.mod h1:g2DVQ2XYqra4/8ioC/Qw7Y7eqwcSMo1X1bmYt+AFklw=
 github.com/davidrenne/professor v0.0.0-20180814210453-cc6399dacc55 h1:jpjXKPwamtTIaggnybPdGYWJUAKtZaqth/AIEJnwVYg=
 github.com/davidrenne/professor v0.0.0-20180814210453-cc6399dacc55/go.mod h1:EhGeYpPVXtjBYAdAVlC4zH+6jqGV0bj3KpVfYgSzFzQ=
-github.com/davidrenne/reflections v0.0.0-20161019174303-010f7c1fcf36 h1:c1ui3LMYPXl2vGXZKWamUeBQMC10Q3YHHIwvlNlcE6E=
-github.com/davidrenne/reflections v0.0.0-20161019174303-010f7c1fcf36/go.mod h1:S5gF7nIawJ1WKLi5m01QFu0QT+aGhYolMhSeSnYbwms=
+github.com/davidrenne/reflections v1.0.0 h1:Shy1zyc/oNZQdE6w/lCFstglYWReGBGP5P502xsqkSI=
+github.com/davidrenne/reflections v1.0.0/go.mod h1:S5gF7nIawJ1WKLi5m01QFu0QT+aGhYolMhSeSnYbwms=
 github.com/dchest/uniuri v0.0.0-20160212164326-8902c56451e9 h1:74lLNRzvsdIlkTgfDSMuaPjBr4cf6k7pwQQANm/yLKU=
 github.com/dchest/uniuri v0.0.0-20160212164326-8902c56451e9/go.mod h1:GgB8SF9nRG+GqaDtLcwJZsQFhcogVCJ79j4EdT0c2V4=
 github.com/fatih/camelcase v1.0.0 h1:hxNvNX/xYBp0ovncs8WyWZrOrpBNub/JfaMvbURyft8=

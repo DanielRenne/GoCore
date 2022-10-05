@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221005154118-077b76f14268
 	github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221005154118-077b76f14268
-	github.com/davidrenne/reflections v0.0.0-20180324022930-e166de9814da
+	github.com/davidrenne/reflections v1.0.0
 	github.com/go-errors/errors v1.4.2
 )
 
