@@ -1,5 +1,11 @@
 github.com/DanielRenne/GoCore/core/atomicTypes v0.0.0-20221005154118-077b76f14268 h1:6R+PKAT23/GNJgK9IK6TMOZ0Bp81nciuX8+PHAz4XKs=
 github.com/DanielRenne/GoCore/core/atomicTypes v0.0.0-20221005154118-077b76f14268/go.mod h1:QyDH9vWW1+e7fbDWpTu/WPmbdKDr8z57nhTb/8tdmDg=
+github.com/DanielRenne/GoCore/core/dbServices/bolt/stubs v0.0.0-20221005165220-d79b80c17bea h1:qhr5YvSLZRXyDFufLbYJ6ipsml3NEW0omrca4bPRojQ=
+github.com/DanielRenne/GoCore/core/dbServices/bolt/stubs v0.0.0-20221005165220-d79b80c17bea/go.mod h1:YvuKqN82jPAThJObtfZLpt5h/aFIJKZXVNmHgfp7ntc=
+github.com/DanielRenne/GoCore/core/dbServices/common/stubs v0.0.0-20221005165220-d79b80c17bea h1:g6cINF7+inihBBQIrsAPNrwTtfTEis8w4zFazJoJm5s=
+github.com/DanielRenne/GoCore/core/dbServices/common/stubs v0.0.0-20221005165220-d79b80c17bea/go.mod h1:pI9sj+LTUOqignaRjepdwwOeF/NfrLBulMGRqOBvLu4=
+github.com/DanielRenne/GoCore/core/dbServices/mongo/stubs v0.0.0-20221005165220-d79b80c17bea h1:LboZFfwZSQ4wJzC7GMaECPgeV9M9waWBIyFl29Ev8MQ=
+github.com/DanielRenne/GoCore/core/dbServices/mongo/stubs v0.0.0-20221005165220-d79b80c17bea/go.mod h1:6oGsmEiE8gompFm8260nWpIKORD6kOD5tespyGzW99k=
 github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221005154932-80ed3782034d h1:1FEVD7dLMhD8IqmG4LEZWmCQnfZS/sTvDE/tsm8UScc=
 github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221005154932-80ed3782034d/go.mod h1:98nXCbxueotrBzTZ3xJ61NxBJgeh9ZduFMV0qqZoMCY=
 github.com/DanielRenne/GoCore/core/path v0.0.0-20221005154932-80ed3782034d h1:qjOdxL8PUf3b7HPtZFVPfEfSZIzMEWjHguvXvju9XEY=

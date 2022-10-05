@@ -4,6 +4,9 @@ go 1.19
 
 require (
 	github.com/DanielRenne/GoCore/core/atomicTypes v0.0.0-20221005154118-077b76f14268
+	github.com/DanielRenne/GoCore/core/dbServices/bolt/stubs v0.0.0-20221005165220-d79b80c17bea
+	github.com/DanielRenne/GoCore/core/dbServices/common/stubs v0.0.0-20221005165220-d79b80c17bea
+	github.com/DanielRenne/GoCore/core/dbServices/mongo/stubs v0.0.0-20221005165220-d79b80c17bea
 	github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221005154932-80ed3782034d
 	github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221005154932-80ed3782034d
 	github.com/asdine/storm v2.1.2+incompatible
