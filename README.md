@@ -7,8 +7,8 @@ A Golang solution of tools for building a full stack web application.
 Below are some targeted goals:
 
 - Webserver Goals
-  - Http & Https & HTTP 2.0 with Golang 1.9 and [gin-gonic/gin](https://github.com/gin-gonic/gin). [See GoCore/app documentation](https://pkg.go.dev/github.com/DanielRenne/GoCore@v1.5.1/core/app))
-    - Basic [configuration helpers with a gin-gonic server](https://pkg.go.dev/github.com/DanielRenne/GoCore@v1.5.1/core/ginServer/#example_ConfigureGin)
+  - Http & Https & HTTP 2.0 with Golang 1.9 and [gin-gonic/gin](https://github.com/gin-gonic/gin). [See GoCore/app documentation](https://pkg.go.dev/github.com/DanielRenne/GoCore@v1.5.2/core/app))
+    - Basic [configuration helpers with a gin-gonic server](https://pkg.go.dev/github.com/DanielRenne/GoCore@v1.5.2/core/ginServer/#example_ConfigureGin)
     - Exposing [the gin-gonic Router engine](https://github.com/DanielRenne/GoCore/blob/master/doc/Basic_GinRouter.md) to your application for custom routes.
   - Setting up [dynamic routes through controller registration APIs (in the app/api package)](https://github.com/DanielRenne/GoCore/blob/master/doc/Controller_Registration_With_Api.md) and reflection to invoke your methods with interfaces
   - Websocket WSS and WS support through [github.com/gorilla/websocket](github.com/gorilla/websocket)
@@ -32,22 +32,22 @@ Below are some targeted goals:
 ---
 
 - General application toolbox and file utilities
-  - Some basic crypto functions in the [github.com/DanielRenne/core/crypto](https://pkg.go.dev/github.com/DanielRenne/GoCore@v1.5.1/core/crypto) package
-  - Utility functions for versioning, hexadecimals, strings, human directory sizes, printable ascii/emojis, data type conversions inside of [github.com/DanielRenne/GoCore/core/extensions](https://pkg.go.dev/github.com/DanielRenne/GoCore@v1.5.1/core/extensions)
-  - Basic path helpers in [github.com/DanielRenne/GoCore/core/path](https://pkg.go.dev/github.com/DanielRenne/GoCore@v1.5.1/core/path)
-  - Utility functions for managing files and directories for getting all files in directories, copying and removing directories, reading files and also parsing interfaces into json, unGizipping files, and Untarring and Taring files natively inside of go with [github.com/DanielRenne/core/extensions/](https://pkg.go.dev/github.com/DanielRenne/GoCore@v1.5.1/core/extensions) `fileExtensions.go` and `unix.go`
-  - A simple logger with logging with colors, [goRoutine logging](https://pkg.go.dev/github.com/DanielRenne/GoCore@v1.5.1/core/logger#example_GoRoutineLogger), [tailing files](https://pkg.go.dev/github.com/DanielRenne/GoCore@v1.5.1/core/logger#Tail), and [measuring time of execution](https://pkg.go.dev/github.com/DanielRenne/GoCore@v1.5.1/core/logger#example_TimeTrack) in [github.com/DanielRenne/core/logger](https://pkg.go.dev/github.com/DanielRenne/GoCore@v1.5.1/core/logger) package
-  - A ["core" package](https://pkg.go.dev/github.com/DanielRenne/GoCore@v1.5.1/core) which currently has some debug Dump tools for dumping structs and variables to the console in a readable format
+  - Some basic crypto functions in the [github.com/DanielRenne/core/crypto](https://pkg.go.dev/github.com/DanielRenne/GoCore@v1.5.2/core/crypto) package
+  - Utility functions for versioning, hexadecimals, strings, human directory sizes, printable ascii/emojis, data type conversions inside of [github.com/DanielRenne/GoCore/core/extensions](https://pkg.go.dev/github.com/DanielRenne/GoCore@v1.5.2/core/extensions)
+  - Basic path helpers in [github.com/DanielRenne/GoCore/core/path](https://pkg.go.dev/github.com/DanielRenne/GoCore@v1.5.2/core/path)
+  - Utility functions for managing files and directories for getting all files in directories, copying and removing directories, reading files and also parsing interfaces into json, unGizipping files, and Untarring and Taring files natively inside of go with [github.com/DanielRenne/core/extensions/](https://pkg.go.dev/github.com/DanielRenne/GoCore@v1.5.2/core/extensions) `fileExtensions.go` and `unix.go`
+  - A simple logger with logging with colors, [goRoutine logging](https://pkg.go.dev/github.com/DanielRenne/GoCore@v1.5.2/core/logger#example_GoRoutineLogger), [tailing files](https://pkg.go.dev/github.com/DanielRenne/GoCore@v1.5.2/core/logger#Tail), and [measuring time of execution](https://pkg.go.dev/github.com/DanielRenne/GoCore@v1.5.2/core/logger#example_TimeTrack) in [github.com/DanielRenne/core/logger](https://pkg.go.dev/github.com/DanielRenne/GoCore@v1.5.2/core/logger) package
+  - A ["core" package](https://pkg.go.dev/github.com/DanielRenne/GoCore@v1.5.2/core) which currently has some debug Dump tools for dumping structs and variables to the console in a readable format
 
 ---
 
 - Channel management queues and pubsub functions
-  - A [simple channel management queue system](https://pkg.go.dev/github.com/DanielRenne/GoCore@v1.5.1/core/pubsub#example_Signal) for managing goRoutines and channels in [github.com/DanielRenne/GoCore/core/channels](https://pkg.go.dev/github.com/DanielRenne/GoCore@v1.5.1/core/channels) package
-  - pubsub package for [publishing to subscribers](https://pkg.go.dev/github.com/DanielRenne/GoCore@v1.5.1/core/pubsub#example_Publish) in [github.com/DanielRenne/GoCore/core/pubsub](https://pkg.go.dev/github.com/DanielRenne/GoCore@v1.5.1/core/pubsub) package
+  - A [simple channel management queue system](https://pkg.go.dev/github.com/DanielRenne/GoCore@v1.5.2/core/pubsub#example_Signal) for managing goRoutines and channels in [github.com/DanielRenne/GoCore/core/channels](https://pkg.go.dev/github.com/DanielRenne/GoCore@v1.5.2/core/channels) package
+  - pubsub package for [publishing to subscribers](https://pkg.go.dev/github.com/DanielRenne/GoCore@v1.5.2/core/pubsub#example_Publish) in [github.com/DanielRenne/GoCore/core/pubsub](https://pkg.go.dev/github.com/DanielRenne/GoCore@v1.5.2/core/pubsub) package
 
 ---
 
-- Atomic file locking functions (on many common types) for file system operations on thread safe files in [github.com/DanielRenne/GoCore/core/atomicTypes](https://pkg.go.dev/github.com/DanielRenne/GoCore@v1.5.1/core/atomicTypes) package
+- Atomic file locking functions (on many common types) for file system operations on thread safe files in [github.com/DanielRenne/GoCore/core/atomicTypes](https://pkg.go.dev/github.com/DanielRenne/GoCore@v1.5.2/core/atomicTypes) package
   - Adds a Get() and Set() method with a mutex lock to the following types:
     - AtomicString
     - AtomicUInt16
