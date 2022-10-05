@@ -246,7 +246,9 @@ func (self *core_debug) dumpBase(values ...interface{}) (output string) {
 			isAllJSON := true
 			var kind string
 			kind = strings.TrimSpace(fmt.Sprintf("%T", value))
-			if !IsZeroOfUnderlyingType(value) {
+			var pieces = strings.Split(kind, " ")
+			if pieces[0] == "struct" || strings.Index(pieces[0], "model.") != -1 || strings.Index(pieces[0], "viewModel.") != -1 {
+				// if !IsZeroOfUnderlyingType(value) {
 				kind = reflections.ReflectKind(value)
 				structKeys, err = reflections.FieldsDeep(value)
 				if err == nil {
