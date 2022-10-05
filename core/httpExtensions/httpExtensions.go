@@ -1,3 +1,4 @@
+// Package httpExtensions provides a set of extensions for HTTP utilities
 package httpExtensions
 
 import (

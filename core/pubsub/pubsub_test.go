@@ -38,25 +38,5 @@ func ExamplePublish() {
 
 	!!!!!!!!!!!!! ENDDEBUG 2022-10-03 21:25:35.506013!!!!!!!!!!!!!
 	2022/10/03 21:25:35 Sleeping for 2 seconds to allow the pubsub to run before it exits the program
-	!!!!!!!!!!!!! DEBUG 2022-10-03 21:25:35.509669!!!!!!!!!!!!!
-
-
-	#### string                                  [len:118]####
-	Dumping the data emojis wont work on windows because windows cmd line sucks, but on linux or mac it will kiss you 💋
-	#### string                                  [len:4]####
-	test
-	#### main.TestPublish                        ####
-	{DeviceID:123 Value:true}
-
-	!!!!!!!!!!!!! ENDDEBUG 2022-10-03 21:25:35.509669!!!!!!!!!!!!!
-	!!!!!!!!!!!!! DEBUG 2022-10-03 21:25:35.512750!!!!!!!!!!!!!
-
-
-	#### string                                  [len:50]####
-	oh cool byte array dumps when non printables exist
-	#### string                                  [len:14]####
-	00000000  00 20 68 65 6c 6c 6f 20  6e 75 6c 6c 73 21        |. hello nulls!|
-
-	!!!!!!!!!!!!! ENDDEBUG 2022-10-03 21:25:35.512750!!!!!!!!!!!!!
 	*/
 }

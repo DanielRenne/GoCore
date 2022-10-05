@@ -7,13 +7,6 @@ import (
 )
 
 func ExampleSetString() {
-	/*
-		import (
-			"log"
-
-			"github.com/DanielRenne/GoCore/core/fileCache"
-		)
-	*/
 	fileCache.Init("127.0.0.1")
 	fileCache.SetString("/somePath", "test")
 

@@ -59,7 +59,7 @@ func init() {
 	RunningGophers = utils.Array()
 	GopherTimeRunning = make(map[string]time.Time, 0)
 	go func() {
-		time.Sleep(time.Second * 15)
+		time.Sleep(time.Second * 10)
 		for {
 			serverSettings.WebConfigMutex.RLock()
 			if serverSettings.WebConfig.Application.LogGophers {
@@ -72,14 +72,14 @@ func init() {
 	}()
 }
 
-//Log is a wrapper for the standard log package.  Pass in unlimited number of parameters.
+// Log is a wrapper for the standard log package.  Pass in unlimited number of parameters.
 func Log(dataValues ...interface{}) {
 	for _, value := range dataValues {
 		Message(fmt.Sprintf("%+v", value), CYAN)
 	}
 }
 
-//Message takes in a string and a color and prints it to the console.
+// Message takes in a string and a color and prints it to the console.
 func Message(message string, c Color) {
 	switch c {
 	case 1:
@@ -118,7 +118,7 @@ func getGopherGender() string {
 	}
 }
 
-//ViewRunningGophers prints out all the gophers currently running in the system who have been wrapped in GoRoutineLogger or GoRoutineLoggerWithId
+// ViewRunningGophers prints out all the gophers currently running in the system who have been wrapped in GoRoutineLogger or GoRoutineLoggerWithId
 func ViewRunningGophers() {
 	gopherMutex.RLock()
 	if len(RunningGophers) > 0 {
@@ -150,7 +150,7 @@ at ` + time.Now().String() + " " + extensions.IntToString(len(RunningGophers)) +
 	gopherMutex.RUnlock()
 }
 
-//GoRoutineLoggerWithId is a wrapper for go routines that will log the start and end of the go routine.  Pass in a function to be executed in the go routine.
+// GoRoutineLoggerWithId is a wrapper for go routines that will log the start and end of the go routine.  Pass in a function to be executed in the go routine.
 func GoRoutineLoggerWithId(fn func(), routineDesc string, Id string) {
 	if serverSettings.WebConfig.Application.LogGophers {
 		id := getGopherGender()
@@ -176,12 +176,12 @@ func GoRoutineLoggerWithId(fn func(), routineDesc string, Id string) {
 	}
 }
 
-//GoRoutineLogger is a wrapper for go routines that will log the start and end of the go routine.  Pass in a function to be executed in the go routine.
+// GoRoutineLogger is a wrapper for go routines that will log the start and end of the go routine.  Pass in a function to be executed in the go routine.
 func GoRoutineLogger(fn func(), routineDesc string) {
 	GoRoutineLoggerWithId(fn, routineDesc, "")
 }
 
-//TimeTrack is typically called in your defer function to log the time it took to execute a function.  But can be used anywhere.
+// TimeTrack is typically called in your defer function to log the time it took to execute a function.  But can be used anywhere.
 func TimeTrack(start time.Time, name string) (log string) {
 	elapsed := time.Since(start)
 	//if elapsed.Seconds() > 1 {
@@ -189,7 +189,7 @@ func TimeTrack(start time.Time, name string) (log string) {
 	return fmt.Sprintf("%s took %s", name, elapsed)
 }
 
-//TimeTrackQuery is meant to be used in conjunction with the mgo package.  It will log the time it took to execute a query and the query itself.
+// TimeTrackQuery is meant to be used in conjunction with the mgo package.  It will log the time it took to execute a query and the query itself.
 func TimeTrackQuery(start time.Time, name string, collection *mgo.Collection, m bson.M, q *mgo.Query) (log string) {
 	elapsed := time.Since(start)
 	log += "\n\n"

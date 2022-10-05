@@ -8,13 +8,6 @@ import (
 
 // GetDump many values to a string (this returns nothing and prints nothing to stdout)
 func ExampleGetDump() {
-	/*
-		import (
-			"log"
-
-			"github.com/DanielRenne/GoCore/core"
-		)
-	*/
 	type example struct {
 		bytes []byte
 		data  *string

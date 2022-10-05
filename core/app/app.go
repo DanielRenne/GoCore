@@ -1,3 +1,4 @@
+// Package app is a package that contains the core functionality of the GoCore framework and websocket functionality
 package app
 
 import (

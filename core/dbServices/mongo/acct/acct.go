@@ -1,8 +1,11 @@
+// Package acct - Internal Stub
 package acct
 
 import (
-	"github.com/DanielRenne/GoCore/core/dbServices"
 	"log"
+
+	"github.com/DanielRenne/GoCore/core/dbServices"
+
 	// "gopkg.in/mgo.v2"
 	// "gopkg.in/mgo.v2/bson"
 	"time"

@@ -1,3 +1,4 @@
+// Package mongoStubs - Internal Stub templates for mongo struct/ORM generation
 package mongoStubs
 
 var HistTemplate string

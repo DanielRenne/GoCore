@@ -16,13 +16,6 @@ func ExampleStart() {
 
 // ExampleExecuteOneTimeJob is an example of how to execute a one time event.
 func ExampleExecuteOneTimeJob() {
-	/*
-		import (
-			"github.com/DanielRenne/GoCore/core/cron"
-			"github.com/DanielRenne/GoCore/core/fileCache" // In order to use crons, you must import fileCache and call Initialize() if you are not using app.Initialize() or app.InitializeLite() to run a webserver (which do this automatically for you)
-			"github.com/DanielRenne/GoCore/core/zip"
-		)
-	*/
 	// You can set the CACHE_STORAGE_PATH export to a folder on your system to use the goCore fileCache.
 	// fileCache.CACHE_STORAGE_PATH = "/my/goCore/cachePath"
 	fileCache.Initialize()

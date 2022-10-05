@@ -11,17 +11,6 @@ import (
 
 // ExampleSignal: Two examples of signal and wait. One timesout and the other does not.
 func ExampleSignal() {
-	/*
-		import (
-			"log"
-			"time"
-
-			"github.com/DanielRenne/GoCore/core/atomicTypes"
-			"github.com/DanielRenne/GoCore/core/channels"
-			"github.com/DanielRenne/GoCore/core/extensions"
-		)
-
-	*/
 	timeout := atomicTypes.AtomicInt{}
 	timeout.Set(1000)
 	channelQueue := channels.Queue{

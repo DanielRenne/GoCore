@@ -5,13 +5,8 @@ import (
 	"github.com/DanielRenne/GoCore/core/ginServer"
 )
 
+// Simple example using csrf security, session cookies, and a custom port.
 func ExampleConfigureGin() {
-	/*
-		import (
-			"github.com/DanielRenne/GoCore/core/app"
-			"github.com/DanielRenne/GoCore/core/ginServer"
-		)
-	*/
 	csrf := "my crsf secret"
 	cookieConfig := ginServer.SessionConfiguration{
 		Enabled:               true,

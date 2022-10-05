@@ -1,4 +1,4 @@
-//api provides an API router and controller Registry to route controller api's.
+// Package api provides an API router and controller Registry to route controller api's.
 package api
 
 import (
@@ -12,12 +12,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//private local variables
+// private local variables
 var registry sync.Map
 
 //public variables
 
-/*APICallback provides the routing to controller methods.
+/*
+APICallback provides the routing to controller methods.
 Implementation example-----------
 ginServer.Router.GET("/apiGET", appAPI.APICallback)
 ginServer.Router.POST("/api", appAPI.APICallback)
@@ -35,7 +36,8 @@ func APICallback(c *gin.Context) {
 	}
 }
 
-/*SocketAPICallback provides the routing to controller methods for web socket calls.
+/*
+SocketAPICallback provides the routing to controller methods for web socket calls.
 Implementation example-----------
 app.RegisterWebSocketDataCallback(api.SocketAPICallback)
 ---------------------------------
@@ -48,17 +50,17 @@ func SocketAPICallback(conn *app.WebSocketConnection, c *gin.Context, messageTyp
 	processSocketAPI(c, data, conn)
 }
 
-//RegisterController registers a controller object to be registered by the name of the object.
+// RegisterController registers a controller object to be registered by the name of the object.
 func RegisterController(controller interface{}) {
 	registry.Store(getType(controller), reflect.ValueOf(controller))
 }
 
-//RegisterControllerByKey registers a controller object to be registered by a custom key.
+// RegisterControllerByKey registers a controller object to be registered by a custom key.
 func RegisterControllerByKey(key string, controller interface{}) {
 	registry.Store(key, reflect.ValueOf(controller))
 }
 
-//GetControllerInterface will return the interface of the controller.
+// GetControllerInterface will return the interface of the controller.
 func GetControllerInterface(key string) interface{} {
 
 	controller, ok := getControllerRegistry(key)

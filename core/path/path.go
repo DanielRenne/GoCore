@@ -1,3 +1,4 @@
+// Package path provides basic path functions for OS specific path folder names and a function to get the base path of where the binary resides
 package path
 
 import (

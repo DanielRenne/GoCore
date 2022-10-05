@@ -1,3 +1,4 @@
+// Package boltStubs - Internal Stub templates for bolt struct/ORM generation
 package boltStubs
 
 var Model string
