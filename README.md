@@ -64,11 +64,13 @@ Below are some targeted goals:
 
 1.  To start a new project with go modules (after go 1.13) run the following steps in a new console window. Note, this just gets all packages indirectly and they will be removed in your app as you begin to use them.
 
-    `go mod init yourProject/packageName`
+```
+go mod init yourProject/packageName
+```
 
 If you want to just play with all packages run:
 
-    `go get github.com/DanielRenne/GoCore`
+    go get github.com/DanielRenne/GoCore
 
 Otherwise [read the docs](https://pkg.go.dev/github.com/DanielRenne/GoCore) and see if anything adds value to your work and go get individual packages.
 

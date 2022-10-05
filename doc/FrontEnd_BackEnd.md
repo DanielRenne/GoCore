@@ -10,15 +10,17 @@ If you would like to proceed and at least test it out, we would love some feedba
 
 ### Install Homebrew
 
-`/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"`
+```
+/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+```
 
 ### Install MongoDB
 
-`brew tap mongodb/brew`
-
-`brew install mongodb-community`
-
-`brew services start mongodb/brew/mongodb-community`
+```
+brew tap mongodb/brew
+brew install mongodb-community
+brew services start mongodb/brew/mongodb-community
+```
 
 ### Install NPM and Node JS
 
@@ -26,7 +28,7 @@ https://nodejs.org/en/download/
 
 ### Install Webpack
 
-npm install --global webpack@v2.6.1
+    npm install --global webpack@v2.6.1
 
 ### Install Golang
 
@@ -34,28 +36,41 @@ npm install --global webpack@v2.6.1
 
 ### Add your gopath bin directory to your PATH and set NODE_ENV=development
 
-`vim ~/.bash_profile`
+```
+vim ~/.bash_profile
+```
 
 Add lines to add NODE_ENV to your environment
-`export PATH="$PATH:/Users/davidrenne/go/bin" export NODE_ENV=development`
+```
+export PATH="$PATH:$HOME/go/bin"
+export NODE_ENV=development
+```
 
 Source it:
 
-`source ~/.bash_profile`
+```
+source ~/.bash_profile
+```
 
 ### Build GoCore Front End/Backend App
 
-1.  A sample project generator is available to build a GoCore project.
+A sample project generator is available to build a GoCore project.
 
-    `go install github.com/DanielRenne/GoCore/goCoreCreateApp`
+```
+go install github.com/DanielRenne/GoCore/goCoreCreateApp
+```
 
-    And install the binary for fetching the project template files
+And install the binary for fetching the project template files
 
-    `go install github.com/DanielRenne/GoCore/getAppTemplate`
+```
+go install github.com/DanielRenne/GoCore/getAppTemplate
+```
 
 Then run
 
-    goCoreCreateApp
+```
+goCoreCreateApp
+```
 
 Follow the prompts to generate your app. Ensure you install nodejs, npm before generating an app with this binary.
 
@@ -65,7 +80,9 @@ GoCore has built in functions to read json configuration files to generate SQL T
 
 1.  Run the following to start your app
 
-    `bash bin/start_app`
+```
+bash bin/start_app
+```
 
 Open a web browser to: [http://127.0.0.1](http://127.0.0.1)
 
