@@ -1,0 +1,28 @@
+go 1.19
+
+use (
+	.
+	./core/dbServices/example
+	./core
+	./core/zip
+	./core/utils
+	./core/store
+	./core/serverSettings
+	./core/pubsub
+	./core/path
+	./core/mongo
+	./core/logger
+	./core/httpExtensions
+	./core/gitWebHooks
+	./core/ginServer
+	./core/fileCache
+	./core/extensions
+	./core/dbServices
+	./core/crypto
+	./core/cron
+	./core/channels
+	./core/atomicTypes
+	./core/appGen
+	./core/app
+	./core/app/api
+)

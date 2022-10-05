@@ -1,7 +1,6 @@
 package ginServer_test
 
 import (
-	"github.com/DanielRenne/GoCore/core/app"
 	"github.com/DanielRenne/GoCore/core/ginServer"
 )
 
@@ -16,5 +15,7 @@ func ExampleConfigureGin() {
 		SessionSecureCookie:   false,
 	}
 	ginServer.ConfigureGin("debug", "", false, []string{}, csrf, cookieConfig, true)
-	app.RunLite(9090)
+	// Run this if you want to use the gin server after configuring it how you want
+	// import "github.com/DanielRenne/GoCore/core/app"
+	// app.RunLite(9090)
 }
