@@ -93,6 +93,10 @@ func (self *modelHistCollection) Rollback(transactionId string) error {
 		} else {
 			err = rollbackEntity.Delete()
 		}
+		
+		if err == nil {
+			dbServices.CollectionCache{}.Remove("OriginalEntity", rollbackEntity.Id.Hex())
+		}
 
 	}
 	return err
