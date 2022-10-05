@@ -8,7 +8,7 @@ import (
 	"sync"
 )
 
-//SubscriptionCallback is the callback function for published messgages for use in your interfaces
+// SubscriptionCallback is the callback function for published messgages for use in your interfaces
 type SubscriptionCallback func(key string, x interface{})
 type subscriptionCallbacks struct {
 	sync.RWMutex
@@ -23,7 +23,7 @@ func (subscription *subscriptionCallbacks) append(callback SubscriptionCallback)
 	subscription.callbacks = append(subscription.callbacks, callback)
 }
 
-//iter over the subscription callbacks
+// iter over the subscription callbacks
 func (subscription *subscriptionCallbacks) iter() <-chan SubscriptionCallback {
 	c := make(chan SubscriptionCallback)
 
@@ -42,7 +42,7 @@ func (subscription *subscriptionCallbacks) iter() <-chan SubscriptionCallback {
 
 var subscribers sync.Map
 
-//Subscribe to a publisher message key and function to call
+// Subscribe to a publisher message key and function to call
 func Subscribe(key string, callback SubscriptionCallback) {
 	subscriptionObj, ok := subscribers.Load(key)
 	if ok {
@@ -55,7 +55,7 @@ func Subscribe(key string, callback SubscriptionCallback) {
 	}
 }
 
-//Publish a message with a payload.
+// Publish a message with a payload.
 func Publish(key string, x interface{}) {
 	go pub(key, x)
 }
@@ -71,15 +71,15 @@ func pub(key string, x interface{}) {
 	if ok {
 		subscription := subscriptionObj.(*subscriptionCallbacks)
 		for callback := range subscription.iter() {
-			go func(keyLocal string, xLocal interface{}) {
+			go func(keyLocal string, xLocal interface{}, cb SubscriptionCallback) {
 				defer func() {
 					if r := recover(); r != nil {
 						log.Println("Panic Recovered in pub.  You have some bad code here: "+string(debug.Stack()), fmt.Sprintf("%+v", r))
 						return
 					}
 				}()
-				callback(keyLocal, xLocal)
-			}(key, x)
+				cb(keyLocal, xLocal)
+			}(key, x, callback)
 		}
 	}
 }
