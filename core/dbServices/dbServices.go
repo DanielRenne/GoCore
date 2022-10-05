@@ -71,23 +71,6 @@ func Initialize() {
 	}()
 }
 
-func openSQLDriver() error {
-	var err error
-	DBMutex.Lock()
-	DB, err = sql.Open(serverSettings.WebConfig.DbConnection.Driver, serverSettings.WebConfig.DbConnection.ConnectionString)
-	DBMutex.Unlock()
-
-	if err != nil {
-		color.Red("Open connection failed:" + err.Error())
-		return err
-	}
-
-	DBMutex.RLock()
-	color.Cyan("Open Database Connections: " + string(DB.Stats().OpenConnections))
-	DBMutex.RUnlock()
-	return nil
-}
-
 func openBolt() {
 
 	myDBDir := serverSettings.APP_LOCATION + "/db/" + serverSettings.WebConfig.DbConnection.ConnectionString
