@@ -7,6 +7,8 @@ import (
 	"github.com/davidrenne/professor"
 	"github.com/fatih/color"
 	"github.com/gin-contrib/secure"
+
+	// todo, this is legacy and deprecated, we need to move to something else to replace it
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 	csrf "github.com/utrack/gin-csrf"

@@ -1,2 +1,4 @@
 github.com/DanielRenne/GoCore/core/path v0.0.0-20221005154118-077b76f14268 h1:qacDv6GKEQ0uZBotl++jHTsJ/QTWaA0ace+QsiPHP+U=
 github.com/DanielRenne/GoCore/core/path v0.0.0-20221005154118-077b76f14268/go.mod h1:/xvJ8xSQDvZ7UuUymCjIwKlJwvWmpjz9IvkmY3RPvCk=
+github.com/DanielRenne/GoCore/core/path v0.0.0-20221005172157-944da386fb3a h1:VBK3GcDP9bmZeU5KpoWLUnfUUHI4ArdwzguPYsMH7gI=
+github.com/DanielRenne/GoCore/core/path v0.0.0-20221005172157-944da386fb3a/go.mod h1:/xvJ8xSQDvZ7UuUymCjIwKlJwvWmpjz9IvkmY3RPvCk=

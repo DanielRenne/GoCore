@@ -1,5 +1,7 @@
 github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221005154118-077b76f14268 h1:A9TxjE4WPCCxyUkXtekVJmxNUYbNP71NMQPukKUwEOY=
 github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221005154118-077b76f14268/go.mod h1:98nXCbxueotrBzTZ3xJ61NxBJgeh9ZduFMV0qqZoMCY=
+github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221005172157-944da386fb3a h1:3ss36e+2bkxZI5OKBKbxcTSiAWRj58MDzyX3P3avklU=
+github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221005172157-944da386fb3a/go.mod h1:f1b5mUjvVSF5s5XMRMGgP2S7XqOHSG+r0fjqlpCE4mo=
 github.com/forPelevin/gomoji v1.1.6 h1:mSIGhjyMiywuGFHR/6CLL/L6HwwDiQmYGdl1R9a/05w=
 github.com/forPelevin/gomoji v1.1.6/go.mod h1:h31zCiwG8nIto/c9RmijODA1xgN2JSvwKfU7l65xeTk=
 github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8 h1:DujepqpGd1hyOd7aW59XpK7Qymp8iy83xq74fLr21is=
@@ -11,5 +13,7 @@ github.com/kr/text v0.1.0 h1:45sCR5RtlFHMR4UwH9sdQ5TC8v0qDQCHnXt+kaKSTVE=
 github.com/kr/text v0.1.0/go.mod h1:4Jbv+DJW3UT/LiOwJeYQe1efqtUx/iVham/4vfdArNI=
 github.com/rivo/uniseg v0.3.4 h1:3Z3Eu6FGHZWSfNKJTOUiPatWwfc7DzJRU04jFUqJODw=
 github.com/rivo/uniseg v0.3.4/go.mod h1:FN3SvrM+Zdj16jyLfmOkMNblXMcoc8DfTHruCPUcx88=
+github.com/rivo/uniseg v0.4.2 h1:YwD0ulJSJytLpiaWua0sBDusfsCZohxjxzVTYjwxfV8=
+github.com/rivo/uniseg v0.4.2/go.mod h1:FN3SvrM+Zdj16jyLfmOkMNblXMcoc8DfTHruCPUcx88=
 gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c h1:Hei/4ADfdWqJk1ZMxUNpqntNwaWcugrBjAiHlqqRiVk=
 gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c/go.mod h1:JHkPIbrfpd72SG/EVd6muEfDQjcINNoR0C8j2r3qZ4Q=

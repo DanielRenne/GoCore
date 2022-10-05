@@ -1,9 +1,15 @@
 github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221005154118-077b76f14268 h1:A9TxjE4WPCCxyUkXtekVJmxNUYbNP71NMQPukKUwEOY=
 github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221005154118-077b76f14268/go.mod h1:98nXCbxueotrBzTZ3xJ61NxBJgeh9ZduFMV0qqZoMCY=
+github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221005172157-944da386fb3a h1:3ss36e+2bkxZI5OKBKbxcTSiAWRj58MDzyX3P3avklU=
+github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221005172157-944da386fb3a/go.mod h1:f1b5mUjvVSF5s5XMRMGgP2S7XqOHSG+r0fjqlpCE4mo=
 github.com/DanielRenne/GoCore/core/path v0.0.0-20221005154118-077b76f14268 h1:qacDv6GKEQ0uZBotl++jHTsJ/QTWaA0ace+QsiPHP+U=
 github.com/DanielRenne/GoCore/core/path v0.0.0-20221005154118-077b76f14268/go.mod h1:/xvJ8xSQDvZ7UuUymCjIwKlJwvWmpjz9IvkmY3RPvCk=
+github.com/DanielRenne/GoCore/core/path v0.0.0-20221005172157-944da386fb3a h1:VBK3GcDP9bmZeU5KpoWLUnfUUHI4ArdwzguPYsMH7gI=
+github.com/DanielRenne/GoCore/core/path v0.0.0-20221005172157-944da386fb3a/go.mod h1:/xvJ8xSQDvZ7UuUymCjIwKlJwvWmpjz9IvkmY3RPvCk=
 github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221005154118-077b76f14268 h1:EeNOMMDKfXAVdTbx5CkhilEY8KCG+tczYm4MBEy14Ao=
 github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221005154118-077b76f14268/go.mod h1:x3eUFCEWNXhPjeWSFqENNNX60KrDg0Z+TOFp3+MKD8A=
+github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221005172157-944da386fb3a h1:MgglvVPA4OvEZAtOU0Knb5cYchiDrgIypkLyp4gYCi8=
+github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221005172157-944da386fb3a/go.mod h1:0rbm/c0GT9XlH8K0505dTRzCXzdtEffmZbv9Xu438eA=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
@@ -19,6 +25,8 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/rivo/uniseg v0.3.4 h1:3Z3Eu6FGHZWSfNKJTOUiPatWwfc7DzJRU04jFUqJODw=
 github.com/rivo/uniseg v0.3.4/go.mod h1:FN3SvrM+Zdj16jyLfmOkMNblXMcoc8DfTHruCPUcx88=
+github.com/rivo/uniseg v0.4.2 h1:YwD0ulJSJytLpiaWua0sBDusfsCZohxjxzVTYjwxfV8=
+github.com/rivo/uniseg v0.4.2/go.mod h1:FN3SvrM+Zdj16jyLfmOkMNblXMcoc8DfTHruCPUcx88=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/objx v0.4.0/go.mod h1:YvHI0jy2hoMjB+UWwv71VJQ9isScKT/TqJzVSSt89Yw=
 github.com/stretchr/testify v1.6.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
