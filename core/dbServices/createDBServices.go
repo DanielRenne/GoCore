@@ -961,7 +961,7 @@ func genNoSQLSchema(collection *NOSQLCollection, schema NOSQLSchema, driver stri
 	return val
 }
 
-//Recursive Function to Generate Validation Schema
+// Recursive Function to Generate Validation Schema
 func genNoSQLValidationRecusion(schema NOSQLSchema) string {
 	val := ""
 	for _, field := range schema.Fields {
@@ -1973,7 +1973,7 @@ func genNoSQLSchemaIndex(collection NOSQLCollection, schema NOSQLSchema, driver 
 	return val
 }
 
-//Generates the Bootstrap Data for the application.
+// Generates the Bootstrap Data for the application.
 func genNoSQLBootstrap(collection NOSQLCollection, schema NOSQLSchema, driver string) string {
 	val := ""
 

@@ -70,18 +70,28 @@ type collection interface {
 	Query() *Query
 }
 
+
+// BootstrapMeta is a struct that is used to tell the bootstrap how or what you want to bootstrap
 type BootstrapMeta struct {
+	// Version is the version that you specifically want to bootstrap only to
 	Version      int      ` + "`" + `json:"Version" bson:"Version"` + "`" + `
+	// Domain would be used to bootstrap only a specific domain
 	Domain       string   ` + "`" + `json:"Domain" bson:"Domain"` + "`" + `
+	// ReleaseMode would be used to bootstrap only a specific release mode such as debug records
 	ReleaseMode  string   ` + "`" + `json:"ReleaseMode" bson:"ReleaseMode"` + "`" + `
+	// ProductName would be used to bootstrap only a specific product name
 	ProductName  string   ` + "`" + `json:"ProductName" bson:"ProductName"` + "`" + `
+	// Domains would be used to bootstrap only many domains
 	Domains      []string ` + "`" + `json:"Domains" bson:"Domains"` + "`" + `
+	// ProductNames would be used to bootstrap many product name
 	ProductNames []string ` + "`" + `json:"ProductNames" bson:"ProductNames"` + "`" + `
+	// DeleteRow, if true, will delete the row from the bootstrap table after it is previousl bootstrapped
 	DeleteRow    bool     ` + "`" + `json:"DeleteRow" bson:"DeleteRow"` + "`" + `
+	// AlwaysUpdate, if true, will always update the row from the bootstrap table after it is previously bootstrapped
 	AlwaysUpdate bool     ` + "`" + `json:"AlwaysUpdate" bson:"AlwaysUpdate"` + "`" + `
 }
 
-type BootstrapSync struct {
+type bootstrapSync struct {
 	sync.Mutex
 	Items [][]byte
 }
@@ -123,14 +133,17 @@ func init() {
 	go clearTransactionQueue()
 }
 
+// Q is a helper function to pass to things like Filter to filter a field value and key
 func Q(k string, v interface{}) map[string]interface{} {
 	return map[string]interface{}{k: v}
 }
 
+// QTs is a helper function to pass to things like Filter to filter a field value and a time.Time
 func QTs(k string, v time.Time) map[string]time.Time {
 	return map[string]time.Time{k: v}
 }
 
+// RangeQ is a helper function to pass to things like Filter to filter a field value and key
 func RangeQ(k string, min interface{}, max interface{}) map[string]Range {
 	var rge map[string]Range
 	rge = make(map[string]Range)
@@ -141,6 +154,7 @@ func RangeQ(k string, min interface{}, max interface{}) map[string]Range {
 	return rge
 }
 
+// MinQ is a helper function to pass to things like Filter to filter a field value and key
 func MinQ(k string, min interface{}) map[string]Min {
 	var rge map[string]Min
 	rge = make(map[string]Min)
@@ -150,6 +164,8 @@ func MinQ(k string, min interface{}) map[string]Min {
 	return rge
 }
 
+
+// MaxQ is a helper function to pass to things like Filter to filter a field value and a max value
 func MaxQ(k string, max interface{}) map[string]Max {
 	var rge map[string]Max
 	rge = make(map[string]Max)
@@ -686,7 +702,7 @@ func BootstrapDirectory(directoryName string, collectionCount int) (files [][]by
 		}
 	}()
 
-	var syncedItems BootstrapSync
+	var syncedItems bootstrapSync
 	var wg sync.WaitGroup
 	path := serverSettings.APP_LOCATION + "/db/bootstrap/" + directoryName + "/dist"
 
