@@ -39,7 +39,7 @@ require (
 	github.com/boj/redistore v0.0.0-20160128113310-fc113767cd6b // indirect
 	github.com/boltdb/bolt v1.2.2-0.20160730144416-94c8db596809 // indirect
 	github.com/davidrenne/professor v0.0.0-20180814210453-cc6399dacc55 // indirect
-	github.com/davidrenne/reflections v1.0.0 // indirect
+	github.com/davidrenne/reflections v1.0.2 // indirect
 	github.com/dchest/uniuri v0.0.0-20160212164326-8902c56451e9 // indirect
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/forPelevin/gomoji v1.1.6 // indirect
