@@ -1,5 +1,5 @@
-// Package core is the core package of GoCore.
-// Also contains some debugging/dumping variable functions
+// Package core is the main package contents of the GoCore application collection of packages and utilities
+// Also the root contains some debugging/dumping variable functions
 package core
 
 import (
