@@ -1,4 +1,6 @@
 set -e
+go get -u
+go mod tidy
 cd core
 echo "Updating core"
 go get -u
@@ -50,6 +52,11 @@ go mod tidy
 cd -
 echo "Updating dbServices/common/stubs"
 cd dbServices/common/stubs
+go get -u
+go mod tidy
+cd -
+echo "Updating dbServices/example"
+cd dbServices/example
 go get -u
 go mod tidy
 cd -

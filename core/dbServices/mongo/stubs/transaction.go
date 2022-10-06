@@ -231,18 +231,6 @@ func (self *Transaction) Commit() error {
 				affectedRecordCount[pieces[0] + typeAction] = 1
 			}
 		}
-		/*
-			//Future debugging on collections
-			if pieces[0] == "Control" {
-				log.Println("entity for controls (" + typeAction + ")->", entityTran.entity.GetId())
-				log.Println("entity->", entityTran.entity)
-				newControlIds = append(newControlIds, "\""+entityTran.entity.GetId()+"\"")
-			}
-			if pieces[0] == "Variable" {
-				log.Println("entity for variables (" + typeAction + ")->", entityTran.entity.GetId())
-				log.Println("entity->", entityTran.entity)
-			}
-		*/
 		if entityTran.changeType == TRANSACTION_CHANGETYPE_DELETE {
 			err := entityTran.entity.Delete()
 			if err != nil && err.Error() != "not found" {
