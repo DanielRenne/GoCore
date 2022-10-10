@@ -5,7 +5,7 @@ package serverSettings
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"sync"
 
 	"github.com/DanielRenne/GoCore/core/path"
@@ -157,7 +157,7 @@ func Initialize(path string, configurationFile string) (err error) {
 	initPath(path)
 	fmt.Println("core serverSettings initialized.")
 
-	jsonData, err := ioutil.ReadFile(APP_LOCATION + "/" + configurationFile)
+	jsonData, err := os.ReadFile(APP_LOCATION + "/" + configurationFile)
 	if err != nil {
 		fmt.Println("Reading of webConfig.json failed:  " + err.Error())
 	}

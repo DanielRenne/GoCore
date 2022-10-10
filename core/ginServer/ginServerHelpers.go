@@ -4,8 +4,9 @@ package ginServer
 import (
 	"encoding/base64"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
+	"os"
 	"strings"
 	"sync"
 	"time"
@@ -134,12 +135,12 @@ func GetLocaleLanguage(c *gin.Context) (ll LocaleLanguage) {
 // GetRequestBody returns the body of the request as a string.
 func GetRequestBody(c *gin.Context) ([]byte, error) {
 	body := c.Request.Body
-	return ioutil.ReadAll(body)
+	return io.ReadAll(body)
 }
 
 // ReadHTMLFile reads a file from the path parameter and returns to the client as text/html.
 func ReadHTMLFile(path string, c *gin.Context) {
-	page, err := ioutil.ReadFile(path)
+	page, err := os.ReadFile(path)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -153,7 +154,7 @@ func ReadHTMLFile(path string, c *gin.Context) {
 
 // ReadJSFile reads a file from the path parameter and returns to the client as text/javascript.
 func ReadJSFile(path string, c *gin.Context) {
-	page, err := ioutil.ReadFile(path)
+	page, err := os.ReadFile(path)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -167,7 +168,7 @@ func ReadJSFile(path string, c *gin.Context) {
 
 // ReadFileBase64 reads a file and responds with a base64 encoded string.  Primarily used for jquery ajax response binary data blob encoding.
 func ReadFileBase64(path string, c *gin.Context) {
-	page, err := ioutil.ReadFile(path)
+	page, err := os.ReadFile(path)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -186,7 +187,7 @@ func RenderHTML(html string, c *gin.Context) {
 
 // ReadJSONFile reads a file from the path parameter and returns to the client application/json
 func ReadJSONFile(path string, c *gin.Context) {
-	js, err := ioutil.ReadFile(path)
+	js, err := os.ReadFile(path)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return

@@ -9,7 +9,6 @@ import (
 	"sync"
 
 	"encoding/json"
-	"io/ioutil"
 
 	"github.com/DanielRenne/GoCore/core/extensions"
 	"github.com/DanielRenne/GoCore/core/path"
@@ -116,7 +115,7 @@ func WriteJobCacheFile() (err error) {
 	if err != nil {
 		return err
 	}
-	err = ioutil.WriteFile(CACHE_JOBS+"/jobs.json", []byte(strjson), 0777)
+	err = os.WriteFile(CACHE_JOBS+"/jobs.json", []byte(strjson), 0777)
 	if err != nil {
 		return err
 	}
@@ -167,7 +166,7 @@ func WriteBootStrapCacheFile(key string) (err error) {
 		if err != nil {
 			return err
 		}
-		err = ioutil.WriteFile(CACHE_BOOTSTRAP_STORAGE_PATH+"/"+key+".json", []byte(strjson), 0777)
+		err = os.WriteFile(CACHE_BOOTSTRAP_STORAGE_PATH+"/"+key+".json", []byte(strjson), 0777)
 		if err != nil {
 			return err
 		}
@@ -285,7 +284,7 @@ func WriteManifestCacheFile(key string) (err error) {
 		if err != nil {
 			return err
 		}
-		err = ioutil.WriteFile(CACHE_MANIFEST_STORAGE_PATH+"/"+key+".json", []byte(strjson), 0777)
+		err = os.WriteFile(CACHE_MANIFEST_STORAGE_PATH+"/"+key+".json", []byte(strjson), 0777)
 		if err != nil {
 			return err
 		}

@@ -231,7 +231,6 @@ webConfig.json
 package settings
 
 import (	
-	"io/ioutil"
 	"log"
 	"os"
 	"sync"
@@ -269,7 +268,7 @@ func Initialize() {
 	}
 	ServerSettings = serverSettings.WebConfig.Application
 
-	jsonData, err := ioutil.ReadFile(serverSettings.APP_LOCATION + "/webConfig.json")
+	jsonData, err := os.ReadFile(serverSettings.APP_LOCATION + "/webConfig.json")
 	if err != nil {
 		log.Println("Reading of webConfig.json failed at settings.init():  " + err.Error())
 		os.Exit(1)
