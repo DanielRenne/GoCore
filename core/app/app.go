@@ -242,7 +242,6 @@ func RunLite(port int) {
 	err := PrimaryGoCoreHTTPServer.ListenAndServe()
 	if err != nil {
 		log.Println("GoCore Cannot open port " + strconv.Itoa(port) + " Reason: " + err.Error())
-		os.Exit(1)
 	}
 
 }
@@ -297,7 +296,6 @@ func Run() {
 			err := http.ListenAndServe(":"+port, nil)
 			if err != nil {
 				log.Println("GoCore Cannot open port " + port + " Reason: " + err.Error())
-				os.Exit(1)
 			}
 		}()
 	}
@@ -347,7 +345,6 @@ func Run() {
 			err := s.ListenAndServeTLS(serverSettings.APP_LOCATION+"/keys/cert.pem", serverSettings.APP_LOCATION+"/keys/key.pem")
 			if err != nil {
 				log.Println("GoCore Application failed to ListenAndServeTLS:  " + err.Error())
-				os.Exit(1)
 			} else {
 				log.Println("Application Listening on TLS port " + strconv.Itoa(serverSettings.WebConfig.Application.HttpsPort))
 			}
@@ -374,7 +371,6 @@ func RunServer() {
 	err := PrimaryGoCoreHTTPServer.ListenAndServe()
 	if err != nil {
 		log.Println("GoCore Application failed to listen on port (" + port + "):  " + err.Error())
-		os.Exit(1)
 	} else {
 		log.Println("Application Listening on port " + port)
 	}
