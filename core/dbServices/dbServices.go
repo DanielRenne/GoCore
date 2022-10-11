@@ -1,8 +1,8 @@
+// Package dbServices provides a set of extensions for database utilities and ORM generation
 package dbServices
 
 import (
 	"crypto/tls"
-	"database/sql"
 	"fmt"
 	"log"
 	"net"
@@ -19,17 +19,22 @@ import (
 	"github.com/globalsign/mgo/bson"
 )
 
+// DBMutex is a mutex for the database connection
 var DBMutex *sync.RWMutex
-var DB *sql.DB
+
+// BoltDB is the global bolt database connection
 var BoltDB *storm.DB
+
+// MongoSession is the global mongo session
 var MongoSession *mgo.Session
+
+// MongoDB is the global mongo database connection
 var MongoDB *mgo.Database
 
 var mongoDBOverride string
 var mongoDBNameOverride string
 
 const (
-
 	//Driver Types
 	DATABASE_DRIVER_BOLTDB  = "boltDB"
 	DATABASE_DRIVER_MONGODB = "mongoDB"
@@ -39,11 +44,13 @@ func init() {
 	DBMutex = &sync.RWMutex{}
 }
 
+// OverrideMongoDBConnection allows you to override the connection string for the mongo database
 func OverrideMongoDBConnection(connectionString string, dbName string) {
 	mongoDBOverride = connectionString
 	mongoDBNameOverride = dbName
 }
 
+// ReadMongoDB will read the database connection from memory
 func ReadMongoDB() (mdb *mgo.Database) {
 	DBMutex.RLock()
 	mdb = MongoDB
@@ -51,8 +58,8 @@ func ReadMongoDB() (mdb *mgo.Database) {
 	return mdb
 }
 
+// Initialize will initialize the database connection
 func Initialize() {
-
 	fmt.Println("core dbServices initialized.")
 	go func() {
 		switch serverSettings.WebConfig.DbConnection.Driver {
@@ -62,23 +69,6 @@ func Initialize() {
 			openMongo()
 		}
 	}()
-}
-
-func openSQLDriver() error {
-	var err error
-	DBMutex.Lock()
-	DB, err = sql.Open(serverSettings.WebConfig.DbConnection.Driver, serverSettings.WebConfig.DbConnection.ConnectionString)
-	DBMutex.Unlock()
-
-	if err != nil {
-		color.Red("Open connection failed:" + err.Error())
-		return err
-	}
-
-	DBMutex.RLock()
-	color.Cyan("Open Database Connections: " + string(DB.Stats().OpenConnections))
-	DBMutex.RUnlock()
-	return nil
 }
 
 func openBolt() {
@@ -101,6 +91,7 @@ func openBolt() {
 	color.Cyan("Successfully opened new bolt DB at " + myDBDir)
 }
 
+// GetMongoDialInfo returns a mgo.DialInfo object based on the current serverSettings
 func GetMongoDialInfo() (*mgo.DialInfo, error) {
 	connectionString := serverSettings.WebConfig.DbConnection.ConnectionString
 	if mongoDBOverride != "" {

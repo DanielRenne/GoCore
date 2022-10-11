@@ -2,149 +2,87 @@
 
 A Golang solution of tools for building a full stack web application.
 
-## Goals of the Project ##
+## Goals of the Project
 
 Below are some targeted goals:
 
-* Http & Https Redirection & HTTP 2.0 with Golang 1.8 and [gin-gonic/gin](https://github.com/gin-gonic/gin)
-* Extension packages for common functions including:
-	* File IO Management & Manipulation
-	* Zip File Compression & Decompression
+- Webserver Goals
+  - Http & Https & HTTP 2.0 with Golang 1.9 and [gin-gonic/gin](https://github.com/gin-gonic/gin). [See GoCore/app documentation](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/app))
+    - Basic [configuration helpers with a gin-gonic server](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/ginServer/#example_ConfigureGin)
+    - Exposing [the gin-gonic Router engine](https://github.com/DanielRenne/GoCore/blob/master/doc/Basic_GinRouter.md) to your application for custom routes.
+  - Setting up [dynamic routes through controller registration APIs (in the app/api package)](https://github.com/DanielRenne/GoCore/blob/master/doc/Controller_Registration_With_Api.md) and reflection to invoke your methods with interfaces
+  - Websocket WSS and WS support through [github.com/gorilla/websocket](https://github.com/gorilla/websocket)
+    - Replying to messages or Broadcasting to all
+    - Giving you access to iterate your connected sockets
+    - Managing deleted sockets and providing a way to safely iterate through connected sockets to publish messages to all or some sockets
 
-----------
+---
 
-* Database extensions and drivers for the following:
-	* Supported databases:
-		* MongoDB
-		* BoltDB
-	* Create SQL Schema (DDL) from JSON Configuration.
-	* Create Golang ORM packages for RDBMS Transactions & Queries.
+- Database Goals. Provide Model/structs/ORM support and drivers for the following (only for use with [GoCore full apps](https://github.com/DanielRenne/GoCore/blob/master/doc/GoCore_Full.md)):
+  - Supported databases:
+    - MongoDB
+    - BoltDB
+  - Create SQL Schema (DDL) from JSON Configuration.
+    - Generated golang structs and methods will also allow customization files to be injected inside your models/v1/model package
+  - Create Golang ORM packages for RDBMS Transactions & Queries.
+  - Create a bootstrapping system to seed data in various configurations and data dumping formats
+  - Recursive Joins with foreign and primary keys in mongo or bolt.
+  - A pubsub store (core/store) for mongo or bolt to allow for interfaces to subscribe to changes in the database or to save changes to the database with either golang or a javascript client.
 
-----------
-## Getting Started ##
+---
 
-### Install Homebrew ###
+- General application toolbox and file utilities
+  - Some basic crypto functions in the [github.com/DanielRenne/core/crypto](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/crypto) package
+  - Utility functions for versioning, hexadecimals, strings, human directory sizes, printable ascii/emojis, data type conversions inside of [github.com/DanielRenne/GoCore/core/extensions](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/extensions)
+  - Basic path helpers in [github.com/DanielRenne/GoCore/core/path](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/path)
+  - Utility functions for managing files and directories for getting all files in directories, copying and removing directories, reading files and also parsing interfaces into json, unGizipping files, and Untarring and Taring files natively inside of go with [github.com/DanielRenne/core/extensions/](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/extensions) `fileExtensions.go` and `unix.go`
+  - A simple logger with logging with colors, [goRoutine logging](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/logger#example_GoRoutineLogger), [tailing files](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/logger#Tail), and [measuring time of execution](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/logger#example_TimeTrack) in [github.com/DanielRenne/core/logger](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/logger) package
+  - A ["core" package](https://pkg.go.dev/github.com/DanielRenne/GoCore/core) which currently has some debug Dump tools for dumping structs and variables to the console in a readable format
+  - A [cron package](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/cron) which sets up a ticker to run a function at a specified interval such as top of second (we never needed sub-second crons but can add it if you need it as we currently ticker every 100ms), minute, hour, day and helper functions to run at top of 15 minutes, 5 minutes [dynamically defined job](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/cron#example-ExampleRegisterRecurring) and [even running only a job once](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/cron#example-ExecuteOneTimeJob) (if successfully returned true)
 
-`/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"`
+---
 
-### Install MongoDB ###
+- Channel management queues and pubsub functions
+  - A [simple channel management queue system](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/pubsub#example_Signal) for managing goRoutines and channels in [github.com/DanielRenne/GoCore/core/channels](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/channels) package
+  - pubsub package for [publishing to subscribers](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/pubsub#example_Publish) in [github.com/DanielRenne/GoCore/core/pubsub](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/pubsub) package
 
-`brew tap mongodb/brew`
+---
 
-`brew install mongodb-community`
+- Atomic file locking functions (on many common types) for file system operations on thread safe files in [github.com/DanielRenne/GoCore/core/atomicTypes](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/atomicTypes) package
+  - Adds a Get() and Set() method with a mutex lock to the following types:
+    - AtomicString
+    - AtomicUInt16
+    - AtomicUInt32
+    - AtomicByteArray
+    - AtomicFloat64
+    - AtomicBoolArray
+    - AtomicBool (ToggleTrue returning if changed to true)
+    - AtomicInt (Add, Increment, Decrement)
 
-`brew services start mongodb/brew/mongodb-community`
+---
 
-### Install NPM and Node JS ###
+## Get Started with GoCore
 
-https://nodejs.org/en/download/
+1.  To start a new project with go modules (after go 1.13) run the following steps in a new console window. Note, this just gets all packages indirectly and they will be removed in your app as you begin to use them.
 
-### Install Webpack ###
+```
+go mod init yourProject/packageName
+```
 
-npm install --global webpack@v2.6.1
+If you want to just play with all packages run:
 
-### Install Golang ###
+    go get github.com/DanielRenne/GoCore
 
-[Setup](https://golang.org/doc/install/ "Setup")
+Otherwise [read the docs](https://pkg.go.dev/github.com/DanielRenne/GoCore) and see if anything adds value to your work and go get individual packages.
 
-### Edit sudoers ###
+## Build GoCore Backend Only Webserver app
 
-sudo vim /etc/sudoers
+There are three options to start a webserver. GoCoreLite (just a gin-gonic server with a gorilla websocket where you pass the port you wish), GoCoreFull ( which assumes usages of our model and ORM with mongo or boltDB ), or GoCoreCreateApp (full front-end examples with a backend webserver).
 
-yourusername   ALL = NOPASSWD: ALL
+- GoCore full docs are available at [here](https://github.com/DanielRenne/GoCore/blob/master/doc/GoCore_Full.md)
 
+- GoCoreLite full docs are available [here](https://github.com/DanielRenne/GoCore/blob/master/doc/GoCore_Lite.md)
 
-### Add your gopath bin directory to your PATH and set NODE_ENV=development
+- GoCoreCreateApp full docs are available [here](https://github.com/DanielRenne/GoCore/blob/master/doc/FrontEnd_BackEnd.md)
 
-`vim ~/.bash_profile`
-
-Add lines
-`
-export PATH="$PATH:/Users/davidrenne/go/bin"
-export NODE_ENV=development
-`
-
-Source it:
-
-`source ~/.bash_profile`
-
-
-### Get GoCore
-1.  To start a new project with go modules (1.13) GoCore run the following steps in a new console window.
-
-	`go mod init github.com/your_example/repo_project`
-
-	`go get github.com/DanielRenne/GoCore`
-
-1.5.  To start a new project with a version prior to go modules.
-
-	`go get github.com/DanielRenne/GoCore/...`
-
-### Add to your Operating Systems Path the ~/go/bin directory
-
-### Build GoCore Backend Only App
-
-
-
-### Build GoCore Front End/Backend App
-
-1.  A sample project generator is available to build a GoCore project.
-
-	`go install github.com/DanielRenne/GoCore/goCoreCreateApp`
-
-	And install the binary for fetching the project template files
-
-	`go install github.com/DanielRenne/GoCore/getAppTemplate`
-
-Then run
-
-    goCoreCreateApp
-
-Follow the prompts to generate your app.  Note you probably should install nodejs, npm and nvm before generating an app.
-
-GoCore has built in functions to read json configuration files to generate SQL Tables, indexes, primary & foreign keys, NOSQL Collections & Buckets, auto-generated Golang model code files.  See [BuildCore Readme](https://github.com/DanielRenne/GoCore/blob/master/buildCore/README.md) for details.
-
-### Run Your GoCore App
-
-1.  Run the following to start your app
-
-	`bash bin/start_app`
-
-Open a web browser to:  [http://127.0.0.1:8080](http://127.0.0.1:8080)
-
-Login as admin/admin and setup application roles etc.  More documentation to come later on application specific setup.
-
-#### How to build your own web project in GoCore
-
-See [Application Settings](https://github.com/DanielRenne/GoCore/blob/master/doc/Application_Settings.md) within docs for information on what webConfig.json allows for.
-
-## IMPORTANT NOTE for HTTPS (TLS) Security
-GoCore comes default with an open ssl generated Cert and PEM files that are **NOT** secret as they are available via the open source repository.  Make sure you replace both these files located in the `keys` directory.  To do this we recommend in Linux running the following command and copying the output files to the `keys` directory.  Alternatively cert and pem files generated by a valid Certificate Authority like GoDaddy or Verisign when you reach production with an online domain.
-
-	openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout key.pem -out cert.pem
-
-NOTE:  We also recommend **NOT** to store your secret key files in source control.  We recommend ignoring the keys directory for source control.
-
-NOTE:  key files are ingored when running `getCore` as to not overwrite your keys.
-
-Additional Info on Golang https:  [https://www.kaihag.com/https-and-go/](https://www.kaihag.com/https-and-go/ "HTTPS&GO")
-
-
-
-## Building a Database Model with SQLite3
-
-####NOTE: Because SQLite3 requires gcc externally we separated the driver for compiling reasons.  Windows users we recommend installing gcc as a prerequisite for the sqlite3 golang module to compile via [tdb-gcc](http://tdm-gcc.tdragon.net/download).  Be sure to install 64 bit for 64 bit machines.
-
-####More SQLite tools to verify your data in Windows [SQLite Studio](http://sqlitestudio.pl/)
-
-To create a SQLite3 Database schema and model package for your application run the following:
-
-	go install github.com/DanielRenne/GoCore/buildCoreLite
-
-Then run
-
-	buildCoreLite
-
-## References
-
-* [NOSQL Database Schema Model API](https://github.com/DanielRenne/GoCore/blob/master/doc/NOSQL_Schema_Model.md)
+### If you decide not to use the web server functionality and want to try out some other helper utilities outlined in our goals, our main documentation for the codebase located here: [https://pkg.go.dev/github.com/DanielRenne/GoCore](https://pkg.go.dev/github.com/DanielRenne/GoCore)

@@ -65,6 +65,12 @@ func (obj *modelTransactions) New(userId string) (*Transaction, error) {
 	return &t, err
 }
 
+func (obj *modelTransactions) Start() (*Transaction, error) {
+	t := Transaction{}
+	err := t.Begin()
+	return &t, err
+}
+
 func (self *Transaction) Save() error {
     /*
 	collectionTransactionMutex.RLock()
@@ -254,6 +260,10 @@ func (self *Transaction) Commit() error {
     */
     return nil
 
+}
+
+func (self *Transaction) RollbackTransaction() error {
+	return self.Rollback("", "")	
 }
 
 func (self *Transaction) Rollback(userId string, reason string) error {

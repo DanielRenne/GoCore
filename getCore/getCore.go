@@ -1,3 +1,4 @@
+// cmd Deprecated.  This package is for another project who uses GoCore and we are leaving it here for now
 package main
 
 // NOTE, this file is legacy and for another project using GoCore no need to install it

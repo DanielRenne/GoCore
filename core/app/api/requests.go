@@ -17,6 +17,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// ErrorResponse is the default error response object.
 type ErrorResponse struct {
 	Error *errorObj `json:"error,omitEmpty"`
 }
@@ -199,7 +200,7 @@ func processSocketAPI(c *gin.Context, data []byte, conn *app.WebSocketConnection
 
 }
 
-//ProcessRequest will process a controller requeest.
+// ProcessRequest will process a controller requeest.
 func ProcessRequest(controller string, action string, data []byte, results func(y interface{}, e ErrorResponse, httpStatus int)) {
 	processRequest(controller, action, data, nil, results)
 }

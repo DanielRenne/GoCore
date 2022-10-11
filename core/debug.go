@@ -1,7 +1,9 @@
-// Debug functions.
+// Package core is the main package contents of the GoCore application collection of packages and utilities
+// Also the root contains some debugging/dumping variable functions
 package core
 
 import (
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -23,9 +25,16 @@ type core_debug struct{}
 
 var core_logger = log.New(os.Stdout, "", 0)
 
+// TransactionLog provides a thread-safe buffer/string if you have serverSettings.WebConfig.Application.ReleaseMode == "development" you can call something like core.Debug.GetDump in many places and then read the TransactionLog when you need to (note you must manually clear it as it will just increase your memory usage the more logs are sent)
 var TransactionLog string
+
+// Debug is a base struct for all debug functions.
 var Debug = core_debug{}
+
+// Logger can be overridden with log.New(os.Stdout, "", 0) to log to stdout or some other writer
 var Logger = core_logger
+
+// TransactionLogMutex is a mutex for the TransactionLog which should be used on your end to clear the value safely
 var TransactionLogMutex *sync.RWMutex
 
 func init() {
@@ -43,6 +52,7 @@ func (self *core_debug) Nop(dummiesIn ...interface{}) (dummyOut interface{}) {
 	return nil
 }
 
+// CallStackInfo returns a string with the call stack info.
 func (self *core_debug) CallStackInfo(skip int) (info string) {
 	pc, file, line, ok := runtime.Caller(skip)
 	if ok {
@@ -56,10 +66,12 @@ func (self *core_debug) CallStackInfo(skip int) (info string) {
 	return info
 }
 
+// PrintCallStack prints the call stack info.
 func (self *core_debug) PrintCallStack() {
 	debug.PrintStack()
 }
 
+// LogCallStack logs the call stack info.
 func (self *core_debug) LogCallStack() {
 	log.Print(self.Stack())
 }
@@ -76,30 +88,27 @@ func (self *core_debug) formatCallstack(skip int) string {
 	return fmt.Sprintf("\nCallstack: %s", self.CallStackInfo(skip+1))
 }
 
+// FormatSkip formats a value with callstack info.
 func (self *core_debug) FormatSkip(skip int, value interface{}) string {
 	return self.formatValue(value) + self.formatCallstack(skip+1)
 }
 
+// Format formats a value with callstack info.
 func (self *core_debug) Format(value interface{}) string {
 	return self.FormatSkip(2, value)
 }
 
-func (self *core_debug) DumpQuiet(values ...interface{}) {
-	// uncomment below to find your callers to quiet
-	self.Print("Silently not dumping " + extensions.IntToString(len(values)) + " values")
-	//Logger.Println("DumpQuiet has " + extensions.IntToString(len(values)) + " parameters called")
-	//Logger.Println("")
-	//self.ThrowAndPrintError()
-}
-
+// IsZeroOfUnderlyingType returns true if the value is the zero value (nil) for its type.
 func IsZeroOfUnderlyingType(x interface{}) bool {
 	return reflect.DeepEqual(x, reflect.Zero(reflect.TypeOf(x)).Interface())
 }
 
+// IsZeroOfUnderlyingType2 returns true if the value is the zero value (nil) for its type.
 func IsZeroOfUnderlyingType2(x interface{}) bool {
 	return x == reflect.Zero(reflect.TypeOf(x)).Interface()
 }
 
+// HandleError is a helper function that will log an error and return it with the callers line and file.
 func (self *core_debug) HandleError(err error) (s string) {
 	if err != nil {
 		// notice that we're using 1, so it will actually log the where
@@ -111,6 +120,7 @@ func (self *core_debug) HandleError(err error) (s string) {
 	return ""
 }
 
+// ErrLineAndFile returns the line and file of the error.
 func (self *core_debug) ErrLineAndFile(err error) (s string) {
 	if err != nil {
 		// notice that we're using 1, so it will actually log the where
@@ -122,6 +132,7 @@ func (self *core_debug) ErrLineAndFile(err error) (s string) {
 	return ""
 }
 
+// Dump is a helper function that will log unlimited values to print to stdout or however you have log setup if you overload core/Logger
 func (self *core_debug) Dump(valuesOriginal ...interface{}) {
 	t := time.Now()
 	l := "!!!!!!!!!!!!! DEBUG " + t.Format("2006-01-02 15:04:05.000000") + "!!!!!!!!!!!!!\n\n"
@@ -135,7 +146,7 @@ func (self *core_debug) Dump(valuesOriginal ...interface{}) {
 	}
 	serverSettings.WebConfigMutex.RUnlock()
 	for _, value := range valuesOriginal {
-		l := self.DumpBase(value)
+		l := self.dumpBase(value)
 		Logger.Print(l)
 		serverSettings.WebConfigMutex.RLock()
 		if serverSettings.WebConfig.Application.ReleaseMode == "development" {
@@ -166,9 +177,10 @@ func (self *core_debug) Dump(valuesOriginal ...interface{}) {
 	serverSettings.WebConfigMutex.RUnlock()
 }
 
+// GetDump is a helper function that will log unlimited values which will return a string representation of what was logged
 func (self *core_debug) GetDump(valuesOriginal ...interface{}) (output string) {
 	for _, value := range valuesOriginal {
-		output += self.DumpBase(value)
+		output += self.dumpBase(value)
 	}
 	//output += self.ThrowAndPrintError()
 	return output
@@ -179,6 +191,7 @@ func (self *core_debug) GetDumpWithInfo(valuesOriginal ...interface{}) (output s
 	return self.GetDumpWithInfoAndTimeString(t.String(), valuesOriginal...)
 }
 
+// GetDumpWithInfoAndTimeString is a helper function that will log unlimited values which will return a string representation of what was logged but allows you to pass your own time string in a case of timezone offsets
 func (self *core_debug) GetDumpWithInfoAndTimeString(timeStr string, valuesOriginal ...interface{}) (output string) {
 	l := "\n!!!!!!!!!!!!! DEBUG " + timeStr + "!!!!!!!!!!!!!\n\n"
 	output += l
@@ -192,7 +205,7 @@ func (self *core_debug) GetDumpWithInfoAndTimeString(timeStr string, valuesOrigi
 	serverSettings.WebConfigMutex.RUnlock()
 
 	for _, value := range valuesOriginal {
-		output += self.DumpBase(value) + "\n"
+		output += self.dumpBase(value) + "\n"
 	}
 
 	serverSettings.WebConfigMutex.RLock()
@@ -224,9 +237,7 @@ func (self *core_debug) GetDumpWithInfoAndTimeString(timeStr string, valuesOrigi
 	return output
 }
 
-func (self *core_debug) DumpBase(values ...interface{}) (output string) {
-	//golog "github.com/DanielRenne/GoCore/core/log"
-	//defer golog.TimeTrack(time.Now(), "Dump")
+func (self *core_debug) dumpBase(values ...interface{}) (output string) {
 	var jsonString string
 	var err error
 	var structKeys []string
@@ -235,8 +246,9 @@ func (self *core_debug) DumpBase(values ...interface{}) (output string) {
 			isAllJSON := true
 			var kind string
 			kind = strings.TrimSpace(fmt.Sprintf("%T", value))
-			var pieces = strings.Split(kind, " ")
-			if pieces[0] == "struct" || strings.Index(pieces[0], "model.") != -1 || strings.Index(pieces[0], "viewModel.") != -1 {
+			// var pieces = strings.Split(kind, " ")
+			// if pieces[0] == "struct" || strings.Index(pieces[0], "model.") != -1 || strings.Index(pieces[0], "viewModel.") != -1 {
+			if !IsZeroOfUnderlyingType(value) {
 				kind = reflections.ReflectKind(value)
 				structKeys, err = reflections.FieldsDeep(value)
 				if err == nil {
@@ -255,24 +267,35 @@ func (self *core_debug) DumpBase(values ...interface{}) (output string) {
 			} else {
 				isAllJSON = false
 			}
+
 			if isAllJSON || kind == "map" || kind == "bson.M" || kind == "slice" {
 				var rawBytes []byte
 				rawBytes, err = json.MarshalIndent(value, "", "\t")
 				if err == nil {
-					output += fmt.Sprintf("#### %-39s ####\n%+v", kind, string(rawBytes[:]))
+					if kind == "slice" || kind[:2] == "[]" {
+						valReflected := reflect.ValueOf(value)
+						output += fmt.Sprintf("#### %-39s [len:%s]####\n%+v", kind, extensions.IntToString(valReflected.Len()), string(rawBytes[:]))
+					} else {
+						output += fmt.Sprintf("#### %-39s ####\n%+v", kind, string(rawBytes[:]))
+					}
 				}
 			} else {
 				if strings.TrimSpace(kind) == "string" {
-					var stringVal = value.(string)
+					var stringVal = fmt.Sprintf("%+v", value)
 					position := strings.Index(stringVal, "Desc->")
 					if position == -1 {
-						output += "#### + " + kind + " " + stringVal + "[len:" + extensions.IntToString(len(stringVal)) + "]####" + "\n"
-						// for _, tmp := range strings.Split(stringVal, "\\n") {
-						// 	output += "\n" + tmp
-						// }
+						if !extensions.IsPrintable(stringVal) {
+							kind += " (non printables -> dump hex)"
+							stringVal = hex.Dump([]byte(stringVal))
+						}
+						valReflected := reflect.ValueOf(value)
+						output += fmt.Sprintf("#### %-39s [len:%s]####\n%s", kind, extensions.IntToString(valReflected.Len()), stringVal)
 					} else {
 						output += stringVal[6:] + " --> "
 					}
+				} else if kind[:2] == "[]" || strings.TrimSpace(kind) == "array" {
+					valReflected := reflect.ValueOf(value)
+					output += fmt.Sprintf("#### %-39s [len:%s]####\n%+v", kind, extensions.IntToString(valReflected.Len()), value)
 				} else {
 					output += fmt.Sprintf("#### %-39s ####\n%+v", kind, value)
 				}
@@ -282,6 +305,7 @@ func (self *core_debug) DumpBase(values ...interface{}) (output string) {
 	return output
 }
 
+// ThrowAndPrintError is a helper function that will throw a fake error and get the callstack and return it as a string (you probably shouldnt use this)
 func (self *core_debug) ThrowAndPrintError() (output string) {
 
 	serverSettings.WebConfigMutex.RLock()
@@ -323,18 +347,17 @@ func (self *core_debug) ThrowAndPrintError() (output string) {
 	return output
 }
 
+// ThrowError is a helper function that will throw a fake error and get the callstack and return it as an error (you probably shouldnt use this)
 func (self *core_debug) ThrowError() *errors.Error {
 	return errors.Errorf("Debug Dump")
 }
 
-func (self *core_debug) Print(values ...interface{}) {
-	if Logger != nil {
-		Logger.Print(values...)
-	}
+// GetDump is a helper function that will return a string of the dump of the values passed in
+func GetDump(valuesOriginal ...interface{}) string {
+	return Debug.GetDump(valuesOriginal...)
 }
 
-func (self *core_debug) Printf(format string, values ...interface{}) {
-	if Logger != nil {
-		Logger.Printf(format, values...)
-	}
+// Dump is a helper function that will dump the values passed to it
+func Dump(valuesOriginal ...interface{}) {
+	Debug.Dump(valuesOriginal...)
 }

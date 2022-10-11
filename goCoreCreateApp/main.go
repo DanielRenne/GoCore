@@ -42,14 +42,10 @@ func main() {
 	var username string
 	var databaseType string
 	var humanTitle string
-	var createGit string
-	var createGitUsername string
-	var privateRepo string
-	var pushGit string
-	var useSSH string
-	var gitPassword string
 	var colorPalette string
 	var basePath string
+	var profileFile string
+	var mainCNKeys string
 
 	logger.Message("Welcome to the GoCore createApp tool!  Thank you for using GoCore.", logger.YELLOW)
 
@@ -94,6 +90,17 @@ func main() {
 
 	for {
 		reader := bufio.NewReader(os.Stdin)
+		logger.Message("For your self signed SSL cert.  Add your full cert information like this: \"/CN=www.mydom.com/O=My Company Name LTD./C=US\" (defaults to this if you just press enter)", logger.GREEN)
+		mainCNKeys, _ = reader.ReadString('\n')
+		mainCNKeys = strings.Trim(mainCNKeys, "\n")
+		if mainCNKeys == "" {
+			mainCNKeys = "/CN=www.mydom.com/O=My Company Name LTD./C=US"
+		}
+		break
+	}
+
+	for {
+		reader := bufio.NewReader(os.Stdin)
 		fmt.Print("Github.com Username: ")
 		username, _ = reader.ReadString('\n')
 		username = strings.Trim(username, "\n")
@@ -127,131 +134,16 @@ func main() {
 		}
 	}
 
-	createGit = "y"
 	for {
 		reader := bufio.NewReader(os.Stdin)
-		fmt.Print("Create and commit initial git repository (y or n) (defaults y): ")
-		createGit, _ = reader.ReadString('\n')
-		createGit = strings.Trim(createGit, "\n")
-		if createGit == "" {
-			createGit = "y"
+		fmt.Print("Enter the name of the file which loads your shell environment (.bash_profile) is defaulted if you leave blank: ")
+		profileFile, _ = reader.ReadString('\n')
+		profileFile = strings.Trim(profileFile, "\n")
+		if profileFile == "" {
+			profileFile = ".bash_profile"
 		}
-		ok := false
-		if createGit == "y" || createGit == "n" {
-			ok = true
-		} else {
-			fmt.Println("Invalid type 'n' or 'y'")
-		}
-		if ok {
-			break
-		}
+		break
 	}
-
-	if createGit == "y" {
-
-		for {
-			reader := bufio.NewReader(os.Stdin)
-			fmt.Print("If public repo.  Would you like to push this to github.com? (defaults y): ")
-			pushGit, _ = reader.ReadString('\n')
-			pushGit = strings.Trim(pushGit, "\n")
-			if pushGit == "" {
-				pushGit = "y"
-			}
-			ok := false
-			if pushGit == "y" || pushGit == "n" {
-				ok = true
-			} else {
-				fmt.Println("Invalid type 'n' or 'y'")
-			}
-			if ok {
-				break
-			}
-		}
-	}
-
-	if pushGit == "y" {
-
-		for {
-			reader := bufio.NewReader(os.Stdin)
-			fmt.Print("Use SSH keys locally or password based to push? [y=ssh n=username/password]: ")
-			useSSH, _ = reader.ReadString('\n')
-			useSSH = strings.Trim(createGitUsername, "\n")
-			if useSSH == "" {
-				useSSH = "y"
-			}
-			ok := false
-			if useSSH == "y" || useSSH == "n" {
-				ok = true
-			} else {
-				fmt.Println("Enter y or n")
-			}
-			if ok {
-				break
-			}
-		}
-
-		for {
-			reader := bufio.NewReader(os.Stdin)
-			fmt.Print("Enter github.com username to push as [will send \"" + username + "\"] change if this is a team account to your local login you use for your team: ")
-			createGitUsername, _ = reader.ReadString('\n')
-			createGitUsername = strings.Trim(createGitUsername, "\n")
-			if createGitUsername == "" {
-				createGitUsername = username
-			}
-			ok := false
-			if createGitUsername != "" {
-				ok = true
-			} else {
-				fmt.Println("Enter username")
-			}
-			if ok {
-				break
-			}
-		}
-
-		for {
-			reader := bufio.NewReader(os.Stdin)
-			fmt.Print("Private Repo (defaults n): ")
-			privateRepo, _ = reader.ReadString('\n')
-			privateRepo = strings.Trim(privateRepo, "\n")
-			if privateRepo == "" {
-				privateRepo = "n"
-			}
-			ok := false
-			if privateRepo == "y" || privateRepo == "n" {
-				ok = true
-			} else {
-				fmt.Println("Invalid type 'n' or 'y'")
-			}
-			if ok {
-				break
-			}
-		}
-		for {
-			reader := bufio.NewReader(os.Stdin)
-			fmt.Print("Enter github.com password for user \"" + createGitUsername + "\": ")
-			gitPassword, _ = reader.ReadString('\n')
-			gitPassword = strings.Trim(gitPassword, "\n")
-			ok := false
-			if gitPassword != "" {
-				ok = true
-			} else {
-				fmt.Println("Enter password with at least 4 bytes")
-			}
-			if ok {
-				break
-			}
-		}
-	}
-
-	//logger.Message("Next choose a color palette:", logger.WHITE)
-	//logger.Message("(default) BlueGrey and Orange value=bgo", logger.BLUE)
-	//logger.Message("(default) Green and White value=irish", logger.GREEN)
-
-	//reader = bufio.NewReader(os.Stdin)
-	//fmt.Print("Color value: ")
-	//colorPalette, _ = reader.ReadString('\n')
-	//colorPalette = strings.Trim(colorPalette, "\n")
 
 	cdPath(basePath)
 
@@ -262,6 +154,9 @@ func main() {
 
 	err = extensions.WriteToFile(humanTitle, "/tmp/humanTitle", 0777)
 	errorOut("extensions.WriteToFile "+humanTitle+" to /tmp/humanTitle", err, false)
+
+	err = extensions.WriteToFile(mainCNKeys, "/tmp/mainCNKeys", 0777)
+	errorOut("extensions.WriteToFile "+mainCNKeys+" to /tmp/mainCNKeys", err, false)
 
 	err = extensions.WriteToFile(databaseType, "/tmp/databaseType", 0777)
 	errorOut("extensions.WriteToFile "+databaseType+" to /tmp/databaseType", err, false)
@@ -334,7 +229,7 @@ func main() {
 		errorOut("couldnt process user", err, false)
 	}
 
-	fBashProfile, err := os.OpenFile(user.HomeDir+"/.bash_profile",
+	fBashProfile, err := os.OpenFile(user.HomeDir+"/"+profileFile,
 		os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		errorOut("couldnt create environment variable in the "+user.HomeDir+".bash_profile", err, false)
@@ -383,79 +278,6 @@ func main() {
 
 	err = os.Chdir(basePath + "/" + appPath)
 	errorOut("cd appPath", err, false)
-
-	if createGit == "y" {
-		talk("Adding github files")
-
-		cmd = exec.Command("git", "init")
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		err = cmd.Run()
-		errorOut("git init", err, false)
-
-		cmd = exec.Command("git", "add", ".")
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		err = cmd.Run()
-		errorOut("git add", err, false)
-
-		cmd = exec.Command("git", "commit", "-m", "Initial GoCore App Generation")
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		err = cmd.Run()
-		errorOut("git commit", err, false)
-
-		if useSSH == "y" {
-			cmd = exec.Command("git", "remote", "add", "origin", "git@github.com:"+username+"/"+appName+".git")
-			err = cmd.Run()
-			cmd.Stdout = os.Stdout
-			cmd.Stderr = os.Stderr
-			errorOut("git remote add", err, false)
-		} else {
-			cmd = exec.Command("git", "remote", "add", "origin", "https://github.com/"+username+"/"+appName+".git")
-			cmd.Stdout = os.Stdout
-			cmd.Stderr = os.Stderr
-			err = cmd.Run()
-			errorOut("git remote add", err, false)
-		}
-
-		if pushGit == "y" {
-			talk("Creating repository online")
-			pathExec := "/tmp/execCurl"
-			var endpoint string
-			if username == createGitUsername {
-				endpoint = "https://api.github.com/user/repos"
-			} else {
-				endpoint = "https://api.github.com/orgs/" + username + "/repos"
-			}
-			payload := `"{\"name\": \"` + appName + `\"}"`
-			if privateRepo == "y" {
-				payload = `"{\"private\": true, \"name\": \"` + appName + `\"}"`
-			}
-			err := extensions.WriteToFile("curl -u "+createGitUsername+":"+gitPassword+" "+endpoint+" -d "+payload, pathExec, 777)
-			errorOut("extensions.WriteToFile /tmp/execCurl", err, false)
-			cmd = exec.Command("bash", pathExec)
-			cmd.Stdout = os.Stdout
-			cmd.Stderr = os.Stderr
-			err = cmd.Run()
-			talk("Done creating repository online")
-			errorOut("curl create repo on API", err, true)
-
-			if useSSH == "n" {
-				logger.Message("\n\nRun this after completion.\n\ncd "+os.Getenv("GOPATH")+"/"+appPath+"\ngit push -u "+username+" origin master\n\n\nThen enter your password", logger.MAGENTA)
-			} else {
-				err = os.Chdir(basePath + "/" + appPath)
-				errorOut("cd appPath", err, false)
-				cmd = exec.Command("git", "push", "origin", "master")
-				cmd.Stdout = os.Stdout
-				cmd.Stderr = os.Stderr
-				err = cmd.Run()
-				errorOut("Git push", err, true)
-			}
-			err = os.Remove(pathExec)
-			errorOut("Remove "+pathExec, err, true)
-		}
-	}
 
 	cmd = exec.Command("go", "install", strings.Replace(modelBuildPath, "src/", "", -1))
 	err = cmd.Run()

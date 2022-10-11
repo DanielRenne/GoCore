@@ -1,3 +1,6 @@
+// Package logger provides a simple logging package for GoCore.
+// It can also log running goRoutines, track time of execution easily and tail files
+// Note: To view running gopher logs, you must set serverSettings.WebConfig.Application.LogGophers to true so it will print out the gopher logs at set interval of serverSettings.WebConfig.Application.LogGopherInterval (set this as well)
 package logger
 
 import (
@@ -17,48 +20,66 @@ import (
 	"github.com/globalsign/mgo/bson"
 )
 
+// Color is a color type
 type Color int
 
+// VerboseBornAndDeadGophers is a flag to turn on and off the verbose logging of gophers.
 var VerboseBornAndDeadGophers bool
+
+// TotalSystemGoRoutines is a counter of all the go routines running in the system.
 var TotalSystemGoRoutines int32
+
+// RunningGophers is a list of all the gophers currently running.
 var RunningGophers []string
+
+// GopherTimeRunning is a map of all the gophers currently running and the time they started.
 var GopherTimeRunning map[string]time.Time
+
 var gopherMutex sync.RWMutex
 
 const (
-	RED     = 1
-	GREEN   = 2
-	YELLOW  = 3
-	BLUE    = 4
+	// RED is a color constant
+	RED = 1
+	// GREEN is a color constant
+	GREEN = 2
+	// YELLOW is a color constant
+	YELLOW = 3
+	// BLUE is a color constant
+	BLUE = 4
+	// MAGENTA is a color constant
 	MAGENTA = 5
-	CYAN    = 6
-	WHITE   = 7
+	// CYAN is a color constant
+	CYAN = 6
+	// WHITE is a color constant
+	WHITE = 7
 )
 
 func init() {
-	//VerboseBornAndDeadGophers= true
 	rand.Seed(time.Now().UnixNano())
 	RunningGophers = utils.Array()
 	GopherTimeRunning = make(map[string]time.Time, 0)
 	go func() {
-		time.Sleep(time.Second * 15)
+		time.Sleep(time.Second * 10)
 		for {
 			serverSettings.WebConfigMutex.RLock()
 			if serverSettings.WebConfig.Application.LogGophers {
 				ViewRunningGophers()
 			}
+			sleepTime := serverSettings.WebConfig.Application.LogGopherInterval
 			serverSettings.WebConfigMutex.RUnlock()
-			time.Sleep(time.Second * 15)
+			time.Sleep(time.Second * time.Duration(sleepTime))
 		}
 	}()
 }
 
+// Log is a wrapper for the standard log package.  Pass in unlimited number of parameters.
 func Log(dataValues ...interface{}) {
 	for _, value := range dataValues {
 		Message(fmt.Sprintf("%+v", value), CYAN)
 	}
 }
 
+// Message takes in a string and a color and prints it to the console.
 func Message(message string, c Color) {
 	switch c {
 	case 1:
@@ -97,6 +118,7 @@ func getGopherGender() string {
 	}
 }
 
+// ViewRunningGophers prints out all the gophers currently running in the system who have been wrapped in GoRoutineLogger or GoRoutineLoggerWithId
 func ViewRunningGophers() {
 	gopherMutex.RLock()
 	if len(RunningGophers) > 0 {
@@ -128,6 +150,7 @@ at ` + time.Now().String() + " " + extensions.IntToString(len(RunningGophers)) +
 	gopherMutex.RUnlock()
 }
 
+// GoRoutineLoggerWithId is a wrapper for go routines that will log the start and end of the go routine.  Pass in a function to be executed in the go routine.
 func GoRoutineLoggerWithId(fn func(), routineDesc string, Id string) {
 	if serverSettings.WebConfig.Application.LogGophers {
 		id := getGopherGender()
@@ -153,10 +176,12 @@ func GoRoutineLoggerWithId(fn func(), routineDesc string, Id string) {
 	}
 }
 
+// GoRoutineLogger is a wrapper for go routines that will log the start and end of the go routine.  Pass in a function to be executed in the go routine.
 func GoRoutineLogger(fn func(), routineDesc string) {
 	GoRoutineLoggerWithId(fn, routineDesc, "")
 }
 
+// TimeTrack is typically called in your defer function to log the time it took to execute a function.  But can be used anywhere.
 func TimeTrack(start time.Time, name string) (log string) {
 	elapsed := time.Since(start)
 	//if elapsed.Seconds() > 1 {
@@ -164,6 +189,7 @@ func TimeTrack(start time.Time, name string) (log string) {
 	return fmt.Sprintf("%s took %s", name, elapsed)
 }
 
+// TimeTrackQuery is meant to be used in conjunction with the mgo package.  It will log the time it took to execute a query and the query itself.
 func TimeTrackQuery(start time.Time, name string, collection *mgo.Collection, m bson.M, q *mgo.Query) (log string) {
 	elapsed := time.Since(start)
 	log += "\n\n"
@@ -174,6 +200,7 @@ func TimeTrackQuery(start time.Time, name string, collection *mgo.Collection, m 
 	return
 }
 
+// Tail will return the last n bytes of a file
 func Tail(path string, length int64) (data string) {
 	file, err := os.Open(path)
 	if err != nil {

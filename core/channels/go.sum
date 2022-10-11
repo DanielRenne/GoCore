@@ -1,0 +1,8 @@
+github.com/DanielRenne/GoCore/core/atomicTypes v0.0.0-20221006033550-a4b7beccbc87 h1:TAR/5DvS6v8vzx7KOv6Lm6xo4FseEuJIxFqBgSplSW4=
+github.com/DanielRenne/GoCore/core/atomicTypes v0.0.0-20221006033550-a4b7beccbc87/go.mod h1:QyDH9vWW1+e7fbDWpTu/WPmbdKDr8z57nhTb/8tdmDg=
+github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221006033550-a4b7beccbc87 h1:OtXtN3rzYbETy5dS8lq9wgi7C0HnovbVVFQTxwgOjAw=
+github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221006033550-a4b7beccbc87/go.mod h1:ywraOX8cSLbojCgxjzRXn1QVJSwze8gy+lVToq+L6Zc=
+github.com/forPelevin/gomoji v1.1.6 h1:mSIGhjyMiywuGFHR/6CLL/L6HwwDiQmYGdl1R9a/05w=
+github.com/forPelevin/gomoji v1.1.6/go.mod h1:h31zCiwG8nIto/c9RmijODA1xgN2JSvwKfU7l65xeTk=
+github.com/rivo/uniseg v0.4.2 h1:YwD0ulJSJytLpiaWua0sBDusfsCZohxjxzVTYjwxfV8=
+github.com/rivo/uniseg v0.4.2/go.mod h1:FN3SvrM+Zdj16jyLfmOkMNblXMcoc8DfTHruCPUcx88=

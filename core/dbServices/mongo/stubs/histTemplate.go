@@ -1,3 +1,4 @@
+// Package mongoStubs - Internal Stub templates for mongo struct/ORM generation
 package mongoStubs
 
 var HistTemplate string
@@ -91,6 +92,10 @@ func (self *modelHistCollection) Rollback(transactionId string) error {
 			err = rollbackEntity.Save()
 		} else {
 			err = rollbackEntity.Delete()
+		}
+		
+		if err == nil {
+			dbServices.CollectionCache{}.Remove("OriginalEntity", rollbackEntity.Id.Hex())
 		}
 
 	}

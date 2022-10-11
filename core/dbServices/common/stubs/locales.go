@@ -1,3 +1,4 @@
+// Package commonStubs - Internal Stub templates for bolt/mongo struct/ORM generation
 package commonStubs
 
 var Locales string

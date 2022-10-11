@@ -1,3 +1,4 @@
+// Package path provides basic path functions for OS specific path folder names and a function to get the base path of where the binary resides
 package path
 
 import (
@@ -7,7 +8,10 @@ import (
 	"strings"
 )
 
-//GetBinaryPath will return the location of the binary or the project in go run mode.
+// GetBinaryPath will return the location of the binary or the project in go run mode.
+// Note, if you compiled a go Binary and exported it into an OSX App Package folder, the base path would be the root of where the app lives
+// If you are running a go binary from the command line using go run, the base path returned of where the binary is located so long as you are in the directory of the main and you pass $(cwd) to the first parameter of the go run
+// Else the path when compiled is easily found by using filepath.Dir(os.Executable())
 func GetBinaryPath() (path string) {
 	ex, err := os.Executable()
 	if err != nil {

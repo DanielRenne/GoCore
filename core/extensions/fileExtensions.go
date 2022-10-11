@@ -6,6 +6,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -17,12 +18,14 @@ import (
 	"strings"
 )
 
+// ByOldestFile is a type for sorting files by oldest first
 type ByOldestFile []os.FileInfo
 
 func (a ByOldestFile) Len() int           { return len(a) }
 func (a ByOldestFile) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a ByOldestFile) Less(i, j int) bool { return a[i].ModTime().Unix() < a[j].ModTime().Unix() }
 
+// GetAllFilesSortedBy returns all files in a directory sorted
 func GetAllFilesSortedBy(path string, fileSearch string) (files []os.FileInfo, err error) {
 	files, err = GetAllFilesWithSearch(path, fileSearch)
 	if err == nil {
@@ -31,10 +34,12 @@ func GetAllFilesSortedBy(path string, fileSearch string) (files []os.FileInfo, e
 	return files, err
 }
 
+// GetAllFiles returns all files in a directory
 func GetAllFiles(path string) (files []os.FileInfo, err error) {
 	return GetAllFilesWithSearch(path, "")
 }
 
+// GetAllFilesWithSearch returns all files in a directory with a search string
 func GetAllFilesWithSearch(path string, fileSearch string) (files []os.FileInfo, err error) {
 	files = make([]os.FileInfo, 0)
 	filesAll, err := ioutil.ReadDir(path)
@@ -50,10 +55,12 @@ func GetAllFilesWithSearch(path string, fileSearch string) (files []os.FileInfo,
 	return files, err
 }
 
+// GetAllFolders returns all folders in a directory
 func GetAllFolders(path string) (files []os.FileInfo, err error) {
 	return GetAllFoldersWithSearch(path, "")
 }
 
+// GetAllFoldersWithSearch returns all folders in a directory with a search string
 func GetAllFoldersWithSearch(path string, fileSearch string) (files []os.FileInfo, err error) {
 	files = make([]os.FileInfo, 0)
 	filesAll, err := ioutil.ReadDir(path)
@@ -69,6 +76,7 @@ func GetAllFoldersWithSearch(path string, fileSearch string) (files []os.FileInf
 	return files, err
 }
 
+// GetAllFilesDeepWithSearch recursively returns all files in a directory with a search string
 func GetAllFilesDeepWithSearch(path string, fileSearch string) (files []os.FileInfo, err error) {
 	files = make([]os.FileInfo, 0)
 	filesAll, err := ioutil.ReadDir(path)
@@ -90,6 +98,7 @@ func GetAllFilesDeepWithSearch(path string, fileSearch string) (files []os.FileI
 	return files, err
 }
 
+// GetAllFilesSearchWithPath returns all files in a directory with a search string
 func GetAllFilesSearchWithPath(path string, fileSearch string) (files []FilePath, err error) {
 	files = make([]FilePath, 0)
 	filesAll, err := ioutil.ReadDir(path)
@@ -122,10 +131,12 @@ func GetAllFilesSearchWithPath(path string, fileSearch string) (files []FilePath
 	return files, err
 }
 
+// GetAllDirs returns all directories in a directory
 func GetAllDirs(path string) (files []os.FileInfo, err error) {
 	return GetAllDirWithExclude(path, "")
 }
 
+// GetAllDirWithExclude returns all directories in a directory excluding the exclude string
 func GetAllDirWithExclude(path string, except string) (files []os.FileInfo, err error) {
 	files = make([]os.FileInfo, 0)
 	filesAll, err := ioutil.ReadDir(path)
@@ -141,10 +152,12 @@ func GetAllDirWithExclude(path string, except string) (files []os.FileInfo, err 
 	return files, err
 }
 
+// DirSize returns the size of a directory
 func DirSize(path string) (int64, error) {
 	return DirSizeWithSearch(path, "")
 }
 
+// DirSizeWithSearch returns the size of a directory with a search string
 func DirSizeWithSearch(path string, fileSearch string) (int64, error) {
 	var size int64
 	err := filepath.Walk(path, func(_ string, info os.FileInfo, err error) error {
@@ -158,13 +171,21 @@ func DirSizeWithSearch(path string, fileSearch string) (int64, error) {
 	return size, err
 }
 
+// RemoveDirectoryShell removes a directory using the shell
 func RemoveDirectoryShell(dir string) (err error) {
+	if dir == "/" {
+		return errors.New("Cannot remove root directory")
+	}
 	cmd := exec.Command("rm", "-rf", dir)
 	err = cmd.Run()
 	return
 }
 
+// RemoveDirectory removes a directory
 func RemoveDirectory(dir string) error {
+	if dir == "/" {
+		return errors.New("Cannot remove root directory")
+	}
 	d, err := os.Open(dir)
 	defer d.Close()
 	if err != nil {
@@ -184,6 +205,7 @@ func RemoveDirectory(dir string) error {
 	return nil
 }
 
+// CopyFolder copies a folder to another folder
 func CopyFolder(source string, dest string) (err error) {
 
 	sourceinfo, err := os.Stat(source)
@@ -232,6 +254,7 @@ func CopyFolder(source string, dest string) (err error) {
 	return
 }
 
+// CopyFile copies a file to another file
 func CopyFile(source string, dest string) (err error) {
 	sourcefile, err := os.Open(source)
 	defer sourcefile.Close()
@@ -257,10 +280,12 @@ func CopyFile(source string, dest string) (err error) {
 	return
 }
 
+// WriteAndGoFormat writes a file and formats it with go
 func WriteAndGoFormat(value string, path string) error {
 	return WriteAndGoFmt(value, path, false, 0777)
 }
 
+// WriteAndGoFmt writes a file and formats it with go
 func WriteAndGoFmt(value string, path string, quiet bool, perm os.FileMode) error {
 
 	err := ioutil.WriteFile(path, []byte(value), perm)
@@ -285,10 +310,12 @@ func WriteAndGoFmt(value string, path string, quiet bool, perm os.FileMode) erro
 	return nil
 }
 
+// ReadFile reads a file
 func ReadFile(path string) ([]byte, error) {
 	return ioutil.ReadFile(path)
 }
 
+// ReadFileAndParse reads a file and parses it with json.Unmarshal
 func ReadFileAndParse(path string, v interface{}) (err error) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
@@ -299,6 +326,7 @@ func ReadFileAndParse(path string, v interface{}) (err error) {
 	return
 }
 
+// ParseAndWriteFile parses a file and writes it with json.Marshal
 func ParseAndWriteFile(path string, v interface{}, perm os.FileMode) (err error) {
 	data, err := json.Marshal(v)
 	if err != nil {
@@ -309,6 +337,7 @@ func ParseAndWriteFile(path string, v interface{}, perm os.FileMode) (err error)
 	return
 }
 
+// WriteToFile writes a file
 func WriteToFile(value string, path string, perm os.FileMode) error {
 	err := ioutil.WriteFile(path, []byte(value), perm)
 	if err != nil {
@@ -318,18 +347,22 @@ func WriteToFile(value string, path string, perm os.FileMode) error {
 	return nil
 }
 
+// Write to a file
 func Write(value string, path string) error {
 	return WriteToFile(value, path, UNIX_COMMON_FILE)
 }
 
+// MkDir creates a directory
 func MkDir(path string) error {
 	return os.MkdirAll(path, UNIX_COMMON_DIR)
 }
 
+// MkDirRWAll creates a directory with 0777 permissions
 func MkDirRWAll(path string) error {
 	return os.MkdirAll(path, UNIX_DIR_RWALL)
 }
 
+// DoesFileExist checks if a file exists
 func DoesFileExist(path string) bool {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		return false
@@ -337,6 +370,7 @@ func DoesFileExist(path string) bool {
 	return true
 }
 
+// DoesFileNotExist checks if a file does not exist
 func DoesFileNotExist(path string) bool {
 	if _, err := os.Stat(path); err == nil {
 		// path/to/whatever exists
@@ -345,6 +379,7 @@ func DoesFileNotExist(path string) bool {
 	return true
 }
 
+// MD returns the md5 hash of a string
 func MD5(path string) (string, error) {
 	hasher := md5.New()
 
@@ -359,6 +394,7 @@ func MD5(path string) (string, error) {
 	return val, nil
 }
 
+// UnGzipfunc ungzips a file
 func UnGzipfunc(source, target string) error {
 	reader, err := os.Open(source)
 	defer reader.Close()
@@ -383,6 +419,7 @@ func UnGzipfunc(source, target string) error {
 	return err
 }
 
+// Gzipfunc gzips a file
 func Gzipfunc(source string, target string) (err error) {
 
 	data, err := ReadFile(source)
@@ -415,6 +452,7 @@ func GetFileSize(path string) (size int64, err error) {
 	return
 }
 
+// UnTar unzips a tar file
 func UnTar(tarball, target string) error {
 	reader, err := os.Open(tarball)
 	defer reader.Close()

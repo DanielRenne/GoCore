@@ -117,6 +117,12 @@ func (obj *modelTransactions) Index() error {
 	return nil
 }
 
+func (obj *modelTransactions) Start() (*Transaction, error) {
+	t := Transaction{}
+	err := t.Begin()
+	return &t, err
+}
+
 func (obj *modelTransactions) New(userId string) (*Transaction, error) {
 	t := Transaction{}
 	t.UserId = userId
@@ -225,18 +231,6 @@ func (self *Transaction) Commit() error {
 				affectedRecordCount[pieces[0] + typeAction] = 1
 			}
 		}
-		/*
-			//Future debugging on collections
-			if pieces[0] == "Control" {
-				log.Println("entity for controls (" + typeAction + ")->", entityTran.entity.GetId())
-				log.Println("entity->", entityTran.entity)
-				newControlIds = append(newControlIds, "\""+entityTran.entity.GetId()+"\"")
-			}
-			if pieces[0] == "Variable" {
-				log.Println("entity for variables (" + typeAction + ")->", entityTran.entity.GetId())
-				log.Println("entity->", entityTran.entity)
-			}
-		*/
 		if entityTran.changeType == TRANSACTION_CHANGETYPE_DELETE {
 			err := entityTran.entity.Delete()
 			if err != nil && err.Error() != "not found" {
@@ -329,6 +323,10 @@ func (self *Transaction) Commit() error {
 
 	return errors.New(rollBackErrorMessage)
 
+}
+
+func (self *Transaction) RollbackTransaction() error {
+	return self.Rollback("", "")	
 }
 
 func (self *Transaction) Rollback(userId string, reason string) error {
