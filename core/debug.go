@@ -295,9 +295,9 @@ func (self *core_debug) dumpBase(values ...interface{}) (output string) {
 					}
 				} else if kind[:2] == "[]" || strings.TrimSpace(kind) == "array" {
 					valReflected := reflect.ValueOf(value)
-					output += fmt.Sprintf("#### %-39s [len:%s]####\n%+v", kind, extensions.IntToString(valReflected.Len()), value)
+					output += fmt.Sprintf("#### %-39s [len:%s]####\n%#v", kind, extensions.IntToString(valReflected.Len()), value)
 				} else {
-					output += fmt.Sprintf("#### %-39s ####\n%+v", kind, value)
+					output += fmt.Sprintf("#### %-39s ####\n%#v", kind, value)
 				}
 			}
 		}
