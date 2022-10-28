@@ -246,6 +246,7 @@ func (self *core_debug) dumpBase(values ...interface{}) (output string) {
 			isAllJSON := true
 			var kind string
 			kind = strings.TrimSpace(fmt.Sprintf("%T", value))
+			kindFormatted := strings.TrimSpace(fmt.Sprintf("%T", value))
 			// var pieces = strings.Split(kind, " ")
 			// if pieces[0] == "struct" || strings.Index(pieces[0], "model.") != -1 || strings.Index(pieces[0], "viewModel.") != -1 {
 			if !IsZeroOfUnderlyingType(value) {
@@ -268,7 +269,7 @@ func (self *core_debug) dumpBase(values ...interface{}) (output string) {
 				isAllJSON = false
 			}
 
-			if isAllJSON || kind == "map" || kind == "bson.M" || kind == "slice" {
+			if kindFormatted != "[]uint8" && (isAllJSON || kind == "map" || kind == "bson.M" || kind == "slice") {
 				var rawBytes []byte
 				rawBytes, err = json.MarshalIndent(value, "", "\t")
 				if err == nil {
@@ -293,9 +294,22 @@ func (self *core_debug) dumpBase(values ...interface{}) (output string) {
 					} else {
 						output += stringVal[6:] + " --> "
 					}
-				} else if kind[:2] == "[]" || strings.TrimSpace(kind) == "array" {
-					valReflected := reflect.ValueOf(value)
-					output += fmt.Sprintf("#### %-39s [len:%s]####\n%#v", kind, extensions.IntToString(valReflected.Len()), value)
+				} else if kindFormatted == "[]uint8" || kind[:2] == "[]" || strings.TrimSpace(kind) == "array" {
+					if kindFormatted == "[]uint8" {
+						val, ok := value.([]uint8)
+						if ok {
+							if !extensions.IsPrintable(string(val)) {
+								kind += " (non printables -> dump hex)"
+								output = hex.Dump(value.([]uint8))
+							} else {
+								valReflected := reflect.ValueOf(value)
+								output += fmt.Sprintf("#### %-39s [len:%s]####\n%s", kindFormatted, extensions.IntToString(valReflected.Len()), string(val))
+							}
+						}
+					} else {
+						valReflected := reflect.ValueOf(value)
+						output += fmt.Sprintf("#### %-39s [len:%s]####\n%#v", kind, extensions.IntToString(valReflected.Len()), value)
+					}
 				} else {
 					output += fmt.Sprintf("#### %-39s ####\n%#v", kind, value)
 				}
