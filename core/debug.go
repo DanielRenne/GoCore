@@ -25,11 +25,17 @@ type core_debug struct{}
 
 var core_logger = log.New(os.Stdout, "", 0)
 
-// TransactionLog provides a thread-safe buffer/string if you have serverSettings.WebConfig.Application.ReleaseMode == "development" you can call something like core.Debug.GetDump in many places and then read the TransactionLog when you need to (note you must manually clear it as it will just increase your memory usage the more logs are sent)
+// No one will ever use this, but TransactionLog provides a thread-safe buffer/string if you have debug.EnableTransactionLog set to true you can call something like core.Debug.GetDump in many places and then eventually read the core.TransactionLog value when you need to (note you must manually clear it as it will just increase your memory usage the more logs are sent).  And always remember to use TransactionLogMutex.RLock and unlock when you are trying to read it in a busy system logging lots of stuff 
 var TransactionLog string
+
+// See TransactionLog documentation
+var EnableTransactionLog bool
 
 // Debug is a base struct for all debug functions.
 var Debug = core_debug{}
+
+// LogStackTraces will show you where your logs are coming from in the stack.  Alternatively if you are using a GoCore full web app with a webConfig.json you can set CoreDebugStackTrace to true if you dont override this to false or true.  The default is true.
+var LogStackTraces bool
 
 // Logger can be overridden with log.New(os.Stdout, "", 0) to log to stdout or some other writer
 var Logger = core_logger
@@ -38,6 +44,7 @@ var Logger = core_logger
 var TransactionLogMutex *sync.RWMutex
 
 func init() {
+	LogStackTraces = true
 	TransactionLogMutex = &sync.RWMutex{}
 }
 
@@ -138,43 +145,35 @@ func (self *core_debug) Dump(valuesOriginal ...interface{}) {
 	l := "!!!!!!!!!!!!! DEBUG " + t.Format("2006-01-02 15:04:05.000000") + "!!!!!!!!!!!!!\n\n"
 	Logger.Println(l)
 
-	serverSettings.WebConfigMutex.RLock()
-	if serverSettings.WebConfig.Application.ReleaseMode == "development" {
+	if EnableTransactionLog {
 		TransactionLogMutex.Lock()
 		TransactionLog += l
 		TransactionLogMutex.Unlock()
 	}
-	serverSettings.WebConfigMutex.RUnlock()
 	for _, value := range valuesOriginal {
 		l := self.dumpBase(value)
 		Logger.Print(l)
-		serverSettings.WebConfigMutex.RLock()
-		if serverSettings.WebConfig.Application.ReleaseMode == "development" {
+		if EnableTransactionLog {
 			TransactionLogMutex.Lock()
 			TransactionLog += l
 			TransactionLogMutex.Unlock()
 		}
-		serverSettings.WebConfigMutex.RUnlock()
 	}
 	l = self.ThrowAndPrintError()
 	Logger.Print(l)
 
-	serverSettings.WebConfigMutex.RLock()
-	if serverSettings.WebConfig.Application.ReleaseMode == "development" {
+	if EnableTransactionLog {
 		TransactionLogMutex.Lock()
 		TransactionLog += l
 		TransactionLogMutex.Unlock()
 	}
-	serverSettings.WebConfigMutex.RUnlock()
 	l = "!!!!!!!!!!!!! ENDDEBUG " + t.Format("2006-01-02 15:04:05.000000") + "!!!!!!!!!!!!!"
 	Logger.Println(l)
-	serverSettings.WebConfigMutex.RLock()
-	if serverSettings.WebConfig.Application.ReleaseMode == "development" {
+	if EnableTransactionLog {
 		TransactionLogMutex.Lock()
 		TransactionLog += l
 		TransactionLogMutex.Unlock()
 	}
-	serverSettings.WebConfigMutex.RUnlock()
 }
 
 // GetDump is a helper function that will log unlimited values which will return a string representation of what was logged
@@ -196,44 +195,38 @@ func (self *core_debug) GetDumpWithInfoAndTimeString(timeStr string, valuesOrigi
 	l := "\n!!!!!!!!!!!!! DEBUG " + timeStr + "!!!!!!!!!!!!!\n\n"
 	output += l
 
-	serverSettings.WebConfigMutex.RLock()
-	if serverSettings.WebConfig.Application.ReleaseMode == "development" {
+	if EnableTransactionLog {
 		TransactionLogMutex.Lock()
 		TransactionLog += l
 		TransactionLogMutex.Unlock()
 	}
-	serverSettings.WebConfigMutex.RUnlock()
 
 	for _, value := range valuesOriginal {
 		output += self.dumpBase(value) + "\n"
 	}
 
-	serverSettings.WebConfigMutex.RLock()
-	if serverSettings.WebConfig.Application.ReleaseMode == "development" {
+	if EnableTransactionLog {
 		TransactionLogMutex.Lock()
 		TransactionLog += output
 		TransactionLogMutex.Unlock()
 	}
-	serverSettings.WebConfigMutex.RUnlock()
 
 	l = self.ThrowAndPrintError()
 	output += l
-	serverSettings.WebConfigMutex.RLock()
-	if serverSettings.WebConfig.Application.ReleaseMode == "development" {
+	
+	if EnableTransactionLog {
 		TransactionLogMutex.Lock()
 		TransactionLog += l
 		TransactionLogMutex.Unlock()
 	}
-	serverSettings.WebConfigMutex.RUnlock()
+	
 	l = "!!!!!!!!!!!!! ENDDEBUG " + timeStr + "!!!!!!!!!!!!!\n"
 	output += l
-	serverSettings.WebConfigMutex.RLock()
-	if serverSettings.WebConfig.Application.ReleaseMode == "development" {
+	if EnableTransactionLog {
 		TransactionLogMutex.Lock()
 		TransactionLog += l
 		TransactionLogMutex.Unlock()
 	}
-	serverSettings.WebConfigMutex.RUnlock()
 	return output
 }
 
@@ -325,7 +318,7 @@ func (self *core_debug) ThrowAndPrintError() (output string) {
 	serverSettings.WebConfigMutex.RLock()
 	ok := serverSettings.WebConfig.Application.CoreDebugStackTrace
 	serverSettings.WebConfigMutex.RUnlock()
-	if ok {
+	if ok || LogStackTraces {
 		output += "\n"
 		errorInfo := self.ThrowError()
 		stack := strings.Split(errorInfo.ErrorStack(), "\n")
