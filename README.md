@@ -85,4 +85,10 @@ There are three options to start a webserver. GoCoreLite (just a gin-gonic serve
 
 - GoCoreCreateApp full docs are available [here](https://github.com/DanielRenne/GoCore/blob/master/doc/FrontEnd_BackEnd.md)
 
+## FAQ
+
+### Why to I need to pass $(pwd) on go run?
+
+This is because in many cases for a full GoCore web app, we need to read a webConfig.json in your current directory so that you dont compile configurations inside your main.go and developers and servers can be reconfigured without recompiling.  Go will compile into a tmp directory and we dont know where your webConfig.json is located.  Sure we could always enforce passing this file, but its easier to pass the current directory for go runs.
+
 ### If you decide not to use the web server functionality and want to try out some other helper utilities outlined in our goals, our main documentation for the codebase located here: [https://pkg.go.dev/github.com/DanielRenne/GoCore](https://pkg.go.dev/github.com/DanielRenne/GoCore)
