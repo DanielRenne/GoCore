@@ -25,7 +25,7 @@ type core_debug struct{}
 
 var core_logger = log.New(os.Stdout, "", 0)
 
-// No one will ever use this, but TransactionLog provides a thread-safe buffer/string if you have debug.EnableTransactionLog set to true you can call something like core.Debug.GetDump in many places and then eventually read the core.TransactionLog value when you need to (note you must manually clear it as it will just increase your memory usage the more logs are sent).  And always remember to use TransactionLogMutex.RLock and unlock when you are trying to read it in a busy system logging lots of stuff 
+// No one will ever use this, but TransactionLog provides a thread-safe buffer/string if you have debug.EnableTransactionLog set to true you can call something like core.Debug.GetDump in many places and then eventually read the core.TransactionLog value when you need to (note you must manually clear it as it will just increase your memory usage the more logs are sent).  And always remember to use TransactionLogMutex.RLock and unlock when you are trying to read it in a busy system logging lots of stuff
 var TransactionLog string
 
 // See TransactionLog documentation
@@ -213,13 +213,13 @@ func (self *core_debug) GetDumpWithInfoAndTimeString(timeStr string, valuesOrigi
 
 	l = self.ThrowAndPrintError()
 	output += l
-	
+
 	if EnableTransactionLog {
 		TransactionLogMutex.Lock()
 		TransactionLog += l
 		TransactionLogMutex.Unlock()
 	}
-	
+
 	l = "!!!!!!!!!!!!! ENDDEBUG " + timeStr + "!!!!!!!!!!!!!\n"
 	output += l
 	if EnableTransactionLog {
@@ -268,9 +268,9 @@ func (self *core_debug) dumpBase(values ...interface{}) (output string) {
 				if err == nil {
 					if kind == "slice" || kind[:2] == "[]" {
 						valReflected := reflect.ValueOf(value)
-						output += fmt.Sprintf("#### %-39s [len:%s]####\n%+v", kind, extensions.IntToString(valReflected.Len()), string(rawBytes[:]))
+						output += fmt.Sprintf("#### %-39s [len:%s]####\n%+v", kindFormatted, extensions.IntToString(valReflected.Len()), string(rawBytes[:]))
 					} else {
-						output += fmt.Sprintf("#### %-39s ####\n%+v", kind, string(rawBytes[:]))
+						output += fmt.Sprintf("#### %-39s ####\n%+v", kindFormatted, string(rawBytes[:]))
 					}
 				}
 			} else {
@@ -283,7 +283,7 @@ func (self *core_debug) dumpBase(values ...interface{}) (output string) {
 							stringVal = hex.Dump([]byte(stringVal))
 						}
 						valReflected := reflect.ValueOf(value)
-						output += fmt.Sprintf("#### %-39s [len:%s]####\n%s", kind, extensions.IntToString(valReflected.Len()), stringVal)
+						output += fmt.Sprintf("#### %-39s [len:%s]####\n%s", kindFormatted, extensions.IntToString(valReflected.Len()), stringVal)
 					} else {
 						output += stringVal[6:] + " --> "
 					}
@@ -292,7 +292,7 @@ func (self *core_debug) dumpBase(values ...interface{}) (output string) {
 						val, ok := value.([]uint8)
 						if ok {
 							if !extensions.IsPrintable(string(val)) {
-								kind += " (non printables -> dump hex)"
+								kind += " (non printables -> dump hex of a []byte)"
 								output = hex.Dump(value.([]uint8))
 							} else {
 								valReflected := reflect.ValueOf(value)
@@ -301,10 +301,10 @@ func (self *core_debug) dumpBase(values ...interface{}) (output string) {
 						}
 					} else {
 						valReflected := reflect.ValueOf(value)
-						output += fmt.Sprintf("#### %-39s [len:%s]####\n%#v", kind, extensions.IntToString(valReflected.Len()), value)
+						output += fmt.Sprintf("#### %-39s [len:%s]####\n%#v", kindFormatted, extensions.IntToString(valReflected.Len()), value)
 					}
 				} else {
-					output += fmt.Sprintf("#### %-39s ####\n%#v", kind, value)
+					output += fmt.Sprintf("#### %-39s ####\n%#v", kindFormatted, value)
 				}
 			}
 		}
