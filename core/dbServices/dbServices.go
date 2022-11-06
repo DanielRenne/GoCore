@@ -61,14 +61,11 @@ func ReadMongoDB() (mdb *mgo.Database) {
 // Initialize will initialize the database connection
 func Initialize() {
 	fmt.Println("core dbServices initialized.")
-	go func() {
-		switch serverSettings.WebConfig.DbConnection.Driver {
-		case DATABASE_DRIVER_BOLTDB:
-			openBolt()
-		case DATABASE_DRIVER_MONGODB:
-			openMongo()
-		}
-	}()
+	if serverSettings.WebConfig.DbConnection.Driver == DATABASE_DRIVER_BOLTDB {
+		openBolt()
+	} else if serverSettings.WebConfig.DbConnection.Driver == DATABASE_DRIVER_MONGODB {
+		go openMongo()
+	}
 }
 
 func openBolt() {

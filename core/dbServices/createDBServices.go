@@ -1091,7 +1091,7 @@ func genNoSQLRuntime(collection NOSQLCollection, schema NOSQLSchema, driver stri
 		val += genNoSQLSchemaRange(collection, schema, driver)
 	}
 
-	val += genSetCollection(collection)
+	val += genSetCollection(collection, driver)
 
 	val += genById(collection, schema, driver)
 	val += genDoesIdExist(collection, schema, driver)
@@ -1209,7 +1209,7 @@ func genNOSQLQuery(collection NOSQLCollection, schema NOSQLSchema, driver string
 					}
 					elapseMs = elapseMs + 2
 					time.Sleep(time.Millisecond * 2)
-					if elapseMs `, strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name)) + "%" + heredoc.Docf(`10000 == 0 {
+					if elapseMs `, strings.Title(collection.Name), strings.Title(collection.Name)) + "%" + heredoc.Docf(`10000 == 0 {
 						log.Println("%s has not bootstrapped and has yet to get a collection pointer")
 					}
 				}
@@ -1457,8 +1457,9 @@ func genNoSQLSchemaSave(collection NOSQLCollection, schema NOSQLSchema, driver s
 	return val
 }
 
-func genSetCollection(collection NOSQLCollection) string {
-	return `func (obj model` + strings.Title(collection.Name) + `) SetCollection(mdb *mgo.Database) {
+func genSetCollection(collection NOSQLCollection, driver string) string {
+	if driver == DATABASE_DRIVER_MONGODB {
+		return `func (obj model` + strings.Title(collection.Name) + `) SetCollection(mdb *mgo.Database) {
 		collection` + strings.Title(collection.Name) + `Mutex.Lock()
 		mongo` + strings.Title(collection.Name) + `Collection = mdb.C("` + strings.Title(collection.Name) + `")
 		ci := mgo.CollectionInfo{ForceIdIndex: true}
@@ -1467,6 +1468,8 @@ func genSetCollection(collection NOSQLCollection) string {
 	}
 
 `
+	}
+	return "\n\n"
 }
 
 func genById(collection NOSQLCollection, schema NOSQLSchema, driver string) string {

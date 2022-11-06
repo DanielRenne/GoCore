@@ -57,13 +57,6 @@ func ExampleGetDump() {
 
 // Dump many values to stdout
 func ExampleDump() {
-	/*
-		import (
-			"log"
-
-			"github.com/DanielRenne/GoCore/core"
-		)
-	*/
 	type example struct {
 		bytes []byte
 		data  *string
