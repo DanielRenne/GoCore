@@ -33,6 +33,7 @@ var MongoDB *mgo.Database
 
 var mongoDBOverride string
 var mongoDBNameOverride string
+var hasBoltConnected bool
 
 const (
 	//Driver Types
@@ -69,23 +70,26 @@ func Initialize() {
 }
 
 func openBolt() {
+	if !hasBoltConnected {
 
-	myDBDir := serverSettings.APP_LOCATION + "/db/" + serverSettings.WebConfig.DbConnection.ConnectionString
+		myDBDir := serverSettings.APP_LOCATION + "/db/" + serverSettings.WebConfig.DbConnection.ConnectionString
 
-	os.Mkdir(path.Dir(myDBDir), 0777)
+		os.Mkdir(path.Dir(myDBDir), 0777)
 
-	// (Create if not exist) open a database
-	var err error
-	DBMutex.Lock()
-	BoltDB, err = storm.Open(myDBDir)
-	DBMutex.Unlock()
+		// (Create if not exist) open a database
+		var err error
+		DBMutex.Lock()
+		BoltDB, err = storm.Open(myDBDir)
+		DBMutex.Unlock()
 
-	if err != nil {
-		color.Red("Failed to create or open boltDB Database at " + myDBDir + ":\n\t" + err.Error())
-		os.Exit(1)
+		if err != nil {
+			color.Red("Failed to create or open boltDB Database at " + myDBDir + ":\n\t" + err.Error())
+			os.Exit(1)
+		}
+		color.Cyan("Successfully opened new bolt DB at " + myDBDir)
 	}
+	hasBoltConnected = true
 
-	color.Cyan("Successfully opened new bolt DB at " + myDBDir)
 }
 
 // GetMongoDialInfo returns a mgo.DialInfo object based on the current serverSettings
