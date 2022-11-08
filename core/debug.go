@@ -44,7 +44,7 @@ var Logger = core_logger
 var TransactionLogMutex *sync.RWMutex
 
 func init() {
-	LogStackTraces = true
+	LogStackTraces = false
 	TransactionLogMutex = &sync.RWMutex{}
 }
 
@@ -328,11 +328,21 @@ func (self *core_debug) ThrowAndPrintError() (output string) {
 			output += "\nDump Caller:"
 			output += "\n---------------"
 			//output += strings.Join(stack, ",")
-			output += "\n golines ==> " + strings.TrimSpace(stack[6])
-			output += "\n         ==> " + strings.TrimSpace(stack[7])
-			output += "\n         ==> " + strings.TrimSpace(stack[8])
-			output += "\n         ==> " + strings.TrimSpace(stack[9])
-			output += "\n         ==> " + strings.TrimSpace(stack[10])
+			if len(stack) >= 7 {
+				output += "\n golines ==> " + strings.TrimSpace(stack[6])
+			}
+			if len(stack) >= 8 {
+				output += "\n         ==> " + strings.TrimSpace(stack[7])
+			}
+			if len(stack) >= 9 {
+				output += "\n         ==> " + strings.TrimSpace(stack[8])
+			}
+			if len(stack) >= 10 {
+				output += "\n         ==> " + strings.TrimSpace(stack[9])
+			}
+			if len(stack) >= 11 {
+				output += "\n         ==> " + strings.TrimSpace(stack[10])
+			}
 			if len(stack) >= 12 {
 				output += "\n         ==> " + strings.TrimSpace(stack[11])
 			}
