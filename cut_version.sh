@@ -1,4 +1,5 @@
 set -e
+./update_go_modules.sh
 currentDir=$(pwd)
 echo "New version number (with out the v)"
 read version

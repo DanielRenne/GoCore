@@ -3,17 +3,17 @@ module github.com/DanielRenne/GoCore/core/mongo
 go 1.19
 
 require (
-	github.com/DanielRenne/GoCore/core/atomicTypes v0.0.0-20221006033550-a4b7beccbc87
-	github.com/DanielRenne/GoCore/core/dbServices v0.0.0-20221006033550-a4b7beccbc87
+	github.com/DanielRenne/GoCore/core/atomicTypes v0.0.0-20221108044544-fbffa31e3788
+	github.com/DanielRenne/GoCore/core/dbServices v0.0.0-20221108044544-fbffa31e3788
 )
 
 require (
-	github.com/DanielRenne/GoCore/core/dbServices/bolt/stubs v0.0.0-20221006033550-a4b7beccbc87 // indirect
-	github.com/DanielRenne/GoCore/core/dbServices/common/stubs v0.0.0-20221006033550-a4b7beccbc87 // indirect
-	github.com/DanielRenne/GoCore/core/dbServices/mongo/stubs v0.0.0-20221006033550-a4b7beccbc87 // indirect
-	github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221006033550-a4b7beccbc87 // indirect
-	github.com/DanielRenne/GoCore/core/path v0.0.0-20221006033550-a4b7beccbc87 // indirect
-	github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221006033550-a4b7beccbc87 // indirect
+	github.com/DanielRenne/GoCore/core/dbServices/bolt/stubs v0.0.0-20221108044544-fbffa31e3788 // indirect
+	github.com/DanielRenne/GoCore/core/dbServices/common/stubs v0.0.0-20221108044544-fbffa31e3788 // indirect
+	github.com/DanielRenne/GoCore/core/dbServices/mongo/stubs v0.0.0-20221108044544-fbffa31e3788 // indirect
+	github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221108044544-fbffa31e3788 // indirect
+	github.com/DanielRenne/GoCore/core/path v0.0.0-20221108044544-fbffa31e3788 // indirect
+	github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221108044544-fbffa31e3788 // indirect
 	github.com/asdine/storm v2.1.2+incompatible // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/davidrenne/heredoc v0.0.0-20161006151009-80dc836e596c // indirect
@@ -28,7 +28,7 @@ require (
 	github.com/rivo/uniseg v0.4.2 // indirect
 	go.etcd.io/bbolt v1.3.6 // indirect
 	golang.org/x/net v0.0.0-20190603091049-60506f45cf65 // indirect
-	golang.org/x/sys v0.0.0-20220928140112-f11e5e49a4ec // indirect
+	golang.org/x/sys v0.2.0 // indirect
 	google.golang.org/protobuf v1.26.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

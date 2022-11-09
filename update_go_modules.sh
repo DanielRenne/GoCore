@@ -59,7 +59,7 @@ cd -
 # cd dbServices/example
 # go get -u
 # go mod tidy
-cd -
+# cd -
 echo "Updating dbServices/mongo/stubs"
 cd dbServices/mongo/stubs
 go get -u
