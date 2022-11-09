@@ -2,7 +2,6 @@ go 1.19
 
 use (
 	.
-	./core/dbServices/example
 	./core
 	./core/zip
 	./core/utils

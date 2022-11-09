@@ -66,6 +66,9 @@ func init() {
 				ViewRunningGophers()
 			}
 			sleepTime := serverSettings.WebConfig.Application.LogGopherInterval
+			if sleepTime == 0 {
+				sleepTime = 60
+			}
 			serverSettings.WebConfigMutex.RUnlock()
 			time.Sleep(time.Second * time.Duration(sleepTime))
 		}

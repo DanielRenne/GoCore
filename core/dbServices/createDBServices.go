@@ -1138,7 +1138,7 @@ func genNOSQLRemoveAll(collection NOSQLCollection, schema NOSQLSchema, driver st
 						break
 					}
 					elapseMs = elapseMs + 2
-					time.Sleep(time.Millisecond * 2)
+					time.Sleep(time.Millisecond * 1000)
 					if elapseMs `, strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name)) + "%" + heredoc.Docf(`10000 == 0 {
 						log.Println("%s has not bootstrapped and has yet to get a collection pointer")
 					}
@@ -1183,7 +1183,7 @@ func genNOSQLQuery(collection NOSQLCollection, schema NOSQLSchema, driver string
 						break
 					}
 					elapseMs = elapseMs + 2
-					time.Sleep(time.Millisecond * 2)
+					time.Sleep(time.Millisecond * 1000)
 					if elapseMs `, strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name), strings.Title(collection.Name)) + "%" + heredoc.Docf(`10000 == 0 {
 						log.Println("%s has not bootstrapped and has yet to get a collection pointer")
 					}
@@ -1208,7 +1208,7 @@ func genNOSQLQuery(collection NOSQLCollection, schema NOSQLSchema, driver string
 						break
 					}
 					elapseMs = elapseMs + 2
-					time.Sleep(time.Millisecond * 2)
+					time.Sleep(time.Millisecond * 1000)
 					if elapseMs `, strings.Title(collection.Name), strings.Title(collection.Name)) + "%" + heredoc.Docf(`10000 == 0 {
 						log.Println("%s has not bootstrapped and has yet to get a collection pointer")
 					}

@@ -57,7 +57,7 @@ func (obj modelHistCollection) Query() *Query {
 		if collection != nil {
 			break
 		}
-		time.Sleep(time.Millisecond * 2)
+		time.Sleep(time.Millisecond * 1000)
 	}
 	collectionHistCollectionMutex.RLock()
 	collection := mongoHistCollectionCollection
