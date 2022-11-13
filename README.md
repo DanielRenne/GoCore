@@ -42,9 +42,10 @@ Below are some targeted goals:
 
 ---
 
-- Channel management queues and pubsub functions
+- Channel management queues, pubsub functions and shell utilities
   - A [simple channel management queue system](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/pubsub#example_Signal) for managing goRoutines and channels in [github.com/DanielRenne/GoCore/core/channels](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/channels) package
   - pubsub package for [publishing to subscribers](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/pubsub#example_Publish) in [github.com/DanielRenne/GoCore/core/pubsub](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/pubsub) package
+  - cmdExec package for [easily extracting sdtout and stderr and invoking system binaries in github.com/DanielRenne/GoCore/core/cmdExec](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/cmdExec) package
 
 ---
 
@@ -89,6 +90,6 @@ There are three options to start a webserver. GoCoreLite (just a gin-gonic serve
 
 ### Why to I need to pass $(pwd) on go run?
 
-This is because in many cases for a full GoCore web app, we need to read a webConfig.json in your current directory so that you dont compile configurations inside your main.go and developers and servers can be reconfigured without recompiling.  Go will compile into a tmp directory and we dont know where your webConfig.json is located.  Sure we could always enforce passing this file, but its easier to pass the current directory for go runs.
+This is because in many cases for a full GoCore web app, we need to read a webConfig.json in your current directory so that you dont compile configurations inside your main.go and developers and servers can be reconfigured without recompiling. Go will compile into a tmp directory and we dont know where your webConfig.json is located. Sure we could always enforce passing this file, but its easier to pass the current directory for go runs.
 
 ### If you decide not to use the web server functionality and want to try out some other helper utilities outlined in our goals, our main documentation for the codebase located here: [https://pkg.go.dev/github.com/DanielRenne/GoCore](https://pkg.go.dev/github.com/DanielRenne/GoCore)
