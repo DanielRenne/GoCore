@@ -3,17 +3,17 @@ module github.com/DanielRenne/GoCore/core/mongo
 go 1.19
 
 require (
-	github.com/DanielRenne/GoCore/core/atomicTypes v0.0.0-20221108044544-fbffa31e3788
-	github.com/DanielRenne/GoCore/core/dbServices v0.0.0-20221108044544-fbffa31e3788
+	github.com/DanielRenne/GoCore/core/atomicTypes v0.0.0-20221113211016-1b7bad8bde86
+	github.com/DanielRenne/GoCore/core/dbServices v0.0.0-20221113211016-1b7bad8bde86
 )
 
 require (
-	github.com/DanielRenne/GoCore/core/dbServices/bolt/stubs v0.0.0-20221108044544-fbffa31e3788 // indirect
-	github.com/DanielRenne/GoCore/core/dbServices/common/stubs v0.0.0-20221108044544-fbffa31e3788 // indirect
-	github.com/DanielRenne/GoCore/core/dbServices/mongo/stubs v0.0.0-20221108044544-fbffa31e3788 // indirect
-	github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221108044544-fbffa31e3788 // indirect
-	github.com/DanielRenne/GoCore/core/path v0.0.0-20221108044544-fbffa31e3788 // indirect
-	github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221108044544-fbffa31e3788 // indirect
+	github.com/DanielRenne/GoCore/core/dbServices/bolt/stubs v0.0.0-20221113211016-1b7bad8bde86 // indirect
+	github.com/DanielRenne/GoCore/core/dbServices/common/stubs v0.0.0-20221113211016-1b7bad8bde86 // indirect
+	github.com/DanielRenne/GoCore/core/dbServices/mongo/stubs v0.0.0-20221113211016-1b7bad8bde86 // indirect
+	github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221113211016-1b7bad8bde86 // indirect
+	github.com/DanielRenne/GoCore/core/path v0.0.0-20221113211016-1b7bad8bde86 // indirect
+	github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221113211016-1b7bad8bde86 // indirect
 	github.com/asdine/storm v2.1.2+incompatible // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/davidrenne/heredoc v0.0.0-20161006151009-80dc836e596c // indirect

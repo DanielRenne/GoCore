@@ -3,11 +3,11 @@ module github.com/DanielRenne/GoCore/core/appGen
 go 1.19
 
 require (
-	github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221108044544-fbffa31e3788
-	github.com/DanielRenne/GoCore/core/logger v0.0.0-20221108044544-fbffa31e3788
-	github.com/DanielRenne/GoCore/core/path v0.0.0-20221108044544-fbffa31e3788
-	github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221108044544-fbffa31e3788
-	github.com/DanielRenne/GoCore/core/utils v0.0.0-20221108044544-fbffa31e3788
+	github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221113211016-1b7bad8bde86
+	github.com/DanielRenne/GoCore/core/logger v0.0.0-20221113211016-1b7bad8bde86
+	github.com/DanielRenne/GoCore/core/path v0.0.0-20221113211016-1b7bad8bde86
+	github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221113211016-1b7bad8bde86
+	github.com/DanielRenne/GoCore/core/utils v0.0.0-20221113211016-1b7bad8bde86
 	github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8
 )
 

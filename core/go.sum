@@ -1,9 +1,9 @@
-github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221108044544-fbffa31e3788 h1:Q+jh7Me9sieu8WHB1O9JCG+YwZjrcXFKet/gYtK8pEE=
-github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221108044544-fbffa31e3788/go.mod h1:ywraOX8cSLbojCgxjzRXn1QVJSwze8gy+lVToq+L6Zc=
-github.com/DanielRenne/GoCore/core/path v0.0.0-20221108044544-fbffa31e3788 h1:+YYtiCM8xKCDyTMIdWVq4zKBVznZ/PG/aFjLxfsiDzM=
-github.com/DanielRenne/GoCore/core/path v0.0.0-20221108044544-fbffa31e3788/go.mod h1:/xvJ8xSQDvZ7UuUymCjIwKlJwvWmpjz9IvkmY3RPvCk=
-github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221108044544-fbffa31e3788 h1:bDiCubnNISM4beUig2sxCk18aM0Fn8rWZq1P/sULR4A=
-github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221108044544-fbffa31e3788/go.mod h1:a3QEYyH+oOBoDfpkoPV44vQvvE9SJedpNsI3T33TbDY=
+github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221113211016-1b7bad8bde86 h1:LnLxjzQC97B5hTfbTu3A5feBj3PDlDk1h+nMLxqGAvU=
+github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221113211016-1b7bad8bde86/go.mod h1:ywraOX8cSLbojCgxjzRXn1QVJSwze8gy+lVToq+L6Zc=
+github.com/DanielRenne/GoCore/core/path v0.0.0-20221113211016-1b7bad8bde86 h1:PGwtuWOeav9qQyEVTFqFQ1+muQrNub942zm0k3on96Q=
+github.com/DanielRenne/GoCore/core/path v0.0.0-20221113211016-1b7bad8bde86/go.mod h1:/xvJ8xSQDvZ7UuUymCjIwKlJwvWmpjz9IvkmY3RPvCk=
+github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221113211016-1b7bad8bde86 h1:5sRRJ3HREQxmdSTm9KxfoUtgtV5wIy88nGem0lK467M=
+github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221113211016-1b7bad8bde86/go.mod h1:m+J8moYcKwY/hqj4CaHlQOM+tj40GSyqOMzCKAphurI=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

@@ -1,7 +1,7 @@
-github.com/DanielRenne/GoCore/core/atomicTypes v0.0.0-20221108044544-fbffa31e3788 h1:p9GmZm3BG1mPjaDiA+w6iCq9PjtQSDloLPn7eEbVDLw=
-github.com/DanielRenne/GoCore/core/atomicTypes v0.0.0-20221108044544-fbffa31e3788/go.mod h1:QyDH9vWW1+e7fbDWpTu/WPmbdKDr8z57nhTb/8tdmDg=
-github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221108044544-fbffa31e3788 h1:Q+jh7Me9sieu8WHB1O9JCG+YwZjrcXFKet/gYtK8pEE=
-github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221108044544-fbffa31e3788/go.mod h1:ywraOX8cSLbojCgxjzRXn1QVJSwze8gy+lVToq+L6Zc=
+github.com/DanielRenne/GoCore/core/atomicTypes v0.0.0-20221113211016-1b7bad8bde86 h1:wbwCQT/1JUcHvNQVFuoiz0uFOnCoLvh9umy/MmQx2rI=
+github.com/DanielRenne/GoCore/core/atomicTypes v0.0.0-20221113211016-1b7bad8bde86/go.mod h1:QyDH9vWW1+e7fbDWpTu/WPmbdKDr8z57nhTb/8tdmDg=
+github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221113211016-1b7bad8bde86 h1:LnLxjzQC97B5hTfbTu3A5feBj3PDlDk1h+nMLxqGAvU=
+github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221113211016-1b7bad8bde86/go.mod h1:ywraOX8cSLbojCgxjzRXn1QVJSwze8gy+lVToq+L6Zc=
 github.com/forPelevin/gomoji v1.1.6 h1:mSIGhjyMiywuGFHR/6CLL/L6HwwDiQmYGdl1R9a/05w=
 github.com/forPelevin/gomoji v1.1.6/go.mod h1:h31zCiwG8nIto/c9RmijODA1xgN2JSvwKfU7l65xeTk=
 github.com/rivo/uniseg v0.4.2 h1:YwD0ulJSJytLpiaWua0sBDusfsCZohxjxzVTYjwxfV8=

@@ -3,8 +3,8 @@ module github.com/DanielRenne/GoCore/core/ginServer
 go 1.19
 
 require (
-	github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221108044544-fbffa31e3788
-	github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221108044544-fbffa31e3788
+	github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221113211016-1b7bad8bde86
+	github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221113211016-1b7bad8bde86
 	github.com/davidrenne/professor v0.0.0-20180814210453-cc6399dacc55
 	github.com/fatih/color v1.13.0
 	github.com/gin-contrib/secure v0.0.1
@@ -14,7 +14,7 @@ require (
 )
 
 require (
-	github.com/DanielRenne/GoCore/core/path v0.0.0-20221108044544-fbffa31e3788 // indirect
+	github.com/DanielRenne/GoCore/core/path v0.0.0-20221113211016-1b7bad8bde86 // indirect
 	github.com/boj/redistore v0.0.0-20180917114910-cd5dcc76aeff // indirect
 	github.com/dchest/uniuri v1.2.0 // indirect
 	github.com/forPelevin/gomoji v1.1.6 // indirect
@@ -37,7 +37,7 @@ require (
 	github.com/pelletier/go-toml/v2 v2.0.5 // indirect
 	github.com/rivo/uniseg v0.4.2 // indirect
 	github.com/ugorji/go/codec v1.2.7 // indirect
-	golang.org/x/crypto v0.1.0 // indirect
+	golang.org/x/crypto v0.2.0 // indirect
 	golang.org/x/net v0.2.0 // indirect
 	golang.org/x/sys v0.2.0 // indirect
 	golang.org/x/text v0.4.0 // indirect
