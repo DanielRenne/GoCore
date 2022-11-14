@@ -9,6 +9,7 @@ import (
 	_ "github.com/DanielRenne/GoCore/core/appGen"
 	_ "github.com/DanielRenne/GoCore/core/atomicTypes"
 	_ "github.com/DanielRenne/GoCore/core/channels"
+	_ "github.com/DanielRenne/GoCore/core/cmdExec"
 	_ "github.com/DanielRenne/GoCore/core/crypto"
 	_ "github.com/DanielRenne/GoCore/core/dbServices"
 	_ "github.com/DanielRenne/GoCore/core/dbServices/bolt/stubs"

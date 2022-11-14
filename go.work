@@ -22,6 +22,7 @@ use (
 	./core/channels
 	./core/atomicTypes
 	./core/appGen
+	./core/cmdExec
 	./core/app
 	./core/app/api
 )

@@ -77,11 +77,11 @@ func Run(command string, cmdAndArguments ...string) (stdOut string, stdErr strin
 	}
 
 	err = cmd.Wait()
-	obj, ok := stdOutSync.Load(executionID)
+	obj, ok := stdOutSync.LoadAndDelete(executionID)
 	if ok {
 		stdOut = obj.(string)
 	}
-	obj, ok = stdErrSync.Load(executionID)
+	obj, ok = stdErrSync.LoadAndDelete(executionID)
 	if ok {
 		stdErr = obj.(string)
 	}
