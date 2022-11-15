@@ -13,7 +13,6 @@ import (
 
 	// "fmt"
 	"encoding/base64"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -176,7 +175,7 @@ func (a SchemaNameSorter) Less(i, j int) bool { return a[i].Schema.Name < a[j].S
 
 func RunDBCreate() {
 
-	// jsonData, err := ioutil.ReadFile("db/" + serverSettings.WebConfig.DbConnection.AppName + "/create.json")
+	// jsonData, err := os.ReadFile("db/" + serverSettings.WebConfig.DbConnection.AppName + "/create.json")
 	// if err != nil {
 	// 	fmt.Println("Reading of create.json failed:  " + err.Error())
 	// 	return
@@ -221,7 +220,7 @@ func walkNoSQLSchema() {
 	allCollections.Unlock()
 	basePath := serverSettings.APP_LOCATION + "/db/schemas"
 
-	fileNames, errReadDir := ioutil.ReadDir(basePath)
+	fileNames, errReadDir := os.ReadDir(basePath)
 	if errReadDir != nil {
 		color.Red("Reading of " + basePath + " failed:  " + errReadDir.Error())
 		return
@@ -236,7 +235,7 @@ func walkNoSQLSchema() {
 			versionDir := "v" + version.MajorString
 			walkNoSQLVersion(basePath+"/"+file.Name(), versionDir)
 
-			goFileNames, errGoReadDir := ioutil.ReadDir(serverSettings.APP_LOCATION + "/db/goFiles/v" + version.MajorString)
+			goFileNames, errGoReadDir := os.ReadDir(serverSettings.APP_LOCATION + "/db/goFiles/v" + version.MajorString)
 
 			if errGoReadDir == nil {
 				for _, file := range goFileNames {
@@ -301,7 +300,7 @@ func walkNoSQLVersion(path string, versionDir string) {
 		var e error
 
 		if filepath.Ext(f.Name()) == ".json" {
-			jsonData, err := ioutil.ReadFile(path)
+			jsonData, err := os.ReadFile(path)
 			if err != nil {
 				color.Red("Reading in walkNoSQLVersion of " + path + " failed:  " + err.Error())
 				e = err
@@ -608,7 +607,7 @@ func generateNoSQLModelBucket(driver string) string {
 
 func writeNoSQLWebAPI(value string, path string, collection NOSQLCollection) {
 
-	err := ioutil.WriteFile(path, []byte(value), 0777)
+	err := os.WriteFile(path, []byte(value), 0777)
 	if err != nil {
 		color.Red("Error creating Web API for Collection " + collection.Name + ":  " + err.Error())
 		return
@@ -636,7 +635,7 @@ func copyNoSQLStub(source string, dest string) {
 
 func writeNoSQLStub(value string, path string) {
 
-	err := ioutil.WriteFile(path, []byte(value), 0777)
+	err := os.WriteFile(path, []byte(value), 0777)
 	if err != nil {
 		color.Red("Failed to write stub file to " + path + ":  " + err.Error())
 		return
@@ -654,7 +653,7 @@ func writeNoSQLStub(value string, path string) {
 
 func writeNoSQLModelCollection(value string, path string, collection NOSQLCollection) {
 
-	err := ioutil.WriteFile(path, []byte(value), 0777)
+	err := os.WriteFile(path, []byte(value), 0777)
 	if err != nil {
 		color.Red("Error creating Model for Collection " + collection.Name + ":  " + err.Error())
 		return
@@ -671,7 +670,7 @@ func writeNoSQLModelCollection(value string, path string, collection NOSQLCollec
 
 func writeNOSQLModelBucket(value string, path string) {
 
-	err := ioutil.WriteFile(path, []byte(value), 0777)
+	err := os.WriteFile(path, []byte(value), 0777)
 	if err != nil {
 		color.Red("Error creating Model for Bucket:  " + err.Error())
 		return

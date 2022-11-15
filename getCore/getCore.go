@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 
@@ -147,7 +146,7 @@ func readManifest() (coreManifest, error) {
 
 	var manifest coreManifest
 
-	jsonData, err := ioutil.ReadFile(manifestFileName)
+	jsonData, err := os.ReadFile(manifestFileName)
 	if err != nil {
 		fmt.Println("Reading of " + manifestFileName + " failed:  " + err.Error())
 		return manifest, err

@@ -2,9 +2,9 @@
 package utils
 
 import (
-	"io/ioutil"
 	"log"
 	"math/rand"
+	"os"
 	"os/exec"
 	"strings"
 	"time"
@@ -29,7 +29,7 @@ func RandStringRunes(n int) string {
 
 // ReplaceTokenInFile replaces a token in a file with a find/replace value
 func ReplaceTokenInFile(file string, find string, replaceWith string) {
-	input, err := ioutil.ReadFile(file)
+	input, err := os.ReadFile(file)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -42,7 +42,7 @@ func ReplaceTokenInFile(file string, find string, replaceWith string) {
 		}
 	}
 	output := strings.Join(lines, "\n")
-	err = ioutil.WriteFile(file, []byte(output), 0644)
+	err = os.WriteFile(file, []byte(output), 0644)
 	if err != nil {
 		log.Fatalln(err)
 	}

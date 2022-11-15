@@ -12,7 +12,6 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"math/rand"
 	"os"
 	"os/exec"
@@ -752,7 +751,7 @@ func BootstrapDirectory(directoryName string, collectionCount int) (files [][]by
 
 			go func() {
 				defer wg.Done()
-				jsonData, err := ioutil.ReadFile(path)
+				jsonData, err := os.ReadFile(path)
 				if err != nil {
 					return
 				}
