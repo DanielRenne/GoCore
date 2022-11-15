@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -41,7 +42,7 @@ func GetAllFiles(path string) (files []os.FileInfo, err error) {
 // GetAllFilesWithSearch returns all files in a directory with a search string
 func GetAllFilesWithSearch(path string, fileSearch string) (files []os.FileInfo, err error) {
 	files = make([]os.FileInfo, 0)
-	filesAll, err := os.ReadDir(path)
+	filesAll, err := ioutil.ReadDir(path)
 	if err == nil {
 		for _, file := range filesAll {
 			if !file.IsDir() {
@@ -62,7 +63,7 @@ func GetAllFolders(path string) (files []os.FileInfo, err error) {
 // GetAllFoldersWithSearch returns all folders in a directory with a search string
 func GetAllFoldersWithSearch(path string, fileSearch string) (files []os.FileInfo, err error) {
 	files = make([]os.FileInfo, 0)
-	filesAll, err := os.ReadDir(path)
+	filesAll, err := ioutil.ReadDir(path)
 	if err == nil {
 		for _, file := range filesAll {
 			if file.IsDir() {
@@ -78,7 +79,7 @@ func GetAllFoldersWithSearch(path string, fileSearch string) (files []os.FileInf
 // GetAllFilesDeepWithSearch recursively returns all files in a directory with a search string
 func GetAllFilesDeepWithSearch(path string, fileSearch string) (files []os.FileInfo, err error) {
 	files = make([]os.FileInfo, 0)
-	filesAll, err := os.ReadDir(path)
+	filesAll, err := ioutil.ReadDir(path)
 	if err == nil {
 		for _, file := range filesAll {
 			if !file.IsDir() {
@@ -138,7 +139,7 @@ func GetAllDirs(path string) (files []os.FileInfo, err error) {
 // GetAllDirWithExclude returns all directories in a directory excluding the exclude string
 func GetAllDirWithExclude(path string, except string) (files []os.FileInfo, err error) {
 	files = make([]os.FileInfo, 0)
-	filesAll, err := os.ReadDir(path)
+	filesAll, err := ioutil.ReadDir(path)
 	if err == nil {
 		for _, file := range filesAll {
 			if file.IsDir() {
