@@ -269,10 +269,10 @@ func (self *core_debug) dumpBase(values ...interface{}) (output string) {
 					if kind == "slice" || kind[:2] == "[]" {
 						valReflected := reflect.ValueOf(value)
 						output += fmt.Sprintf("#### %-39s [len:%s]####\n%+v", kindFormatted, extensions.IntToString(valReflected.Len()), string(rawBytes[:]))
-						output += "\n\nOr Go Slice Code\n\n" + fmt.Sprintf("%#v", value)
+						output += "\n\n" + fmt.Sprintf("%#v", value)
 					} else {
 						output += fmt.Sprintf("#### %-39s ####\n%+v", kindFormatted, string(rawBytes[:]))
-						output += "\n\nOr Go Struct Code\n\n" + fmt.Sprintf("%#v", value)
+						output += "\n\n" + fmt.Sprintf("%#v", value)
 					}
 				}
 			} else {
