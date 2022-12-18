@@ -115,6 +115,11 @@ func IsZeroOfUnderlyingType2(x interface{}) bool {
 	return x == reflect.Zero(reflect.TypeOf(x)).Interface()
 }
 
+// IsNil returns true if the value is the zero value (nil) for its type.
+func IsNil(c interface{}) bool {
+	return c == nil || (reflect.ValueOf(c).Kind() == reflect.Ptr && reflect.ValueOf(c).IsNil())
+}
+
 // HandleError is a helper function that will log an error and return it with the callers line and file.
 func (self *core_debug) HandleError(err error) (s string) {
 	if err != nil {
@@ -242,7 +247,7 @@ func (self *core_debug) dumpBase(values ...interface{}) (output string) {
 			kindFormatted := strings.TrimSpace(fmt.Sprintf("%T", value))
 			// var pieces = strings.Split(kind, " ")
 			// if pieces[0] == "struct" || strings.Index(pieces[0], "model.") != -1 || strings.Index(pieces[0], "viewModel.") != -1 {
-			if !IsZeroOfUnderlyingType(value) {
+			if !IsNil(value) {
 				kind = reflections.ReflectKind(value)
 				structKeys, err = reflections.FieldsDeep(value)
 				if err == nil {
@@ -268,10 +273,10 @@ func (self *core_debug) dumpBase(values ...interface{}) (output string) {
 				if err == nil {
 					if kind == "slice" || kind[:2] == "[]" {
 						valReflected := reflect.ValueOf(value)
-						output += fmt.Sprintf("#### %-39s [len:%s]####\n%+v", kindFormatted, extensions.IntToString(valReflected.Len()), string(rawBytes[:]))
+						output += fmt.Sprintf("#### %-39s [len:%s]####\n%+v\n", kindFormatted, extensions.IntToString(valReflected.Len()), string(rawBytes[:]))
 						output += "\n\n" + fmt.Sprintf("%#v", value)
 					} else {
-						output += fmt.Sprintf("#### %-39s ####\n%+v", kindFormatted, string(rawBytes[:]))
+						output += fmt.Sprintf("#### %-39s ####\n%+v\n", kindFormatted, string(rawBytes[:]))
 						output += "\n\n" + fmt.Sprintf("%#v", value)
 					}
 				}
@@ -285,7 +290,7 @@ func (self *core_debug) dumpBase(values ...interface{}) (output string) {
 							stringVal = hex.Dump([]byte(stringVal))
 						}
 						valReflected := reflect.ValueOf(value)
-						output += fmt.Sprintf("#### %-39s [len:%s]####\n%s", kindFormatted, extensions.IntToString(valReflected.Len()), stringVal)
+						output += fmt.Sprintf("#### %-39s [len:%s]####\n%s\n", kindFormatted, extensions.IntToString(valReflected.Len()), stringVal)
 					} else {
 						output += stringVal[6:] + " --> "
 					}
@@ -298,15 +303,15 @@ func (self *core_debug) dumpBase(values ...interface{}) (output string) {
 								output = hex.Dump(value.([]uint8))
 							} else {
 								valReflected := reflect.ValueOf(value)
-								output += fmt.Sprintf("#### %-39s [len:%s]####\n%s", kindFormatted, extensions.IntToString(valReflected.Len()), string(val))
+								output += fmt.Sprintf("#### %-39s [len:%s]####\n%s\n", kindFormatted, extensions.IntToString(valReflected.Len()), string(val))
 							}
 						}
 					} else {
 						valReflected := reflect.ValueOf(value)
-						output += fmt.Sprintf("#### %-39s [len:%s]####\n%#v", kindFormatted, extensions.IntToString(valReflected.Len()), value)
+						output += fmt.Sprintf("#### %-39s [len:%s]####\n%#v\n", kindFormatted, extensions.IntToString(valReflected.Len()), value)
 					}
 				} else {
-					output += fmt.Sprintf("#### %-39s ####\n%#v", kindFormatted, value)
+					output += fmt.Sprintf("#### %-39s ####\n%#v\n", kindFormatted, value)
 				}
 			}
 		}
