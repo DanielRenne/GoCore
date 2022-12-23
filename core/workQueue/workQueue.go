@@ -31,7 +31,15 @@ func New(numWorkers int) Job {
 	jobs := make(chan processJob)
 
 	for i := 0; i < numWorkers; i++ {
-		go worker(i, jobs)
+		go func() {
+			defer func() {
+				if r := recover(); r != nil {
+					log.Println("\n\nPanic Stack: " + string(debug.Stack()))
+					return
+				}
+			}()
+			worker(jobs)
+		}()
 	}
 	var wg sync.WaitGroup
 	return Job{
@@ -117,7 +125,7 @@ func (obj *Job) reset() {
 	obj.jobInvocations = empty
 }
 
-func worker(idx int, jobs chan processJob) {
+func worker(jobs chan processJob) {
 	defer func() {
 		defer func() {
 			if r := recover(); r != nil {
