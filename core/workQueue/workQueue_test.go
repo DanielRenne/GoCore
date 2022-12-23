@@ -30,8 +30,8 @@ func ExampleNew() {
 				log.Println("Could not cast")
 				return
 			}
-			log.Println(value.strParameterExample, "Sleeping ", value.sleep)
 			time.Sleep(time.Duration(value.sleep) * time.Second)
+			log.Println(value.strParameterExample, "Slept ", value.sleep)
 		})
 	}
 	job.RunSynchronously()
