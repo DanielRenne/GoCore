@@ -3,25 +3,25 @@ module github.com/DanielRenne/GoCore/core/app/api
 go 1.19
 
 require (
-	github.com/DanielRenne/GoCore/core/app v0.0.0-20221218012518-5f511e3dd7f1
-	github.com/DanielRenne/GoCore/core/ginServer v0.0.0-20221218012518-5f511e3dd7f1
-	github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221214095338-6f1e84aaa301
-	github.com/gin-gonic/gin v1.8.1
+	github.com/DanielRenne/GoCore/core/app v0.0.0-20221223202811-e70a420aa251
+	github.com/DanielRenne/GoCore/core/ginServer v0.0.0-20221223202811-e70a420aa251
+	github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221223202811-e70a420aa251
+	github.com/gin-gonic/gin v1.8.2
 )
 
 require (
-	github.com/DanielRenne/GoCore/core/atomicTypes v0.0.0-20221214095338-6f1e84aaa301 // indirect
-	github.com/DanielRenne/GoCore/core/dbServices v0.0.0-20221218012518-5f511e3dd7f1 // indirect
-	github.com/DanielRenne/GoCore/core/dbServices/bolt/stubs v0.0.0-20221218012518-5f511e3dd7f1 // indirect
-	github.com/DanielRenne/GoCore/core/dbServices/common/stubs v0.0.0-20221218012518-5f511e3dd7f1 // indirect
-	github.com/DanielRenne/GoCore/core/dbServices/mongo/stubs v0.0.0-20221218012518-5f511e3dd7f1 // indirect
-	github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221214095338-6f1e84aaa301 // indirect
-	github.com/DanielRenne/GoCore/core/fileCache v0.0.0-20221218012518-5f511e3dd7f1 // indirect
-	github.com/DanielRenne/GoCore/core/gitWebHooks v0.0.0-20221218012518-5f511e3dd7f1 // indirect
-	github.com/DanielRenne/GoCore/core/logger v0.0.0-20221214095338-6f1e84aaa301 // indirect
-	github.com/DanielRenne/GoCore/core/path v0.0.0-20221214095338-6f1e84aaa301 // indirect
-	github.com/DanielRenne/GoCore/core/store v0.0.0-20221218012518-5f511e3dd7f1 // indirect
-	github.com/DanielRenne/GoCore/core/utils v0.0.0-20221214095338-6f1e84aaa301 // indirect
+	github.com/DanielRenne/GoCore/core/atomicTypes v0.0.0-20221223195643-35f01702c184 // indirect
+	github.com/DanielRenne/GoCore/core/dbServices v0.0.0-20221223202811-e70a420aa251 // indirect
+	github.com/DanielRenne/GoCore/core/dbServices/bolt/stubs v0.0.0-20221223202811-e70a420aa251 // indirect
+	github.com/DanielRenne/GoCore/core/dbServices/common/stubs v0.0.0-20221223202811-e70a420aa251 // indirect
+	github.com/DanielRenne/GoCore/core/dbServices/mongo/stubs v0.0.0-20221223202811-e70a420aa251 // indirect
+	github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221223195643-35f01702c184 // indirect
+	github.com/DanielRenne/GoCore/core/fileCache v0.0.0-20221223202811-e70a420aa251 // indirect
+	github.com/DanielRenne/GoCore/core/gitWebHooks v0.0.0-20221223202811-e70a420aa251 // indirect
+	github.com/DanielRenne/GoCore/core/logger v0.0.0-20221223202811-e70a420aa251 // indirect
+	github.com/DanielRenne/GoCore/core/path v0.0.0-20221223202811-e70a420aa251 // indirect
+	github.com/DanielRenne/GoCore/core/store v0.0.0-20221223202811-e70a420aa251 // indirect
+	github.com/DanielRenne/GoCore/core/utils v0.0.0-20221223202811-e70a420aa251 // indirect
 	github.com/asdine/storm v2.1.2+incompatible // indirect
 	github.com/boj/redistore v0.0.0-20180917114910-cd5dcc76aeff // indirect
 	github.com/davidrenne/heredoc v0.0.0-20161006151009-80dc836e596c // indirect

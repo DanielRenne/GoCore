@@ -1,9 +1,9 @@
-github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221214095338-6f1e84aaa301 h1:Q4o9vkzs5KJ89wS/FXPNj519rJ4cQnDUgp1WklFA0Sc=
-github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221214095338-6f1e84aaa301/go.mod h1:ywraOX8cSLbojCgxjzRXn1QVJSwze8gy+lVToq+L6Zc=
-github.com/DanielRenne/GoCore/core/path v0.0.0-20221214095338-6f1e84aaa301 h1:qk3/0jZv0GNNVyewUkKqaJ7jJEQRTeiebxKCZQCjbkk=
-github.com/DanielRenne/GoCore/core/path v0.0.0-20221214095338-6f1e84aaa301/go.mod h1:/xvJ8xSQDvZ7UuUymCjIwKlJwvWmpjz9IvkmY3RPvCk=
-github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221214095338-6f1e84aaa301 h1:wToiFt0MYpibNrAFEGaB+d/n3rYqgN5LJeABoL8UGBY=
-github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221214095338-6f1e84aaa301/go.mod h1:E0Uluma2CWghujvENaTBgYSQKSSmwuanm4H7UhXZOPc=
+github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221223195643-35f01702c184 h1:hotvLEWMcGvT7XdvdByk2eKRNTcoqnTq+/hjstQt2N8=
+github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221223195643-35f01702c184/go.mod h1:6gaxFzpuy3c3l/q0gRWar1ry0ZSbopm7clbGYLCjkGU=
+github.com/DanielRenne/GoCore/core/path v0.0.0-20221223202811-e70a420aa251 h1:JilPktCXJ3CPSFGEQGBNa2EzBvI80O8wgJYKZGBEc8k=
+github.com/DanielRenne/GoCore/core/path v0.0.0-20221223202811-e70a420aa251/go.mod h1:/xvJ8xSQDvZ7UuUymCjIwKlJwvWmpjz9IvkmY3RPvCk=
+github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221223202811-e70a420aa251 h1:C2o2JMpwCYMvQ9EL6yVY5a2X9qYSuNt00wMT0Qu6Q4E=
+github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221223202811-e70a420aa251/go.mod h1:7q9I2RC4FB0XfSjjUTTqazFXpoT8ojjFth8Sv921dgM=
 github.com/boj/redistore v0.0.0-20180917114910-cd5dcc76aeff h1:RmdPFa+slIr4SCBg4st/l/vZWVe9QJKMXGO60Bxbe04=
 github.com/boj/redistore v0.0.0-20180917114910-cd5dcc76aeff/go.mod h1:+RTT1BOk5P97fT2CiHkbFQwkK3mjsFAP6zCYV2aXtjw=
 github.com/bradfitz/gomemcache v0.0.0-20180710155616-bc664df96737/go.mod h1:PmM6Mmwb0LSuEubjR8N7PtNe1KxZLtOUHtbeikc5h60=
@@ -34,8 +34,8 @@ github.com/gin-gonic/contrib v0.0.0-20221130124618-7e01895a63f2 h1:dyuNlYlG1faym
 github.com/gin-gonic/contrib v0.0.0-20221130124618-7e01895a63f2/go.mod h1:iqneQ2Df3omzIVTkIfn7c1acsVnMGiSLn4XF5Blh3Yg=
 github.com/gin-gonic/gin v1.3.0/go.mod h1:7cKuhb5qV2ggCFctp2fJQ+ErvciLZrIeoOSOm6mUr7Y=
 github.com/gin-gonic/gin v1.5.0/go.mod h1:Nd6IXA8m5kNZdNEHMBd93KT+mdY3+bewLgRvmCsR2Do=
-github.com/gin-gonic/gin v1.8.1 h1:4+fr/el88TOO3ewCmQr8cx/CtZ/umlIRIs5M4NTNjf8=
-github.com/gin-gonic/gin v1.8.1/go.mod h1:ji8BvRH1azfM+SYow9zQ6SZMvR8qOMZHmsCuWR9tTTk=
+github.com/gin-gonic/gin v1.8.2 h1:UzKToD9/PoFj/V4rvlKqTRKnQYyz8Sc1MJlv4JHPtvY=
+github.com/gin-gonic/gin v1.8.2/go.mod h1:qw5AYuDrzRTnhvusDsrov+fDIxp9Dleuu12h8nfB398=
 github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8/go.mod h1:xkRDCp4j0OGD1HRkm4kmhM+pmpv3AKq5SU7GMg4oO/Q=
 github.com/go-playground/assert/v2 v2.0.1 h1:MsBgLAaY856+nPRTKrp3/OZK38U/wa0CcBYNjji3q3A=
 github.com/go-playground/assert/v2 v2.0.1/go.mod h1:VDjEfimB/XKnb+ZQfWdccd7VUvScMdVu0Titje2rxJ4=

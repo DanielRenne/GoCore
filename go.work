@@ -23,6 +23,7 @@ use (
 	./core/atomicTypes
 	./core/appGen
 	./core/cmdExec
+	./core/workQueue
 	./core/app
 	./core/app/api
 )

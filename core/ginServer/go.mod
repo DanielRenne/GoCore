@@ -3,18 +3,18 @@ module github.com/DanielRenne/GoCore/core/ginServer
 go 1.19
 
 require (
-	github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221214095338-6f1e84aaa301
-	github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221214095338-6f1e84aaa301
+	github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221223195643-35f01702c184
+	github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221223202811-e70a420aa251
 	github.com/davidrenne/professor v0.0.0-20180814210453-cc6399dacc55
 	github.com/fatih/color v1.13.0
 	github.com/gin-contrib/secure v0.0.1
 	github.com/gin-gonic/contrib v0.0.0-20221130124618-7e01895a63f2
-	github.com/gin-gonic/gin v1.8.1
+	github.com/gin-gonic/gin v1.8.2
 	github.com/utrack/gin-csrf v0.0.0-20190424104817-40fb8d2c8fca
 )
 
 require (
-	github.com/DanielRenne/GoCore/core/path v0.0.0-20221214095338-6f1e84aaa301 // indirect
+	github.com/DanielRenne/GoCore/core/path v0.0.0-20221223202811-e70a420aa251 // indirect
 	github.com/boj/redistore v0.0.0-20180917114910-cd5dcc76aeff // indirect
 	github.com/dchest/uniuri v1.2.0 // indirect
 	github.com/forPelevin/gomoji v1.1.8 // indirect

@@ -129,6 +129,11 @@ echo "Updating zip"
 cd zip
 go get -u
 go mod tidy
+cd -
+echo "Updating workQueue"
+cd workQueue
+go get -u
+go mod tidy
 cd ..
 cd ..
 echo "Successfully updated all modules"

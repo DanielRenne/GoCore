@@ -1,5 +1,5 @@
-github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221214095338-6f1e84aaa301 h1:Q4o9vkzs5KJ89wS/FXPNj519rJ4cQnDUgp1WklFA0Sc=
-github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221214095338-6f1e84aaa301/go.mod h1:ywraOX8cSLbojCgxjzRXn1QVJSwze8gy+lVToq+L6Zc=
+github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221223195643-35f01702c184 h1:hotvLEWMcGvT7XdvdByk2eKRNTcoqnTq+/hjstQt2N8=
+github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221223195643-35f01702c184/go.mod h1:6gaxFzpuy3c3l/q0gRWar1ry0ZSbopm7clbGYLCjkGU=
 github.com/forPelevin/gomoji v1.1.8 h1:JElzDdt0TyiUlecy6PfITDL6eGvIaxqYH1V52zrd0qQ=
 github.com/forPelevin/gomoji v1.1.8/go.mod h1:8+Z3KNGkdslmeGZBC3tCrwMrcPy5GRzAD+gL9NAwMXg=
 github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8 h1:DujepqpGd1hyOd7aW59XpK7Qymp8iy83xq74fLr21is=

@@ -26,6 +26,7 @@ import (
 	_ "github.com/DanielRenne/GoCore/core/serverSettings"
 	_ "github.com/DanielRenne/GoCore/core/store"
 	_ "github.com/DanielRenne/GoCore/core/utils"
+	_ "github.com/DanielRenne/GoCore/core/workQueue"
 	_ "github.com/DanielRenne/GoCore/core/zip"
 	_ "github.com/DanielRenne/GoCore/modelBuild"
 	_ "github.com/altipla-consulting/i18n-dateformatter"
