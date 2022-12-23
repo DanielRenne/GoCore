@@ -11,8 +11,8 @@ import (
 
 func ExampleNew() {
 	type data struct {
-		sleep int
-		str   string
+		sleep               int
+		strParameterExample string
 	}
 	min := 0
 	max := 15
