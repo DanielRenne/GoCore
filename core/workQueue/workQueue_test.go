@@ -15,10 +15,10 @@ func ExampleNew() {
 		strParameterExample string
 	}
 	min := 0
-	max := 15
+	max := 5
 	rand.Seed(time.Now().UnixNano())
 
-	job := workqueue.New(50)
+	job := workqueue.New(10)
 	for i := 0; i < 50; i++ {
 		randomInt := rand.Intn(max-min+1) + min
 		job.AddQueue(data{
@@ -30,6 +30,7 @@ func ExampleNew() {
 				log.Println("Could not cast")
 				return
 			}
+			log.Println("Worker starting work....")
 			time.Sleep(time.Duration(value.sleep) * time.Second)
 			log.Println(value.strParameterExample, "Slept ", value.sleep)
 		})
