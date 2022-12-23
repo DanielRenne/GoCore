@@ -1,0 +1,6 @@
+github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221218012627-e3e248301864 h1:dr+u6QD5jqgp6KM1iRz0IS95T2lR61TP8FLn6/wUOaU=
+github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221218012627-e3e248301864/go.mod h1:6gaxFzpuy3c3l/q0gRWar1ry0ZSbopm7clbGYLCjkGU=
+github.com/forPelevin/gomoji v1.1.8 h1:JElzDdt0TyiUlecy6PfITDL6eGvIaxqYH1V52zrd0qQ=
+github.com/forPelevin/gomoji v1.1.8/go.mod h1:8+Z3KNGkdslmeGZBC3tCrwMrcPy5GRzAD+gL9NAwMXg=
+github.com/rivo/uniseg v0.4.3 h1:utMvzDsuh3suAEnhH0RdHmoPbU648o6CvXxTx4SBMOw=
+github.com/rivo/uniseg v0.4.3/go.mod h1:FN3SvrM+Zdj16jyLfmOkMNblXMcoc8DfTHruCPUcx88=
