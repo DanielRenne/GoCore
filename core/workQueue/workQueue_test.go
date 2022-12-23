@@ -35,4 +35,5 @@ func ExampleNew() {
 		})
 	}
 	job.RunSynchronously()
+	log.Println("Job Done!")
 }
