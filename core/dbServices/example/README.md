@@ -30,4 +30,4 @@ You will see a bunch of dumped data starting with
 
 ```
 
-Try to gain and understanding by reading the main source code and also playing with some sample keys I provided in webConfig.json in which will bootstrap new records based upon how you have your application configured bootstrapping data based upon the product you are building or whether its in development mode.
+Try to gain and understanding by [reading the main source code](https://github.com/DanielRenne/GoCore/blob/master/core/dbServices/example/main.go) and also playing with some sample keys I provided in webConfig.json in which will bootstrap new records based upon how you have your application configured bootstrapping data based upon the product you are building or whether its in development mode.
