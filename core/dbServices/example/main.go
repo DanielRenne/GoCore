@@ -1,13 +1,14 @@
 package main
 
 import (
-	// My module name is exampleGoCoreModels
+	// Example module package name is github.com/DanielRenne/GoCore/core/dbServices/example
 	// When a webConfig.json exists like the file in this directory
 	// models/v1/model will generate structs and methods for your ORM schemas
 	// you should never checkin this folder and .gitignore it and require developers to run the buildCore command you have in a binary somewhere to generate the models
-	"github.com/DanielRenne/GoCore/core/dbServices/example/models/v1/model"
 	"fmt"
 	"time"
+
+	"github.com/DanielRenne/GoCore/core/dbServices/example/models/v1/model"
 
 	"github.com/DanielRenne/GoCore/core"
 	"github.com/DanielRenne/GoCore/core/dbServices"

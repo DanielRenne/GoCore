@@ -1,4 +1,4 @@
-module modelsGenerate/exampleGoCoreModels
+module github.com/DanielRenne/GoCore/core/dbServices/example/modelsGenerate
 
 go 1.19
 
