@@ -3,31 +3,31 @@ module github.com/DanielRenne/GoCore
 go 1.19
 
 require (
-	github.com/DanielRenne/GoCore/core v0.0.0-20221223195643-35f01702c184
-	github.com/DanielRenne/GoCore/core/app v0.0.0-20221223202811-e70a420aa251
-	github.com/DanielRenne/GoCore/core/app/api v0.0.0-20221223202811-e70a420aa251
-	github.com/DanielRenne/GoCore/core/appGen v0.0.0-20221223202811-e70a420aa251
-	github.com/DanielRenne/GoCore/core/atomicTypes v0.0.0-20221223195643-35f01702c184
-	github.com/DanielRenne/GoCore/core/channels v0.0.0-20221223202811-e70a420aa251
-	github.com/DanielRenne/GoCore/core/cmdExec v0.0.0-20221223202811-e70a420aa251
-	github.com/DanielRenne/GoCore/core/crypto v0.0.0-20221223202811-e70a420aa251
-	github.com/DanielRenne/GoCore/core/dbServices v0.0.0-20221223202811-e70a420aa251
-	github.com/DanielRenne/GoCore/core/dbServices/bolt/stubs v0.0.0-20221223202811-e70a420aa251
-	github.com/DanielRenne/GoCore/core/dbServices/common/stubs v0.0.0-20221223202811-e70a420aa251
-	github.com/DanielRenne/GoCore/core/dbServices/mongo/stubs v0.0.0-20221223202811-e70a420aa251
-	github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221223195643-35f01702c184
-	github.com/DanielRenne/GoCore/core/fileCache v0.0.0-20221223202811-e70a420aa251
-	github.com/DanielRenne/GoCore/core/ginServer v0.0.0-20221223202811-e70a420aa251
-	github.com/DanielRenne/GoCore/core/gitWebHooks v0.0.0-20221223202811-e70a420aa251
-	github.com/DanielRenne/GoCore/core/httpExtensions v0.0.0-20221223202811-e70a420aa251
-	github.com/DanielRenne/GoCore/core/logger v0.0.0-20221223202811-e70a420aa251
-	github.com/DanielRenne/GoCore/core/mongo v0.0.0-20221223202811-e70a420aa251
-	github.com/DanielRenne/GoCore/core/pubsub v0.0.0-20221223202811-e70a420aa251
-	github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221223202811-e70a420aa251
-	github.com/DanielRenne/GoCore/core/store v0.0.0-20221223202811-e70a420aa251
-	github.com/DanielRenne/GoCore/core/utils v0.0.0-20221223202811-e70a420aa251
-	github.com/DanielRenne/GoCore/core/workQueue v0.0.0-20221223195643-35f01702c184
-	github.com/DanielRenne/GoCore/core/zip v0.0.0-20221223202811-e70a420aa251
+	github.com/DanielRenne/GoCore/core v0.0.0-20221223210029-bca2197988c2
+	github.com/DanielRenne/GoCore/core/app v0.0.0-20221223210029-bca2197988c2
+	github.com/DanielRenne/GoCore/core/app/api v0.0.0-20221224110536-f3cb2b1de330
+	github.com/DanielRenne/GoCore/core/appGen v0.0.0-20221224110536-f3cb2b1de330
+	github.com/DanielRenne/GoCore/core/atomicTypes v0.0.0-20221224110536-f3cb2b1de330
+	github.com/DanielRenne/GoCore/core/channels v0.0.0-20221223210029-bca2197988c2
+	github.com/DanielRenne/GoCore/core/cmdExec v0.0.0-20221224110536-f3cb2b1de330
+	github.com/DanielRenne/GoCore/core/crypto v0.0.0-20221224110536-f3cb2b1de330
+	github.com/DanielRenne/GoCore/core/dbServices v0.0.0-20221224110536-f3cb2b1de330
+	github.com/DanielRenne/GoCore/core/dbServices/bolt/stubs v0.0.0-20221223210029-bca2197988c2
+	github.com/DanielRenne/GoCore/core/dbServices/common/stubs v0.0.0-20221223210029-bca2197988c2
+	github.com/DanielRenne/GoCore/core/dbServices/mongo/stubs v0.0.0-20221223210029-bca2197988c2
+	github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221223210029-bca2197988c2
+	github.com/DanielRenne/GoCore/core/fileCache v0.0.0-20221224110536-f3cb2b1de330
+	github.com/DanielRenne/GoCore/core/ginServer v0.0.0-20221223210029-bca2197988c2
+	github.com/DanielRenne/GoCore/core/gitWebHooks v0.0.0-20221223210029-bca2197988c2
+	github.com/DanielRenne/GoCore/core/httpExtensions v0.0.0-20221223210029-bca2197988c2
+	github.com/DanielRenne/GoCore/core/logger v0.0.0-20221224110536-f3cb2b1de330
+	github.com/DanielRenne/GoCore/core/mongo v0.0.0-20221223210029-bca2197988c2
+	github.com/DanielRenne/GoCore/core/pubsub v0.0.0-20221224110536-f3cb2b1de330
+	github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221223210029-bca2197988c2
+	github.com/DanielRenne/GoCore/core/store v0.0.0-20221223210029-bca2197988c2
+	github.com/DanielRenne/GoCore/core/utils v0.0.0-20221224110536-f3cb2b1de330
+	github.com/DanielRenne/GoCore/core/workQueue v0.0.0-20221224110536-f3cb2b1de330
+	github.com/DanielRenne/GoCore/core/zip v0.0.0-20221224110536-f3cb2b1de330
 	github.com/altipla-consulting/i18n-dateformatter v0.0.0-20181229145957-7f51bee562e1
 	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d
 	github.com/davidrenne/heredoc v0.0.0-20161006151009-80dc836e596c
@@ -35,7 +35,7 @@ require (
 )
 
 require (
-	github.com/DanielRenne/GoCore/core/path v0.0.0-20221223202811-e70a420aa251 // indirect
+	github.com/DanielRenne/GoCore/core/path v0.0.0-20221223210029-bca2197988c2 // indirect
 	github.com/altipla-consulting/dateformatter v0.0.0-20181229145957-7f51bee562e1 // indirect
 	github.com/asdine/storm v2.1.2+incompatible // indirect
 	github.com/boj/redistore v0.0.0-20180917114910-cd5dcc76aeff // indirect
