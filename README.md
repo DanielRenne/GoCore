@@ -34,7 +34,6 @@ Below are some targeted goals:
 - General application toolbox and file utilities
   - Some basic crypto functions in the [github.com/DanielRenne/core/crypto](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/crypto) package
   - Utility functions for versioning, hexadecimals, strings, human directory sizes, printable ascii/emojis, data type conversions inside of [github.com/DanielRenne/GoCore/core/extensions](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/extensions)
-  - A workqueue package simplifying how to append batches of function calls to N number of workers. Especially nice for long running tasks where you can either wait and block or be signaled when a job completes [github.com/DanielRenne/GoCore/core/workQueue](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/workQueue)
   - Basic path helpers in [github.com/DanielRenne/GoCore/core/path](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/path)
   - Utility functions for managing files and directories for getting all files in directories, copying and removing directories, reading files and also parsing interfaces into json, unGizipping files, and Untarring and Taring files natively inside of go with [github.com/DanielRenne/core/extensions/](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/extensions) `fileExtensions.go` and `unix.go`
   - A simple logger with logging with colors, [goRoutine logging](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/logger#example_GoRoutineLogger), [tailing files](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/logger#Tail), and [measuring time of execution](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/logger#example_TimeTrack) in [github.com/DanielRenne/core/logger](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/logger) package
@@ -43,10 +42,11 @@ Below are some targeted goals:
 
 ---
 
-- Channel management queues, pubsub functions and shell utilities
+- Channel management queues, pubsub functions, shell utilities and even a go worker package to assist spreading load
   - A [simple channel management queue system](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/pubsub#example_Signal) for managing goRoutines and channels in [github.com/DanielRenne/GoCore/core/channels](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/channels) package
   - pubsub package for [publishing to subscribers](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/pubsub#example_Publish) in [github.com/DanielRenne/GoCore/core/pubsub](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/pubsub) package
   - cmdExec package for [easily extracting sdtout and stderr and invoking system binaries in github.com/DanielRenne/GoCore/core/cmdExec](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/cmdExec) package
+  - A workqueue package simplifying how to append batches of function calls to N number of workers. Especially nice for long running tasks where you can either wait and block or be signaled when a job completes [github.com/DanielRenne/GoCore/core/workQueue](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/workQueue)
 
 ---
 
