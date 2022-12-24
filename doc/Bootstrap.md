@@ -6,7 +6,7 @@ GoCore's dbServices package (which is included in a GoCore full app) provides a 
 
 ## Folders
 
-To bootstrap data, you must first create a db/ folder to house db/bootstrap and db/schemas. A small collection bootstrap must be inside the subfolder of the collection name. So if your collection is called accounts, the bootstrap file must be called db/bootstrap/accounts/accounts.json and the contents will be a slice of many objects. These files will be cached inside the models after you execute something [like this](https://github.com/DanielRenne/GoCore/blob/master/core/dbServices/example/modelsGenerate/main.go) see [examples](https://github.com/DanielRenne/GoCore/tree/master/core/dbServices/examples) for more details about dbServices and models and bootstrapping.
+To bootstrap data, you must first create a db/ folder to house db/bootstrap and db/schemas. A small collection bootstrap must be inside the subfolder of the collection name. So if your collection is called accounts, the bootstrap file must be called db/bootstrap/accounts/accounts.json and the contents will be a slice of many objects. These files will be cached inside the models after you execute something [like this](https://github.com/DanielRenne/GoCore/blob/master/core/dbServices/example/modelsGenerate/main.go) see the [example](https://github.com/DanielRenne/GoCore/tree/master/core/dbServices/example) for more details about dbServices and models and bootstrapping.
 
 ## dist/ folder
 
@@ -44,4 +44,4 @@ Here is a mapping of what key maps to what webConfig.json key
 | ProductName   | productName                         |
 | ProductNames  | productName                         |
 
-For more details about dbServices model generation see [the examples](https://github.com/DanielRenne/GoCore/tree/master/core/dbServices/examples) for more details and a working example outside of GoCore Full
+For more details about dbServices model generation see [the example](https://github.com/DanielRenne/GoCore/tree/master/core/dbServices/example) for more details and a working example outside of GoCore Full
