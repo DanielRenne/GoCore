@@ -512,7 +512,7 @@ func main() {
 		} else {
 			if totalExpectedSuccesses == totalSuccesses {
 				msg := "GoCore " + mainNameFileGo + " and other files generated in your module successfully."
-				logger.Message(msg+"  Please `go run "+mainNameFileGo+" $(pwd)` to get started running your app for the first time", logger.GREEN)
+				logger.Message(msg+"  Please `go build "+mainNameFileGo+" && ./"+strings.ReplaceAll(mainNameFileGo, ".go", "")+"` to get started running your app for the first time", logger.GREEN)
 				go exec.Command("say", msg).Output()
 			}
 		}

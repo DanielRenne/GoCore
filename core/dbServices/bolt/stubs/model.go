@@ -132,6 +132,11 @@ func init() {
 	go clearTransactionQueue()
 }
 
+func ConnectDB() {
+	var ts []Transaction
+	Transactions.Query().All(&ts)
+}
+
 // Q is a helper function to pass to things like Filter to filter a field value and key
 func Q(k string, v interface{}) map[string]interface{} {
 	return map[string]interface{}{k: v}

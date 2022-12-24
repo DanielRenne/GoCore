@@ -172,7 +172,7 @@ func (self *core_debug) Dump(valuesOriginal ...interface{}) {
 		TransactionLog += l
 		TransactionLogMutex.Unlock()
 	}
-	l = "!!!!!!!!!!!!! ENDDEBUG " + t.Format("2006-01-02 15:04:05.000000") + "!!!!!!!!!!!!!"
+	l = "!!!!!!!!!!!!! ENDDEBUG " + t.Format("2006-01-02 15:04:05.000000") + "!!!!!!!!!!!!!\n\n"
 	Logger.Println(l)
 	if EnableTransactionLog {
 		TransactionLogMutex.Lock()

@@ -68,40 +68,4 @@ func main() {
 }
 ```
 
-Then run `go run main.go $(pwd)`
-
-Follow the steps outlined and parameters to generate your backend only goCore application
-
-Then run `go get -d ./...` to download all the dependencies of your main.go
-
-If you look at the output it will show you your command to go run like: `go run main.go $(pwd)`
-
-When you build your main.go you dont have to pass the `pwd` as the first parameter. It's only needed in go run due to temporary compile directories and needing to know where your webConfig and referenced files are located.
-
-## GoCore core/app package
-
-The GoCore/core/app package is what runs your application. You must first Init() it with the root path of your application. Then call the Run() method which will block on the HTTP server initialization.
-
-Please note, that if you use go run, you must call `go run main.go $(pwd)` because GoCore needs to know the directory of your project to read the webConfig.json file and associated paths for things like models, keys, db/bootstrap etc. You can also call app.InitCustomWebConfig() and pass a custom file name for webConfig.json based on your own logic.
-
-```go
-    package main
-    import (
-      "github.com/DanielRenne/GoCore/core/app"
-    )
-    func main() {
-      //Run First.
-      app.Init()
-      //Add your Application Code here.
-      //Run Last.
-      app.Run()
-    }
-```
-
-#### How to build your own web project in GoCore
-
-See [Application Settings](https://github.com/DanielRenne/GoCore/blob/master/doc/Application_Settings.md) within docs for information on what webConfig.json allows for.
-
-## References
-
-For information on how to build out noSQL models in our ORM, see [this markdown](https://github.com/DanielRenne/GoCore/blob/master/doc/NOSQL_Schema_Model.md)
+Then run `go build main.go && ./main`

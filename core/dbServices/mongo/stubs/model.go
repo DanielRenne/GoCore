@@ -130,6 +130,11 @@ func init() {
 	go setupCollections()
 }
 
+func ConnectDB() {
+	var ts []Transaction
+	Transactions.Query().All(&ts)
+}
+
 func setupCollections() {
 	defer func() {
 		if r := recover(); r != nil {

@@ -18,21 +18,19 @@ The purpose of this binary is that anytime your schema JSON files have changed t
 
 Then run `go mod tidy` which will download buildCore package
 
-Then run `go run yourBuildFile.go $(pwd)`
+Then run `go build main.go && ./main`
 
 Follow the steps outlined and parameters to generate your backend only goCore application
 
 Then run `go get -d ./...` to download all the dependencies of your main.go
 
-If you look at the output it will show you your command to go run like: `go run main.go $(pwd)`
-
-When you build your main.go you dont have to pass the `pwd` as the first parameter. It's only needed in go run due to temporary compile directories and needing to know where your webConfig and referenced files are located.
+If you look at the output it will show you your command to run your app for the first time.
 
 ## GoCore core/app package
 
 The GoCore/core/app package is what runs your application. You must first Init() it with the root path of your application. Then call the Run() method which will block on the HTTP server initialization.
 
-Please note, that if you use go run, you must call `go run main.go $(pwd)` because GoCore needs to know the directory of your project to read the webConfig.json file and associated paths for things like models, keys, db/bootstrap etc. You can also call app.InitCustomWebConfig() and pass a custom file name for webConfig.json based on your own logic.
+Please note, that if you use go run, you must call `go run main.go $(pwd)` because GoCore needs to know the directory of your project to read the webConfig.json file and associated paths for things like models, keys, db/bootstrap etc. You can also call app.InitCustomWebConfig() and pass a custom file name for webConfig.json based on your own logic. It's best to just call `go build` on your main server and then run it vs. go run and passing the current working directory.
 
 ```go
     package main
