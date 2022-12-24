@@ -3,12 +3,12 @@ module github.com/DanielRenne/GoCore/core/dbServices
 go 1.19
 
 require (
-	github.com/DanielRenne/GoCore/core/atomicTypes v0.0.0-20221224110536-f3cb2b1de330
-	github.com/DanielRenne/GoCore/core/dbServices/bolt/stubs v0.0.0-20221223210029-bca2197988c2
-	github.com/DanielRenne/GoCore/core/dbServices/common/stubs v0.0.0-20221223210029-bca2197988c2
-	github.com/DanielRenne/GoCore/core/dbServices/mongo/stubs v0.0.0-20221223210029-bca2197988c2
-	github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221223210029-bca2197988c2
-	github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221223210029-bca2197988c2
+	github.com/DanielRenne/GoCore/core/atomicTypes v0.0.0-20221224121259-0b446d81e16b
+	github.com/DanielRenne/GoCore/core/dbServices/bolt/stubs v0.0.0-20221224121259-0b446d81e16b
+	github.com/DanielRenne/GoCore/core/dbServices/common/stubs v0.0.0-20221224121259-0b446d81e16b
+	github.com/DanielRenne/GoCore/core/dbServices/mongo/stubs v0.0.0-20221224121259-0b446d81e16b
+	github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221224184506-951fa215fd18
+	github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221224121259-0b446d81e16b
 	github.com/asdine/storm v2.1.2+incompatible
 	github.com/davidrenne/heredoc v0.0.0-20161006151009-80dc836e596c
 	github.com/fatih/color v1.13.0
@@ -16,7 +16,7 @@ require (
 )
 
 require (
-	github.com/DanielRenne/GoCore/core/path v0.0.0-20221223210029-bca2197988c2 // indirect
+	github.com/DanielRenne/GoCore/core/path v0.0.0-20221224184037-eb45cfdecd6a // indirect
 	github.com/DataDog/zstd v1.5.2 // indirect
 	github.com/MakeNowJust/heredoc v1.0.0 // indirect
 	github.com/Sereal/Sereal v0.0.0-20220903133728-b4d312952c4c // indirect

@@ -3,15 +3,15 @@ module github.com/DanielRenne/GoCore/core/logger
 go 1.19
 
 require (
-	github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221223210029-bca2197988c2
-	github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221224110536-f3cb2b1de330
-	github.com/DanielRenne/GoCore/core/utils v0.0.0-20221224110536-f3cb2b1de330
+	github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221224184506-951fa215fd18
+	github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221224121259-0b446d81e16b
+	github.com/DanielRenne/GoCore/core/utils v0.0.0-20221224121259-0b446d81e16b
 	github.com/fatih/color v1.13.0
 	github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8
 )
 
 require (
-	github.com/DanielRenne/GoCore/core/path v0.0.0-20221223210029-bca2197988c2 // indirect
+	github.com/DanielRenne/GoCore/core/path v0.0.0-20221224184037-eb45cfdecd6a // indirect
 	github.com/forPelevin/gomoji v1.1.8 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.16 // indirect

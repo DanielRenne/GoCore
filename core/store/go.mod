@@ -3,7 +3,7 @@ module github.com/DanielRenne/GoCore/core/store
 go 1.19
 
 require (
-	github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221223210029-bca2197988c2
+	github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221224184506-951fa215fd18
 	github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8
 )
 
