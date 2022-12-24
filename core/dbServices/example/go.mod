@@ -1,4 +1,4 @@
-module exampleGoCoreModels
+module github.com/DanielRenne/GoCore/core/dbServices/example
 
 go 1.19
 
