@@ -18,14 +18,14 @@ Below are some targeted goals:
 
 ---
 
-- Database Goals. Provide Model/structs/ORM support and drivers for the following (only for use with [GoCore full apps](https://github.com/DanielRenne/GoCore/blob/master/doc/GoCore_Full.md)):
+- Database Goals. Provide Model/structs/ORM support and drivers for the following (for use with [GoCore full apps](https://github.com/DanielRenne/GoCore/blob/master/doc/GoCore_Full.md) or [standalone ORM](https://github.com/DanielRenne/GoCore/tree/master/core/dbServices/example)):
   - Supported databases:
     - MongoDB
     - BoltDB
   - Create SQL Schema (DDL) from JSON Configuration.
     - Generated golang structs and methods will also allow customization files to be injected inside your models/v1/model package
   - Create Golang ORM packages for RDBMS Transactions & Queries.
-  - Create a bootstrapping system to seed data in various configurations and data dumping formats
+  - Create a [bootstrapping system](https://github.com/DanielRenne/GoCore/blob/master/doc/Bootstrap.md) to seed data in various configurations and data dumping formats
   - Recursive Joins with foreign and primary keys in mongo or bolt.
   - A pubsub store (core/store) for mongo or bolt to allow for interfaces to subscribe to changes in the database or to save changes to the database with either golang or a javascript client.
 

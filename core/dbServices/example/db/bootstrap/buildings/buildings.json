@@ -1,0 +1,18 @@
+[
+  {
+    "Id": "633e21412a1b49f431ee6f4e",
+    "Name": "Bootstrapped WebSocket Building",
+    "ImageCustom": "123",
+    "ImageFileName": "",
+    "SiteId": "633e21412a1b49f431ee6f4d",
+    "AccountId": "633e21412a1b49f431ee6f4c"
+  },
+  {
+    "Id": "633e21412a1b49f431ee6f4f",
+    "Name": "Bootstrapped Channels and GoRoutine Building",
+    "ImageCustom": "12345",
+    "ImageFileName": "",
+    "SiteId": "633e21412a1b49f431ee6f4d",
+    "AccountId": "633e21412a1b49f431ee6f4c"
+  }
+]

@@ -1,0 +1,21 @@
+{
+  "application": {
+    "bootstrapData": true,
+    "versionNumeric": 1,
+    "versionDot": "0.0.1",
+    "productName": "test",
+    "productName---rename to productName and delete the 'test' productName to find a new record get bootstrapped so you can see you can have different products output different bootstrapped data": "my cool product",
+    "releaseMode": "release",
+    "releaseMode---rename to releaseMode and delete other entry to see another record get bootstrapped into FileObjects collection": "release"
+  },
+  "dbConnections": [
+    {
+      "driver---Rename to driver and delete other entry if you want bolt DB": "boltDB",
+      "connectionString---Rename to connectionString and delete other entry if you want bolt DB": "helloWorld.db",
+
+      "driver": "mongoDB",
+      "connectionString": "mongodb://127.0.0.1:27017/test",
+      "database": "test"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+[
+  {
+    "Id": "633e21412a1b49f431ee6f50",
+    "Name": "Bootstrapped Floor 1",
+    "SiteId": "633e21412a1b49f431ee6f4d",
+    "BuildingId": "633e21412a1b49f431ee6f4e",
+    "AccountId": "633e21412a1b49f431ee6f4c"
+  },
+  {
+    "Id": "633e21412a1b49f431ee6f51",
+    "Name": "Bootstrapped Floor 2",
+    "SiteId": "633e21412a1b49f431ee6f4d",
+    "BuildingId": "633e21412a1b49f431ee6f4e",
+    "AccountId": "633e21412a1b49f431ee6f4c"
+  },
+  {
+    "Id": "633e21412a1b49f431ee6f52",
+    "Name": "Bootstrapped Floor 1",
+    "SiteId": "633e21412a1b49f431ee6f4d",
+    "BuildingId": "633e21412a1b49f431ee6f4f",
+    "AccountId": "633e21412a1b49f431ee6f4c"
+  },
+  {
+    "Id": "633e21412a1b49f431ee6f53",
+    "Name": "Bootstrapped Floor 2",
+    "SiteId": "633e21412a1b49f431ee6f4d",
+    "BuildingId": "633e21412a1b49f431ee6f4f",
+    "AccountId": "633e21412a1b49f431ee6f4c"
+  }
+]

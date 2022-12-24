@@ -1,0 +1,72 @@
+{
+  "collections": [
+    {
+      "name": "Accounts",
+      "schema": {
+        "name": "Account",
+        "fields": [
+          {
+            "name": "Id",
+            "type": "int",
+            "index": "primary"
+          },
+          {
+            "name": "AccountName",
+            "type": "string",
+            "validate": {
+              "required": true
+            }
+          },
+          {
+            "name": "SecondaryPhone",
+            "type": "object",
+            "schema": {
+              "name": "SecondaryPhoneInfo",
+              "fields": [
+                {
+                  "name": "Value",
+                  "type": "string"
+                },
+                {
+                  "name": "Numeric",
+                  "type": "string"
+                },
+                {
+                  "name": "DialCode",
+                  "type": "string"
+                },
+                {
+                  "name": "CountryISO",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          {
+            "name": "UpdateDate",
+            "type": "string",
+            "view": true,
+            "ref": "updateDate",
+            "format": "DateTime"
+          },
+          {
+            "name": "UpdateFromNow",
+            "type": "string",
+            "view": true,
+            "ref": "updateDate",
+            "format": "TimeFromNow"
+          },
+          {
+            "name": "LastUpdateUser",
+            "type": "join",
+            "join": {
+              "collectionName": "Users",
+              "schemaName": "User",
+              "fieldName": "LastUpdateId"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "collections": [
+    {
+      "name": "Users",
+      "schema": {
+        "name": "User",
+        "fields": [
+          {
+            "name": "Id",
+            "type": "int",
+            "index": "primary"
+          },
+          {
+            "name": "First",
+            "type": "string",
+            "validate": {
+              "required": true
+            }
+          },
+          {
+            "name": "Last",
+            "type": "string",
+            "validate": {
+              "required": true
+            }
+          },
+          {
+            "name": "SignupDate",
+            "type": "dateTime"
+          },
+          {
+            "name": "Email",
+            "type": "string",
+            "index": "unique",
+            "validate": {
+              "required": true,
+              "type": "email"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

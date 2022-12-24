@@ -1,0 +1,29 @@
+{
+	"collections":
+	[
+		{
+			"name":"Countries",
+			"clearTable": true,
+			"schema":
+			{
+				"name": "Country",
+				"fields":
+				[
+					{
+						"name":"Id",
+						"type":"int",
+						"index":"primary"
+					},
+					{
+						"name":"Iso",
+						"type":"string"
+					},
+					{
+						"name":"Name",
+						"type":"string"
+					}
+				]
+			}
+		}
+	]
+}

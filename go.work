@@ -17,6 +17,8 @@ use (
 	./core/fileCache
 	./core/extensions
 	./core/dbServices
+	./core/dbServices/example
+	./core/dbServices/example/modelsGenerate
 	./core/crypto
 	./core/cron
 	./core/channels

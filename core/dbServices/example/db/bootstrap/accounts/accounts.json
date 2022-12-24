@@ -1,0 +1,12 @@
+[
+  {
+    "Id": "633e21412a1b49f431ee6f4c",
+    "AccountName": "Bootstrapped GoCore App",
+    "SecondaryPhone": {
+      "Value": "1 2483339223",
+      "Numeric": "2483339223",
+      "DialCode": "1",
+      "CountryISO": "us"
+    }
+  }
+]

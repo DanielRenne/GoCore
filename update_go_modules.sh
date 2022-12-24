@@ -55,11 +55,16 @@ cd dbServices/common/stubs
 go get -u
 go mod tidy
 cd -
-# echo "Updating dbServices/example"
-# cd dbServices/example
-# go get -u
-# go mod tidy
-# cd -
+echo "Updating dbServices/example"
+cd dbServices/example
+go get -u
+go mod tidy
+cd -
+echo "Updating dbServices/example/modelsGenerate"
+cd dbServices/example/modelsGenerate
+go get -u
+go mod tidy
+cd -
 echo "Updating dbServices/mongo/stubs"
 cd dbServices/mongo/stubs
 go get -u

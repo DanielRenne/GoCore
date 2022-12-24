@@ -1,0 +1,203 @@
+{
+  "collections": [
+    {
+      "name": "Buildings",
+      "schema": {
+        "name": "Building",
+        "fields": [
+          {
+            "name": "Id",
+            "type": "int",
+            "index": "primary"
+          },
+          {
+            "name": "Name",
+            "type": "string",
+            "validate": {
+              "required": true
+            }
+          },
+          {
+            "name": "FileObjects",
+            "type": "join",
+            "join": {
+              "collectionName": "FileObjects",
+              "schemaName": "FileObject",
+              "fieldName": "ImageCustom"
+            }
+          },
+          {
+            "name": "ImageCustom",
+            "type": "string"
+          },
+          {
+            "name": "ImageFileName",
+            "type": "string"
+          },
+          {
+            "name": "Floors",
+            "type": "join",
+            "join": {
+              "collectionName": "Floors",
+              "schemaName": "Floor",
+              "fieldName": "Id",
+              "foreignFieldName": "BuildingId",
+              "isMany": true
+            }
+          },
+          {
+            "name": "SiteId",
+            "type": "string",
+            "index": "index",
+            "validate": {
+              "required": true
+            }
+          },
+          {
+            "name": "Site",
+            "type": "join",
+            "join": {
+              "collectionName": "Sites",
+              "schemaName": "Site",
+              "fieldName": "SiteId"
+            }
+          },
+          {
+            "name": "AccountId",
+            "type": "string",
+            "index": "index",
+            "validate": {
+              "required": true
+            }
+          },
+          {
+            "name": "Account",
+            "type": "join",
+            "join": {
+              "collectionName": "Accounts",
+              "schemaName": "Account",
+              "fieldName": "AccountId"
+            }
+          },
+          {
+            "name": "UpdateDate",
+            "type": "string",
+            "view": true,
+            "ref": "updateDate",
+            "format": "DateTime"
+          },
+          {
+            "name": "UpdateFromNow",
+            "type": "string",
+            "view": true,
+            "ref": "updateDate",
+            "format": "TimeFromNow"
+          },
+          {
+            "name": "LastUpdateUser",
+            "type": "join",
+            "join": {
+              "collectionName": "Users",
+              "schemaName": "User",
+              "fieldName": "LastUpdateId"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Floors",
+      "schema": {
+        "name": "Floor",
+        "fields": [
+          {
+            "name": "Id",
+            "type": "int",
+            "index": "primary"
+          },
+          {
+            "name": "Name",
+            "type": "string",
+            "validate": {
+              "required": true
+            }
+          },
+          {
+            "name": "SiteId",
+            "type": "string",
+            "index": "index",
+            "validate": {
+              "required": true
+            }
+          },
+          {
+            "name": "Site",
+            "type": "join",
+            "join": {
+              "collectionName": "Sites",
+              "schemaName": "Site",
+              "fieldName": "SiteId"
+            }
+          },
+          {
+            "name": "BuildingId",
+            "type": "string",
+            "index": "index",
+            "validate": {
+              "required": true
+            }
+          },
+          {
+            "name": "Building",
+            "type": "join",
+            "join": {
+              "collectionName": "Buildings",
+              "schemaName": "Building",
+              "fieldName": "BuildingId"
+            }
+          },
+          {
+            "name": "AccountId",
+            "type": "string",
+            "index": "index",
+            "validate": {
+              "required": true
+            }
+          },
+          {
+            "name": "Account",
+            "type": "join",
+            "join": {
+              "collectionName": "Accounts",
+              "schemaName": "Account",
+              "fieldName": "AccountId"
+            }
+          },
+          {
+            "name": "UpdateDate",
+            "type": "string",
+            "view": true,
+            "ref": "updateDate",
+            "format": "DateTime"
+          },
+          {
+            "name": "UpdateFromNow",
+            "type": "string",
+            "view": true,
+            "ref": "updateDate",
+            "format": "TimeFromNow"
+          },
+          {
+            "name": "LastUpdateUser",
+            "type": "join",
+            "join": {
+              "collectionName": "Users",
+              "schemaName": "User",
+              "fieldName": "LastUpdateId"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
