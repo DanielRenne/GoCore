@@ -1,6 +1,6 @@
 ## Use the buildCore package to generate a webConfig.json file and related files for your new GoCore backend only application
 
-Create a build binary (preferably named yourAppNameModelBuild.go in your base application folder)
+Create a build binary inside a new modelBuild directory `mkdir modelBuild; cd modelBuild; go mod init go mod init github.com/davidrenne/GoCoreFullExample/modelBuild` (preferably named modelBuild.go in your base application folder like the example snippet)
 
 The purpose of this binary is that anytime your schema JSON files have changed to regerate the model structs and functions. So once you create the file, go install it and run it anytime your models change:
 
@@ -18,13 +18,25 @@ The purpose of this binary is that anytime your schema JSON files have changed t
 
 Then run `go mod tidy` which will download buildCore package
 
-Then run `go build main.go && ./main`
+Then run `cd ..; go get github.com/DanielRenne/GoCore/buildCore; go build -o appModelBuild modelBuild/modelBuild.go && ./appModelBuild`
 
-Follow the steps outlined and parameters to generate your backend only goCore application
+Follow the steps outlined and parameters to generate your backend only goCore application:
 
-Then run `go get -d ./...` to download all the dependencies of your main.go
+```
+Please enter the camelCase name of your app
+goCoreFullExample
+We are now attempting to generate SSL self signed certificates.  Add your full cert information like this: "/CN=www.mydom.com/O=My Company Name LTD./C=US" (defaults to this if you just press enter)
+What do you want to call your main package fileName?
+myApp
+What is your go module name?
+github.com/davidrenne/GoCoreFullExample
+Do you want to include cron jobs to your main.go? ('y' or 'n')
+y
+```
 
-If you look at the output it will show you your command to run your app for the first time.
+Then run `go get -d ./...` to download all the dependencies of your main.go.  Disregard `go get github.com/gomodule/redigo@latest` being retracted.  We still need to resolve this issue in our dependencies.
+
+If you look at the output above it will look something like this `GoCore myApp.go and other files generated in your module successfully.  Please 'go build myApp.go && ./myApp' to get started running your app for the first time` it will show you your command to run your app for the first time.
 
 ## GoCore core/app package
 
