@@ -11,7 +11,7 @@ import (
 	// todo, this is legacy and deprecated, we need to move to something else to replace it
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
-	csrf "github.com/utrack/gin-csrf"
+	csrf "github.com/srbry/gin-csrf"
 )
 
 const (
@@ -98,13 +98,14 @@ func ConfigureGin(mode string, cookieDomain string, secureHeaders bool, allowedH
 
 	if csrfMiddleWareSecret != "" {
 		//Protect from CSRF Hacking
-		Router.Use(csrf.Middleware(csrf.Options{
+		csrfManager := &csrf.DefaultCSRFManager{
 			Secret: csrfMiddleWareSecret,
 			ErrorFunc: func(c *gin.Context) {
 				c.String(400, "CSRF token mismatch")
 				c.Abort()
 			},
-		}))
+		}
+		Router.Use(csrfManager.Middleware())
 	}
 
 	hasInitialized = true
