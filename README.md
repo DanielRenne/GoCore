@@ -77,11 +77,11 @@ go mod init github.com/username/packageName
 
 There are three options to start a webserver. GoCoreLite (just a gin-gonic server with a gorilla websocket where you pass the port you wish), GoCoreFull ( which assumes usages of our model and ORM with mongo or boltDB ), or GoCoreSuper (full front-end examples with a backend webserver).
 
-- GoCoreLite full docs are available [here](https://github.com/DanielRenne/GoCore/blob/master/doc/GoCore_Lite.md)
+- GoCoreLite documentation is available [here](https://github.com/DanielRenne/GoCore/blob/master/doc/GoCore_Lite.md)
 
-- GoCore full docs are available at [here](https://github.com/DanielRenne/GoCore/blob/master/doc/GoCore_Full.md)
+- GoCoreFull documentation is available at [here](https://github.com/DanielRenne/GoCore/blob/master/doc/GoCore_Full.md)
 
-- GoCoreSuper full docs are available [here](https://github.com/DanielRenne/GoCore/blob/master/doc/FrontEnd_BackEnd.md)
+- GoCoreSuper full documentation is available [here](https://github.com/DanielRenne/GoCore/blob/master/doc/FrontEnd_BackEnd.md)
 
 ## FAQ
 
