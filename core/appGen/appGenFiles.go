@@ -46,7 +46,7 @@ func moveServerOnlyAppFiles() {
 		var mainAppName string
 		for {
 			reader := bufio.NewReader(os.Stdin)
-			log.Println("Please enter the camelCase name of your app:")
+			logger.Message("Please enter the camelCase name of your app", logger.GREEN)
 			mainAppName, _ = reader.ReadString('\n')
 			mainAppName = strings.Trim(mainAppName, "\n")
 			if mainAppName != "" {
@@ -73,6 +73,7 @@ func moveServerOnlyAppFiles() {
 		"sessionName":"` + mainAppName + `ProductName",
 		"sessionExpirationDays":3650,
 		"sessionSecureCookie":false,
+		"csrfSecret":"` + mainAppName + `CsrfSecret",
 		"bootstrapData":true, 
 		"htmlTemplates":{
 			"enabled":false,
@@ -102,7 +103,7 @@ func moveServerOnlyAppFiles() {
 		var mainCNKeys string
 		for {
 			reader := bufio.NewReader(os.Stdin)
-			log.Println("We are now attempting to generate SSL self signed certificates.  Add your full cert information like this: \"/CN=www.mydom.com/O=My Company Name LTD./C=US\" (defaults to this if you just press enter)")
+			logger.Message("We are now attempting to generate SSL self signed certificates.  Add your full cert information like this: \"/CN=www.mydom.com/O=My Company Name LTD./C=US\" (defaults to this if you just press enter)", logger.GREEN)
 			mainCNKeys, _ = reader.ReadString('\n')
 			mainCNKeys = strings.Trim(mainCNKeys, "\n")
 			if mainCNKeys == "" {
@@ -195,6 +196,28 @@ func moveServerOnlyAppFiles() {
 				logger.Message("Failed to create /db/bootstrap dir.", logger.RED)
 			}
 		}
+		_, err = os.Stat(serverSettings.APP_LOCATION + path.PathSeparator + ".gitignore")
+
+		if err != nil {
+			err := extensions.Write(`*.idea
+*.pyc
+nohup.out
+debug
+/log/*
+webConfig.json
+.DS_Store
+.history
+*.vscode
+*.db
+/models/
+`, serverSettings.APP_LOCATION+path.PathSeparator+".gitignore")
+			if err != nil {
+				logger.Message("failed to create .gitignore"+err.Error(), logger.RED)
+			} else {
+				totalSuccesses++
+				logger.Message("Created .gitignore for Application.", logger.GREEN)
+			}
+		}
 
 		_, err = os.Stat(serverSettings.APP_LOCATION + path.PathSeparator + "settings")
 
@@ -279,7 +302,7 @@ func Initialize() {
 		var mainNameFileGo string
 		for {
 			reader := bufio.NewReader(os.Stdin)
-			log.Println("What do you want to call your main package fileName?")
+			logger.Message("What do you want to call your main package fileName?", logger.GREEN)
 			mainNameFileGo, _ = reader.ReadString('\n')
 			mainNameFileGo = strings.Trim(mainNameFileGo, "\n")
 			ok := false
@@ -293,30 +316,6 @@ func Initialize() {
 					mainNameFileGo += ".go"
 				}
 				break
-			}
-		}
-
-		_, err = os.Stat(serverSettings.APP_LOCATION + path.PathSeparator + ".gitignore")
-
-		if err != nil {
-			err := extensions.Write(`*.idea
-*.pyc
-nohup.out
-debug
-/log/*
-appModelBuild
-`+strings.ReplaceAll(mainNameFileGo, ".go", "")+`
-webConfig.json
-.DS_Store
-.history
-*.db
-/models/
-`, serverSettings.APP_LOCATION+path.PathSeparator+".gitignore")
-			if err != nil {
-				logger.Message("failed to create .gitignore"+err.Error(), logger.RED)
-			} else {
-				totalSuccesses++
-				logger.Message("Created .gitignore for Application.", logger.GREEN)
 			}
 		}
 
@@ -342,7 +341,7 @@ webConfig.json
 		addCronJob := "y"
 		for {
 			reader := bufio.NewReader(os.Stdin)
-			log.Println("Do you want to include cron jobs to your main.go? ('y' or 'n')")
+			logger.Message("Do you want to include cron jobs to your main.go? ('y' or 'n')", logger.GREEN)
 			addCronJob, _ = reader.ReadString('\n')
 			addCronJob = strings.Trim(addCronJob, "\n")
 			if addCronJob == "" {
@@ -364,8 +363,8 @@ webConfig.json
 
 		if addCronJob == "y" {
 			totalExpectedSuccesses = totalExpectedSuccesses + 2
-			cronImport = "\t\"github.com/DanielRenne/GoCore/core/cron\"\n//" + strings.ReplaceAll(mainNameFileGo, ".go", "") + "cron \"github.com/yourusername/package/cron\"\n"
-			cronStartCode = "\t//" + strings.ReplaceAll(mainNameFileGo, ".go", "") + "cron.Start()"
+			cronImport = "\t\"github.com/DanielRenne/GoCore/core\"\n\t//\"yourPackageName/cron\""
+			cronStartCode = "\tcore.CronJobs.Start()\n\t//cron.Start()"
 			_, err = os.Stat(serverSettings.APP_LOCATION + path.PathSeparator + "cron")
 
 			if err != nil {
@@ -374,31 +373,32 @@ webConfig.json
 					totalSuccesses++
 					logger.Message("Created /cron dir for Application.", logger.GREEN)
 					cronFile := `
-package cron
+				package cron
 
-import (
-	"log"
-	"runtime/debug"
-	"time"
+				import (
+					"log"
+					"fmt"
+					"runtime/debug"
+					"time"
 
-	//"github.com/DanielRenne/GoCore/core/cron"
-)
+					"github.com/DanielRenne/GoCore/core"
+				)
 
-func Start() {
-	defer func() {
-		if r := recover(); r != nil {
-			log.Println("\n\nPanic Stack: " + string(debug.Stack()))
-			time.Sleep(time.Millisecond * 3000)
-			Start()
-			return
-		}
-	}()
-	// setup cron jobs for your app you can do
-	// core.CRON_TOP_OF_HOUR
-	// core.CRON_TOP_OF_SECOND
-	// And much more, just check the core package for more or send a pull request if you need faster tickers
-	// go core.RegisterRecurring(core.CRON_TOP_OF_30_SECONDS, yourCronFunction)
-}
+				func Start() {
+					defer func() {
+						if r := recover(); r != nil {
+							log.Println("\n\nPanic Stack: " + string(debug.Stack()))
+							time.Sleep(time.Millisecond * 3000)
+							Start()
+							return
+						}
+					}()
+					// setup cron jobs for your app you can do
+					// core.CRON_TOP_OF_HOUR
+					// core.CRON_TOP_OF_SECOND
+					// And much more, just check the core package for more or send a pull request if you need faster tickers
+					// go core.CronJobs.RegisterRecurring(core.CRON_TOP_OF_30_SECONDS, yourCronFunction)
+				}
 `
 					err := extensions.Write(cronFile, serverSettings.APP_LOCATION+path.PathSeparator+"cron"+path.PathSeparator+"cron.go")
 					if err != nil {
