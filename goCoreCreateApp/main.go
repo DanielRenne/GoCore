@@ -47,6 +47,7 @@ var basePath string
 var profileFile string
 var mainCNKeys string
 var createGit string
+var username string
 
 func main() {
 
@@ -60,6 +61,22 @@ func main() {
 		appName = strings.Trim(appName, "\n")
 		ok := false
 		if strings.Index(appName, " ") == -1 {
+			ok = true
+		} else {
+			fmt.Println("No spaces please")
+		}
+		if ok {
+			break
+		}
+	}
+
+	for {
+		reader := bufio.NewReader(os.Stdin)
+		fmt.Print("Github.com Username: ")
+		username, _ = reader.ReadString('\n')
+		username = strings.Trim(username, "\n")
+		ok := false
+		if strings.Index(username, " ") == -1 {
 			ok = true
 		} else {
 			fmt.Println("No spaces please")
@@ -177,8 +194,9 @@ func main() {
 	err = extensions.Write(databaseType, "/tmp/databaseType")
 	errorOut("extensions.WriteToFile "+databaseType+" to /tmp/databaseType", err, false)
 
-	err = extensions.MkDir(appName)
-	errorOut("os.MkdirAll("+appName+", 0644)", err, false)
+	path := "github.com/" + username + "/" + appName
+	err = extensions.MkDir(path)
+	errorOut("extensions.MkDir("+path+", 0644)", err, false)
 
 	cmd := exec.Command("go", "install", "github.com/DanielRenne/GoCore/getAppTemplate@latest")
 	cmd.Stdout = os.Stdout
@@ -194,7 +212,12 @@ func main() {
 	errorOut("running getAppTemplate", err, false)
 
 	fmt.Println("App name :", appName)
-	appPath := appName
+	appPath := path + "/" + appName
+
+	_, err = os.Stat(appPath)
+	if err == nil {
+		extensions.RemoveDirectoryShell(appPath)
+	}
 
 	modelBuildPath := appPath + "/modelBuild" + camelUpper + "/"
 	err = extensions.MkDir(modelBuildPath)
