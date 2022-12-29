@@ -6,7 +6,6 @@ import (
 
 // Simple example using csrf security, session cookies, and a custom port.
 func ExampleConfigureGin() {
-	csrf := "my crsf secret"
 	cookieConfig := ginServer.SessionConfiguration{
 		Enabled:               true,
 		SessionKey:            "test",
@@ -14,7 +13,7 @@ func ExampleConfigureGin() {
 		SessionExpirationDays: 15,
 		SessionSecureCookie:   false,
 	}
-	ginServer.ConfigureGin("debug", "", false, []string{}, csrf, cookieConfig, true)
+	ginServer.ConfigureGin("debug", "", false, []string{}, cookieConfig, true)
 	// Run this if you want to use the gin server after configuring it how you want
 	// import "github.com/DanielRenne/GoCore/core/app"
 	// app.RunLite(9090)

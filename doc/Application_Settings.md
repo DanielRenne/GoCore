@@ -27,7 +27,6 @@ There are two root objects to be configured:
     "sessionName": "goCoreProductName",
     "sessionExpirationDays": 3650,
     "sessionSecureCookie": false,
-    "csrfSecret": "goCoreCsrfSecret",
     "bootstrapData": true,
     "htmlTemplates": {
       "enabled": false,

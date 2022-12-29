@@ -97,8 +97,6 @@ type Application struct {
 	SessionExpirationDays int `json:"sessionExpirationDays"`
 	// SessionSecureCookie is a flag to tell the application to use a secure cookie
 	SessionSecureCookie bool `json:"sessionSecureCookie"`
-	// CSRFSecret is the secret used to encrypt the csrf token.  Please dont leave blank or something guessable
-	CSRFSecret string `json:"csrfSecret"`
 	// BootstrapData is a flag to tell the application to bootstrap data into the database, definitely set to true
 	BootstrapData bool `json:"bootstrapData"`
 	// LogQueries is a flag to tell the application to log detailed queries to the log

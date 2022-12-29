@@ -11,7 +11,6 @@ import (
 	// todo, this is legacy and deprecated, we need to move to something else to replace it
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
-	csrf "github.com/utrack/gin-csrf"
 )
 
 const (
@@ -53,7 +52,7 @@ type SessionConfiguration struct {
 }
 
 // ConfigureGin sets up all the GoCore features we currently offer
-func ConfigureGin(mode string, cookieDomain string, secureHeaders bool, allowedHosts []string, csrfMiddleWareSecret string, cookieSession SessionConfiguration, launchPprof bool) {
+func ConfigureGin(mode string, cookieDomain string, secureHeaders bool, allowedHosts []string, cookieSession SessionConfiguration, launchPprof bool) {
 	if launchPprof {
 		// Run a safe pprof localhost server.
 		professor.Launch("localhost:6897")
@@ -96,17 +95,6 @@ func ConfigureGin(mode string, cookieDomain string, secureHeaders bool, allowedH
 		}
 	}
 
-	if csrfMiddleWareSecret != "" {
-		//Protect from CSRF Hacking
-		Router.Use(csrf.Middleware(csrf.Options{
-			Secret: csrfMiddleWareSecret,
-			ErrorFunc: func(c *gin.Context) {
-				c.String(400, "CSRF token mismatch")
-				c.Abort()
-			},
-		}))
-	}
-
 	hasInitialized = true
 
 	for _, group := range initializedRouterGroups {
@@ -118,7 +106,6 @@ func ConfigureGin(mode string, cookieDomain string, secureHeaders bool, allowedH
 // Initialize is an internal export used in app/app.go based on your webConfig.json
 func Initialize(mode string, cookieDomain string) {
 	serverSettings.WebConfigMutex.RLock()
-	csrf := serverSettings.WebConfig.Application.CSRFSecret
 	cookieConfig := SessionConfiguration{
 		Enabled:               true,
 		SessionKey:            serverSettings.WebConfig.Application.SessionKey,
@@ -127,12 +114,12 @@ func Initialize(mode string, cookieDomain string) {
 		SessionSecureCookie:   serverSettings.WebConfig.Application.SessionSecureCookie,
 	}
 	serverSettings.WebConfigMutex.RUnlock()
-	ConfigureGin(mode, cookieDomain, false, []string{}, csrf, cookieConfig, true)
+	ConfigureGin(mode, cookieDomain, false, []string{}, cookieConfig, true)
 }
 
 // InitializeLite is an internal export used in app/app.go based on if you use app.InitializeLite()
 func InitializeLite(mode string, secureHeaders bool, allowedHosts []string) {
-	ConfigureGin(mode, "", secureHeaders, allowedHosts, "", SessionConfiguration{}, true)
+	ConfigureGin(mode, "", secureHeaders, allowedHosts, SessionConfiguration{}, true)
 }
 
 // AddRouterGroup adds a gin-gonic router group to the gin server
