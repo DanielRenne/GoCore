@@ -569,9 +569,18 @@ func moveAppFiles() {
 	_, err := os.Stat("/tmp/tools/appFiles")
 	if err == nil {
 		humanTitle, err := extensions.ReadFile("/tmp/humanTitle")
-		mainCNKeys, err := extensions.ReadFile("/tmp/mainCNKeys")
 		if err != nil {
 			log.Println("error reading humanTitle")
+			os.Exit(1)
+		}
+		mainCNKeys, err := extensions.ReadFile("/tmp/mainCNKeys")
+		if err != nil {
+			log.Println("error reading mainCNKeys")
+			os.Exit(1)
+		}
+		username, err := extensions.ReadFile("/tmp/username")
+		if err != nil {
+			log.Println("error reading username")
 			os.Exit(1)
 		}
 		foundDbType := false
@@ -583,7 +592,6 @@ func moveAppFiles() {
 			os.Remove("/tmp/databaseType")
 			foundDbType = true
 		}
-
 		_, errDatabaseType := os.Stat(serverSettings.APP_LOCATION + "/databaseType")
 		if errDatabaseType == nil {
 			databaseType, err = extensions.ReadFile(serverSettings.APP_LOCATION + "/databaseType")
@@ -595,7 +603,7 @@ func moveAppFiles() {
 		}
 		parts := strings.Split(serverSettings.APP_LOCATION, "/")
 		appName := parts[len(parts)-1]
-		githubName := parts[len(parts)-2]
+		githubName := string(username)
 		project := githubName + "/" + appName
 		//First check for the WebConfig.json file
 		_, errNoWebConfig := os.Stat(serverSettings.APP_LOCATION + "/webConfig.json")
