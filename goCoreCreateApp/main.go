@@ -56,7 +56,7 @@ func main() {
 	//also should ensure first char of appName is lower
 	for {
 		reader := bufio.NewReader(os.Stdin)
-		fmt.Print("GoCore AppName: ")
+		fmt.Print("GoCore AppName (lowercase first byte camel case proect name): ")
 		appName, _ = reader.ReadString('\n')
 		appName = strings.Trim(appName, "\n")
 		ok := false
@@ -88,7 +88,7 @@ func main() {
 
 	for {
 		reader := bufio.NewReader(os.Stdin)
-		fmt.Print("Path of module install (no trailing /): ")
+		fmt.Print("Path of module install (please no trailing /) It will create three subdirectories to access your app {your-path-you-enter-here}/github.com/" + username + "/" + appName + "/" + appName + "/: ")
 		basePath, _ = reader.ReadString('\n')
 		basePath = strings.Trim(basePath, "\n")
 		ok := false
@@ -194,6 +194,9 @@ func main() {
 	err = extensions.Write(databaseType, "/tmp/databaseType")
 	errorOut("extensions.WriteToFile "+databaseType+" to /tmp/databaseType", err, false)
 
+	err = extensions.Write(username, "/tmp/username")
+	errorOut("extensions.WriteToFile "+databaseType+" to /tmp/username", err, false)
+
 	path := "github.com/" + username + "/" + appName
 	err = extensions.MkDir(path)
 	errorOut("extensions.MkDir("+path+", 0644)", err, false)
@@ -274,7 +277,7 @@ func main() {
 		errorOut("couldnt create environment variable in .bash_profile", err, false)
 	}
 
-	cmd = exec.Command("go", "mod", "init", appName)
+	cmd = exec.Command("go", "mod", "init", "github.com/"+username+"/"+appName)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err = cmd.Run()
@@ -333,8 +336,8 @@ func main() {
 	err = cmd.Start()
 	errorOut("formatting all code", err, false)
 
-	err = os.Chdir(basePath + "/" + appPath)
-	errorOut("cd appPath", err, false)
+	// err = os.Chdir(basePath + "/" + appPath)
+	// errorOut("cd appPath", err, false)
 
 	cmd = exec.Command("go", "install", strings.Replace(modelBuildPath, "src/", "", -1))
 	err = cmd.Run()
