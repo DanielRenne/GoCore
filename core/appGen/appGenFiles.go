@@ -542,7 +542,7 @@ func copyFolder(path string) (wasCopied bool) {
 func replacePath(path string, newpath string, newGithubUser string, newProject string) {
 	filepath.Walk(serverSettings.APP_LOCATION+path, func(pth string, info os.FileInfo, err error) error {
 		if !info.IsDir() {
-			utils.ReplaceTokenInFile(pth, "DanielRenne/goCoreAppTemplate", newpath)
+			utils.ReplaceTokenInFile(pth, "github.com/DanielRenne/goCoreAppTemplate", newpath)
 			// we cant just globally replace DanielRenne with the new github username, so we use the special token DanielRenneFolder
 
 			utils.ReplaceTokenInFile(pth, "goCoreAppPath", newProject+"_path")
@@ -624,10 +624,8 @@ func moveAppFiles() {
 		}
 
 		for _, v := range utils.Array("webConfig.prod.json", "webConfig.dev.json", "webConfig.json") {
-			id1 := bson.NewObjectId()
 			id2 := bson.NewObjectId()
 			utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/"+v, "goCoreProductName", appName+"BaseProduct")
-			utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/"+v, "goCoreCsrfSecret", id1.Hex())
 			utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/"+v, "goCoreSessionKey", id2.Hex())
 		}
 
@@ -669,8 +667,8 @@ func moveAppFiles() {
 
 		wasCopied = copyFolder("/web")
 		if wasCopied {
-			utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/web/app/watchFile.json", "DanielRenne/goCoreAppTemplate", project)
-			utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/web/app/javascript/build-css.sh", "DanielRenne/goCoreAppTemplate", project)
+			utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/web/app/watchFile.json", "github.com/DanielRenne/goCoreAppTemplate", project)
+			utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/web/app/javascript/build-css.sh", "github.com/DanielRenne/goCoreAppTemplate", project)
 			replacePath("/web/app/javascript/pages/template", project, githubName, appName)
 			for _, v := range utils.Array("/web/app/manifests", "/web/app/globalization/translations", "/web/app/javascript/pages/logs", "/web/app/javascript/globals", "/web/app/markup/app") {
 				replaceAnything(v, "GoCoreAppHumanName", strings.TrimSpace(string(humanTitle)))
