@@ -75,17 +75,17 @@ go mod init github.com/username/packageName
 
 ## Build GoCore Backend Only Webserver app
 
-There are three options to start a webserver. GoCoreLite (just a gin-gonic server with a gorilla websocket where you pass the port you wish), GoCoreFull ( which assumes usages of our model and ORM with mongo or boltDB ), or GoCoreCreateApp (full front-end examples with a backend webserver).
-
-- GoCore full docs are available at [here](https://github.com/DanielRenne/GoCore/blob/master/doc/GoCore_Full.md)
+There are three options to start a webserver. GoCoreLite (just a gin-gonic server with a gorilla websocket where you pass the port you wish), GoCoreFull ( which assumes usages of our model and ORM with mongo or boltDB ), or GoCoreSuper (full front-end examples with a backend webserver).
 
 - GoCoreLite full docs are available [here](https://github.com/DanielRenne/GoCore/blob/master/doc/GoCore_Lite.md)
 
-- GoCoreCreateApp full docs are available [here](https://github.com/DanielRenne/GoCore/blob/master/doc/FrontEnd_BackEnd.md)
+- GoCore full docs are available at [here](https://github.com/DanielRenne/GoCore/blob/master/doc/GoCore_Full.md)
+
+- GoCoreSuper full docs are available [here](https://github.com/DanielRenne/GoCore/blob/master/doc/FrontEnd_BackEnd.md)
 
 ## FAQ
 
-### Why cant I go run my main in a full GoCore application
+### Why cant I `go run` my main in a full GoCore application
 
 This is because in many cases for a full GoCore web app, we need to read a webConfig.json in your current directory so that you dont compile configurations inside your main.go and developers and servers can be reconfigured without recompiling. Go will compile into a tmp directory and we dont know where your webConfig.json is located. If you really want to use go run, you can pass `go run main.go $(pwd)` if you dont want to compile your web server which will pass the location where you webConfig.json sits next to your main program.
 
