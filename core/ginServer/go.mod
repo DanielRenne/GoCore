@@ -3,8 +3,8 @@ module github.com/DanielRenne/GoCore/core/ginServer
 go 1.19
 
 require (
-	github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221224184506-951fa215fd18
-	github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221224121259-0b446d81e16b
+	github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221229191145-5251e8f27cc2
+	github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221229191145-5251e8f27cc2
 	github.com/davidrenne/professor v0.0.0-20180814210453-cc6399dacc55
 	github.com/fatih/color v1.13.0
 	github.com/gin-contrib/secure v0.0.1
@@ -14,7 +14,7 @@ require (
 )
 
 require (
-	github.com/DanielRenne/GoCore/core/path v0.0.0-20221224184037-eb45cfdecd6a // indirect
+	github.com/DanielRenne/GoCore/core/path v0.0.0-20221229191145-5251e8f27cc2 // indirect
 	github.com/boj/redistore v0.0.0-20180917114910-cd5dcc76aeff // indirect
 	github.com/dchest/uniuri v1.2.0 // indirect
 	github.com/forPelevin/gomoji v1.1.8 // indirect
@@ -31,12 +31,12 @@ require (
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
-	github.com/mattn/go-isatty v0.0.16 // indirect
+	github.com/mattn/go-isatty v0.0.17 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.6 // indirect
 	github.com/rivo/uniseg v0.4.3 // indirect
-	github.com/ugorji/go/codec v1.2.7 // indirect
+	github.com/ugorji/go/codec v1.2.8 // indirect
 	golang.org/x/crypto v0.4.0 // indirect
 	golang.org/x/net v0.4.0 // indirect
 	golang.org/x/sys v0.3.0 // indirect

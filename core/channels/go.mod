@@ -3,8 +3,8 @@ module github.com/DanielRenne/GoCore/core/channels
 go 1.19
 
 require (
-	github.com/DanielRenne/GoCore/core/atomicTypes v0.0.0-20221224121259-0b446d81e16b
-	github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221224184506-951fa215fd18
+	github.com/DanielRenne/GoCore/core/atomicTypes v0.0.0-20221229191145-5251e8f27cc2
+	github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221229191145-5251e8f27cc2
 )
 
 require (

@@ -4,15 +4,15 @@ go 1.19
 
 require (
 	github.com/DanielRenne/GoCore/core v0.0.0-20221006033550-a4b7beccbc87
-	github.com/DanielRenne/GoCore/core/fileCache v0.0.0-20221224121259-0b446d81e16b
+	github.com/DanielRenne/GoCore/core/fileCache v0.0.0-20221229191145-5251e8f27cc2
 	github.com/DanielRenne/GoCore/core/zip v0.0.0-20221005154932-80ed3782034d
 )
 
 require (
-	github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221224184506-951fa215fd18 // indirect
-	github.com/DanielRenne/GoCore/core/path v0.0.0-20221224184037-eb45cfdecd6a // indirect
-	github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221224121259-0b446d81e16b // indirect
-	github.com/DanielRenne/GoCore/core/utils v0.0.0-20221224121259-0b446d81e16b // indirect
+	github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221229191145-5251e8f27cc2 // indirect
+	github.com/DanielRenne/GoCore/core/path v0.0.0-20221229191145-5251e8f27cc2 // indirect
+	github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221229191145-5251e8f27cc2 // indirect
+	github.com/DanielRenne/GoCore/core/utils v0.0.0-20221229191145-5251e8f27cc2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/davidrenne/reflections v1.0.2 // indirect
 	github.com/forPelevin/gomoji v1.1.8 // indirect
