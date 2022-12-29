@@ -29,6 +29,8 @@ func errorOut(line string, err error, dontExit bool) {
 		msg := "Errored out: " + err.Error()
 		logger.Message(msg+" "+line, logger.RED)
 		utils.TalkDirty(msg)
+		cdPath(basePath)
+		extensions.RemoveDirectory(appName)
 		if !dontExit {
 			os.Exit(2)
 		}
@@ -37,15 +39,16 @@ func errorOut(line string, err error, dontExit bool) {
 	}
 }
 
+var appName string
+var databaseType string
+var humanTitle string
+var colorPalette string
+var basePath string
+var profileFile string
+var mainCNKeys string
+var createGit string
+
 func main() {
-	var appName string
-	var databaseType string
-	var humanTitle string
-	var colorPalette string
-	var basePath string
-	var profileFile string
-	var mainCNKeys string
-	var createGit string
 
 	logger.Message("Welcome to the GoCore createApp tool!  Thank you for using GoCore.", logger.YELLOW)
 
@@ -145,6 +148,15 @@ func main() {
 		profileFile = strings.Trim(profileFile, "\n")
 		if profileFile == "" {
 			profileFile = ".bash_profile"
+		}
+		ok := false
+		if strings.Index(profileFile, "/home") != -1 && strings.Index(profileFile, "/Users") != -1 && strings.Index(profileFile, "~") != -1 {
+			ok = true
+		} else {
+			fmt.Println("Just the .filename, not the path such as ~, /home or /Users/")
+		}
+		if ok {
+			break
 		}
 		break
 	}
