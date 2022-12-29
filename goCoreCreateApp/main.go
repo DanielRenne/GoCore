@@ -39,13 +39,13 @@ func errorOut(line string, err error, dontExit bool) {
 
 func main() {
 	var appName string
-	var username string
 	var databaseType string
 	var humanTitle string
 	var colorPalette string
 	var basePath string
 	var profileFile string
 	var mainCNKeys string
+	var createGit string
 
 	logger.Message("Welcome to the GoCore createApp tool!  Thank you for using GoCore.", logger.YELLOW)
 
@@ -68,20 +68,20 @@ func main() {
 
 	for {
 		reader := bufio.NewReader(os.Stdin)
-		fmt.Print("Path of application install (no trailing /): ")
+		fmt.Print("Path of module install (no trailing /): ")
 		basePath, _ = reader.ReadString('\n')
 		basePath = strings.Trim(basePath, "\n")
 		ok := false
-		if strings.Index(basePath, " ") == -1 {
+		if strings.Index(basePath, " ") == -1 && basePath[len(basePath)-1:] != "/" {
 			ok = true
 		} else {
-			fmt.Println("No spaces please")
+			fmt.Println("No spaces please and dont end in / ")
 		}
 		if ok {
 			break
 		}
 	}
-	err := os.MkdirAll(basePath, 0777)
+	err := extensions.MkDir(basePath)
 
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print("Title of all pages: ")
@@ -97,22 +97,6 @@ func main() {
 			mainCNKeys = "/CN=www.mydom.com/O=My Company Name LTD./C=US"
 		}
 		break
-	}
-
-	for {
-		reader := bufio.NewReader(os.Stdin)
-		fmt.Print("Github.com Username: ")
-		username, _ = reader.ReadString('\n')
-		username = strings.Trim(username, "\n")
-		ok := false
-		if strings.Index(username, " ") == -1 {
-			ok = true
-		} else {
-			fmt.Println("No spaces please")
-		}
-		if ok {
-			break
-		}
 	}
 
 	for {
@@ -134,9 +118,29 @@ func main() {
 		}
 	}
 
+	createGit = "y"
 	for {
 		reader := bufio.NewReader(os.Stdin)
-		fmt.Print("Enter the name of the file which loads your shell environment (.bash_profile) is defaulted if you leave blank: ")
+		fmt.Print("Create and commit initial git repository (y or n) (defaults y): ")
+		createGit, _ = reader.ReadString('\n')
+		createGit = strings.Trim(createGit, "\n")
+		if createGit == "" {
+			createGit = "y"
+		}
+		ok := false
+		if createGit == "y" || createGit == "n" {
+			ok = true
+		} else {
+			fmt.Println("Invalid type 'n' or 'y'")
+		}
+		if ok {
+			break
+		}
+	}
+
+	for {
+		reader := bufio.NewReader(os.Stdin)
+		fmt.Print("Enter the name of the file which loads your shell environment (~/.bash_profile) is defaulted if you leave blank: ")
 		profileFile, _ = reader.ReadString('\n')
 		profileFile = strings.Trim(profileFile, "\n")
 		if profileFile == "" {
@@ -149,21 +153,20 @@ func main() {
 
 	camelUpper := strings.ToTitle(string(appName[0])) + string(appName[1:])
 
-	err = extensions.WriteToFile(colorPalette, "/tmp/colorPalette", 0777)
+	err = extensions.Write(colorPalette, "/tmp/colorPalette")
 	errorOut("extensions.WriteToFile "+colorPalette+" to /tmp/colorPalette", err, false)
 
-	err = extensions.WriteToFile(humanTitle, "/tmp/humanTitle", 0777)
+	err = extensions.Write(humanTitle, "/tmp/humanTitle")
 	errorOut("extensions.WriteToFile "+humanTitle+" to /tmp/humanTitle", err, false)
 
-	err = extensions.WriteToFile(mainCNKeys, "/tmp/mainCNKeys", 0777)
+	err = extensions.Write(mainCNKeys, "/tmp/mainCNKeys")
 	errorOut("extensions.WriteToFile "+mainCNKeys+" to /tmp/mainCNKeys", err, false)
 
-	err = extensions.WriteToFile(databaseType, "/tmp/databaseType", 0777)
+	err = extensions.Write(databaseType, "/tmp/databaseType")
 	errorOut("extensions.WriteToFile "+databaseType+" to /tmp/databaseType", err, false)
 
-	path := "github.com/" + username
-	err = os.MkdirAll(path, 0777)
-	errorOut("os.MkdirAll("+path+", 0644)", err, false)
+	err = extensions.MkDir(appName)
+	errorOut("os.MkdirAll("+appName+", 0644)", err, false)
 
 	talk("Getting all dependencies and the latest version of GoCore App Templates")
 	cmd := exec.Command("getAppTemplate")
@@ -173,24 +176,15 @@ func main() {
 	errorOut("running getAppTemplate", err, false)
 
 	fmt.Println("App name :", appName)
-	appPath := path + "/" + appName
-
-	_, err = os.Stat(appPath)
-	if err == nil {
-		extensions.RemoveDirectoryShell(appPath)
-	}
-
-	err = os.MkdirAll(appPath, 0777)
-	errorOut("os.MkdirAll("+appPath+", 0644)", err, false)
+	appPath := appName
 
 	modelBuildPath := appPath + "/modelBuild" + camelUpper + "/"
-
-	err = os.MkdirAll(modelBuildPath, 0777)
+	err = extensions.MkDir(modelBuildPath)
 	errorOut("os.MkdirAll("+modelBuildPath+", 0644)", err, false)
 
 	buildPath := appPath + "/build" + camelUpper + "/"
 
-	err = os.MkdirAll(buildPath, 0777)
+	err = extensions.MkDir(buildPath)
 	errorOut("os.MkdirAll("+buildPath+", 0644)", err, false)
 
 	template := `
@@ -239,11 +233,33 @@ func main() {
 		errorOut("couldnt create environment variable in .bash_profile", err, false)
 	}
 
-	cmd = exec.Command("go", "mod", "init", "github.com/"+username+"/"+appName)
+	cmd = exec.Command("go", "mod", "init", appName)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err = cmd.Run()
 	errorOut("running go mod init", err, false)
+
+	if createGit == "y" {
+		talk("Adding github files")
+
+		cmd = exec.Command("git", "init")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		err = cmd.Run()
+		errorOut("git init", err, false)
+
+		cmd = exec.Command("git", "add", ".")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		err = cmd.Run()
+		errorOut("git add", err, false)
+
+		cmd = exec.Command("git", "commit", "-m", "Initial GoCore App Generation")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		err = cmd.Run()
+		errorOut("git commit", err, false)
+	}
 
 	cmd = exec.Command("go", "get", "github.com/DanielRenne/GoCore")
 	cmd.Stdout = os.Stdout
