@@ -180,8 +180,14 @@ func main() {
 	err = extensions.MkDir(appName)
 	errorOut("os.MkdirAll("+appName+", 0644)", err, false)
 
+	cmd := exec.Command("go", "install", "github.com/DanielRenne/GoCore/getAppTemplate@latest")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err = cmd.Run()
+	errorOut("running go install github.com/DanielRenne/GoCore/getAppTemplate@latest", err, false)
+
 	talk("Getting all dependencies and the latest version of GoCore App Templates")
-	cmd := exec.Command("getAppTemplate")
+	cmd = exec.Command("getAppTemplate")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err = cmd.Run()
