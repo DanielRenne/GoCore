@@ -18,7 +18,7 @@ Below are some targeted goals:
 
 ---
 
-- Database Goals. Provide Model/structs/ORM support and drivers for the following (for use with [GoCore full apps](https://github.com/DanielRenne/GoCore/blob/master/doc/GoCore_Full.md) or [standalone ORM](https://github.com/DanielRenne/GoCore/tree/master/core/dbServices/example)):
+- Database Goals. Provide Model/structs/ORM support and drivers for the following (for use with [GoCoreFull webserver](https://github.com/DanielRenne/GoCore/blob/master/doc/GoCore_Full.md) or [GoCoreSuper webserver](https://github.com/DanielRenne/GoCore/blob/master/doc/FrontEnd_BackEnd.md) or [standalone ORM](https://github.com/DanielRenne/GoCore/tree/master/core/dbServices/example)):
   - Supported databases:
     - MongoDB
     - BoltDB
@@ -79,9 +79,9 @@ There are three options to start a webserver. GoCoreLite (just a gin-gonic serve
 
 - GoCoreLite documentation is available [here](https://github.com/DanielRenne/GoCore/blob/master/doc/GoCore_Lite.md)
 
-- GoCoreFull documentation is available at [here](https://github.com/DanielRenne/GoCore/blob/master/doc/GoCore_Full.md)
+- GoCoreFull (backend only with minimal SSL certs, mongo and stub models) documentation is available at [here](https://github.com/DanielRenne/GoCore/blob/master/doc/GoCore_Full.md)
 
-- GoCoreSuper full documentation is available [here](https://github.com/DanielRenne/GoCore/blob/master/doc/FrontEnd_BackEnd.md)
+- GoCoreSuper (react front-end and more!) documentation is available [here](https://github.com/DanielRenne/GoCore/blob/master/doc/FrontEnd_BackEnd.md)
 
 ## FAQ
 
