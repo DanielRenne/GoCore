@@ -3,7 +3,7 @@ module github.com/DanielRenne/GoCore/core/workQueue
 go 1.19
 
 require (
-	github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221229213842-589c9effe65e
+	github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221230214907-6a01b3c95765
 	github.com/DanielRenne/GoCore/core/utils v0.0.0-20221223202811-e70a420aa251
 )
 

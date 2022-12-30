@@ -3,25 +3,25 @@ module github.com/DanielRenne/GoCore/core/dbServices/example
 go 1.19
 
 require (
-	github.com/DanielRenne/GoCore/core v0.0.0-20221229213842-589c9effe65e
-	github.com/DanielRenne/GoCore/core/dbServices v0.0.0-20221229213842-589c9effe65e
-	github.com/DanielRenne/GoCore/core/dbServices/example/models/v1/model v0.0.0-20221229213842-589c9effe65e
-	github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221229213842-589c9effe65e
+	github.com/DanielRenne/GoCore/core v0.0.0-20221230214907-6a01b3c95765
+	github.com/DanielRenne/GoCore/core/dbServices v0.0.0-20221230214907-6a01b3c95765
+	github.com/DanielRenne/GoCore/core/dbServices/example/models/v1/model v0.0.0-20221230214643-d0e77c1f8488
+	github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221230214907-6a01b3c95765
 	github.com/common-nighthawk/go-figure v0.0.0-20210622060536-734e95fb86be
 )
 
 require (
-	github.com/DanielRenne/GoCore/core/atomicTypes v0.0.0-20221229213842-589c9effe65e // indirect
-	github.com/DanielRenne/GoCore/core/dbServices/bolt/stubs v0.0.0-20221229213842-589c9effe65e // indirect
-	github.com/DanielRenne/GoCore/core/dbServices/common/stubs v0.0.0-20221229213842-589c9effe65e // indirect
-	github.com/DanielRenne/GoCore/core/dbServices/mongo/stubs v0.0.0-20221229213842-589c9effe65e // indirect
-	github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221229213842-589c9effe65e // indirect
-	github.com/DanielRenne/GoCore/core/fileCache v0.0.0-20221229213842-589c9effe65e // indirect
-	github.com/DanielRenne/GoCore/core/logger v0.0.0-20221229213842-589c9effe65e // indirect
-	github.com/DanielRenne/GoCore/core/path v0.0.0-20221229213842-589c9effe65e // indirect
-	github.com/DanielRenne/GoCore/core/pubsub v0.0.0-20221229213842-589c9effe65e // indirect
-	github.com/DanielRenne/GoCore/core/store v0.0.0-20221229213842-589c9effe65e // indirect
-	github.com/DanielRenne/GoCore/core/utils v0.0.0-20221229213842-589c9effe65e // indirect
+	github.com/DanielRenne/GoCore/core/atomicTypes v0.0.0-20221230214907-6a01b3c95765 // indirect
+	github.com/DanielRenne/GoCore/core/dbServices/bolt/stubs v0.0.0-20221230214907-6a01b3c95765 // indirect
+	github.com/DanielRenne/GoCore/core/dbServices/common/stubs v0.0.0-20221230214907-6a01b3c95765 // indirect
+	github.com/DanielRenne/GoCore/core/dbServices/mongo/stubs v0.0.0-20221230214907-6a01b3c95765 // indirect
+	github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221230214907-6a01b3c95765 // indirect
+	github.com/DanielRenne/GoCore/core/fileCache v0.0.0-20221230214907-6a01b3c95765 // indirect
+	github.com/DanielRenne/GoCore/core/logger v0.0.0-20221230214907-6a01b3c95765 // indirect
+	github.com/DanielRenne/GoCore/core/path v0.0.0-20221230214907-6a01b3c95765 // indirect
+	github.com/DanielRenne/GoCore/core/pubsub v0.0.0-20221230214907-6a01b3c95765 // indirect
+	github.com/DanielRenne/GoCore/core/store v0.0.0-20221230214907-6a01b3c95765 // indirect
+	github.com/DanielRenne/GoCore/core/utils v0.0.0-20221230214643-d0e77c1f8488 // indirect
 	github.com/altipla-consulting/dateformatter v0.0.0-20181229145957-7f51bee562e1 // indirect
 	github.com/altipla-consulting/i18n-dateformatter v0.0.0-20181229145957-7f51bee562e1 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d // indirect
