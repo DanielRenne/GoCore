@@ -328,6 +328,8 @@ func main() {
 	err = cmd.Run()
 	errorOut("github.com/DanielRenne/GoCore/buildCore@a114cdfbeccce193d17f900e919f9b69b1dc9ef9", err, false)
 
+	cdPath(basePath + "/" + appPath)
+	
 	cmd = exec.Command("go", "run", "build"+camelUpper+"/build"+camelUpper+".go")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
