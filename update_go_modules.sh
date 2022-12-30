@@ -1,6 +1,14 @@
 set -e
 go get -u
 go mod tidy
+cd buildCore
+go get -u
+go mod tidy
+cd -
+cd modelBuild
+go get -u
+go mod tidy
+cd -
 cd core
 echo "Updating core"
 go get -u
