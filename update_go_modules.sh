@@ -1,151 +1,335 @@
 set -e
 go get -u
+echo -e "\n\n\n\n\n\n\n"
 go mod tidy
-cd buildCore
+dirname="buildCore"
+cd $dirname
+echo " Start of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
+go get -u
+echo -e "\n\n\n\n\n\n\n"
+echo " End of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
+go mod tidy
+cd -
+
+dirname="modelBuild"
+cd $dirname
+echo " Start of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
+go get -u
+echo -e "\n\n\n\n\n\n\n"
+echo " End of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
+
+go mod tidy
+cd -
+
+dirname="core"
+cd $dirname
+echo " Start of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
+go get -u
+echo -e "\n\n\n\n\n\n\n"
+echo " End of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
+
+go mod tidy
+dirname="app"
+cd $dirname
+echo " Start of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
+go get -u
+echo -e "\n\n\n\n\n\n\n"
+echo " End of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
+go mod tidy
+cd -
+
+dirname="app/api"
+cd $dirname
+echo " Start of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
+go get -u
+echo -e "\n\n\n\n\n\n\n"
+echo " End of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
+go mod tidy
+cd -
+
+dirname="appGen"
+cd $dirname
+echo " Start of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
+go get -u
+echo -e "\n\n\n\n\n\n\n"
+echo " End of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
+go mod tidy
+cd -
+
+dirname="atomicTypes"
+cd $dirname
+echo " Start of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
+go get -u
+echo -e "\n\n\n\n\n\n\n"
+echo " End of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
+go mod tidy
+cd -
+
+dirname="channels"
+cd $dirname
+echo " Start of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
+go get -u
+echo -e "\n\n\n\n\n\n\n"
+echo " End of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
+go mod tidy
+cd -
+
+dirname="cron"
+cd $dirname
+echo " Start of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
+go get -u
+echo -e "\n\n\n\n\n\n\n"
+echo " End of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go get -u
 go mod tidy
 cd -
-cd modelBuild
+
+dirname="crypto"
+cd $dirname
+echo " Start of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go get -u
+echo -e "\n\n\n\n\n\n\n"
+echo " End of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go mod tidy
 cd -
-cd core
-echo "Updating core"
+
+dirname="dbServices"
+cd $dirname
+echo " Start of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go get -u
-go mod tidy
-cd app
-echo "Updating app"
-go get -u
-go mod tidy
-cd -
-echo "Updating app/api"
-cd app/api
-go get -u
+echo -e "\n\n\n\n\n\n\n"
+echo " End of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go mod tidy
 cd -
-echo "Updating appGen"
-cd appGen
+
+dirname="dbServices/bolt/stubs"
+cd $dirname
+echo " Start of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go get -u
+echo -e "\n\n\n\n\n\n\n"
+echo " End of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go mod tidy
 cd -
-echo "Updating atomicTypes"
-cd atomicTypes
+
+dirname="dbServices/common/stubs"
+cd $dirname
+echo " Start of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go get -u
+echo -e "\n\n\n\n\n\n\n"
+echo " End of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go mod tidy
 cd -
-echo "Updating channels"
-cd channels
+
+dirname="dbServices/example"
+cd $dirname
+echo " Start of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go get -u
+echo -e "\n\n\n\n\n\n\n"
+echo " End of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go mod tidy
 cd -
-echo "Updating cron"
-cd cron
+
+dirname="dbServices/example/modelsGenerate"
+cd $dirname
+echo " Start of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go get -u
+echo -e "\n\n\n\n\n\n\n"
+echo " End of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go mod tidy
 cd -
-echo "Updating crypto"
-cd crypto
+
+dirname="dbServices/mongo/stubs"
+cd $dirname
+echo " Start of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go get -u
+echo -e "\n\n\n\n\n\n\n"
+echo " End of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go mod tidy
 cd -
-echo "Updating dbServices"
-cd dbServices
+
+dirname="extensions"
+cd $dirname
+echo " Start of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go get -u
+echo -e "\n\n\n\n\n\n\n"
+echo " End of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go mod tidy
 cd -
-echo "Updating dbServices/bolt/stubs"
-cd dbServices/bolt/stubs
+
+dirname="fileCache"
+cd $dirname
+echo " Start of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go get -u
+echo -e "\n\n\n\n\n\n\n"
+echo " End of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go mod tidy
 cd -
-echo "Updating dbServices/common/stubs"
-cd dbServices/common/stubs
+
+dirname="ginServer"
+cd $dirname
+echo " Start of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go get -u
+echo -e "\n\n\n\n\n\n\n"
+echo " End of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go mod tidy
 cd -
-echo "Updating dbServices/example"
-cd dbServices/example
+
+dirname="gitWebHooks"
+cd $dirname
+echo " Start of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go get -u
+echo -e "\n\n\n\n\n\n\n"
+echo " End of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go mod tidy
 cd -
-echo "Updating dbServices/example/modelsGenerate"
-cd dbServices/example/modelsGenerate
+
+dirname="httpExtensions"
+cd $dirname
+echo " Start of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go get -u
+echo -e "\n\n\n\n\n\n\n"
+echo " End of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go mod tidy
 cd -
-echo "Updating dbServices/mongo/stubs"
-cd dbServices/mongo/stubs
+
+dirname="logger"
+cd $dirname
+echo " Start of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go get -u
+echo -e "\n\n\n\n\n\n\n"
+echo " End of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go mod tidy
 cd -
-echo "Updating extensions"
-cd extensions
+
+dirname="mongo"
+cd $dirname
+echo " Start of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go get -u
+echo -e "\n\n\n\n\n\n\n"
+echo " End of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go mod tidy
 cd -
-echo "Updating fileCache"
-cd fileCache
+
+dirname="path"
+cd $dirname
+echo " Start of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go get -u
+echo -e "\n\n\n\n\n\n\n"
+echo " End of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go mod tidy
 cd -
-echo "Updating ginServer"
-cd ginServer
+
+dirname="pubsub"
+cd $dirname
+echo " Start of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go get -u
+echo -e "\n\n\n\n\n\n\n"
+echo " End of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go mod tidy
 cd -
-echo "Updating gitWebHooks"
-cd gitWebHooks
+
+dirname="serverSettings"
+cd $dirname
+echo " Start of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go get -u
+echo -e "\n\n\n\n\n\n\n"
+echo " End of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go mod tidy
 cd -
-echo "Updating httpExtensions"
-cd httpExtensions
+
+dirname="store"
+cd $dirname
+echo " Start of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go get -u
+echo -e "\n\n\n\n\n\n\n"
+echo " End of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go mod tidy
 cd -
-echo "Updating logger"
-cd logger
+
+dirname="utils"
+cd $dirname
+echo " Start of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go get -u
+echo -e "\n\n\n\n\n\n\n"
+echo " End of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go mod tidy
 cd -
-echo "Updating mongo"
-cd mongo
+
+dirname="zip"
+cd $dirname
+echo " Start of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go get -u
+echo -e "\n\n\n\n\n\n\n"
+echo " End of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go mod tidy
 cd -
-echo "Updating path"
-cd path
+
+dirname="workQueue"
+cd $dirname
+echo " Start of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go get -u
-go mod tidy
-cd -
-echo "Updating pubsub"
-cd pubsub
-go get -u
-go mod tidy
-cd -
-echo "Updating serverSettings"
-cd serverSettings
-go get -u
-go mod tidy
-cd -
-echo "Updating store"
-cd store
-go get -u
-go mod tidy
-cd -
-echo "Updating utils"
-cd utils
-go get -u
-go mod tidy
-cd -
-echo "Updating zip"
-cd zip
-go get -u
-go mod tidy
-cd -
-echo "Updating workQueue"
-cd workQueue
-go get -u
+echo -e "\n\n\n\n\n\n\n"
+echo " End of Updates from $dirname "
+echo -e "\n\n\n\n\n\n\n"
 go mod tidy
 cd ..
 cd ..

@@ -24,8 +24,8 @@ github.com/DanielRenne/GoCore/core/dbServices/common/stubs v0.0.0-20221230220400
 github.com/DanielRenne/GoCore/core/dbServices/common/stubs v0.0.0-20221230220400-0d0b96574dc8/go.mod h1:pI9sj+LTUOqignaRjepdwwOeF/NfrLBulMGRqOBvLu4=
 github.com/DanielRenne/GoCore/core/dbServices/example/models/v1/model v0.0.0-20221230220400-0d0b96574dc8 h1:gzSlzwA0YMpgt9RR22/aHsLql9CUXjjKK5fAO1v9s5c=
 github.com/DanielRenne/GoCore/core/dbServices/example/models/v1/model v0.0.0-20221230220400-0d0b96574dc8/go.mod h1:8pW4ohbxdAzyfbEhL5j088k1Sq3X8IwpdJKGLPlkInw=
-github.com/DanielRenne/GoCore/core/dbServices/mongo/stubs v0.0.0-20221230214907-6a01b3c95765 h1:x0Phw/A5kTvK1fcp21LZWh27M9gv/aUVsBLXXS9XxzI=
-github.com/DanielRenne/GoCore/core/dbServices/mongo/stubs v0.0.0-20221230214907-6a01b3c95765/go.mod h1:6oGsmEiE8gompFm8260nWpIKORD6kOD5tespyGzW99k=
+github.com/DanielRenne/GoCore/core/dbServices/mongo/stubs v0.0.0-20221230221914-4522c6b5dd65 h1:vxbYI385OaayyQe2mft45zP1j/+GeWaScXQRI0aU/1s=
+github.com/DanielRenne/GoCore/core/dbServices/mongo/stubs v0.0.0-20221230221914-4522c6b5dd65/go.mod h1:6oGsmEiE8gompFm8260nWpIKORD6kOD5tespyGzW99k=
 github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221230220400-0d0b96574dc8 h1:4+rE9Uxpvs60At2MnAlblc7obZWhH8Z1b0L32JAoyW8=
 github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221230220400-0d0b96574dc8/go.mod h1:6gaxFzpuy3c3l/q0gRWar1ry0ZSbopm7clbGYLCjkGU=
 github.com/DanielRenne/GoCore/core/fileCache v0.0.0-20221230220400-0d0b96574dc8 h1:XJt/Pv1twI3/x5TatLKTp8TbV76LREC/QUZ+asfupxs=
@@ -34,8 +34,8 @@ github.com/DanielRenne/GoCore/core/ginServer v0.0.0-20221230220400-0d0b96574dc8 
 github.com/DanielRenne/GoCore/core/ginServer v0.0.0-20221230220400-0d0b96574dc8/go.mod h1:kU83tjqnaN94zn+7LFmJ0jXlyW0Zg+5wXkOgNk3Wbqs=
 github.com/DanielRenne/GoCore/core/gitWebHooks v0.0.0-20221230220400-0d0b96574dc8 h1:gyag5ba6eTgFw5OIdgT1VqdOip8Vn297S0CRjM2P3I8=
 github.com/DanielRenne/GoCore/core/gitWebHooks v0.0.0-20221230220400-0d0b96574dc8/go.mod h1:9p4XcWjAl+YOMJEgxC09iD+P0TQaMElXt6J8MO8YdQw=
-github.com/DanielRenne/GoCore/core/httpExtensions v0.0.0-20221230214907-6a01b3c95765 h1:+RN+jIv+/Ek3jmDfH0g9RntXLotaTUkPsKNaVbeWWTc=
-github.com/DanielRenne/GoCore/core/httpExtensions v0.0.0-20221230214907-6a01b3c95765/go.mod h1:T3oLSSe9hCAgpHe+bHkRuy41howRDX0TNWzZ6orqGoc=
+github.com/DanielRenne/GoCore/core/httpExtensions v0.0.0-20221230221914-4522c6b5dd65 h1:W9Ow3p5eIoOmV3wEJiwlptFWFC53y/K8UHBfrltRXBM=
+github.com/DanielRenne/GoCore/core/httpExtensions v0.0.0-20221230221914-4522c6b5dd65/go.mod h1:T3oLSSe9hCAgpHe+bHkRuy41howRDX0TNWzZ6orqGoc=
 github.com/DanielRenne/GoCore/core/logger v0.0.0-20221230220400-0d0b96574dc8 h1:hDo3sNbq0CWhhzjgBnr7YrjN0AwJYAqrojy1OzEuw64=
 github.com/DanielRenne/GoCore/core/logger v0.0.0-20221230220400-0d0b96574dc8/go.mod h1:6O1Rx2oPhBNvMJGLD+wZ4IR61Mhw6UzC9B8RV8n8Ue8=
 github.com/DanielRenne/GoCore/core/mongo v0.0.0-20221230220400-0d0b96574dc8 h1:iD5v4f5GMZJqqkAViQpwWO5AdpWtV0WkTpw0qk/FHDk=
@@ -50,8 +50,8 @@ github.com/DanielRenne/GoCore/core/store v0.0.0-20221230220400-0d0b96574dc8 h1:m
 github.com/DanielRenne/GoCore/core/store v0.0.0-20221230220400-0d0b96574dc8/go.mod h1:SxpqaoOo7+bqj1UKbcxq1SQgbYaUWrebasRomrVo11w=
 github.com/DanielRenne/GoCore/core/utils v0.0.0-20221230220400-0d0b96574dc8 h1:EMAL4nCcOkAr5QsOzkVmk4ZLdbaOo28J3VRmTexjKPo=
 github.com/DanielRenne/GoCore/core/utils v0.0.0-20221230220400-0d0b96574dc8/go.mod h1:0VIEyJmIJy7TLEFPJnYgMpld5wL4KsPZEsMuu3JV3vs=
-github.com/DanielRenne/GoCore/core/workQueue v0.0.0-20221230214907-6a01b3c95765 h1:dp2E6BaNXOgcTAiBAtKxz0b02HOzZKRyDoo1B9VoukE=
-github.com/DanielRenne/GoCore/core/workQueue v0.0.0-20221230214907-6a01b3c95765/go.mod h1:XoNKNxyKz3rHw3XwH/4n/xmO2R5XVAbo3mdsVK8GUyI=
+github.com/DanielRenne/GoCore/core/workQueue v0.0.0-20221230221914-4522c6b5dd65 h1:4w9hUt+KfWAGXd12m/d68IunLv6KwdhLX/1FQ6SWKGE=
+github.com/DanielRenne/GoCore/core/workQueue v0.0.0-20221230221914-4522c6b5dd65/go.mod h1:LspAKY6ayaYXkkxz5Quf2Yyrt1buLaqiy2HuTuxJxiY=
 github.com/DanielRenne/GoCore/core/zip v0.0.0-20221230220400-0d0b96574dc8 h1:SFiEshTCeTE3kpHGX9GK2suTmjfLQm0f1JaXtoddeOE=
 github.com/DanielRenne/GoCore/core/zip v0.0.0-20221230220400-0d0b96574dc8/go.mod h1:Js/oSPf7ntiEJa1InU/xpKCKkabxXNqD5JkKed6NBRk=
 github.com/DanielRenne/GoCore/modelBuild v0.0.0-20221230221914-4522c6b5dd65 h1:vFyX+9P454W4K1HdLXHCZuLdVh0nO6liCJWYwf82kaM=

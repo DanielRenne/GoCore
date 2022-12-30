@@ -6,7 +6,7 @@ require (
 	github.com/DanielRenne/GoCore/core/atomicTypes v0.0.0-20221230220400-0d0b96574dc8
 	github.com/DanielRenne/GoCore/core/dbServices/bolt/stubs v0.0.0-20221230220400-0d0b96574dc8
 	github.com/DanielRenne/GoCore/core/dbServices/common/stubs v0.0.0-20221230220400-0d0b96574dc8
-	github.com/DanielRenne/GoCore/core/dbServices/mongo/stubs v0.0.0-20221230214907-6a01b3c95765
+	github.com/DanielRenne/GoCore/core/dbServices/mongo/stubs v0.0.0-20221230221914-4522c6b5dd65
 	github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221230220400-0d0b96574dc8
 	github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221230220400-0d0b96574dc8
 	github.com/asdine/storm v2.1.2+incompatible

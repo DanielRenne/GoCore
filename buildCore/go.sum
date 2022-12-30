@@ -8,8 +8,8 @@ github.com/DanielRenne/GoCore/core/dbServices/bolt/stubs v0.0.0-20221230220400-0
 github.com/DanielRenne/GoCore/core/dbServices/bolt/stubs v0.0.0-20221230220400-0d0b96574dc8/go.mod h1:YvuKqN82jPAThJObtfZLpt5h/aFIJKZXVNmHgfp7ntc=
 github.com/DanielRenne/GoCore/core/dbServices/common/stubs v0.0.0-20221230220400-0d0b96574dc8 h1:HHShe+cWnMyEODTlzqmvQItT88PYFr3TcvDlxV2imDs=
 github.com/DanielRenne/GoCore/core/dbServices/common/stubs v0.0.0-20221230220400-0d0b96574dc8/go.mod h1:pI9sj+LTUOqignaRjepdwwOeF/NfrLBulMGRqOBvLu4=
-github.com/DanielRenne/GoCore/core/dbServices/mongo/stubs v0.0.0-20221230214907-6a01b3c95765 h1:x0Phw/A5kTvK1fcp21LZWh27M9gv/aUVsBLXXS9XxzI=
-github.com/DanielRenne/GoCore/core/dbServices/mongo/stubs v0.0.0-20221230214907-6a01b3c95765/go.mod h1:6oGsmEiE8gompFm8260nWpIKORD6kOD5tespyGzW99k=
+github.com/DanielRenne/GoCore/core/dbServices/mongo/stubs v0.0.0-20221230221914-4522c6b5dd65 h1:vxbYI385OaayyQe2mft45zP1j/+GeWaScXQRI0aU/1s=
+github.com/DanielRenne/GoCore/core/dbServices/mongo/stubs v0.0.0-20221230221914-4522c6b5dd65/go.mod h1:6oGsmEiE8gompFm8260nWpIKORD6kOD5tespyGzW99k=
 github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221230220400-0d0b96574dc8 h1:4+rE9Uxpvs60At2MnAlblc7obZWhH8Z1b0L32JAoyW8=
 github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221230220400-0d0b96574dc8/go.mod h1:6gaxFzpuy3c3l/q0gRWar1ry0ZSbopm7clbGYLCjkGU=
 github.com/DanielRenne/GoCore/core/logger v0.0.0-20221230220400-0d0b96574dc8 h1:hDo3sNbq0CWhhzjgBnr7YrjN0AwJYAqrojy1OzEuw64=

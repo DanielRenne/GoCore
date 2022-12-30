@@ -21,7 +21,7 @@ require (
 require (
 	github.com/DanielRenne/GoCore/core/dbServices/bolt/stubs v0.0.0-20221230220400-0d0b96574dc8 // indirect
 	github.com/DanielRenne/GoCore/core/dbServices/common/stubs v0.0.0-20221230220400-0d0b96574dc8 // indirect
-	github.com/DanielRenne/GoCore/core/dbServices/mongo/stubs v0.0.0-20221230214907-6a01b3c95765 // indirect
+	github.com/DanielRenne/GoCore/core/dbServices/mongo/stubs v0.0.0-20221230221914-4522c6b5dd65 // indirect
 	github.com/DanielRenne/GoCore/core/utils v0.0.0-20221230220400-0d0b96574dc8 // indirect
 	github.com/asdine/storm v2.1.2+incompatible // indirect
 	github.com/boj/redistore v0.0.0-20180917114910-cd5dcc76aeff // indirect
