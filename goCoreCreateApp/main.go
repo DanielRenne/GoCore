@@ -337,10 +337,9 @@ func main() {
 	err = cmd.Start()
 	errorOut("formatting all code", err, false)
 
-	cdPath(basePath + "/" + appPath)
-	fmt.Println(basePath+"/"+appPath, "....", "modelBuild"+camelUpper+"/build"+camelUpper+".go")
+	cdPath(basePath + "/" + appPath + "modelBuild" + camelUpper + "/")
 
-	cmd = exec.Command("go", "install", "modelBuild"+camelUpper+"/build"+camelUpper+".go")
+	cmd = exec.Command("go", "install", ".")
 	err = cmd.Run()
 	errorOut("go install models `"+"go install modelBuild"+camelUpper+"/build"+camelUpper+".go`", err, false)
 
