@@ -318,6 +318,16 @@ func main() {
 	err = cmd.Run()
 	errorOut("running go install on getAppTemplate", err, false)
 
+	cdPath(basePath + "/" + appPath + "/build" + camelUpper + "/")
+
+	cmd = exec.Command("go", "mod", "init", "scaffoldGoCoreApp")
+	err = cmd.Run()
+	errorOut("go mod init scaffoldGoCoreApp", err, false)
+
+	cmd = exec.Command("go", "get", "github.com/DanielRenne/GoCore/buildCore@a114cdfbeccce193d17f900e919f9b69b1dc9ef9")
+	err = cmd.Run()
+	errorOut("github.com/DanielRenne/GoCore/buildCore@a114cdfbeccce193d17f900e919f9b69b1dc9ef9", err, false)
+
 	cmd = exec.Command("go", "run", "build"+camelUpper+"/build"+camelUpper+".go")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
