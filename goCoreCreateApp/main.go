@@ -337,7 +337,7 @@ func main() {
 	err = cmd.Start()
 	errorOut("formatting all code", err, false)
 
-	cdPath(basePath + "/" + appPath + "modelBuild" + camelUpper + "/")
+	cdPath(basePath + "/" + appPath + "/modelBuild" + camelUpper + "/")
 
 	cmd = exec.Command("go", "install", ".")
 	err = cmd.Run()
