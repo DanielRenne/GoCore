@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"log"
 	"os"
 	"os/exec"
 	"os/user"
@@ -250,6 +249,7 @@ func main() {
 
 `
 	buildGoFile := buildPath + "build" + camelUpper + ".go"
+
 	err = extensions.WriteAndGoFormat(heredoc.Docf(template, "buildCore", "buildCore", appName), buildGoFile)
 	errorOut("extensions.WriteAndGoFormat "+buildGoFile, err, false)
 
@@ -337,15 +337,9 @@ func main() {
 	err = cmd.Start()
 	errorOut("formatting all code", err, false)
 
-	// err = os.Chdir(basePath + "/" + appPath)
-	// errorOut("cd appPath", err, false)
-	cmd = exec.Command("pwd")
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	err = cmd.Run()
-	log.Println("dbg", strings.Replace(modelBuildPath, "src/", "", -1))
+	cdPath(basePath + "/" + appPath)
 
-	cmd = exec.Command("go", "install", strings.Replace(modelBuildPath, "src/", "", -1))
+	cmd = exec.Command("go", "install", "modelBuild"+camelUpper+"/build"+camelUpper+".go")
 	err = cmd.Run()
 	errorOut("go install models `"+"go install "+strings.Replace(modelBuildPath, "src/", "", -1)+"`", err, false)
 
