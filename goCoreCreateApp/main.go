@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"os/user"
@@ -338,6 +339,11 @@ func main() {
 
 	// err = os.Chdir(basePath + "/" + appPath)
 	// errorOut("cd appPath", err, false)
+	cmd = exec.Command("pwd")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err = cmd.Run()
+	log.Println("dbg", strings.Replace(modelBuildPath, "src/", "", -1))
 
 	cmd = exec.Command("go", "install", strings.Replace(modelBuildPath, "src/", "", -1))
 	err = cmd.Run()
