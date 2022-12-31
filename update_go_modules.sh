@@ -157,17 +157,6 @@ echo -e "\n\n\n\n\n\n\n"
 go mod tidy
 cd -
 
-dirname="dbServices/example/modelsGenerate"
-cd $dirname
-echo " Start of Updates from $dirname "
-echo -e "\n\n\n\n\n\n\n"
-go get -u
-echo -e "\n\n\n\n\n\n\n"
-echo " End of Updates from $dirname "
-echo -e "\n\n\n\n\n\n\n"
-go mod tidy
-cd -
-
 dirname="dbServices/mongo/stubs"
 cd $dirname
 echo " Start of Updates from $dirname "

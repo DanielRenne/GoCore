@@ -3,10 +3,10 @@ module github.com/DanielRenne/GoCore/core/fileCache
 go 1.19
 
 require (
-	github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221230220400-0d0b96574dc8
-	github.com/DanielRenne/GoCore/core/path v0.0.0-20221230220400-0d0b96574dc8
-	github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221230220400-0d0b96574dc8
-	github.com/DanielRenne/GoCore/core/utils v0.0.0-20221230220400-0d0b96574dc8
+	github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221231154141-4cdfc1159a98
+	github.com/DanielRenne/GoCore/core/path v0.0.0-20221231154141-4cdfc1159a98
+	github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221231154141-4cdfc1159a98
+	github.com/DanielRenne/GoCore/core/utils v0.0.0-20221231154141-4cdfc1159a98
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da
 )
 
