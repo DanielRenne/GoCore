@@ -696,6 +696,10 @@ func moveAppFiles() {
 		wasCopied = copyFolder("/bin")
 		if wasCopied {
 			replacePath("/bin", project, githubName, appName)
+			cmd := exec.Command("chmod", "+x", serverSettings.APP_LOCATION+"/bin/*")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			cmd.Run()
 		}
 		wasCopied = copyFolder("/cron")
 		if wasCopied {
@@ -706,20 +710,6 @@ func moveAppFiles() {
 			replacePath("/constants", project, githubName, appName)
 		}
 
-		if errDatabaseFile == nil {
-			copyFolder("/install")
-			replacePath("/install", project, githubName, appName)
-			err = os.Rename(serverSettings.APP_LOCATION+"/install/install.go", serverSettings.APP_LOCATION+"/install/install"+strings.Title(appName)+".go")
-			if err != nil {
-				log.Println("error renaming install")
-				os.Exit(1)
-			}
-			err = os.Rename(serverSettings.APP_LOCATION+"/install", serverSettings.APP_LOCATION+"/install"+strings.Title(appName))
-			if err != nil {
-				log.Println("error renaming install folder")
-				os.Exit(1)
-			}
-		}
 		wasCopied = copyFolder("/br")
 		if wasCopied {
 			replacePath("/br", project, githubName, appName)
@@ -805,16 +795,14 @@ package main
 import (
 	"log"
 	"os"
-
 	"runtime/debug"
 	"runtime/trace"
 	"time"
-
+	"net"
 	"fmt"
 	"net/http"
 	
 	"github.com/DanielRenne/GoCore/core/dbServices"
-	"github.com/DanielRenne/GoCore/core"
 	"github.com/DanielRenne/GoCore/core/app"
 	"github.com/DanielRenne/GoCore/core/ginServer"
 	"github.com/DanielRenne/GoCore/core/logger"
@@ -833,9 +821,7 @@ func main() {
 	defer func() {
 		if r := recover(); r != nil {
 			session_functions.Print("\n\nPanic Stack: " + string(debug.Stack()))
-			session_functions.Log("studio.go", "Panic Recovered at main():"+fmt.Sprintf("%+v", r))
-			time.Sleep(time.Millisecond * 3000)
-			main()
+			session_functions.Log("Main app.go", "Panic Recovered at main():"+fmt.Sprintf("%+v", r)) 
 			return
 		}
 	}()
@@ -881,7 +867,7 @@ func main() {
 
 	controllers.Initialize()
 
-	core.CronJobs.Start()
+	coreCron.Start()
 	cron.Start()
 
 	go logger.GoRoutineLogger(func() {
