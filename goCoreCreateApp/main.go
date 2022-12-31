@@ -21,7 +21,7 @@ func talk(msg string) {
 
 func cdPath(path string) {
 	err := os.Chdir(path)
-	errorOut("cd gopath", err, false)
+	errorOut("cd "+path, err, false)
 }
 
 func errorOut(line string, err error, dontExit bool) {
@@ -341,6 +341,8 @@ func main() {
 	cmd = exec.Command("go", "get", "github.com/DanielRenne/GoCore/buildCore@b32b56bc93ad8c2f1b6039f1c72145e5838d3165")
 	err = cmd.Run()
 	errorOut("github.com/DanielRenne/GoCore/buildCore", err, false)
+
+	cdPath(basePath + "/" + appPath)
 
 	cmd = exec.Command("go", "run", "build"+camelUpper+"/build"+camelUpper+".go")
 	cmd.Stdout = os.Stdout
