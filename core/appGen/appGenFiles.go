@@ -804,6 +804,7 @@ import (
 	
 	"github.com/DanielRenne/GoCore/core/dbServices"
 	"github.com/DanielRenne/GoCore/core/app"
+	coreCron "github.com/DanielRenne/GoCore/core/cron"
 	"github.com/DanielRenne/GoCore/core/ginServer"
 	"github.com/DanielRenne/GoCore/core/logger"
 	_ "github.com/`+project+`/controllerRegistry"
