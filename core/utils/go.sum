@@ -1,4 +1,4 @@
-github.com/DanielRenne/GoCore/core/path v0.0.0-20221231154141-4cdfc1159a98 h1:AxTmG4RwctgOhdRkxPWRkJGKymyOU9ot/L8lhe1KzEA=
-github.com/DanielRenne/GoCore/core/path v0.0.0-20221231154141-4cdfc1159a98/go.mod h1:/xvJ8xSQDvZ7UuUymCjIwKlJwvWmpjz9IvkmY3RPvCk=
-github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221231154141-4cdfc1159a98 h1:5Jsvp/dR3AxmfIYCRgKHidYdAcwB4ig1WhhXU+nLHgw=
-github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221231154141-4cdfc1159a98/go.mod h1:PjWPnnqx1ALslvBJc3hH9PUOxkySV4+Pj7xibIoAin8=
+github.com/DanielRenne/GoCore/core/path v0.0.0-20221231161458-fe3d9327bf49 h1:YOdru7wWDeg65TW7AUbA7qQygM5rNIC6sAfJgv9tvc4=
+github.com/DanielRenne/GoCore/core/path v0.0.0-20221231161458-fe3d9327bf49/go.mod h1:/xvJ8xSQDvZ7UuUymCjIwKlJwvWmpjz9IvkmY3RPvCk=
+github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221231161458-fe3d9327bf49 h1:2zjlQcom+jw2vACFWdt6bBhBiQKHF0Qgtgidh8B64mk=
+github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221231161458-fe3d9327bf49/go.mod h1:iT0bQi2U9sXlkb7bytw5aIWB0hl0YuoCWrprX/X9G0Y=
