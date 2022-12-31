@@ -284,27 +284,41 @@ func main() {
 	err = cmd.Run()
 	errorOut("running go mod init", err, false)
 
-	if createGit == "y" {
-		talk("Adding github files")
+	cmd = exec.Command("go", "get", "github.com/disintegration/imaging")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err = cmd.Run()
+	errorOut("running go gets", err, false)
 
-		cmd = exec.Command("git", "init")
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		err = cmd.Run()
-		errorOut("git init", err, false)
+	cmd = exec.Command("go", "get", "github.com/go-stack/stack")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err = cmd.Run()
+	errorOut("running go gets", err, false)
 
-		cmd = exec.Command("git", "add", ".")
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		err = cmd.Run()
-		errorOut("git add", err, false)
+	cmd = exec.Command("go", "get", "github.com/nfnt/resize")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err = cmd.Run()
+	errorOut("running go gets", err, false)
 
-		cmd = exec.Command("git", "commit", "-m", "Initial GoCore App Generation")
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		err = cmd.Run()
-		errorOut("git commit", err, false)
-	}
+	cmd = exec.Command("go", "get", "github.com/pkg/errors")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err = cmd.Run()
+	errorOut("running go gets", err, false)
+
+	cmd = exec.Command("go", "get", "gopkg.in/mgo.v2/bson")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err = cmd.Run()
+	errorOut("running go gets", err, false)
+
+	cmd = exec.Command("go", "get", "xojoc.pw/useragent")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err = cmd.Run()
+	errorOut("running go gets", err, false)
 
 	cmd = exec.Command("go", "get", "github.com/DanielRenne/GoCore")
 	cmd.Stdout = os.Stdout
@@ -328,19 +342,14 @@ func main() {
 	err = cmd.Run()
 	errorOut("github.com/DanielRenne/GoCore/buildCore@a114cdfbeccce193d17f900e919f9b69b1dc9ef9", err, false)
 
-	cdPath(basePath + "/" + appPath)
-	
 	cmd = exec.Command("go", "run", "build"+camelUpper+"/build"+camelUpper+".go")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err = cmd.Run()
 	errorOut("running go run "+buildGoFile, err, false)
 
-	cmd = exec.Command("go", "run", "install"+camelUpper+"/install"+camelUpper+".go")
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	err = cmd.Run()
-	errorOut("running "+appPath+"/install"+camelUpper, err, false)
+	err = extensions.RemoveDirectory(basePath + "/" + appPath + "/build" + camelUpper + "/")
+	errorOut("remove "+basePath+"/"+appPath+"/build"+camelUpper+"/", err, false)
 
 	err = os.Chdir(basePath + "/" + appPath + "/bin")
 	errorOut("cd bin", err, false)
@@ -349,11 +358,39 @@ func main() {
 	err = cmd.Start()
 	errorOut("formatting all code", err, false)
 
+	if createGit == "y" {
+		err = os.Chdir(basePath + "/" + appPath)
+		errorOut("cd "+basePath+"/"+appPath, err, false)
+
+		talk("Adding github files")
+
+		cmd = exec.Command("git", "init")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		err = cmd.Run()
+		errorOut("git init", err, false)
+
+		cmd = exec.Command("git", "add", "-A")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		err = cmd.Run()
+		errorOut("git add", err, false)
+
+		cmd = exec.Command("git", "commit", "-m", "Initial GoCore App Generation")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		err = cmd.Run()
+		errorOut("git commit", err, false)
+	}
 	cdPath(basePath + "/" + appPath + "/modelBuild" + camelUpper + "/")
 
 	cmd = exec.Command("go", "install", ".")
 	err = cmd.Run()
 	errorOut("go install models `"+"go install modelBuild"+camelUpper+"/build"+camelUpper+".go`", err, false)
+
+	cmd = exec.Command("modelBuild" + camelUpper)
+	err = cmd.Start()
+	errorOut("running ./modelBuild"+camelUpper, err, false)
 
 	cmd = exec.Command("bash", basePath+"/"+appPath+"/bin/start_app")
 	cmd.Stdout = os.Stdout
