@@ -29,6 +29,8 @@ var CACHE_BOOTSTRAP_STORAGE_PATH string
 // CACHE_MANIFEST_STORAGE_PATH is the directory where bootstrap caches are stored
 var CACHE_MANIFEST_STORAGE_PATH string
 
+var hasInitialized bool
+
 // SetGoCoreStoragePath set a directory with a trailing slash of where you want goCore to set and make directories for caching files needed to keep track of your application cron and bootstrap caches.
 func SetGoCoreStoragePath(directory string) {
 	CACHE_STORAGE_PATH = directory + "caches"
@@ -88,25 +90,32 @@ func init() {
 
 // Init will initilize a groupCache if you pass a non empty string and create necessary folders for internal file caching of GoCore
 func Init(groupCache string) {
-	if groupCache != "" {
-		InitializeGroupCache(groupCache)
+	if !hasInitialized {
+		if groupCache != "" {
+			InitializeGroupCache(groupCache)
+		}
+		Initialize()
+		hasInitialized = true
 	}
-	Initialize()
 }
 
 // Initialize in main before any calls to this package are performed.  serverSettings package must be initialized before fileCache.
 // Developers can call SetGoCoreStoragePath() with a path of their choice for storage of where bootstrap caches and jobs files (for one time cron jobs are stored
 func Initialize() {
-	if !path.IsWindows && CACHE_STORAGE_PATH == "" {
-		SetGoCoreStoragePath("/usr/local/goCore/")
-	} else if path.IsWindows && CACHE_STORAGE_PATH == "" {
-		SetGoCoreStoragePath("C:\\goCore\\")
-	}
+	if !hasInitialized {
 
-	if serverSettings.WebConfig.Application.Domain != "" {
-		InitializeGroupCache(serverSettings.WebConfig.Application.Domain)
+		if !path.IsWindows && CACHE_STORAGE_PATH == "" {
+			SetGoCoreStoragePath("/usr/local/goCore/")
+		} else if path.IsWindows && CACHE_STORAGE_PATH == "" {
+			SetGoCoreStoragePath("C:\\goCore\\")
+		}
+
+		if serverSettings.WebConfig.Application.Domain != "" {
+			InitializeGroupCache(serverSettings.WebConfig.Application.Domain)
+		}
+		LoadJobsFile()
+		hasInitialized = true
 	}
-	LoadJobsFile()
 }
 
 // WriteJobCacheFile is exported internally to share between GoCore packages and should not be called directly by you.

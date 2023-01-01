@@ -13,6 +13,7 @@ import (
 type RecurringType int
 
 var recurringJobs recurringJobsSync
+var recurringFutureJobs recurringFutureJobsSync
 
 const (
 	//CronTopOfMinute is a cron job type that is called at the top of every minute.
@@ -31,9 +32,14 @@ type recurringJobsSync struct {
 	sync.RWMutex
 	items []recurringEvent
 }
+type recurringFutureJobsSync struct {
+	sync.RWMutex
+	items []futureEvent
+}
 
 // RecurringEvent is a callback function called by the cron job engine.
 type RecurringEvent func(eventDate time.Time)
+type FutureEvent func()
 
 // OneTimeEvent is used to schedule a one time event to be executed
 type OneTimeEvent func() bool
@@ -41,6 +47,15 @@ type OneTimeEvent func() bool
 type recurringEvent struct {
 	Type  RecurringType
 	Event RecurringEvent
+}
+type futureEvent struct {
+	Time  time.Time
+	Event FutureEvent
+}
+
+func init() {
+	fileCache.Initialize()
+	start()
 }
 
 // ShouldRunEveryTenMinutes is a helper function that returns true if the time is the top of every 10 minutes. Note, please call cron.()
@@ -67,8 +82,7 @@ func ShouldRunEvery15Minutes(x time.Time) (run bool) {
 	return
 }
 
-// Start starts the cron job engine which tickers every 100 ms.  Include this in your main somewhere (possibly after a database connection is established) and wrap all your cron setup in another function
-func Start() {
+func start() {
 	ticker := time.NewTicker(time.Millisecond * 100)
 	go func() {
 
@@ -124,6 +138,7 @@ func Start() {
 
 			if previousSec != sec {
 				previousSec = sec
+				go callRecurringFutureEvents(time.Now())
 				go callRecurringEvents(CronTopOfSecond, tm)
 			}
 		}
@@ -171,9 +186,24 @@ func RegisterRecurring(t RecurringType, callback RecurringEvent) {
 	recurringJobs.Unlock()
 }
 
+// RegisterFutureEvent provides a method to register for a callback that is called at at some time you specify in the future
+func RegisterFutureEvent(t time.Time, callback FutureEvent) {
+	defer func() {
+		if r := recover(); r != nil {
+			return
+		}
+	}()
+	recurringFutureJobs.Lock()
+	var re futureEvent
+	re.Event = callback
+	re.Time = t
+	recurringFutureJobs.items = append(recurringFutureJobs.items, re)
+	recurringFutureJobs.Unlock()
+}
+
 // ClearRecurringJobs clears all recurring jobs.
 // You would do this in a case of some event reconfiguring possibly a dynamic event of RegisterRecurring() where an end user is in control of the execution of the cron jobs
-// Then call the function which reads your static configuration or dynamic configuration to setup your cron jobs and no need to call Start again if its already been called
+// Then call the function which reads your static configuration or dynamic configuration to setup your cron jobs and there is no need to call Start again if its already been called
 func ClearRecurringJobs() {
 	defer func() {
 		if r := recover(); r != nil {
@@ -184,6 +214,19 @@ func ClearRecurringJobs() {
 	var re []recurringEvent
 	recurringJobs.items = re
 	recurringJobs.Unlock()
+}
+
+// ClearFutureJobs clears all future jobs waiting to be executed
+func ClearFutureJobs() {
+	defer func() {
+		if r := recover(); r != nil {
+			return
+		}
+	}()
+	recurringFutureJobs.Lock()
+	var re []futureEvent
+	recurringFutureJobs.items = re
+	recurringFutureJobs.Unlock()
 }
 
 // ExecuteOneTimeJob executes a one time job.
@@ -215,10 +258,6 @@ func ExecuteOneTimeJob(jobName string, callback OneTimeEvent) {
 
 }
 
-func processRecurringTick(tm time.Time) {
-
-}
-
 func callRecurringEvents(t RecurringType, tm time.Time) {
 	recurringJobs.RLock()
 	for _, item := range recurringJobs.items {
@@ -230,4 +269,24 @@ func callRecurringEvents(t RecurringType, tm time.Time) {
 		}
 	}
 	recurringJobs.RUnlock()
+}
+
+func remove(s []futureEvent, i int) []futureEvent {
+	s[i] = s[len(s)-1]
+	return s[:len(s)-1]
+}
+
+func callRecurringFutureEvents(tm time.Time) {
+	recurringFutureJobs.Lock()
+	for idx, item := range recurringFutureJobs.items {
+		i := item
+		if i.Time.Year() == tm.Year() && i.Time.Month() == tm.Month() && i.Time.Day() == tm.Day() && i.Time.Hour() == tm.Hour() && i.Time.Minute() == tm.Minute() && i.Time.Second() == tm.Second() {
+			go func(e FutureEvent) {
+				e()
+			}(i.Event)
+			// manage some memory after execution so these things dont just sit forever dormant on each call
+			remove(recurringFutureJobs.items, idx)
+		}
+	}
+	recurringFutureJobs.Unlock()
 }
