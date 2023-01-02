@@ -1,3 +1,9 @@
+github.com/DanielRenne/GoCore/core/path v0.0.0-20221231161458-fe3d9327bf49 h1:YOdru7wWDeg65TW7AUbA7qQygM5rNIC6sAfJgv9tvc4=
+github.com/DanielRenne/GoCore/core/path v0.0.0-20221231161458-fe3d9327bf49/go.mod h1:/xvJ8xSQDvZ7UuUymCjIwKlJwvWmpjz9IvkmY3RPvCk=
+github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221231161458-fe3d9327bf49 h1:2zjlQcom+jw2vACFWdt6bBhBiQKHF0Qgtgidh8B64mk=
+github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221231161458-fe3d9327bf49/go.mod h1:iT0bQi2U9sXlkb7bytw5aIWB0hl0YuoCWrprX/X9G0Y=
+github.com/DanielRenne/GoCore/core/utils v0.0.0-20221231172306-f069ed88a52a h1:hPAEvo2GK92CqHzzBrq3iROrS4e40nMk5YsvrpRXA+M=
+github.com/DanielRenne/GoCore/core/utils v0.0.0-20221231172306-f069ed88a52a/go.mod h1:wdfh2nZuYWldteaNKj24gDIKOpu9UAv4C2seiKxcHkY=
 github.com/forPelevin/gomoji v1.1.8 h1:JElzDdt0TyiUlecy6PfITDL6eGvIaxqYH1V52zrd0qQ=
 github.com/forPelevin/gomoji v1.1.8/go.mod h1:8+Z3KNGkdslmeGZBC3tCrwMrcPy5GRzAD+gL9NAwMXg=
 github.com/rivo/uniseg v0.4.3 h1:utMvzDsuh3suAEnhH0RdHmoPbU648o6CvXxTx4SBMOw=

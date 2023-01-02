@@ -16,6 +16,9 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"sync"
+
+	"github.com/DanielRenne/GoCore/core/utils"
 )
 
 // ByOldestFile is a type for sorting files by oldest first
@@ -334,6 +337,139 @@ func ParseAndWriteFile(path string, v interface{}, perm os.FileMode) (err error)
 	}
 
 	err = WriteToFile(string(data), path, perm)
+	return
+}
+
+// GetAllFilesRecursively recurses a directory and returns the path and file names of all the files.
+func GetAllFilesRecursively(fileDir string) (files []string, err error) {
+	var satisfy []string
+	return recurseFiles(fileDir, satisfy)
+}
+
+// GetAllFilesRecursivelyByExtension recurses a directory and returns the path and file names of all the files.  Pass []string of fileExtensions as the second parameter (no need for period and cannot have multiple extensions like tar.gz)
+func GetAllFilesRecursivelyByExtension(fileDir string, fileExtensionFilter []string) (files []string, err error) {
+	return recurseFiles(fileDir, fileExtensionFilter)
+}
+
+func recurseFiles(fileDir string, fileExtensionFilter []string) (files []string, err error) {
+	path := fileDir
+
+	if DoesFileExist(path) == false {
+		err = errors.New(fileDir + " does not exist")
+		return
+	}
+	var newFilterExtensions []string
+	for i := range fileExtensionFilter {
+		newFilterExtensions = append(newFilterExtensions, strings.ToUpper(strings.ReplaceAll(fileExtensionFilter[i], ".", "")))
+	}
+	err = filepath.Walk(path, func(path string, f os.FileInfo, errWalk error) (err error) {
+
+		if errWalk != nil {
+			err = errWalk
+			return
+		}
+
+		if !f.IsDir() {
+			addFile := true
+			if len(fileExtensionFilter) > 0 {
+				pieces := strings.Split(path, ".")
+				ext := strings.ToUpper(pieces[len(pieces)-1:][0])
+				if !utils.InArray(ext, newFilterExtensions) {
+					addFile = false
+				}
+			}
+			if addFile {
+				files = append(files, path)
+			}
+		}
+
+		return
+	})
+
+	return
+}
+
+// InvokeMethodOnAllFilesRecursively recurses a directory and returns the path and file names of all the files.  The second parameter is a callback functon which will be called in go routines for each file where you will read the os.File and do something with it
+func InvokeMethodOnAllFilesRecursively(fileDir string, function func(*os.File) error) (files []string, err error, fileErrors map[string]error) {
+	var satisfy []string
+	return recurseFilesAsync(fileDir, satisfy, function)
+}
+
+// InvokeMethodOnAllFilesRecursivelyByExtension recurses a directory and returns the path and file names of all the files.  Pass []string of fileExtensions as the second parameter (no need for period and cannot have multiple extensions like tar.gz). The third parameter is a callback functon which will be called in go routines for each file where you will read the os.File and do something with it
+func InvokeMethodOnAllFilesRecursivelyByExtension(fileDir string, fileExtensionFilter []string, function func(*os.File) error) (files []string, err error, fileErrors map[string]error) {
+	return recurseFilesAsync(fileDir, fileExtensionFilter, function)
+}
+
+func recurseFilesAsync(fileDir string, fileExtensionFilter []string, function func(*os.File) error) (files []string, err error, fileErrors map[string]error) {
+	fileErrors = make(map[string]error, 0)
+	type itemSync struct {
+		sync.Mutex
+		Items []string
+	}
+	var syncedItems itemSync
+	path := fileDir
+	var wg sync.WaitGroup
+	if DoesFileExist(path) == false {
+		err = errors.New(fileDir + " does not exist")
+		return
+	}
+	var newFilterExtensions []string
+	for i := range fileExtensionFilter {
+		newFilterExtensions = append(newFilterExtensions, strings.ToUpper(strings.ReplaceAll(fileExtensionFilter[i], ".", "")))
+	}
+	totalFiles := 0
+	err = filepath.Walk(path, func(path string, f os.FileInfo, errWalk error) (err error) {
+
+		if errWalk != nil {
+			err = errWalk
+			return
+		}
+
+		if !f.IsDir() {
+			addFile := true
+			if len(fileExtensionFilter) > 0 {
+				pieces := strings.Split(path, ".")
+				ext := strings.ToUpper(pieces[len(pieces)-1:][0])
+				if !utils.InArray(ext, newFilterExtensions) {
+					addFile = false
+				}
+			}
+			if addFile {
+				wg.Add(1)
+				totalFiles++
+				go func() {
+					defer func() {
+						if r := recover(); r != nil {
+							return
+						}
+					}()
+
+					defer wg.Done()
+					f, err := os.Open(path)
+					if err != nil {
+						fileErrors[path] = errors.New("File Open Error:" + err.Error())
+						return
+					}
+					defer f.Close()
+					err = function(f)
+					if err != nil {
+						fileErrors[path] = errors.New("Callback function error:" + err.Error())
+						return
+					}
+					syncedItems.Lock()
+					syncedItems.Items = append(syncedItems.Items, path)
+					syncedItems.Unlock()
+
+				}()
+				files = append(files, path)
+			}
+		}
+
+		return
+	})
+	wg.Wait()
+	files = syncedItems.Items
+
 	return
 }
 

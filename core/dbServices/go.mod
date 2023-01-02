@@ -7,7 +7,7 @@ require (
 	github.com/DanielRenne/GoCore/core/dbServices/bolt/stubs v0.0.0-20221229191145-5251e8f27cc2
 	github.com/DanielRenne/GoCore/core/dbServices/common/stubs v0.0.0-20221229191145-5251e8f27cc2
 	github.com/DanielRenne/GoCore/core/dbServices/mongo/stubs v0.0.0-20221229191145-5251e8f27cc2
-	github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221229191145-5251e8f27cc2
+	github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221231172306-f069ed88a52a
 	github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221229191145-5251e8f27cc2
 	github.com/asdine/storm v2.1.2+incompatible
 	github.com/davidrenne/heredoc v0.0.0-20161006151009-80dc836e596c
