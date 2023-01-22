@@ -1,9 +1,9 @@
-# Go Debouncer
+# GoCore Debouncer
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/vnteamopen/godebouncer.svg)](https://pkg.go.dev/github.com/vnteamopen/godebouncer) [![build](https://github.com/vnteamopen/godebouncer/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/vnteamopen/godebouncer/actions/workflows/build.yml) [![Go Report Card](https://goreportcard.com/badge/github.com/vnteamopen/godebouncer)](https://goreportcard.com/report/github.com/vnteamopen/godebouncer)
 [![Built with WeBuild](https://raw.githubusercontent.com/webuild-community/badge/master/svg/WeBuild.svg)](https://webuild.community) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/vnteamopen/godebouncer/blob/main/LICENSE)
 
-Originally forked from [vnteamopen/godebouncer](https://pkg.go.dev/github.com/vnteamopen/godebouncer)
+Originally forked from [vnteamopen/godebouncer](https://pkg.go.dev/github.com/vnteamopen/godebouncer) but added the ability to pass interface/any to the functions which is very useful.
 
 Go Debouncer is a Go language library. It makes sure that the pre-defined function is only triggered once per client's signals during a fixed duration.
 
