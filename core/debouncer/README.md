@@ -159,7 +159,7 @@ func main() {
 	d.SendSignalWithData(&myStruct{
 		Boolean: false,
 		Integer: 5,
-		String: "Will not show"
+		String: "Will not show",
 	})
 
 	time.Sleep(1 * time.Second)
@@ -168,7 +168,7 @@ func main() {
 	d.SendSignalWithData(&myStruct{
 		Boolean: true,
 		Integer: 5,
-		String: "Will show because last one in wins!"
+		String: "Will show because last one in wins!",
 	})
 
 	// After 5 seconds, the trigger will be called.
