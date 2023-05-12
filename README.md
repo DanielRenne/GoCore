@@ -18,7 +18,7 @@ Below are some targeted goals:
 
 ---
 
-- Database Goals. Provide Model/structs/ORM support and drivers for the following (for use with [GoCore full apps](https://github.com/DanielRenne/GoCore/blob/master/doc/GoCore_Full.md) or [standalone ORM](https://github.com/DanielRenne/GoCore/tree/master/core/dbServices/example)):
+- Database Goals. Provide Model/structs/ORM support and drivers for the following (for use with [GoCoreFull webserver](https://github.com/DanielRenne/GoCore/blob/master/doc/GoCore_Full.md) or [GoCoreSuper webserver](https://github.com/DanielRenne/GoCore/blob/master/doc/FrontEnd_BackEnd.md) or [standalone ORM](https://github.com/DanielRenne/GoCore/tree/master/core/dbServices/example)):
   - Supported databases:
     - MongoDB
     - BoltDB
@@ -33,7 +33,8 @@ Below are some targeted goals:
 
 - General application toolbox and file utilities
   - Some basic crypto functions in the [github.com/DanielRenne/core/crypto](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/crypto) package
-  - Utility functions for versioning, hexadecimals, strings, human directory sizes, printable ascii/emojis, data type conversions inside of [github.com/DanielRenne/GoCore/core/extensions](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/extensions)
+  - A comprehensive debouncer in the [github.com/DanielRenne/core/debouncer](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/debouncer) package (Read the [README.md fork](https://github.com/DanielRenne/GoCore/blob/master/core/debouncer/README.md))
+  - Utility "extension" functions for type casting, versioning, hexadecimals, strings, human directory sizes, printable ascii/emojis, data type conversions inside of [github.com/DanielRenne/GoCore/core/extensions](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/extensions)
   - Basic path helpers in [github.com/DanielRenne/GoCore/core/path](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/path)
   - Utility functions for managing files and directories for getting all files in directories, copying and removing directories, reading files and also parsing interfaces into json, unGizipping files, and Untarring and Taring files natively inside of go with [github.com/DanielRenne/core/extensions/](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/extensions) `fileExtensions.go` and `unix.go`
   - A simple logger with logging with colors, [goRoutine logging](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/logger#example_GoRoutineLogger), [tailing files](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/logger#Tail), and [measuring time of execution](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/logger#example_TimeTrack) in [github.com/DanielRenne/core/logger](https://pkg.go.dev/github.com/DanielRenne/GoCore/core/logger) package
@@ -75,17 +76,17 @@ go mod init github.com/username/packageName
 
 ## Build GoCore Backend Only Webserver app
 
-There are three options to start a webserver. GoCoreLite (just a gin-gonic server with a gorilla websocket where you pass the port you wish), GoCoreFull ( which assumes usages of our model and ORM with mongo or boltDB ), or GoCoreCreateApp (full front-end examples with a backend webserver).
+There are three options to start a webserver. GoCoreLite (just a gin-gonic server with a gorilla websocket where you pass the port you wish), GoCoreFull ( which assumes usages of our model and ORM with mongo or boltDB ), or GoCoreSuper (full front-end examples with a backend webserver).
 
-- GoCore full docs are available at [here](https://github.com/DanielRenne/GoCore/blob/master/doc/GoCore_Full.md)
+- GoCoreLite documentation is available [here](https://github.com/DanielRenne/GoCore/blob/master/doc/GoCore_Lite.md)
 
-- GoCoreLite full docs are available [here](https://github.com/DanielRenne/GoCore/blob/master/doc/GoCore_Lite.md)
+- GoCoreFull (backend only with minimal SSL certs, mongo and stub models) documentation is available at [here](https://github.com/DanielRenne/GoCore/blob/master/doc/GoCore_Full.md)
 
-- GoCoreCreateApp full docs are available [here](https://github.com/DanielRenne/GoCore/blob/master/doc/FrontEnd_BackEnd.md)
+- GoCoreSuper (react front-end and more!) documentation is available [here](https://github.com/DanielRenne/GoCore/blob/master/doc/FrontEnd_BackEnd.md)
 
 ## FAQ
 
-### Why cant I go run my main in a full GoCore application
+### Why cant I `go run` my main in a full GoCore application
 
 This is because in many cases for a full GoCore web app, we need to read a webConfig.json in your current directory so that you dont compile configurations inside your main.go and developers and servers can be reconfigured without recompiling. Go will compile into a tmp directory and we dont know where your webConfig.json is located. If you really want to use go run, you can pass `go run main.go $(pwd)` if you dont want to compile your web server which will pass the location where you webConfig.json sits next to your main program.
 

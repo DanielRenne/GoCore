@@ -26,6 +26,7 @@ use (
 	./core/appGen
 	./core/cmdExec
 	./core/workQueue
+	./core/debouncer
 	./core/app
 	./core/app/api
 )

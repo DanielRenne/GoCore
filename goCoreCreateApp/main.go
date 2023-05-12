@@ -21,7 +21,7 @@ func talk(msg string) {
 
 func cdPath(path string) {
 	err := os.Chdir(path)
-	errorOut("cd gopath", err, false)
+	errorOut("cd "+path, err, false)
 }
 
 func errorOut(line string, err error, dontExit bool) {
@@ -29,6 +29,8 @@ func errorOut(line string, err error, dontExit bool) {
 		msg := "Errored out: " + err.Error()
 		logger.Message(msg+" "+line, logger.RED)
 		utils.TalkDirty(msg)
+		cdPath(basePath)
+		extensions.RemoveDirectory(appName)
 		if !dontExit {
 			os.Exit(2)
 		}
@@ -37,22 +39,24 @@ func errorOut(line string, err error, dontExit bool) {
 	}
 }
 
+var appName string
+var databaseType string
+var humanTitle string
+var colorPalette string
+var basePath string
+var profileFile string
+var mainCNKeys string
+var createGit string
+var username string
+
 func main() {
-	var appName string
-	var username string
-	var databaseType string
-	var humanTitle string
-	var colorPalette string
-	var basePath string
-	var profileFile string
-	var mainCNKeys string
 
 	logger.Message("Welcome to the GoCore createApp tool!  Thank you for using GoCore.", logger.YELLOW)
 
 	//also should ensure first char of appName is lower
 	for {
 		reader := bufio.NewReader(os.Stdin)
-		fmt.Print("GoCore AppName: ")
+		fmt.Print("GoCore AppName (lowercase first byte camel case proect name): ")
 		appName, _ = reader.ReadString('\n')
 		appName = strings.Trim(appName, "\n")
 		ok := false
@@ -64,39 +68,6 @@ func main() {
 		if ok {
 			break
 		}
-	}
-
-	for {
-		reader := bufio.NewReader(os.Stdin)
-		fmt.Print("Path of application install (no trailing /): ")
-		basePath, _ = reader.ReadString('\n')
-		basePath = strings.Trim(basePath, "\n")
-		ok := false
-		if strings.Index(basePath, " ") == -1 {
-			ok = true
-		} else {
-			fmt.Println("No spaces please")
-		}
-		if ok {
-			break
-		}
-	}
-	err := os.MkdirAll(basePath, 0777)
-
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Print("Title of all pages: ")
-	humanTitle, _ = reader.ReadString('\n')
-	humanTitle = strings.Trim(humanTitle, "\n")
-
-	for {
-		reader := bufio.NewReader(os.Stdin)
-		logger.Message("For your self signed SSL cert.  Add your full cert information like this: \"/CN=www.mydom.com/O=My Company Name LTD./C=US\" (defaults to this if you just press enter)", logger.GREEN)
-		mainCNKeys, _ = reader.ReadString('\n')
-		mainCNKeys = strings.Trim(mainCNKeys, "\n")
-		if mainCNKeys == "" {
-			mainCNKeys = "/CN=www.mydom.com/O=My Company Name LTD./C=US"
-		}
-		break
 	}
 
 	for {
@@ -113,6 +84,39 @@ func main() {
 		if ok {
 			break
 		}
+	}
+
+	for {
+		reader := bufio.NewReader(os.Stdin)
+		fmt.Print("Path of module install (please no trailing /) It will create three subdirectories to access your app {your-path-you-enter-here}/github.com/" + username + "/" + appName + "/" + appName + "/: ")
+		basePath, _ = reader.ReadString('\n')
+		basePath = strings.Trim(basePath, "\n")
+		ok := false
+		if strings.Index(basePath, " ") == -1 && basePath[len(basePath)-1:] != "/" {
+			ok = true
+		} else {
+			fmt.Println("No spaces please and dont end in / ")
+		}
+		if ok {
+			break
+		}
+	}
+	err := extensions.MkDir(basePath)
+
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Print("Title of all pages: ")
+	humanTitle, _ = reader.ReadString('\n')
+	humanTitle = strings.Trim(humanTitle, "\n")
+
+	for {
+		reader := bufio.NewReader(os.Stdin)
+		logger.Message("For your self signed SSL cert.  Add your full cert information like this: \"/CN=www.mydom.com/O=My Company Name LTD./C=US\" (defaults to this if you just press enter)", logger.GREEN)
+		mainCNKeys, _ = reader.ReadString('\n')
+		mainCNKeys = strings.Trim(mainCNKeys, "\n")
+		if mainCNKeys == "" {
+			mainCNKeys = "/CN=www.mydom.com/O=My Company Name LTD./C=US"
+		}
+		break
 	}
 
 	for {
@@ -134,13 +138,42 @@ func main() {
 		}
 	}
 
+	createGit = "y"
 	for {
 		reader := bufio.NewReader(os.Stdin)
-		fmt.Print("Enter the name of the file which loads your shell environment (.bash_profile) is defaulted if you leave blank: ")
+		fmt.Print("Create and commit initial git repository (y or n) (defaults y): ")
+		createGit, _ = reader.ReadString('\n')
+		createGit = strings.Trim(createGit, "\n")
+		if createGit == "" {
+			createGit = "y"
+		}
+		ok := false
+		if createGit == "y" || createGit == "n" {
+			ok = true
+		} else {
+			fmt.Println("Invalid type 'n' or 'y'")
+		}
+		if ok {
+			break
+		}
+	}
+
+	for {
+		reader := bufio.NewReader(os.Stdin)
+		fmt.Print("Enter the name of the file which loads your shell environment (~/.bash_profile) is defaulted if you leave blank: ")
 		profileFile, _ = reader.ReadString('\n')
 		profileFile = strings.Trim(profileFile, "\n")
 		if profileFile == "" {
 			profileFile = ".bash_profile"
+		}
+		ok := false
+		if strings.Index(profileFile, "/home") != -1 && strings.Index(profileFile, "/Users") != -1 && strings.Index(profileFile, "~") != -1 {
+			ok = true
+		} else {
+			fmt.Println("Just the .filename, not the path such as ~, /home or /Users/")
+		}
+		if ok {
+			break
 		}
 		break
 	}
@@ -149,24 +182,33 @@ func main() {
 
 	camelUpper := strings.ToTitle(string(appName[0])) + string(appName[1:])
 
-	err = extensions.WriteToFile(colorPalette, "/tmp/colorPalette", 0777)
+	err = extensions.Write(colorPalette, "/tmp/colorPalette")
 	errorOut("extensions.WriteToFile "+colorPalette+" to /tmp/colorPalette", err, false)
 
-	err = extensions.WriteToFile(humanTitle, "/tmp/humanTitle", 0777)
+	err = extensions.Write(humanTitle, "/tmp/humanTitle")
 	errorOut("extensions.WriteToFile "+humanTitle+" to /tmp/humanTitle", err, false)
 
-	err = extensions.WriteToFile(mainCNKeys, "/tmp/mainCNKeys", 0777)
+	err = extensions.Write(mainCNKeys, "/tmp/mainCNKeys")
 	errorOut("extensions.WriteToFile "+mainCNKeys+" to /tmp/mainCNKeys", err, false)
 
-	err = extensions.WriteToFile(databaseType, "/tmp/databaseType", 0777)
+	err = extensions.Write(databaseType, "/tmp/databaseType")
 	errorOut("extensions.WriteToFile "+databaseType+" to /tmp/databaseType", err, false)
 
-	path := "github.com/" + username
-	err = os.MkdirAll(path, 0777)
-	errorOut("os.MkdirAll("+path+", 0644)", err, false)
+	err = extensions.Write(username, "/tmp/username")
+	errorOut("extensions.WriteToFile "+databaseType+" to /tmp/username", err, false)
+
+	path := "github.com/" + username + "/" + appName
+	err = extensions.MkDir(path)
+	errorOut("extensions.MkDir("+path+", 0644)", err, false)
+
+	cmd := exec.Command("go", "install", "github.com/DanielRenne/GoCore/getAppTemplate@latest")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err = cmd.Run()
+	errorOut("running go install github.com/DanielRenne/GoCore/getAppTemplate@latest", err, false)
 
 	talk("Getting all dependencies and the latest version of GoCore App Templates")
-	cmd := exec.Command("getAppTemplate")
+	cmd = exec.Command("getAppTemplate")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err = cmd.Run()
@@ -180,17 +222,13 @@ func main() {
 		extensions.RemoveDirectoryShell(appPath)
 	}
 
-	err = os.MkdirAll(appPath, 0777)
-	errorOut("os.MkdirAll("+appPath+", 0644)", err, false)
-
 	modelBuildPath := appPath + "/modelBuild" + camelUpper + "/"
-
-	err = os.MkdirAll(modelBuildPath, 0777)
+	err = extensions.MkDir(modelBuildPath)
 	errorOut("os.MkdirAll("+modelBuildPath+", 0644)", err, false)
 
 	buildPath := appPath + "/build" + camelUpper + "/"
 
-	err = os.MkdirAll(buildPath, 0777)
+	err = extensions.MkDir(buildPath)
 	errorOut("os.MkdirAll("+buildPath+", 0644)", err, false)
 
 	template := `
@@ -211,6 +249,7 @@ func main() {
 
 `
 	buildGoFile := buildPath + "build" + camelUpper + ".go"
+
 	err = extensions.WriteAndGoFormat(heredoc.Docf(template, "buildCore", "buildCore", appName), buildGoFile)
 	errorOut("extensions.WriteAndGoFormat "+buildGoFile, err, false)
 
@@ -245,6 +284,42 @@ func main() {
 	err = cmd.Run()
 	errorOut("running go mod init", err, false)
 
+	cmd = exec.Command("go", "get", "github.com/disintegration/imaging")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err = cmd.Run()
+	errorOut("running go gets", err, false)
+
+	cmd = exec.Command("go", "get", "github.com/go-stack/stack")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err = cmd.Run()
+	errorOut("running go gets", err, false)
+
+	cmd = exec.Command("go", "get", "github.com/nfnt/resize")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err = cmd.Run()
+	errorOut("running go gets", err, false)
+
+	cmd = exec.Command("go", "get", "github.com/pkg/errors")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err = cmd.Run()
+	errorOut("running go gets", err, false)
+
+	cmd = exec.Command("go", "get", "gopkg.in/mgo.v2/bson")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err = cmd.Run()
+	errorOut("running go gets", err, false)
+
+	cmd = exec.Command("go", "get", "xojoc.pw/useragent")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err = cmd.Run()
+	errorOut("running go gets", err, false)
+
 	cmd = exec.Command("go", "get", "github.com/DanielRenne/GoCore")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -257,17 +332,26 @@ func main() {
 	err = cmd.Run()
 	errorOut("running go install on getAppTemplate", err, false)
 
+	cdPath(basePath + "/" + appPath + "/build" + camelUpper + "/")
+
+	cmd = exec.Command("go", "mod", "init", "scaffoldGoCoreApp")
+	err = cmd.Run()
+	errorOut("go mod init scaffoldGoCoreApp", err, false)
+
+	cmd = exec.Command("go", "get", "github.com/DanielRenne/GoCore/buildCore@b32b56bc93ad8c2f1b6039f1c72145e5838d3165")
+	err = cmd.Run()
+	errorOut("github.com/DanielRenne/GoCore/buildCore", err, false)
+
+	cdPath(basePath + "/" + appPath)
+
 	cmd = exec.Command("go", "run", "build"+camelUpper+"/build"+camelUpper+".go")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err = cmd.Run()
 	errorOut("running go run "+buildGoFile, err, false)
 
-	cmd = exec.Command("go", "run", "install"+camelUpper+"/install"+camelUpper+".go")
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	err = cmd.Run()
-	errorOut("running "+appPath+"/install"+camelUpper, err, false)
+	err = extensions.RemoveDirectory(basePath + "/" + appPath + "/build" + camelUpper + "/")
+	errorOut("remove "+basePath+"/"+appPath+"/build"+camelUpper+"/", err, false)
 
 	err = os.Chdir(basePath + "/" + appPath + "/bin")
 	errorOut("cd bin", err, false)
@@ -276,12 +360,39 @@ func main() {
 	err = cmd.Start()
 	errorOut("formatting all code", err, false)
 
-	err = os.Chdir(basePath + "/" + appPath)
-	errorOut("cd appPath", err, false)
+	if createGit == "y" {
+		err = os.Chdir(basePath + "/" + appPath)
+		errorOut("cd "+basePath+"/"+appPath, err, false)
 
-	cmd = exec.Command("go", "install", strings.Replace(modelBuildPath, "src/", "", -1))
+		talk("Adding github files")
+
+		cmd = exec.Command("git", "init")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		err = cmd.Run()
+		errorOut("git init", err, false)
+
+		cmd = exec.Command("git", "add", "-A")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		err = cmd.Run()
+		errorOut("git add", err, false)
+
+		cmd = exec.Command("git", "commit", "-m", "Initial GoCore App Generation")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		err = cmd.Run()
+		errorOut("git commit", err, false)
+	}
+	cdPath(basePath + "/" + appPath + "/modelBuild" + camelUpper + "/")
+
+	cmd = exec.Command("go", "install", ".")
 	err = cmd.Run()
-	errorOut("go install models `"+"go install "+strings.Replace(modelBuildPath, "src/", "", -1)+"`", err, false)
+	errorOut("go install models `"+"go install modelBuild"+camelUpper+"/build"+camelUpper+".go`", err, false)
+
+	cmd = exec.Command("modelBuild" + camelUpper)
+	err = cmd.Start()
+	errorOut("running ./modelBuild"+camelUpper, err, false)
 
 	cmd = exec.Command("bash", basePath+"/"+appPath+"/bin/start_app")
 	cmd.Stdout = os.Stdout

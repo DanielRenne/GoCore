@@ -569,9 +569,18 @@ func moveAppFiles() {
 	_, err := os.Stat("/tmp/tools/appFiles")
 	if err == nil {
 		humanTitle, err := extensions.ReadFile("/tmp/humanTitle")
-		mainCNKeys, err := extensions.ReadFile("/tmp/mainCNKeys")
 		if err != nil {
 			log.Println("error reading humanTitle")
+			os.Exit(1)
+		}
+		mainCNKeys, err := extensions.ReadFile("/tmp/mainCNKeys")
+		if err != nil {
+			log.Println("error reading mainCNKeys")
+			os.Exit(1)
+		}
+		username, err := extensions.ReadFile("/tmp/username")
+		if err != nil {
+			log.Println("error reading username")
 			os.Exit(1)
 		}
 		foundDbType := false
@@ -583,7 +592,6 @@ func moveAppFiles() {
 			os.Remove("/tmp/databaseType")
 			foundDbType = true
 		}
-
 		_, errDatabaseType := os.Stat(serverSettings.APP_LOCATION + "/databaseType")
 		if errDatabaseType == nil {
 			databaseType, err = extensions.ReadFile(serverSettings.APP_LOCATION + "/databaseType")
@@ -595,7 +603,7 @@ func moveAppFiles() {
 		}
 		parts := strings.Split(serverSettings.APP_LOCATION, "/")
 		appName := parts[len(parts)-1]
-		githubName := parts[len(parts)-2]
+		githubName := string(username)
 		project := githubName + "/" + appName
 		//First check for the WebConfig.json file
 		_, errNoWebConfig := os.Stat(serverSettings.APP_LOCATION + "/webConfig.json")
@@ -624,10 +632,8 @@ func moveAppFiles() {
 		}
 
 		for _, v := range utils.Array("webConfig.prod.json", "webConfig.dev.json", "webConfig.json") {
-			id1 := bson.NewObjectId()
 			id2 := bson.NewObjectId()
 			utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/"+v, "goCoreProductName", appName+"BaseProduct")
-			utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/"+v, "goCoreCsrfSecret", id1.Hex())
 			utils.ReplaceTokenInFile(serverSettings.APP_LOCATION+"/"+v, "goCoreSessionKey", id2.Hex())
 		}
 
@@ -690,6 +696,10 @@ func moveAppFiles() {
 		wasCopied = copyFolder("/bin")
 		if wasCopied {
 			replacePath("/bin", project, githubName, appName)
+			cmd := exec.Command("chmod", "+x", serverSettings.APP_LOCATION+"/bin/*")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			cmd.Run()
 		}
 		wasCopied = copyFolder("/cron")
 		if wasCopied {
@@ -700,20 +710,6 @@ func moveAppFiles() {
 			replacePath("/constants", project, githubName, appName)
 		}
 
-		if errDatabaseFile == nil {
-			copyFolder("/install")
-			replacePath("/install", project, githubName, appName)
-			err = os.Rename(serverSettings.APP_LOCATION+"/install/install.go", serverSettings.APP_LOCATION+"/install/install"+strings.Title(appName)+".go")
-			if err != nil {
-				log.Println("error renaming install")
-				os.Exit(1)
-			}
-			err = os.Rename(serverSettings.APP_LOCATION+"/install", serverSettings.APP_LOCATION+"/install"+strings.Title(appName))
-			if err != nil {
-				log.Println("error renaming install folder")
-				os.Exit(1)
-			}
-		}
 		wasCopied = copyFolder("/br")
 		if wasCopied {
 			replacePath("/br", project, githubName, appName)
@@ -799,17 +795,16 @@ package main
 import (
 	"log"
 	"os"
-
 	"runtime/debug"
 	"runtime/trace"
 	"time"
-
+	"net"
 	"fmt"
 	"net/http"
 	
 	"github.com/DanielRenne/GoCore/core/dbServices"
-	"github.com/DanielRenne/GoCore/core"
 	"github.com/DanielRenne/GoCore/core/app"
+	coreCron "github.com/DanielRenne/GoCore/core/cron"
 	"github.com/DanielRenne/GoCore/core/ginServer"
 	"github.com/DanielRenne/GoCore/core/logger"
 	_ "github.com/`+project+`/controllerRegistry"
@@ -827,9 +822,7 @@ func main() {
 	defer func() {
 		if r := recover(); r != nil {
 			session_functions.Print("\n\nPanic Stack: " + string(debug.Stack()))
-			session_functions.Log("studio.go", "Panic Recovered at main():"+fmt.Sprintf("%+v", r))
-			time.Sleep(time.Millisecond * 3000)
-			main()
+			session_functions.Log("Main app.go", "Panic Recovered at main():"+fmt.Sprintf("%+v", r)) 
 			return
 		}
 	}()
@@ -875,7 +868,7 @@ func main() {
 
 	controllers.Initialize()
 
-	core.CronJobs.Start()
+	coreCron.Start()
 	cron.Start()
 
 	go logger.GoRoutineLogger(func() {

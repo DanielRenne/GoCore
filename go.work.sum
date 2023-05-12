@@ -1,5 +1,19 @@
 github.com/BurntSushi/toml v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
+github.com/DanielRenne/GoCore/core v0.0.0-20221224121259-0b446d81e16b/go.mod h1:9ByD29sRBCRYda7QyuDYpM0t6kVXmeQ4cjTEYNh+6s0=
+github.com/DanielRenne/GoCore/core/atomicTypes v0.0.0-20221224121259-0b446d81e16b/go.mod h1:QyDH9vWW1+e7fbDWpTu/WPmbdKDr8z57nhTb/8tdmDg=
+github.com/DanielRenne/GoCore/core/dbServices v0.0.0-20221224121259-0b446d81e16b/go.mod h1:9Ov3UcSL3wV4xKg6bjz0t0QxXw1kfcrEsKoE0wf6qOU=
+github.com/DanielRenne/GoCore/core/dbServices/bolt/stubs v0.0.0-20221223210029-bca2197988c2/go.mod h1:YvuKqN82jPAThJObtfZLpt5h/aFIJKZXVNmHgfp7ntc=
+github.com/DanielRenne/GoCore/core/dbServices/common/stubs v0.0.0-20221223210029-bca2197988c2/go.mod h1:pI9sj+LTUOqignaRjepdwwOeF/NfrLBulMGRqOBvLu4=
+github.com/DanielRenne/GoCore/core/dbServices/mongo/stubs v0.0.0-20221223210029-bca2197988c2/go.mod h1:6oGsmEiE8gompFm8260nWpIKORD6kOD5tespyGzW99k=
+github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221224121259-0b446d81e16b/go.mod h1:6gaxFzpuy3c3l/q0gRWar1ry0ZSbopm7clbGYLCjkGU=
+github.com/DanielRenne/GoCore/core/fileCache v0.0.0-20221224121259-0b446d81e16b/go.mod h1:ovnnMPpmDedx6yz7t7SB1g941GpQzJaAa7NMQwoImX0=
+github.com/DanielRenne/GoCore/core/logger v0.0.0-20221224121259-0b446d81e16b/go.mod h1:AeJm8tZuYkpJNuXUulYEDx4/DB09Rtr9xVTlsJLKZp4=
+github.com/DanielRenne/GoCore/core/path v0.0.0-20221223210029-bca2197988c2/go.mod h1:/xvJ8xSQDvZ7UuUymCjIwKlJwvWmpjz9IvkmY3RPvCk=
+github.com/DanielRenne/GoCore/core/pubsub v0.0.0-20221224121259-0b446d81e16b/go.mod h1:w2F0OagrpFhYT3Pe3tkvo850ityFVPti73CZ0b6xY0Q=
+github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20221224121259-0b446d81e16b/go.mod h1:ovZc4pIG+o7+SjejVhGesGRyE4RyoReXGsVhdhlmbxo=
+github.com/DanielRenne/GoCore/core/store v0.0.0-20221224121259-0b446d81e16b/go.mod h1:zvvtv3jvMKdTw44B6NGog7bJDaSX3vB06MtAg2B6jxw=
+github.com/DanielRenne/GoCore/core/utils v0.0.0-20221224121259-0b446d81e16b/go.mod h1:A6oqiXPMeeenX76QXlX+pJIrdRJwTuigVNR4J6Suc0U=
 github.com/antonlindstrom/pgstore v0.0.0-20200229204646-b08ebf1105e0 h1:grN4CYLduV1d9SYBSYrAMPVf57cxEa7KhenvwOXTktw=
 github.com/antonlindstrom/pgstore v0.0.0-20200229204646-b08ebf1105e0/go.mod h1:2Ti6VUHVxpC0VSmTZzEvpzysnaGAfGBOoMIz5ykPyyw=
 github.com/bos-hieu/mongostore v0.0.2 h1:RS2CLzHoRmI/6Cz+sldlva9lJxICHS6odDOGpoFgbUE=
@@ -30,6 +44,7 @@ github.com/gofrs/uuid v4.0.0+incompatible/go.mod h1:b2aQJv3Z4Fp6yNu3cdSllBxTCLRx
 github.com/golang/protobuf v1.3.3/go.mod h1:vzj43D7+SQXF/4pzW/hwtAqwc6iTitCiVSaWz5lYuqw=
 github.com/golang/snappy v0.0.1/go.mod h1:/XxbfmMg8lxefKM7IXC3fBNl/7bRcc72aCRzEWrmP2Q=
 github.com/google/go-cmp v0.5.2/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
+github.com/google/go-cmp v0.5.9/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
 github.com/google/gofuzz v1.0.0 h1:A8PeW59pxE9IoFRqBp37U+mSNaQoZ46F1f0f863XSXw=
 github.com/google/renameio v0.1.0 h1:GOZbcHa3HfsPKPlmyPyN2KEohoMXOhdMbHrvbpl2QaA=
 github.com/google/renameio v0.1.0/go.mod h1:KWCgfxg9yswjAJkECMjeO8J8rahYeXnNhOm40UhjYkI=
