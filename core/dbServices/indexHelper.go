@@ -9,8 +9,8 @@ import (
 	"github.com/DanielRenne/GoCore/core/extensions"
 )
 
-//GetIndexes provides a way to reflect on your structure to get structs tagged with `dbIndex`.
-//This function is used to generate Indexes for MongoDB and other databases.
+// GetIndexes provides a way to reflect on your structure to get structs tagged with `dbIndex`.
+// This function is used to generate Indexes for MongoDB and other databases.
 func GetDBIndexes(x interface{}) map[string]string {
 	keys := make(map[string]string)
 	getDBIndexesRecursive(reflect.ValueOf(x), keys, "")
@@ -31,7 +31,7 @@ func getDBIndexesRecursive(val reflect.Value, keys map[string]string, key string
 		typeField := val.Type().Field(i)
 		index := typeField.Tag.Get("dbIndex")
 
-		appendKey := strings.Title(typeField.Name)
+		appendKey := extensions.Title(typeField.Name)
 
 		if !valueField.CanInterface() {
 			continue
@@ -53,8 +53,8 @@ func getDBIndexesRecursive(val reflect.Value, keys map[string]string, key string
 	}
 }
 
-//GetValidationTags provides a way to reflect on your structure to get structs tagged with `dbIndex`.
-//This function is used to generate Indexes for MongoDB and other databases.
+// GetValidationTags provides a way to reflect on your structure to get structs tagged with `dbIndex`.
+// This function is used to generate Indexes for MongoDB and other databases.
 func GetValidationTags(x interface{}) map[string]string {
 	keys := make(map[string]string)
 	getValidationTagsRecursive(reflect.ValueOf(x), keys, "")
@@ -75,7 +75,7 @@ func getValidationTagsRecursive(val reflect.Value, keys map[string]string, key s
 		typeField := val.Type().Field(i)
 		index := typeField.Tag.Get("validate")
 
-		appendKey := strings.Title(typeField.Name)
+		appendKey := extensions.Title(typeField.Name)
 
 		if !valueField.CanInterface() {
 			continue

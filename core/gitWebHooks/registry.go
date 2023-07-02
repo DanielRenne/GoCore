@@ -38,7 +38,6 @@ func RunEvent(key string, x interface{}) {
 	}
 
 	hook.RunEvent(x)
-	return
 }
 
 func getRegistry(key string) (x webHooks, ok bool) {

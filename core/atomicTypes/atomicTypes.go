@@ -144,7 +144,7 @@ func (obj *AtomicBool) ToggleTrue() (changed bool) {
 	defer obj.valueSync.Unlock()
 
 	changed = false
-	if obj.value == false {
+	if !obj.value {
 		obj.value = true
 
 		changed = true

@@ -92,9 +92,7 @@ func InIntArray(a int, list []int) bool {
 // Array passes in unlimited amount of strings and returns a slice of strings
 func Array(values ...string) []string {
 	var out []string
-	for _, value := range values {
-		out = append(out, value)
-	}
+	out = append(out, values...)
 	return out
 }
 

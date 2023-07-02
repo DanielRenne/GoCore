@@ -149,20 +149,20 @@ type ConcurrentWebSocketCallbackItem struct {
 	Callback WebSocketCallback
 }
 
-func (self *WebSocketCallbackSync) Append(item WebSocketCallback) {
-	self.RLock()
-	defer self.RUnlock()
-	self.callbacks = append(self.callbacks, item)
+func (obj *WebSocketCallbackSync) Append(item WebSocketCallback) {
+	obj.RLock()
+	defer obj.RUnlock()
+	obj.callbacks = append(obj.callbacks, item)
 }
 
-func (self *WebSocketCallbackSync) Iter() <-chan ConcurrentWebSocketCallbackItem {
+func (obj *WebSocketCallbackSync) Iter() <-chan ConcurrentWebSocketCallbackItem {
 	c := make(chan ConcurrentWebSocketCallbackItem)
 
 	f := func() {
-		self.Lock()
-		defer self.Unlock()
-		for index := range self.callbacks {
-			value := self.callbacks[index]
+		obj.Lock()
+		defer obj.Unlock()
+		for index := range obj.callbacks {
+			value := obj.callbacks[index]
 			c <- ConcurrentWebSocketCallbackItem{index, value}
 		}
 		close(c)
@@ -231,7 +231,6 @@ func Initialize(path string, config string) {
 	}
 	fileCache.Initialize()
 	dbServices.Initialize()
-	return
 }
 
 // InitializeLite initilizes a basic gin server with no database coupling
@@ -284,35 +283,30 @@ func Run() {
 			return
 		}
 	}()
-	if serverSettings.WebConfig.Application.MountGitWebHooks == true && serverSettings.WebConfig.Application.GitWebHookPath != "" {
+	if serverSettings.WebConfig.Application.MountGitWebHooks && serverSettings.WebConfig.Application.GitWebHookPath != "" {
 		hook, _ := github.New(github.Options.Secret(serverSettings.WebConfig.Application.GitWebHookSecretKey))
 		http.HandleFunc(serverSettings.WebConfig.Application.GitWebHookPath, func(w http.ResponseWriter, r *http.Request) {
 
 			// only these git hooks are supported right now to pass parsed github info to you
-			payload, err := hook.Parse(r, github.PushEvent, github.IssuesEvent, github.IssueCommentEvent, github.CreateEvent, github.DeleteEvent, github.ProjectCardEvent, github.ProjectColumnEvent, github.ProjectEvent)
-			if err != nil {
-				if err == github.ErrEventNotFound {
-					// ok event wasn;t one of the ones asked to be parsed
-				}
-			}
-			switch payload.(type) {
+			payload, _ := hook.Parse(r, github.PushEvent, github.IssuesEvent, github.IssueCommentEvent, github.CreateEvent, github.DeleteEvent, github.ProjectCardEvent, github.ProjectColumnEvent, github.ProjectEvent)
+			switch payload := payload.(type) {
 			case github.ProjectCardPayload:
-				info := payload.(github.ProjectCardPayload)
+				info := payload
 				gitWebHooks.RunEvent(gitWebHooks.PROJECT_CARD, info)
 			case github.ProjectColumnPayload:
-				info := payload.(github.ProjectColumnPayload)
+				info := payload
 				gitWebHooks.RunEvent(gitWebHooks.PROJECT_COLUMN, info)
 			case github.ProjectPayload:
-				info := payload.(github.ProjectPayload)
+				info := payload
 				gitWebHooks.RunEvent(gitWebHooks.PROJECT, info)
 			case github.IssuesPayload:
-				info := payload.(github.IssuesPayload)
+				info := payload
 				gitWebHooks.RunEvent(gitWebHooks.ISSUES, info)
 			case github.IssueCommentPayload:
-				info := payload.(github.IssueCommentPayload)
+				info := payload
 				gitWebHooks.RunEvent(gitWebHooks.ISSUE_COMMENT, info)
 			case github.PushPayload:
-				info := payload.(github.PushPayload)
+				info := payload
 				gitWebHooks.RunEvent(gitWebHooks.PUSH_TYPE, info)
 			}
 		})
@@ -328,7 +322,7 @@ func Run() {
 		}()
 	}
 
-	if serverSettings.WebConfig.Application.WebServiceOnly == false {
+	if !serverSettings.WebConfig.Application.WebServiceOnly {
 
 		loadHTMLTemplates()
 
@@ -646,6 +640,7 @@ func ReplyToWebSocketJSON(conn *WebSocketConnection, v interface{}) {
 func ReplyToWebSocketPubSub(conn *WebSocketConnection, key string, v interface{}) {
 	defer func() {
 		if recover := recover(); recover != nil {
+			log.Println("Panic Recovered at ReplyToWebSocketPubSub():  ", recover)
 		}
 	}()
 
@@ -713,7 +708,6 @@ func BroadcastWebSocketData(data []byte) {
 		}()
 		return true
 	})
-	return
 }
 
 // BroadcastWebSocketJSON sends a JSON message to all websocket connections

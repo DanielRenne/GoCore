@@ -17,8 +17,12 @@ use (
 	./core/fileCache
 	./core/extensions
 	./core/dbServices
+	./core/dbServices/bolt/stubs
+	./core/dbServices/common/stubs
+	./core/dbServices/mongo/stubs
 	./core/dbServices/example
 	./core/dbServices/example/modelsGenerate
+	./core/dbServices/example/models/v1/model
 	./core/crypto
 	./core/cron
 	./core/channels

@@ -33,7 +33,7 @@ func Unzip(archive, target string, excludedFiles []string) error {
 			}
 		}
 
-		if excludeFile == true {
+		if excludeFile {
 			fmt.Println("Excluding File:  " + file.Name)
 			continue
 		}

@@ -712,34 +712,6 @@ func (obj modelFloors) ReflectByFieldName(fieldName string, x interface{}) (valu
 func (obj modelFloors) ReflectBaseTypeByFieldName(fieldName string, x interface{}) (value reflect.Value, err error) {
 
 	switch fieldName {
-	case "Id":
-		if x == nil {
-			var obj bson.ObjectId
-			value = reflect.ValueOf(obj)
-			return
-		}
-
-		obj, ok := x.(bson.ObjectId)
-		if !ok {
-			err = errors.New("Failed to typecast interface.")
-			return
-		}
-		value = reflect.ValueOf(obj)
-		return
-	case "Name":
-		if x == nil {
-			var obj string
-			value = reflect.ValueOf(obj)
-			return
-		}
-
-		obj, ok := x.(string)
-		if !ok {
-			err = errors.New("Failed to typecast interface.")
-			return
-		}
-		value = reflect.ValueOf(obj)
-		return
 	case "SiteId":
 		if x == nil {
 			var obj string
@@ -769,6 +741,34 @@ func (obj modelFloors) ReflectBaseTypeByFieldName(fieldName string, x interface{
 		value = reflect.ValueOf(obj)
 		return
 	case "AccountId":
+		if x == nil {
+			var obj string
+			value = reflect.ValueOf(obj)
+			return
+		}
+
+		obj, ok := x.(string)
+		if !ok {
+			err = errors.New("Failed to typecast interface.")
+			return
+		}
+		value = reflect.ValueOf(obj)
+		return
+	case "Id":
+		if x == nil {
+			var obj bson.ObjectId
+			value = reflect.ValueOf(obj)
+			return
+		}
+
+		obj, ok := x.(bson.ObjectId)
+		if !ok {
+			err = errors.New("Failed to typecast interface.")
+			return
+		}
+		value = reflect.ValueOf(obj)
+		return
+	case "Name":
 		if x == nil {
 			var obj string
 			value = reflect.ValueOf(obj)

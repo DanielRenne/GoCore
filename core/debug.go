@@ -55,12 +55,12 @@ func init() {
 // Arbitrary objects can be passed as arguments to avoid "declared and not used"
 // error messages when commenting code out and in.
 // The result is a nil interface{} dummy value.
-func (self *core_debug) Nop(dummiesIn ...interface{}) (dummyOut interface{}) {
+func (obj *core_debug) Nop(dummiesIn ...interface{}) (dummyOut interface{}) {
 	return nil
 }
 
 // CallStackInfo returns a string with the call stack info.
-func (self *core_debug) CallStackInfo(skip int) (info string) {
+func (obj *core_debug) CallStackInfo(skip int) (info string) {
 	pc, file, line, ok := runtime.Caller(skip)
 	if ok {
 		funcName := runtime.FuncForPC(pc).Name()
@@ -74,35 +74,35 @@ func (self *core_debug) CallStackInfo(skip int) (info string) {
 }
 
 // PrintCallStack prints the call stack info.
-func (self *core_debug) PrintCallStack() {
+func (obj *core_debug) PrintCallStack() {
 	debug.PrintStack()
 }
 
 // LogCallStack logs the call stack info.
-func (self *core_debug) LogCallStack() {
-	log.Print(self.Stack())
+func (obj *core_debug) LogCallStack() {
+	log.Print(obj.Stack())
 }
 
-func (self *core_debug) Stack() string {
+func (obj *core_debug) Stack() string {
 	return string(debug.Stack())
 }
 
-func (self *core_debug) formatValue(value interface{}) string {
+func (obj *core_debug) formatValue(value interface{}) string {
 	return fmt.Sprintf("\n     Type: %T\n    Value: %v\nGo Syntax: %#v", value, value, value)
 }
 
-func (self *core_debug) formatCallstack(skip int) string {
-	return fmt.Sprintf("\nCallstack: %s", self.CallStackInfo(skip+1))
+func (obj *core_debug) formatCallstack(skip int) string {
+	return fmt.Sprintf("\nCallstack: %s", obj.CallStackInfo(skip+1))
 }
 
 // FormatSkip formats a value with callstack info.
-func (self *core_debug) FormatSkip(skip int, value interface{}) string {
-	return self.formatValue(value) + self.formatCallstack(skip+1)
+func (obj *core_debug) FormatSkip(skip int, value interface{}) string {
+	return obj.formatValue(value) + obj.formatCallstack(skip+1)
 }
 
 // Format formats a value with callstack info.
-func (self *core_debug) Format(value interface{}) string {
-	return self.FormatSkip(2, value)
+func (obj *core_debug) Format(value interface{}) string {
+	return obj.FormatSkip(2, value)
 }
 
 // IsZeroOfUnderlyingType returns true if the value is the zero value (nil) for its type.
@@ -121,7 +121,7 @@ func IsNil(c interface{}) bool {
 }
 
 // HandleError is a helper function that will log an error and return it with the callers line and file.
-func (self *core_debug) HandleError(err error) (s string) {
+func (obj *core_debug) HandleError(err error) (s string) {
 	if err != nil {
 		// notice that we're using 1, so it will actually log the where
 		// the error happened, 0 = this function, we don't want that.
@@ -133,7 +133,7 @@ func (self *core_debug) HandleError(err error) (s string) {
 }
 
 // ErrLineAndFile returns the line and file of the error.
-func (self *core_debug) ErrLineAndFile(err error) (s string) {
+func (obj *core_debug) ErrLineAndFile(err error) (s string) {
 	if err != nil {
 		// notice that we're using 1, so it will actually log the where
 		// the error happened, 0 = this function, we don't want that.
@@ -145,7 +145,7 @@ func (self *core_debug) ErrLineAndFile(err error) (s string) {
 }
 
 // Dump is a helper function that will log unlimited values to print to stdout or however you have log setup if you overload core/Logger
-func (self *core_debug) Dump(valuesOriginal ...interface{}) {
+func (obj *core_debug) Dump(valuesOriginal ...interface{}) {
 	t := time.Now()
 	l := "!!!!!!!!!!!!! DEBUG " + t.Format("2006-01-02 15:04:05.000000") + "!!!!!!!!!!!!!\n\n"
 	Logger.Println(l)
@@ -156,7 +156,7 @@ func (self *core_debug) Dump(valuesOriginal ...interface{}) {
 		TransactionLogMutex.Unlock()
 	}
 	for _, value := range valuesOriginal {
-		l := self.dumpBase(value)
+		l := obj.dumpBase(value)
 		Logger.Print(l)
 		if EnableTransactionLog {
 			TransactionLogMutex.Lock()
@@ -164,7 +164,7 @@ func (self *core_debug) Dump(valuesOriginal ...interface{}) {
 			TransactionLogMutex.Unlock()
 		}
 	}
-	l = self.ThrowAndPrintError()
+	l = obj.ThrowAndPrintError()
 	Logger.Print(l)
 
 	if EnableTransactionLog {
@@ -182,21 +182,21 @@ func (self *core_debug) Dump(valuesOriginal ...interface{}) {
 }
 
 // GetDump is a helper function that will log unlimited values which will return a string representation of what was logged
-func (self *core_debug) GetDump(valuesOriginal ...interface{}) (output string) {
+func (obj *core_debug) GetDump(valuesOriginal ...interface{}) (output string) {
 	for _, value := range valuesOriginal {
-		output += self.dumpBase(value)
+		output += obj.dumpBase(value)
 	}
-	//output += self.ThrowAndPrintError()
+	//output += obj.ThrowAndPrintError()
 	return output
 }
 
-func (self *core_debug) GetDumpWithInfo(valuesOriginal ...interface{}) (output string) {
+func (obj *core_debug) GetDumpWithInfo(valuesOriginal ...interface{}) (output string) {
 	t := time.Now()
-	return self.GetDumpWithInfoAndTimeString(t.String(), valuesOriginal...)
+	return obj.GetDumpWithInfoAndTimeString(t.String(), valuesOriginal...)
 }
 
 // GetDumpWithInfoAndTimeString is a helper function that will log unlimited values which will return a string representation of what was logged but allows you to pass your own time string in a case of timezone offsets
-func (self *core_debug) GetDumpWithInfoAndTimeString(timeStr string, valuesOriginal ...interface{}) (output string) {
+func (obj *core_debug) GetDumpWithInfoAndTimeString(timeStr string, valuesOriginal ...interface{}) (output string) {
 	l := "\n!!!!!!!!!!!!! DEBUG " + timeStr + "!!!!!!!!!!!!!\n\n"
 	output += l
 
@@ -207,7 +207,7 @@ func (self *core_debug) GetDumpWithInfoAndTimeString(timeStr string, valuesOrigi
 	}
 
 	for _, value := range valuesOriginal {
-		output += self.dumpBase(value) + "\n"
+		output += obj.dumpBase(value) + "\n"
 	}
 
 	if EnableTransactionLog {
@@ -216,7 +216,7 @@ func (self *core_debug) GetDumpWithInfoAndTimeString(timeStr string, valuesOrigi
 		TransactionLogMutex.Unlock()
 	}
 
-	l = self.ThrowAndPrintError()
+	l = obj.ThrowAndPrintError()
 	output += l
 
 	if EnableTransactionLog {
@@ -235,7 +235,7 @@ func (self *core_debug) GetDumpWithInfoAndTimeString(timeStr string, valuesOrigi
 	return output
 }
 
-func (self *core_debug) dumpBase(values ...interface{}) (output string) {
+func (obj *core_debug) dumpBase(values ...interface{}) (output string) {
 	var jsonString string
 	var err error
 	var structKeys []string
@@ -320,14 +320,14 @@ func (self *core_debug) dumpBase(values ...interface{}) (output string) {
 }
 
 // ThrowAndPrintError is a helper function that will throw a fake error and get the callstack and return it as a string (you probably shouldnt use this)
-func (self *core_debug) ThrowAndPrintError() (output string) {
+func (obj *core_debug) ThrowAndPrintError() (output string) {
 
 	serverSettings.WebConfigMutex.RLock()
 	ok := serverSettings.WebConfig.Application.CoreDebugStackTrace
 	serverSettings.WebConfigMutex.RUnlock()
 	if ok || LogStackTraces {
 		output += "\n"
-		errorInfo := self.ThrowError()
+		errorInfo := obj.ThrowError()
 		stack := strings.Split(errorInfo.ErrorStack(), "\n")
 		if len(stack) >= 8 {
 			output += "\nDump Caller:"
@@ -372,7 +372,7 @@ func (self *core_debug) ThrowAndPrintError() (output string) {
 }
 
 // ThrowError is a helper function that will throw a fake error and get the callstack and return it as an error (you probably shouldnt use this)
-func (self *core_debug) ThrowError() *errors.Error {
+func (obj *core_debug) ThrowError() *errors.Error {
 	return errors.Errorf("Debug Dump")
 }
 

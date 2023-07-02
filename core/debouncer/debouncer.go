@@ -8,9 +8,9 @@ import (
 
 const (
 	// ErrorTypeIncorrectSendSignal if you call SendSignal on something you configured WithAny
-	ErrorTypeIncorrectSendSignal = "You are using SendSignal with something setup WithAny"
+	ErrorTypeIncorrectSendSignal = "you are using sendsignal with something setup withany"
 	// ErrorTypeIncorrectSendSignalWithAny  if you call SendSignalWithAny on something you configured WithTriggered
-	ErrorTypeIncorrectSendSignalWithAny = "You are using SendSignalWithAny with something setup WithTriggered"
+	ErrorTypeIncorrectSendSignalWithAny = "you are using sendsignalwithany with something setup withtriggered"
 )
 
 // Debouncer main struct for debouncer package

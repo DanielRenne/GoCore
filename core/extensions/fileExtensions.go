@@ -49,7 +49,7 @@ func GetAllFilesWithSearch(path string, fileSearch string) (files []os.FileInfo,
 	if err == nil {
 		for _, file := range filesAll {
 			if !file.IsDir() {
-				if fileSearch == "" || strings.Index(file.Name(), fileSearch) != -1 {
+				if fileSearch == "" || strings.Contains(file.Name(), fileSearch) {
 					files = append(files, file)
 				}
 			}
@@ -70,7 +70,7 @@ func GetAllFoldersWithSearch(path string, fileSearch string) (files []os.FileInf
 	if err == nil {
 		for _, file := range filesAll {
 			if file.IsDir() {
-				if fileSearch == "" || strings.Index(file.Name(), fileSearch) != -1 {
+				if fileSearch == "" || strings.Contains(file.Name(), fileSearch) {
 					files = append(files, file)
 				}
 			}
@@ -86,7 +86,7 @@ func GetAllFilesDeepWithSearch(path string, fileSearch string) (files []os.FileI
 	if err == nil {
 		for _, file := range filesAll {
 			if !file.IsDir() {
-				if fileSearch == "" || strings.Index(file.Name(), fileSearch) != -1 {
+				if fileSearch == "" || strings.Contains(file.Name(), fileSearch) {
 					files = append(files, file)
 				}
 			} else {
@@ -108,7 +108,7 @@ func GetAllFilesSearchWithPath(path string, fileSearch string) (files []FilePath
 	if err == nil {
 		for _, file := range filesAll {
 			if !file.IsDir() {
-				if fileSearch == "" || strings.Index(file.Name(), fileSearch) != -1 {
+				if fileSearch == "" || strings.Contains(file.Name(), fileSearch) {
 					split := strings.Split(file.Name(), ".")
 					fileType := ""
 					if len(split) > 1 {
@@ -146,7 +146,7 @@ func GetAllDirWithExclude(path string, except string) (files []os.FileInfo, err 
 	if err == nil {
 		for _, file := range filesAll {
 			if file.IsDir() {
-				if except == "" || strings.Index(file.Name(), except) == -1 {
+				if except == "" || !strings.Contains(file.Name(), except) {
 					files = append(files, file)
 				}
 			}
@@ -165,7 +165,7 @@ func DirSizeWithSearch(path string, fileSearch string) (int64, error) {
 	var size int64
 	err := filepath.Walk(path, func(_ string, info os.FileInfo, err error) error {
 		if !info.IsDir() {
-			if fileSearch == "" || strings.Index(info.Name(), fileSearch) != -1 {
+			if fileSearch == "" || strings.Contains(info.Name(), fileSearch) {
 				size += info.Size()
 			}
 		}
@@ -177,7 +177,7 @@ func DirSizeWithSearch(path string, fileSearch string) (int64, error) {
 // RemoveDirectoryShell removes a directory using the shell
 func RemoveDirectoryShell(dir string) (err error) {
 	if dir == "/" {
-		return errors.New("Cannot remove root directory")
+		return errors.New("cannot remove root directory")
 	}
 	cmd := exec.Command("rm", "-rf", dir)
 	err = cmd.Run()
@@ -187,13 +187,13 @@ func RemoveDirectoryShell(dir string) (err error) {
 // RemoveDirectory removes a directory
 func RemoveDirectory(dir string) error {
 	if dir == "/" {
-		return errors.New("Cannot remove root directory")
+		return errors.New("cannot remove root directory")
 	}
 	d, err := os.Open(dir)
-	defer d.Close()
 	if err != nil {
 		return err
 	}
+	defer d.Close()
 	names, err := d.Readdirnames(-1)
 	if err != nil {
 		return err
@@ -260,22 +260,25 @@ func CopyFolder(source string, dest string) (err error) {
 // CopyFile copies a file to another file
 func CopyFile(source string, dest string) (err error) {
 	sourcefile, err := os.Open(source)
-	defer sourcefile.Close()
 	if err != nil {
 		return err
 	}
+	defer sourcefile.Close()
 
 	destfile, err := os.Create(dest)
-	defer destfile.Close()
 	if err != nil {
 		return err
 	}
+	defer destfile.Close()
 
 	_, err = io.Copy(destfile, sourcefile)
 	if err == nil {
 		sourceinfo, err := os.Stat(source)
 		if err != nil {
 			err = os.Chmod(dest, sourceinfo.Mode())
+			if err != nil {
+				return err
+			}
 		}
 
 	}
@@ -354,7 +357,7 @@ func GetAllFilesRecursivelyByExtension(fileDir string, fileExtensionFilter []str
 func recurseFiles(fileDir string, fileExtensionFilter []string) (files []string, err error) {
 	path := fileDir
 
-	if DoesFileExist(path) == false {
+	if !DoesFileExist(path) {
 		err = errors.New(fileDir + " does not exist")
 		return
 	}
@@ -390,17 +393,17 @@ func recurseFiles(fileDir string, fileExtensionFilter []string) (files []string,
 }
 
 // InvokeMethodOnAllFilesRecursively recurses a directory and returns the path and file names of all the files.  The second parameter is a callback functon which will be called in go routines for each file where you will read the os.File and do something with it
-func InvokeMethodOnAllFilesRecursively(fileDir string, function func(*os.File) error) (files []string, err error, fileErrors map[string]error) {
+func InvokeMethodOnAllFilesRecursively(fileDir string, function func(*os.File) error) (files []string, fileErrors map[string]error, err error) {
 	var satisfy []string
 	return recurseFilesAsync(fileDir, satisfy, function)
 }
 
 // InvokeMethodOnAllFilesRecursivelyByExtension recurses a directory and returns the path and file names of all the files.  Pass []string of fileExtensions as the second parameter (no need for period and cannot have multiple extensions like tar.gz). The third parameter is a callback functon which will be called in go routines for each file where you will read the os.File and do something with it
-func InvokeMethodOnAllFilesRecursivelyByExtension(fileDir string, fileExtensionFilter []string, function func(*os.File) error) (files []string, err error, fileErrors map[string]error) {
+func InvokeMethodOnAllFilesRecursivelyByExtension(fileDir string, fileExtensionFilter []string, function func(*os.File) error) (files []string, fileErrors map[string]error, err error) {
 	return recurseFilesAsync(fileDir, fileExtensionFilter, function)
 }
 
-func recurseFilesAsync(fileDir string, fileExtensionFilter []string, function func(*os.File) error) (files []string, err error, fileErrors map[string]error) {
+func recurseFilesAsync(fileDir string, fileExtensionFilter []string, function func(*os.File) error) (files []string, fileErrors map[string]error, err error) {
 	fileErrors = make(map[string]error, 0)
 	type itemSync struct {
 		sync.Mutex
@@ -409,7 +412,7 @@ func recurseFilesAsync(fileDir string, fileExtensionFilter []string, function fu
 	var syncedItems itemSync
 	path := fileDir
 	var wg sync.WaitGroup
-	if DoesFileExist(path) == false {
+	if !DoesFileExist(path) {
 		err = errors.New(fileDir + " does not exist")
 		return
 	}
@@ -533,10 +536,10 @@ func MD5(path string) (string, error) {
 // UnGzipfunc ungzips a file
 func UnGzipfunc(source, target string) error {
 	reader, err := os.Open(source)
-	defer reader.Close()
 	if err != nil {
 		return err
 	}
+	defer reader.Close()
 
 	archive, err := gzip.NewReader(reader)
 	if err != nil {
@@ -557,9 +560,11 @@ func UnGzipfunc(source, target string) error {
 
 // Gzipfunc gzips a file
 func Gzipfunc(source string, target string) (err error) {
-
-	data, err := ReadFile(source)
-
+	var data []byte
+	data, err = ReadFile(source)
+	if err != nil {
+		return
+	}
 	// Open a file for writing.
 	f, _ := os.Create(target)
 
@@ -576,10 +581,10 @@ func Gzipfunc(source string, target string) (err error) {
 
 func GetFileSize(path string) (size int64, err error) {
 	file, err := os.Open(path)
-	defer file.Close()
 	if err != nil {
 		return
 	}
+	defer file.Close()
 	fi, err := file.Stat()
 	if err != nil {
 		return
@@ -591,10 +596,10 @@ func GetFileSize(path string) (size int64, err error) {
 // UnTar unzips a tar file
 func UnTar(tarball, target string) error {
 	reader, err := os.Open(tarball)
-	defer reader.Close()
 	if err != nil {
 		return err
 	}
+	defer reader.Close()
 	tarReader := tar.NewReader(reader)
 
 	for {
@@ -615,10 +620,10 @@ func UnTar(tarball, target string) error {
 		}
 
 		file, err := os.OpenFile(path, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, info.Mode())
-		defer file.Close()
 		if err != nil {
 			return err
 		}
+		defer file.Close()
 		_, err = io.Copy(file, tarReader)
 		if err != nil {
 			return err
@@ -674,10 +679,10 @@ func Tar(source string, target string) error {
 			}
 
 			file, err := os.Open(path)
-			defer file.Close()
 			if err != nil {
 				return err
 			}
+			defer file.Close()
 			_, err = io.Copy(tarball, file)
 			return err
 		})

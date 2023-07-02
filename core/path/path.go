@@ -27,7 +27,7 @@ func GetBinaryPath() (path string) {
 			os.Exit(1)
 		}
 	} else {
-		if strings.Index(exPath, "Contents/MacOS") != -1 {
+		if strings.Contains(exPath, "Contents/MacOS") {
 			dirs := strings.Split(exPath, "/")
 			dirs = dirs[:len(dirs)-3]
 			path = strings.Join(dirs, "/")

@@ -181,20 +181,20 @@ func MaxQ(k string, max interface{}) map[string]Max {
 
 //Every 12 hours check the transactionQueue and remove any outstanding stale transactions > 48 hours old
 func clearTransactionQueue() {
+	for {
+		transactionQueue.Lock()
 
-	transactionQueue.Lock()
+		for key, value := range transactionQueue.queue {
 
-	for key, value := range transactionQueue.queue {
-
-		if time.Since(value.startTime).Hours() > 48 {
-			delete(transactionQueue.queue, key)
+			if time.Since(value.startTime).Hours() > 48 {
+				delete(transactionQueue.queue, key)
+			}
 		}
+
+		transactionQueue.Unlock()
+
+		time.Sleep(12 * time.Hour)
 	}
-
-	transactionQueue.Unlock()
-
-	time.Sleep(12 * time.Hour)
-	clearTransactionQueue()
 }
 
 func getBase64(value string) string {

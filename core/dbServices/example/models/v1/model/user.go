@@ -653,22 +653,6 @@ func (obj *User) ParseInterface(x interface{}) (err error) {
 func (obj modelUsers) ReflectByFieldName(fieldName string, x interface{}) (value reflect.Value, err error) {
 
 	switch fieldName {
-	case "SignupDate":
-		obj, ok := x.(time.Time)
-		if !ok {
-			err = errors.New("Failed to typecast interface.")
-			return
-		}
-		value = reflect.ValueOf(obj)
-		return
-	case "Email":
-		obj, ok := x.(string)
-		if !ok {
-			err = errors.New("Failed to typecast interface.")
-			return
-		}
-		value = reflect.ValueOf(obj)
-		return
 	case "Id":
 		obj, ok := x.(bson.ObjectId)
 		if !ok {
@@ -693,6 +677,22 @@ func (obj modelUsers) ReflectByFieldName(fieldName string, x interface{}) (value
 		}
 		value = reflect.ValueOf(obj)
 		return
+	case "SignupDate":
+		obj, ok := x.(time.Time)
+		if !ok {
+			err = errors.New("Failed to typecast interface.")
+			return
+		}
+		value = reflect.ValueOf(obj)
+		return
+	case "Email":
+		obj, ok := x.(string)
+		if !ok {
+			err = errors.New("Failed to typecast interface.")
+			return
+		}
+		value = reflect.ValueOf(obj)
+		return
 	}
 	return
 }
@@ -700,6 +700,34 @@ func (obj modelUsers) ReflectByFieldName(fieldName string, x interface{}) (value
 func (obj modelUsers) ReflectBaseTypeByFieldName(fieldName string, x interface{}) (value reflect.Value, err error) {
 
 	switch fieldName {
+	case "Email":
+		if x == nil {
+			var obj string
+			value = reflect.ValueOf(obj)
+			return
+		}
+
+		obj, ok := x.(string)
+		if !ok {
+			err = errors.New("Failed to typecast interface.")
+			return
+		}
+		value = reflect.ValueOf(obj)
+		return
+	case "Id":
+		if x == nil {
+			var obj bson.ObjectId
+			value = reflect.ValueOf(obj)
+			return
+		}
+
+		obj, ok := x.(bson.ObjectId)
+		if !ok {
+			err = errors.New("Failed to typecast interface.")
+			return
+		}
+		value = reflect.ValueOf(obj)
+		return
 	case "First":
 		if x == nil {
 			var obj string
@@ -736,34 +764,6 @@ func (obj modelUsers) ReflectBaseTypeByFieldName(fieldName string, x interface{}
 		}
 
 		obj, ok := x.(time.Time)
-		if !ok {
-			err = errors.New("Failed to typecast interface.")
-			return
-		}
-		value = reflect.ValueOf(obj)
-		return
-	case "Email":
-		if x == nil {
-			var obj string
-			value = reflect.ValueOf(obj)
-			return
-		}
-
-		obj, ok := x.(string)
-		if !ok {
-			err = errors.New("Failed to typecast interface.")
-			return
-		}
-		value = reflect.ValueOf(obj)
-		return
-	case "Id":
-		if x == nil {
-			var obj bson.ObjectId
-			value = reflect.ValueOf(obj)
-			return
-		}
-
-		obj, ok := x.(bson.ObjectId)
 		if !ok {
 			err = errors.New("Failed to typecast interface.")
 			return

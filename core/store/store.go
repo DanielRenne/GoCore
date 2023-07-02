@@ -1,4 +1,4 @@
-//Package store provides a registry and interface to interact with a store repository against model entities.
+// Package store provides a registry and interface to interact with a store repository against model entities.
 package store
 
 import (
@@ -23,14 +23,14 @@ type pathValue struct {
 	Value interface{} `json:"Value"`
 }
 
-//OnRecordUpdate allows an application to publish all changes of a record
+// OnRecordUpdate allows an application to publish all changes of a record
 var OnRecordUpdate []string
 var OnChangeRecord func(key string, id string, x interface{})
 
-//OnChange provides inserts, updates, and deletes to the store key.
+// OnChange provides inserts, updates, and deletes to the store key.
 var OnChange func(key string, id string, path string, x interface{}, err error)
 
-//Get gets a collection entity by id.
+// Get gets a collection entity by id.
 func Get(key string, id string, joins []string) (x interface{}, err error) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -53,7 +53,7 @@ func Get(key string, id string, joins []string) (x interface{}, err error) {
 	return
 }
 
-//GetByFilter gets a collection entity by filter.
+// GetByFilter gets a collection entity by filter.
 func GetCountByFilter(key string, filter map[string]interface{}, inFilter map[string]interface{}, excludeFilter map[string]interface{}, joins []string) (x interface{}, err error) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -76,7 +76,7 @@ func GetCountByFilter(key string, filter map[string]interface{}, inFilter map[st
 	return
 }
 
-//GetByFilter gets a collection entity by filter.
+// GetByFilter gets a collection entity by filter.
 func GetByFilter(key string, filter map[string]interface{}, inFilter map[string]interface{}, excludeFilter map[string]interface{}, joins []string) (x interface{}, err error) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -99,7 +99,7 @@ func GetByFilter(key string, filter map[string]interface{}, inFilter map[string]
 	return
 }
 
-//GetByPath gets a collection entity-property value by id & path.
+// GetByPath gets a collection entity-property value by id & path.
 func GetByPath(key string, id string, joins []string, path string) (x interface{}, err error) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -175,7 +175,7 @@ func GetByPath(key string, id string, joins []string, path string) (x interface{
 	return
 }
 
-//GetByPathBatch gets a collection entity-property values by id & path.
+// GetByPathBatch gets a collection entity-property values by id & path.
 func GetByPathBatch(key string, id string, joins []string, paths []string) (x interface{}, err error) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -268,7 +268,7 @@ func GetByPathBatch(key string, id string, joins []string, paths []string) (x in
 	return
 }
 
-//Publish fetches the record / path and publishes out to all subscribers.
+// Publish fetches the record / path and publishes out to all subscribers.
 func Publish(key string, id string, path string, logger func(string, string)) {
 
 	defer func() {
@@ -340,7 +340,7 @@ func Publish(key string, id string, path string, logger func(string, string)) {
 	}
 }
 
-//Set updates a collection by id, path.
+// Set updates a collection by id, path.
 func Set(key string, id string, path string, x interface{}, logger func(string, string)) (err error) {
 
 	defer func() {
@@ -355,7 +355,7 @@ func Set(key string, id string, path string, x interface{}, logger func(string, 
 
 	collection, ok := getRegistry(key)
 	if !ok {
-		err = errors.New("Invalid registry key")
+		err = errors.New("invalid registry key")
 		return
 	}
 
@@ -427,7 +427,8 @@ func Set(key string, id string, path string, x interface{}, logger func(string, 
 
 						// logger("PropType", fmt.Sprintf("%+v", propType))
 
-						if propType == "int" {
+						switch propType {
+						case "int":
 							floatVal, ok := x.(float64)
 							if ok {
 								x = int(floatVal)
@@ -436,7 +437,7 @@ func Set(key string, id string, path string, x interface{}, logger func(string, 
 							if ok {
 								x = extensions.StringToInt(intVal)
 							}
-						} else if propType == "float64" {
+						case "float64":
 							intVal, ok := x.(int)
 							if ok {
 								x = float64(intVal)
@@ -445,7 +446,7 @@ func Set(key string, id string, path string, x interface{}, logger func(string, 
 							if ok {
 								x = extensions.StringToFloat(floatVal, 0)
 							}
-						} else if propType == "[]int" {
+						case "[]int":
 							x = interfaceToIntArray(x)
 						}
 					}
@@ -495,7 +496,7 @@ func Set(key string, id string, path string, x interface{}, logger func(string, 
 
 }
 
-//Append adds to an array field.
+// Append adds to an array field.
 func Append(key string, id string, path string, x interface{}, logger func(string, string)) (y interface{}, err error) {
 
 	defer func() {
@@ -557,12 +558,13 @@ func Append(key string, id string, path string, x interface{}, logger func(strin
 
 				propType := reflect.TypeOf(properties[i].Interface()).String()
 
-				if propType == "int" {
+				switch propType {
+				case "int":
 					floatVal, ok := x.(float64)
 					if ok {
 						x = int(floatVal)
 					}
-				} else if propType == "float64" {
+				case "float64":
 					intVal, ok := x.(int)
 					if ok {
 						x = float64(intVal)
@@ -609,7 +611,7 @@ func Append(key string, id string, path string, x interface{}, logger func(strin
 	return
 }
 
-//Splice removes to an array field.
+// Splice removes to an array field.
 func Splice(key string, id string, path string, x interface{}, logger func(string, string)) (y interface{}, err error) {
 
 	defer func() {
@@ -714,7 +716,7 @@ func Splice(key string, id string, path string, x interface{}, logger func(strin
 	return
 }
 
-//Add adds an entity to the collection and returns it.
+// Add adds an entity to the collection and returns it.
 func Add(key string, x interface{}, logger func(string, string)) (y interface{}, err error) {
 
 	defer func() {
@@ -784,7 +786,7 @@ func Add(key string, x interface{}, logger func(string, string)) (y interface{},
 	return
 }
 
-//Remove removes an entity from the collection and returns the Id Removed.
+// Remove removes an entity from the collection and returns the Id Removed.
 func Remove(key string, id string) (err error) {
 
 	defer func() {

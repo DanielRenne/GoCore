@@ -682,6 +682,20 @@ func (obj modelCountries) ReflectByFieldName(fieldName string, x interface{}) (v
 func (obj modelCountries) ReflectBaseTypeByFieldName(fieldName string, x interface{}) (value reflect.Value, err error) {
 
 	switch fieldName {
+	case "Id":
+		if x == nil {
+			var obj bson.ObjectId
+			value = reflect.ValueOf(obj)
+			return
+		}
+
+		obj, ok := x.(bson.ObjectId)
+		if !ok {
+			err = errors.New("Failed to typecast interface.")
+			return
+		}
+		value = reflect.ValueOf(obj)
+		return
 	case "Iso":
 		if x == nil {
 			var obj string
@@ -704,20 +718,6 @@ func (obj modelCountries) ReflectBaseTypeByFieldName(fieldName string, x interfa
 		}
 
 		obj, ok := x.(string)
-		if !ok {
-			err = errors.New("Failed to typecast interface.")
-			return
-		}
-		value = reflect.ValueOf(obj)
-		return
-	case "Id":
-		if x == nil {
-			var obj bson.ObjectId
-			value = reflect.ValueOf(obj)
-			return
-		}
-
-		obj, ok := x.(bson.ObjectId)
 		if !ok {
 			err = errors.New("Failed to typecast interface.")
 			return

@@ -199,7 +199,6 @@ func UpdateBootStrapMemoryCache(key string, value string) {
 			Model.Unlock()
 		}
 	}
-	return
 }
 
 // DeleteBootstrapCache is exported internally to share between GoCore packages and should not be called directly by you.
@@ -312,7 +311,6 @@ func UpdateManifestMemoryCache(key string, value string, byteSize int) {
 		ByteManifest.Cache[key][value] = byteSize
 	}
 	ByteManifest.Unlock()
-	return
 }
 
 // DeleteManifestFileCache is exported internally to share between GoCore packages and should not be called directly by you.

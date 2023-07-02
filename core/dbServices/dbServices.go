@@ -62,9 +62,10 @@ func ReadMongoDB() (mdb *mgo.Database) {
 // Initialize will initialize the database connection
 func Initialize() {
 	fmt.Println("core dbServices initialized.")
-	if serverSettings.WebConfig.DbConnection.Driver == DATABASE_DRIVER_BOLTDB {
+	switch serverSettings.WebConfig.DbConnection.Driver {
+	case DATABASE_DRIVER_BOLTDB:
 		openBolt()
-	} else if serverSettings.WebConfig.DbConnection.Driver == DATABASE_DRIVER_MONGODB {
+	case DATABASE_DRIVER_MONGODB:
 		go openMongo()
 	}
 }
@@ -138,7 +139,7 @@ func openMongo() {
 				result.Config.Members[0].Priority = 1
 				result.Config.Members[0].Votes = 1
 
-				for i, _ := range serverSettings.WebConfig.DbConnection.Replication.Slaves {
+				for i := range serverSettings.WebConfig.DbConnection.Replication.Slaves {
 					slaveAddress := serverSettings.WebConfig.DbConnection.Replication.Slaves[i]
 					if len(result.Config.Members) < i+2 {
 						var slave Mongo_Replica_Member
@@ -156,7 +157,7 @@ func openMongo() {
 
 				result.Config.Settings.HeartbeatTimeoutSecs = 5
 
-				err = session.DB("admin").Run(bson.D{{"replSetReconfig", result.Config}, {"force", true}}, nil)
+				err = session.DB("admin").Run(bson.D{{Name: "replSetReconfig", Value: result.Config}, {Name: "force", Value: true}}, nil)
 				if err != nil {
 					color.Red("Failed to replSetReconfig:  " + err.Error())
 				}
@@ -192,7 +193,7 @@ func openMongo() {
 
 	// This will block forever until a connection is established
 	DBMutex.Lock()
-	MongoSession, err = mgo.DialWithInfo(dialInfo) // open an connection -> Dial function
+	MongoSession, _ = mgo.DialWithInfo(dialInfo) // open an connection -> Dial function
 	DBMutex.Unlock()
 	connectMongoDB()
 }

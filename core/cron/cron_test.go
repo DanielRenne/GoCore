@@ -22,7 +22,6 @@ func ExampleRegisterRecurring() {
 	}
 	cb := func(currentTime time.Time) {
 		core.Dump("Job Executed on top of second (because it wasnt top-of-hour): " + currentTime.String())
-		return
 	}
 	cron.RegisterRecurring(runCronAt, cb)
 	c := make(chan string)
@@ -48,10 +47,7 @@ func ExampleRegisterFutureEvent() {
 func ExampleExecuteOneTimeJob() {
 	cb := func() bool {
 		err := zip.Unzip("test", "test", []string{})
-		if err != nil {
-			return false
-		}
-		return true
+		return err == nil
 	}
 	cron.ExecuteOneTimeJob("run me and i will save a key of this string and write the boolean of success or not to /usr/local/goCore/jobs/jobs.json for historical purposes", cb)
 }
@@ -63,7 +59,6 @@ func ExampleShouldRunEveryFiveMinutes() {
 		if cron.ShouldRunEveryFiveMinutes(currentTime) {
 			core.Dump("Job Executed on top of 5 minutes: " + currentTime.String())
 		}
-		return
 	}
 	cron.RegisterTopOfMinuteJob(cb)
 	c := make(chan string)
@@ -79,7 +74,6 @@ func ExampleShouldRunEveryFiveMinutes() {
 func ExampleRegisterTopOf30SecondsJob() {
 	cb := func(currentTime time.Time) {
 		core.Dump("Job Executed on: " + currentTime.String())
-		return
 	}
 	cron.RegisterTopOf30SecondsJob(cb)
 	c := make(chan string)
@@ -95,7 +89,6 @@ func ExampleRegisterTopOf30SecondsJob() {
 func ExampleRegisterTopOfMinuteJob() {
 	cb := func(currentTime time.Time) {
 		core.Dump("Job Executed on: " + currentTime.String())
-		return
 	}
 	cron.RegisterTopOfMinuteJob(cb)
 	c := make(chan string)
@@ -111,7 +104,6 @@ func ExampleRegisterTopOfMinuteJob() {
 func ExampleRegisterTopOfDayJob() {
 	cb := func(currentTime time.Time) {
 		core.Dump("Job Executed on: " + currentTime.String())
-		return
 	}
 	cron.RegisterTopOfDayJob(cb)
 	c := make(chan string)
@@ -127,7 +119,6 @@ func ExampleRegisterTopOfDayJob() {
 func ExampleRegisterTopOfSecondJob() {
 	cb := func(currentTime time.Time) {
 		core.Dump("Job Executed on: " + currentTime.String())
-		return
 	}
 	cron.RegisterTopOfSecondJob(cb)
 	c := make(chan string)
@@ -143,7 +134,6 @@ func ExampleRegisterTopOfSecondJob() {
 func ExampleRegisterTopOfHourJob() {
 	cb := func(currentTime time.Time) {
 		core.Dump("Job Executed on: " + currentTime.String())
-		return
 	}
 	cron.RegisterTopOfHourJob(cb)
 	c := make(chan string)

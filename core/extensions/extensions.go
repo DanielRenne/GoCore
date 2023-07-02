@@ -91,33 +91,27 @@ func RightPad(s string, padStr string, pLen int) string {
 *
  */
 func RightPad2Len(s string, padStr string, overallLen int) string {
-	var padCountInt int
-	padCountInt = 1 + ((overallLen - len(padStr)) / len(padStr))
+	var padCountInt int = 1 + ((overallLen - len(padStr)) / len(padStr))
 	var retStr = s + strings.Repeat(padStr, padCountInt)
 	return retStr[:overallLen]
 }
 
 // LeftPad2Len functions are generally assumed to be padded with short sequences of strings
 func LeftPad2Len(s string, padStr string, overallLen int) string {
-	var padCountInt int
-	padCountInt = 1 + ((overallLen - len(padStr)) / len(padStr))
+	var padCountInt int = 1 + ((overallLen - len(padStr)) / len(padStr))
 	var retStr = strings.Repeat(padStr, padCountInt) + s
 	return retStr[(len(retStr) - overallLen):]
 }
 
 // TrimSuffix removes a suffix from a string.
 func TrimSuffix(s, suffix string) string {
-	if strings.HasSuffix(s, suffix) {
-		s = s[:len(s)-len(suffix)]
-	}
-	return s
+	return strings.TrimSuffix(s, suffix)
 }
 
 // PrintKiloBytes prints a number of bytes in kilobytes as a string
 func PrintKiloBytes(bytes int64) string {
 
-	var kilobytes float64
-	kilobytes = float64(bytes / 1024)
+	var kilobytes float64 = float64(bytes / 1024)
 
 	return fmt.Sprint(FloatToString(kilobytes, 2), " kB")
 }
@@ -125,11 +119,9 @@ func PrintKiloBytes(bytes int64) string {
 // PrintMegaBytes prints a number of bytes in megabytes as a human readable string
 func PrintMegaBytes(bytes int64) string {
 
-	var kilobytes float64
-	kilobytes = float64(bytes / 1024)
+	var kilobytes float64 = float64(bytes / 1024)
 
-	var megabytes float64
-	megabytes = kilobytes / 1024 // cast to type float64
+	var megabytes float64 = kilobytes / 1024 // cast to type float64
 
 	return fmt.Sprint(FloatToString(megabytes, 2), " MB")
 }
@@ -154,26 +146,19 @@ func IsPrintable(s string) bool {
 // PrintZettaBytes prints a number of bytes in zettabytes as a human readable string
 func PrintZettaBytes(bytes int64) string {
 
-	var kilobytes float64
-	kilobytes = float64(bytes / 1024)
+	var kilobytes float64 = float64(bytes / 1024)
 
-	var megabytes float64
-	megabytes = (kilobytes / 1024) // cast to type float64
+	var megabytes float64 = (kilobytes / 1024) // cast to type float64
 
-	var gigabytes float64
-	gigabytes = (megabytes / 1024)
+	var gigabytes float64 = (megabytes / 1024)
 
-	var terabytes float64
-	terabytes = (gigabytes / 1024)
+	var terabytes float64 = (gigabytes / 1024)
 
-	var petabytes float64
-	petabytes = (terabytes / 1024)
+	var petabytes float64 = (terabytes / 1024)
 
-	var exabytes float64
-	exabytes = (petabytes / 1024)
+	var exabytes float64 = (petabytes / 1024)
 
-	var zettabytes float64
-	zettabytes = (exabytes / 1024)
+	var zettabytes float64 = (exabytes / 1024)
 
 	return fmt.Sprint(FloatToString(zettabytes, 2), " ZB")
 }
@@ -265,9 +250,7 @@ func Int64ToInt32(val int64) (ret int) {
 
 // Int32ToInt converts a 32 bit integer to a 32 bit integer
 func Int32ToInt(val int32) (ret int) {
-	tempLong := ((val >> 32) << 32) //shift it right then left 32 bits, which zeroes the lower half of the long
-	ret = (int)(val - tempLong)
-	return ret
+	return int(val)
 }
 
 // Int32ToDWORD converts an int32 to DWORD byte array.
@@ -371,10 +354,7 @@ func ExtractArgsWithinBrackets(str string) (res []string) {
 	}
 
 	isBracket := func(r rune) bool {
-		if unicode.In(r, brackets) {
-			return true
-		}
-		return false
+		return unicode.In(r, brackets)
 	}
 
 	res = strings.FieldsFunc(str, isBracket)

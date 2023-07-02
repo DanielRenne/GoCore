@@ -9,9 +9,9 @@ import (
 	"reflect"
 	"runtime/debug"
 	"strconv"
-	"strings"
 
 	"github.com/DanielRenne/GoCore/core/app"
+	"github.com/DanielRenne/GoCore/core/extensions"
 	"github.com/DanielRenne/GoCore/core/ginServer"
 	"github.com/DanielRenne/GoCore/core/serverSettings"
 	"github.com/gin-gonic/gin"
@@ -19,7 +19,7 @@ import (
 
 // ErrorResponse is the default error response object.
 type ErrorResponse struct {
-	Error *errorObj `json:"error,omitEmpty"`
+	Error *errorObj `json:"error"`
 }
 
 type errorObj struct {
@@ -210,9 +210,9 @@ func processRequest(controller string, action string, data []byte, c *gin.Contex
 	var e ErrorResponse
 	e.Error = new(errorObj)
 
-	ctl := getController(strings.Title(controller))
+	ctl := getController(extensions.Title(controller))
 
-	method := ctl.MethodByName(strings.Title(action))
+	method := ctl.MethodByName(extensions.Title(action))
 
 	if !method.IsValid() {
 		e.Error.Message = "Method " + action + " not available to call."

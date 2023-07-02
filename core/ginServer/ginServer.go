@@ -163,7 +163,7 @@ func getRouterSyncGroup(group string) *gin.RouterGroup {
 	n := groupRoutesSynced.m[group]
 	groupRoutesSynced.RUnlock()
 
-	if n.enabled == false {
+	if !n.enabled {
 		r := Router.Group(group)
 		rg := routeGroup{enabled: true, routerGroup: r}
 		addRouterSyncGroup(group, rg)

@@ -100,15 +100,12 @@ func moveServerOnlyAppFiles() {
 
 	if isInitializingApp {
 		var mainCNKeys string
-		for {
-			reader := bufio.NewReader(os.Stdin)
-			log.Println("We are now attempting to generate SSL self signed certificates.  Add your full cert information like this: \"/CN=www.mydom.com/O=My Company Name LTD./C=US\" (defaults to this if you just press enter)")
-			mainCNKeys, _ = reader.ReadString('\n')
-			mainCNKeys = strings.Trim(mainCNKeys, "\n")
-			if mainCNKeys == "" {
-				mainCNKeys = "/CN=www.mydom.com/O=My Company Name LTD./C=US"
-			}
-			break
+		reader := bufio.NewReader(os.Stdin)
+		log.Println("We are now attempting to generate SSL self signed certificates.  Add your full cert information like this: \"/CN=www.mydom.com/O=My Company Name LTD./C=US\" (defaults to this if you just press enter)")
+		mainCNKeys, _ = reader.ReadString('\n')
+		mainCNKeys = strings.Trim(mainCNKeys, "\n")
+		if mainCNKeys == "" {
+			mainCNKeys = "/CN=www.mydom.com/O=My Company Name LTD./C=US"
 		}
 
 		_, err = os.Stat(serverSettings.APP_LOCATION + path.PathSeparator + "keys")
@@ -283,13 +280,13 @@ func Initialize() {
 			mainNameFileGo, _ = reader.ReadString('\n')
 			mainNameFileGo = strings.Trim(mainNameFileGo, "\n")
 			ok := false
-			if strings.Index(mainNameFileGo, " ") == -1 {
+			if !strings.Contains(mainNameFileGo, " ") {
 				ok = true
 			} else {
 				logger.Message("No spaces please", logger.GREEN)
 			}
 			if ok {
-				if strings.Index(mainNameFileGo, ".go") == -1 {
+				if !strings.Contains(mainNameFileGo, ".go") {
 					mainNameFileGo += ".go"
 				}
 				break
@@ -329,7 +326,7 @@ webConfig.json
 			moduleName, _ = reader.ReadString('\n')
 			moduleName = strings.Trim(moduleName, "\n")
 			ok := false
-			if strings.Index(moduleName, " ") == -1 {
+			if !strings.Contains(moduleName, " ") {
 				ok = true
 			} else {
 				logger.Message("No spaces please", logger.GREEN)
@@ -682,7 +679,7 @@ func moveAppFiles() {
 				replaceAnything(v, "GoCoreAppHumanName", strings.TrimSpace(string(humanTitle)))
 			}
 		}
-		wasCopied = copyFolder("/payloads")
+		copyFolder("/payloads")
 		wasCopied = copyFolder("/constants")
 		if wasCopied {
 			replacePath("/constants", project, githubName, appName)

@@ -16,17 +16,17 @@ const (
 	collectionCacheManagementTime = 5
 )
 
-//CollectionCache provides DB object Caching functions.
+// CollectionCache provides DB object Caching functions.
 type CollectionCache struct {
 }
 
-//CacheKey is the key lookup for the collectionCache
+// CacheKey is the key lookup for the collectionCache
 type CacheKey struct {
 	collection string
 	id         string
 }
 
-//CacheValue is the value for the collectionCache
+// CacheValue is the value for the collectionCache
 type CacheValue struct {
 	lastUpdate atomicTypes.AtomicTime
 	value      []byte
@@ -39,7 +39,7 @@ func init() {
 	go CollectionCache{}.manage()
 }
 
-//Fetch will get the collection entity
+// Fetch will get the collection entity
 func (cc CollectionCache) Fetch(collection string, id string, value interface{}) (ok bool) {
 
 	ck := CacheKey{collection: collection, id: id}
@@ -68,7 +68,7 @@ func (cc CollectionCache) Fetch(collection string, id string, value interface{})
 	return
 }
 
-//Store will store the collection object.
+// Store will store the collection object.
 func (cc CollectionCache) Store(collection string, id string, value interface{}) {
 
 	defer func() {
@@ -79,7 +79,7 @@ func (cc CollectionCache) Store(collection string, id string, value interface{})
 	}()
 	ck := CacheKey{collection: collection, id: id}
 
-	data := []byte{}
+	var data []byte
 
 	if serverSettings.WebConfig.DbConnection.Driver == DATABASE_DRIVER_BOLTDB {
 		data, _ = json.Marshal(value)
@@ -99,7 +99,7 @@ func (cc CollectionCache) Store(collection string, id string, value interface{})
 	}
 }
 
-//DeleteAll deletes the whole collection cache
+// DeleteAll deletes the whole collection cache
 func (cc CollectionCache) DeleteAll() {
 	collectionCache.Range(func(key interface{}, value interface{}) bool {
 		cc.removeByKey(key)
@@ -107,13 +107,13 @@ func (cc CollectionCache) DeleteAll() {
 	})
 }
 
-//Count returns the length of the cache.
+// Count returns the length of the cache.
 func (cc CollectionCache) Count() (value int) {
 	value = collectionCacheCount.Get()
 	return
 }
 
-//removeByKey will remove from the collection cache.
+// removeByKey will remove from the collection cache.
 func (cc CollectionCache) removeByKey(key interface{}) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -131,7 +131,7 @@ func (cc CollectionCache) removeByKey(key interface{}) {
 	}
 }
 
-//Remove will remove from the collection cache.
+// Remove will remove from the collection cache.
 func (cc CollectionCache) Remove(collection string, id string) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -151,7 +151,7 @@ func (cc CollectionCache) Remove(collection string, id string) {
 
 }
 
-//reduce will reduce the collection cache by a config time limit or document limit.
+// reduce will reduce the collection cache by a config time limit or document limit.
 func (cc CollectionCache) reduce() {
 
 	defer func() {
@@ -197,7 +197,7 @@ func (cc CollectionCache) reduce() {
 
 }
 
-//manage checks the collectionCache every hour to reduce the cache by date or doc count
+// manage checks the collectionCache every hour to reduce the cache by date or doc count
 func (cc CollectionCache) manage() {
 
 	defer func() {
