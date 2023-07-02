@@ -1,5 +1,11 @@
-github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221231161458-fe3d9327bf49 h1:B4V1nxQMnCAUK6i+Ysqpk+YXqhUyINhaLHaVZm3COFc=
-github.com/DanielRenne/GoCore/core/extensions v0.0.0-20221231161458-fe3d9327bf49/go.mod h1:6gaxFzpuy3c3l/q0gRWar1ry0ZSbopm7clbGYLCjkGU=
+github.com/DanielRenne/GoCore/core/extensions v0.0.0-20230512224548-5dab4387b99a h1:zvcHsqjuOsyDsHWgCSbe5VEMBOLkNmtPQv2wPDP2i8Y=
+github.com/DanielRenne/GoCore/core/extensions v0.0.0-20230512224548-5dab4387b99a/go.mod h1:KC6J3IX9FKk4+tYJGmZRAslBdpws22xf9PI5gTWYYFU=
+github.com/DanielRenne/GoCore/core/path v0.0.0-20230702111012-e8adc1b35e5a h1:Mt4po1sYpcFDu3lqKUkRBYILRAfOL6F00GrEcFxuZgA=
+github.com/DanielRenne/GoCore/core/path v0.0.0-20230702111012-e8adc1b35e5a/go.mod h1:/xvJ8xSQDvZ7UuUymCjIwKlJwvWmpjz9IvkmY3RPvCk=
+github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20230512224548-5dab4387b99a h1:B5ft91xzL1ifnzAC/vKqXSSc3EBPi3X5jrXkQeoKTt4=
+github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20230512224548-5dab4387b99a/go.mod h1:EgEn07rpoZ4hH7AI3NJf2x6bwfvkkW6rSR1shfMScj4=
+github.com/DanielRenne/GoCore/core/utils v0.0.0-20230512224548-5dab4387b99a h1:jMWFLOOBibmIIr1zdL+r/jg38YbXPRFhjPMOcicQV5s=
+github.com/DanielRenne/GoCore/core/utils v0.0.0-20230512224548-5dab4387b99a/go.mod h1:wdfh2nZuYWldteaNKj24gDIKOpu9UAv4C2seiKxcHkY=
 github.com/forPelevin/gomoji v1.1.8 h1:JElzDdt0TyiUlecy6PfITDL6eGvIaxqYH1V52zrd0qQ=
 github.com/forPelevin/gomoji v1.1.8/go.mod h1:8+Z3KNGkdslmeGZBC3tCrwMrcPy5GRzAD+gL9NAwMXg=
 github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8 h1:DujepqpGd1hyOd7aW59XpK7Qymp8iy83xq74fLr21is=
@@ -9,7 +15,7 @@ github.com/kr/pretty v0.2.1/go.mod h1:ipq/a2n7PKx3OHsz4KJII5eveXtPO4qwEXGdVfWzfn
 github.com/kr/pty v1.1.1/go.mod h1:pFQYn66WHrOpPYNljwOMqo10TkYh1fy3cYio2l3bCsQ=
 github.com/kr/text v0.1.0 h1:45sCR5RtlFHMR4UwH9sdQ5TC8v0qDQCHnXt+kaKSTVE=
 github.com/kr/text v0.1.0/go.mod h1:4Jbv+DJW3UT/LiOwJeYQe1efqtUx/iVham/4vfdArNI=
-github.com/rivo/uniseg v0.4.3 h1:utMvzDsuh3suAEnhH0RdHmoPbU648o6CvXxTx4SBMOw=
-github.com/rivo/uniseg v0.4.3/go.mod h1:FN3SvrM+Zdj16jyLfmOkMNblXMcoc8DfTHruCPUcx88=
+github.com/rivo/uniseg v0.4.4 h1:8TfxU8dW6PdqD27gjM8MVNuicgxIjxpm4K7x4jp8sis=
+github.com/rivo/uniseg v0.4.4/go.mod h1:FN3SvrM+Zdj16jyLfmOkMNblXMcoc8DfTHruCPUcx88=
 gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c h1:Hei/4ADfdWqJk1ZMxUNpqntNwaWcugrBjAiHlqqRiVk=
 gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c/go.mod h1:JHkPIbrfpd72SG/EVd6muEfDQjcINNoR0C8j2r3qZ4Q=
