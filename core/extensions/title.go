@@ -6,6 +6,5 @@ import (
 )
 
 func Title(str string) string {
-	caser := cases.Title(language.English)
-	return caser.String(str)
+	return cases.Title(language.English, cases.NoLower).String(str)
 }
