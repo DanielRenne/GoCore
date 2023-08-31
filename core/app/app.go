@@ -16,7 +16,6 @@ import (
 	"time"
 
 	"github.com/DanielRenne/GoCore/core/atomicTypes"
-	"github.com/DanielRenne/GoCore/core/dbServices"
 	"github.com/DanielRenne/GoCore/core/extensions"
 	"github.com/DanielRenne/GoCore/core/fileCache"
 	"github.com/DanielRenne/GoCore/core/ginServer"
@@ -230,7 +229,6 @@ func Initialize(path string, config string) {
 		ginServer.Initialize(gin.DebugMode, serverSettings.WebConfig.Application.CookieDomain)
 	}
 	fileCache.Initialize()
-	dbServices.Initialize()
 }
 
 // InitializeLite initilizes a basic gin server with no database coupling

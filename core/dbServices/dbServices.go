@@ -43,6 +43,7 @@ const (
 
 func init() {
 	DBMutex = &sync.RWMutex{}
+	Initialize()
 }
 
 // OverrideMongoDBConnection allows you to override the connection string for the mongo database
