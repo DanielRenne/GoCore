@@ -3,30 +3,24 @@ module github.com/DanielRenne/GoCore/core/app/api
 go 1.19
 
 require (
-	github.com/DanielRenne/GoCore/core/app v0.0.0-20230702111012-e8adc1b35e5a
-	github.com/DanielRenne/GoCore/core/extensions v0.0.0-20230512224548-5dab4387b99a
-	github.com/DanielRenne/GoCore/core/ginServer v0.0.0-20230702111012-e8adc1b35e5a
-	github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20230512224548-5dab4387b99a
+	github.com/DanielRenne/GoCore/core/app v0.0.0-20230831033353-138ede31e187
+	github.com/DanielRenne/GoCore/core/extensions v0.0.0-20230831033353-138ede31e187
+	github.com/DanielRenne/GoCore/core/ginServer v0.0.0-20230831033353-138ede31e187
+	github.com/DanielRenne/GoCore/core/serverSettings v0.0.0-20230831033353-138ede31e187
 	github.com/gin-gonic/gin v1.9.1
 )
 
 require (
 	github.com/DanielRenne/GoCore/core/atomicTypes v0.0.0-20230512224548-5dab4387b99a // indirect
-	github.com/DanielRenne/GoCore/core/dbServices v0.0.0-20230512224548-5dab4387b99a // indirect
-	github.com/DanielRenne/GoCore/core/dbServices/bolt/stubs v0.0.0-20230702111012-e8adc1b35e5a // indirect
-	github.com/DanielRenne/GoCore/core/dbServices/common/stubs v0.0.0-20230702111012-e8adc1b35e5a // indirect
-	github.com/DanielRenne/GoCore/core/dbServices/mongo/stubs v0.0.0-20230702111012-e8adc1b35e5a // indirect
 	github.com/DanielRenne/GoCore/core/fileCache v0.0.0-20230512224548-5dab4387b99a // indirect
 	github.com/DanielRenne/GoCore/core/gitWebHooks v0.0.0-20230702111012-e8adc1b35e5a // indirect
 	github.com/DanielRenne/GoCore/core/logger v0.0.0-20230512224548-5dab4387b99a // indirect
 	github.com/DanielRenne/GoCore/core/path v0.0.0-20230702111012-e8adc1b35e5a // indirect
 	github.com/DanielRenne/GoCore/core/store v0.0.0-20230512224548-5dab4387b99a // indirect
 	github.com/DanielRenne/GoCore/core/utils v0.0.0-20230512224548-5dab4387b99a // indirect
-	github.com/asdine/storm v2.1.2+incompatible // indirect
 	github.com/boj/redistore v0.0.0-20180917114910-cd5dcc76aeff // indirect
 	github.com/bytedance/sonic v1.9.2 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
-	github.com/davidrenne/heredoc v0.0.0-20161006151009-80dc836e596c // indirect
 	github.com/davidrenne/professor v0.0.0-20180814210453-cc6399dacc55 // indirect
 	github.com/fatih/color v1.15.0 // indirect
 	github.com/forPelevin/gomoji v1.1.8 // indirect
@@ -48,7 +42,7 @@ require (
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.5 // indirect
-	github.com/kr/pretty v0.1.0 // indirect
+	github.com/kr/text v0.2.0 // indirect
 	github.com/leodido/go-urn v1.2.4 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.19 // indirect
@@ -58,7 +52,6 @@ require (
 	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
-	go.etcd.io/bbolt v1.3.7 // indirect
 	golang.org/x/arch v0.3.0 // indirect
 	golang.org/x/crypto v0.10.0 // indirect
 	golang.org/x/net v0.11.0 // indirect
