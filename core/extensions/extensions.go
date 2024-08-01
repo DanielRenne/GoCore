@@ -363,8 +363,13 @@ func ExtractArgsWithinBrackets(str string) (res []string) {
 
 // Random returns a random number between min and max
 func Random(min, max int) int {
-	rand.Seed(time.Now().UTC().UnixNano())
-	return rand.Intn(max-min) + min
+	// Create a new random source with the current time as the seed
+	seed := time.Now().UTC().UnixNano()
+	source := rand.NewSource(seed)
+	random := rand.New(source)
+
+	// Generate a random number between min and max
+	return random.Intn(max-min+1) + min
 }
 
 // Between will return substring between two strings
