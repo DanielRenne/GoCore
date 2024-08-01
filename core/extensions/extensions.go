@@ -424,12 +424,23 @@ func NewUUID() (string, error) {
 
 // RandomString returns a random string of length
 func RandomString(strlen int) string {
-	rand.Seed(time.Now().UTC().UnixNano())
+	// Define the character set to use in the random string
 	const chars = "abcdefghijklmnopqrstuvwxyz0123456789"
+
+	// Create a new random source and Rand instance
+	seed := time.Now().UTC().UnixNano()
+	source := rand.NewSource(seed)
+	random := rand.New(source)
+
+	// Create a slice to store the random characters
 	result := make([]byte, strlen)
+
+	// Populate the slice with random characters from the character set
 	for i := 0; i < strlen; i++ {
-		result[i] = chars[rand.Intn(len(chars))]
+		result[i] = chars[random.Intn(len(chars))]
 	}
+
+	// Convert the byte slice to a string and return it
 	return string(result)
 }
 
