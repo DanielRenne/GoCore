@@ -9,7 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
+	"io/fs"
 	"log"
 	"os"
 	"os/exec"
@@ -43,19 +43,25 @@ func GetAllFiles(path string) (files []os.FileInfo, err error) {
 }
 
 // GetAllFilesWithSearch returns all files in a directory with a search string
-func GetAllFilesWithSearch(path string, fileSearch string) (files []os.FileInfo, err error) {
-	files = make([]os.FileInfo, 0)
-	filesAll, err := ioutil.ReadDir(path)
-	if err == nil {
-		for _, file := range filesAll {
-			if !file.IsDir() {
-				if fileSearch == "" || strings.Contains(file.Name(), fileSearch) {
-					files = append(files, file)
-				}
+func GetAllFilesWithSearch(path string, fileSearch string) ([]fs.FileInfo, error) {
+	files := []fs.FileInfo{}
+	entries, err := os.ReadDir(path)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, entry := range entries {
+		if !entry.IsDir() && strings.Contains(entry.Name(), fileSearch) {
+			// Convert fs.DirEntry to fs.FileInfo
+			info, err := entry.Info()
+			if err != nil {
+				return nil, err
 			}
+			files = append(files, info)
 		}
 	}
-	return files, err
+
+	return files, nil
 }
 
 // GetAllFolders returns all folders in a directory
@@ -64,41 +70,68 @@ func GetAllFolders(path string) (files []os.FileInfo, err error) {
 }
 
 // GetAllFoldersWithSearch returns all folders in a directory with a search string
-func GetAllFoldersWithSearch(path string, fileSearch string) (files []os.FileInfo, err error) {
-	files = make([]os.FileInfo, 0)
-	filesAll, err := ioutil.ReadDir(path)
-	if err == nil {
-		for _, file := range filesAll {
-			if file.IsDir() {
-				if fileSearch == "" || strings.Contains(file.Name(), fileSearch) {
-					files = append(files, file)
+func GetAllFoldersWithSearch(path string, fileSearch string) ([]fs.FileInfo, error) {
+	// Initialize a slice to store the results
+	files := []fs.FileInfo{}
+
+	// Read all entries in the directory
+	filesAll, err := os.ReadDir(path)
+	if err != nil {
+		return nil, err
+	}
+
+	// Loop through each directory entry
+	for _, file := range filesAll {
+		if file.IsDir() { // Check if the entry is a directory
+			if fileSearch == "" || strings.Contains(file.Name(), fileSearch) {
+				// Convert DirEntry to FileInfo
+				info, err := file.Info()
+				if err != nil {
+					return nil, err
 				}
+				// Append the directory's FileInfo to the slice
+				files = append(files, info)
 			}
 		}
 	}
-	return files, err
+
+	return files, nil
 }
 
 // GetAllFilesDeepWithSearch recursively returns all files in a directory with a search string
-func GetAllFilesDeepWithSearch(path string, fileSearch string) (files []os.FileInfo, err error) {
-	files = make([]os.FileInfo, 0)
-	filesAll, err := ioutil.ReadDir(path)
-	if err == nil {
-		for _, file := range filesAll {
-			if !file.IsDir() {
-				if fileSearch == "" || strings.Contains(file.Name(), fileSearch) {
-					files = append(files, file)
-				}
-			} else {
-				subFiles, err := GetAllFilesDeepWithSearch(path+string(os.PathSeparator)+file.Name(), fileSearch)
-				files = append(files, subFiles...)
+func GetAllFilesDeepWithSearch(path string, fileSearch string) ([]fs.FileInfo, error) {
+	// Initialize a slice to store the results
+	files := []fs.FileInfo{}
+
+	// Read all entries in the directory
+	filesAll, err := os.ReadDir(path)
+	if err != nil {
+		return nil, err
+	}
+
+	// Loop through each directory entry
+	for _, file := range filesAll {
+		if !file.IsDir() { // Check if the entry is not a directory
+			if fileSearch == "" || strings.Contains(file.Name(), fileSearch) {
+				// Convert DirEntry to FileInfo
+				info, err := file.Info()
 				if err != nil {
-					return files, err
+					return nil, err
 				}
+				// Append the file's FileInfo to the slice
+				files = append(files, info)
 			}
+		} else { // If the entry is a directory, recursively search it
+			subPath := filepath.Join(path, file.Name())
+			subFiles, err := GetAllFilesDeepWithSearch(subPath, fileSearch)
+			if err != nil {
+				return nil, err
+			}
+			files = append(files, subFiles...)
 		}
 	}
-	return files, err
+
+	return files, nil
 }
 
 // GetAllFilesSearchWithPath returns all files in a directory with a search string
@@ -140,19 +173,32 @@ func GetAllDirs(path string) (files []os.FileInfo, err error) {
 }
 
 // GetAllDirWithExclude returns all directories in a directory excluding the exclude string
-func GetAllDirWithExclude(path string, except string) (files []os.FileInfo, err error) {
-	files = make([]os.FileInfo, 0)
-	filesAll, err := ioutil.ReadDir(path)
-	if err == nil {
-		for _, file := range filesAll {
-			if file.IsDir() {
-				if except == "" || !strings.Contains(file.Name(), except) {
-					files = append(files, file)
+func GetAllDirWithExclude(path string, except string) ([]fs.FileInfo, error) {
+	// Initialize a slice to store the results
+	files := []fs.FileInfo{}
+
+	// Read all entries in the directory
+	filesAll, err := os.ReadDir(path)
+	if err != nil {
+		return nil, err
+	}
+
+	// Loop through each directory entry
+	for _, file := range filesAll {
+		if file.IsDir() { // Check if the entry is a directory
+			if except == "" || !strings.Contains(file.Name(), except) {
+				// Convert DirEntry to FileInfo
+				info, err := file.Info()
+				if err != nil {
+					return nil, err
 				}
+				// Append the directory's FileInfo to the slice
+				files = append(files, info)
 			}
 		}
 	}
-	return files, err
+
+	return files, nil
 }
 
 // DirSize returns the size of a directory
